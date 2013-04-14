@@ -26,6 +26,9 @@ namespace JabbR.Services
         ChatUser GetUserByLegacyIdentity(string userIdentity);
         ChatUser GetUserByIdentity(string providerName, string userIdentity);
 
+        IQueryable<ChatUserMention> GetMentions();
+        IQueryable<ChatUserMention> GetMentionsByUser(ChatUser callingUser);
+
         ChatClient GetClientById(string clientId, bool includeUser = false);
 
         void AddUserRoom(ChatUser user, ChatRoom room);
@@ -36,12 +39,14 @@ namespace JabbR.Services
         void Add(ChatRoom room);
         void Add(ChatUser user);
         void Add(ChatUserIdentity identity);
+        void Add(ChatUserMention mention);
         void Add(Attachment attachment);
 
         void Remove(ChatClient client);
         void Remove(ChatRoom room);
         void Remove(ChatUser user);
         void Remove(ChatUserIdentity identity);
+        void Remove(ChatUserMention mention);
         void Update(ChatMessage message);
         void RemoveAllClients();
         void CommitChanges();

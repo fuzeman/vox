@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JabbR.Models;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -8,7 +9,7 @@ namespace JabbR.Infrastructure
     {
         private const string Pattern = @"(?<user>(?<=@{1}(?!@))[a-zA-Z0-9-_\.]{1,50})";
 
-        public static IList<string> ExtractMentions(string message)
+        public static IList<string> ExtractMentions(string message, IList<ChatUserMention> userMentions)
         {
             if (message == null)
             {
@@ -16,6 +17,8 @@ namespace JabbR.Infrastructure
             }
 
             var matches = new List<string>();
+
+            // Find @ mentions
             foreach (Match m in Regex.Matches(message, Pattern))
             {
                 if (m.Success)
@@ -25,6 +28,16 @@ namespace JabbR.Infrastructure
                     {
                         matches.Add(user);
                     }
+                }
+            }
+
+            // Find string mentions
+            var messageLower = message.ToLower();
+            foreach (ChatUserMention m in userMentions)
+            {
+                if (messageLower.Contains(m.String))
+                {
+                    matches.Add(m.User.Name);
                 }
             }
 

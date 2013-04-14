@@ -882,13 +882,16 @@
       <DependentUpon>201303220549121_ContentProviderContent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201303302002539_Attachments.resx">
-        <DependentUpon>201303302002539_Attachments.cs</DependentUpon>
+      <DependentUpon>201303302002539_Attachments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201303302058326_AttachmentMetadata.resx">
       <DependentUpon>201303302058326_AttachmentMetadata.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201304020629255_Notifications.resx">
       <DependentUpon>201304020629255_Notifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201304140701027_Mentions.resx">
+      <DependentUpon>201304140701027_Mentions.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\ba-linkify.min.js" />
@@ -953,6 +956,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\Startup.DependencyInjection.cs" />
+    <Compile Include="Commands\MentionsCommand.cs" />
     <Compile Include="ContentProviders\Core\ContentProviderProcessor.cs" />
     <Compile Include="ContentProviders\GitHubIssueCommentsContentProvider.cs" />
     <Compile Include="Infrastructure\AuthenticationServiceExtensions.cs" />
@@ -966,7 +970,7 @@
     </Compile>
     <Compile Include="Migrations\201303302002539_Attachments.cs" />
     <Compile Include="Migrations\201303302002539_Attachments.Designer.cs">
-        <DependentUpon>201303302002539_Attachments.cs</DependentUpon>
+      <DependentUpon>201303302002539_Attachments.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201303302058326_AttachmentMetadata.cs" />
     <Compile Include="Migrations\201303302058326_AttachmentMetadata.Designer.cs">
@@ -976,8 +980,14 @@
     <Compile Include="Migrations\201304020629255_Notifications.Designer.cs">
       <DependentUpon>201304020629255_Notifications.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201304140701027_Mentions.cs" />
+    <Compile Include="Migrations\201304140701027_Mentions.Designer.cs">
+      <DependentUpon>201304140701027_Mentions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Mapping\AttachmentMap.cs" />
+    <Compile Include="Models\Mapping\ChatUserMentionMap.cs" />
     <Compile Include="Models\Mapping\NotificationMap.cs" />
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Nancy\HtmlHelperExtensions.cs" />
