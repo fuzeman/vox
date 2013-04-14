@@ -167,13 +167,17 @@ namespace JabbR
                 chatMessage = _service.AddMessage(user, room, id, clientMessage.Content);
                 _repository.CommitChanges();
             }
-            else
+            else if (chatMessage.User == user)
             {
                 chatMessage.Content = clientMessage.Content;
                 chatMessage.HtmlContent = null;
 
                 _repository.Update(chatMessage);
                 _repository.CommitChanges();
+            }
+            else
+            {
+                throw new InvalidOperationException(String.Format("You cannot edit a message you do not own."));
             }
 
 
