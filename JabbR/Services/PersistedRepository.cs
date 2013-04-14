@@ -92,6 +92,18 @@ namespace JabbR.Services
             _db.SaveChanges();
         }
 
+        public void Update(ChatMessage message)
+        {
+            ChatMessage updateMessage = _db.Messages.Where(p => p.Id == message.Id).FirstOrDefault();
+
+            if (updateMessage != null)
+            {
+                _db.Entry(updateMessage).CurrentValues.SetValues(message);
+            }
+
+            _db.SaveChanges();
+        }
+
         public void CommitChanges()
         {
             _db.SaveChanges();

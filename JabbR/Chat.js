@@ -804,13 +804,24 @@
     $ui.bind(ui.events.sendMessage, function (ev, msg) {
         clearUnread();
 
-        var id = utility.newId(),
+        var id, clientMessage, type, messageCompleteTimeout = null;
+
+        if (typeof msg == 'object' && 'content' in msg) {
+            type = 'replace';
+            id = msg.id;
+            clientMessage = msg;
+
+            clientMessage['room'] = chat.state.activeRoom;
+        } else {
+            type = 'append';
+            id = utility.newId();
+
             clientMessage = {
                 id: id,
                 content: msg,
                 room: chat.state.activeRoom
-            },
-            messageCompleteTimeout = null;
+            };
+        }
 
         if (msg[0] !== '/') {
 
@@ -831,7 +842,9 @@
                 isMine: true
             };
 
-            ui.addChatMessage(viewModel, clientMessage.room);
+            if (type == 'append') {
+                ui.addChatMessage(viewModel, clientMessage.room);
+            }
 
             // If there's a significant delay in getting the message sent
             // mark it as pending
@@ -872,10 +885,28 @@
         }
 
         // Store message history
-        messageHistory.push(msg);
+        if (type == 'replace') {
+            for (var i = 0; i < messageHistory.length; i++) {
+                if (messageHistory[i].id == clientMessage.id) {
+                    messageHistory[i] = clientMessage;
+                }
+            }
+        }
+        if (type == 'append') {
+            messageHistory.push(clientMessage);
+        }
 
         // REVIEW: should this pop items off the top after a certain length?
         historyLocation = messageHistory.length;
+    });
+
+    $ui.bind(ui.events.setMessageId, function (ev, oldId, newId) {
+        for (var i = 0; i < messageHistory.length; i++) {
+            if (messageHistory[i].id == oldId) {
+                messageHistory[i].id = newId;
+                return;
+            }
+        }
     });
 
     $ui.bind(ui.events.focusit, function () {
@@ -924,12 +955,20 @@
         if (historyLocation < 0) {
             historyLocation = messageHistory.length - 1;
         }
-        ui.setMessage(messageHistory[historyLocation]);
+
+        var message = messageHistory[historyLocation];
+        if (message != undefined) {
+            ui.setMessage(message);
+        }
     });
 
     $ui.bind(ui.events.nextMessage, function () {
         historyLocation = (historyLocation + 1) % messageHistory.length;
-        ui.setMessage(messageHistory[historyLocation]);
+
+        var message = messageHistory[historyLocation];
+        if (message != undefined) {
+            ui.setMessage(message);
+        }
     });
 
     $ui.bind(ui.events.activeRoomChanged, function (ev, room) {

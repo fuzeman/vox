@@ -95,6 +95,18 @@ namespace JabbR.Services
             _notifications.Remove(notification);
         }
 
+        public void Update(ChatMessage message)
+        {
+            var room = _rooms.First(r => r == message.Room);
+            var updateMessage = room.Messages.Where(p => p.Id == message.Id).FirstOrDefault();
+
+            if (updateMessage != null)
+            {
+                room.Messages.Remove(updateMessage);
+                room.Messages.Add(message);
+            }
+        }
+
         public void CommitChanges()
         {
             // no-op since this is an in-memory impl' of the repo

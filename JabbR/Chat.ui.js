@@ -865,6 +865,7 @@
             return;
         }
 
+        var id = $newMessage.attr('message-id');
         var msg = $.trim($newMessage.val());
 
         focus = true;
@@ -874,11 +875,16 @@
                 ui.showLogin();
             }
             else {
-                $ui.trigger(ui.events.sendMessage, [msg]);
+                if (id == undefined) {
+                    $ui.trigger(ui.events.sendMessage, [msg]);
+                } else {
+                    $ui.trigger(ui.events.sendMessage, [{ content: msg, id: id }]);
+                }
             }
         }
 
         $newMessage.val('');
+        $newMessage.removeAttr('message-id');
         $newMessage.focus();
 
         // always scroll to bottom after new message sent
@@ -1017,7 +1023,8 @@
             preferencesChanged: 'jabbr.ui.preferencesChanged',
             loggedOut: 'jabbr.ui.loggedOut',
             reloadMessages: 'jabbr.ui.reloadMessages',
-            fileUploaded: 'jabbr.ui.fileUploaded'
+            fileUploaded: 'jabbr.ui.fileUploaded',
+            setMessageId: 'jabber.ui.setMessageId'
         },
 
         help: {
@@ -1240,7 +1247,7 @@
 
                 // Prepend our target username
                 message = '@' + $(this).text().trim() + ' ' + message;
-                ui.setMessage(message);
+                ui.setMessage({ content: message });
                 return false;
             };
             $document.on('click', '.users li.user .name', prepareMessage);
@@ -1438,8 +1445,8 @@
 
             // Returns true if a cycle was triggered
             function cycleMessage(messageHistoryDirection) {
-                var currentMessage = $newMessage[0].value;
-                if (currentMessage.length === 0 || lastCycledMessage === currentMessage) {
+                var currentMessage = $newMessage.attr('message-id');
+                if (currentMessage == undefined || lastCycledMessage === currentMessage) {
                     $ui.trigger(messageHistoryDirection);
                     return true;
                 }
@@ -1552,11 +1559,13 @@
                 }
             });
         },
-        setMessage: function (value) {
-            $newMessage.val(value);
-            lastCycledMessage = value;
-            if (value) {
-                $newMessage.selectionEnd = value.length;
+        setMessage: function (clientMessage) {
+            $newMessage.val(clientMessage.content);
+            $newMessage.attr('message-id', clientMessage.id);
+            lastCycledMessage = clientMessage.id;
+
+            if (clientMessage.content) {
+                $newMessage.selectionEnd = clientMessage.content.length;
             }
         },
         addRoom: addRoom,
@@ -2042,6 +2051,8 @@
 
             $message.find('.middle').html(message.message);
             $message.attr('id', 'm-' + message.id);
+
+            $ui.trigger(ui.events.setMessageId, [id, message.id]);
 
         },
         replaceMessage: function (message) {

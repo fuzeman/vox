@@ -157,10 +157,24 @@ namespace JabbR
             // Update activity *after* ensuring the user, this forces them to be active
             UpdateActivity(user, room);
 
-            // Create a true unique id and save the message to the db
-            string id = Guid.NewGuid().ToString("d");
-            ChatMessage chatMessage = _service.AddMessage(user, room, id, clientMessage.Content);
-            _repository.CommitChanges();
+            string id = clientMessage.Id;
+            ChatMessage chatMessage = _repository.GetMessageById(id);
+
+            if (chatMessage == null)
+            {
+                // Create a true unique id and save the message to the db
+                id = Guid.NewGuid().ToString("d");
+                chatMessage = _service.AddMessage(user, room, id, clientMessage.Content);
+                _repository.CommitChanges();
+            }
+            else
+            {
+                chatMessage.Content = clientMessage.Content;
+                chatMessage.HtmlContent = null;
+
+                _repository.Update(chatMessage);
+                _repository.CommitChanges();
+            }
 
 
             var messageViewModel = new MessageViewModel(chatMessage);
