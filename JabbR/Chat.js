@@ -175,8 +175,9 @@
 
         var mentioned = re.test(message.Content);
         if (!mentioned) {
+            var lowerContent = message.Content.toLowerCase();
             for (var i = 0; i < userMentions.length; i++) {
-                var mi = message.Content.indexOf(userMentions[i]);
+                var mi = lowerContent.indexOf(userMentions[i]);
                 if (mi != -1) {
                     mentioned = true;
                     break;

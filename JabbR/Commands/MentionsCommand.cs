@@ -7,7 +7,7 @@ using System.Web;
 namespace JabbR.Commands
 {
     [Command("mentions", "When a message contains one of these strings mark it as a mention.",
-        "string[,string]", "user")]
+        "[string,]", "user")]
     public class MentionOnCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
@@ -22,7 +22,7 @@ namespace JabbR.Commands
             List<string> pendingAdd = new List<string>();
             foreach (string s in mentions)
             {
-                var st = s.Trim();
+                var st = s.Trim().ToLower();
                 if (!pendingAdd.Contains(st))
                     pendingAdd.Add(st);
             }
@@ -42,7 +42,7 @@ namespace JabbR.Commands
             foreach (string s in pendingAdd)
             {
                 context.Repository.Add(new ChatUserMention { 
-                    String = s.ToLower(),
+                    String = s,
                     UserKey = callingUser.Key
                 });
             }
