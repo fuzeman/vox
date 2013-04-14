@@ -9,7 +9,7 @@ namespace JabbR.Infrastructure
     {
         private const string Pattern = @"(?<user>(?<=@{1}(?!@))[a-zA-Z0-9-_\.]{1,50})";
 
-        public static IList<string> ExtractMentions(string message, IList<ChatUserMention> userMentions)
+        public static IList<string> ExtractMentions(string message, IList<ChatUserMention> userMentions = null)
         {
             if (message == null)
             {
@@ -32,12 +32,15 @@ namespace JabbR.Infrastructure
             }
 
             // Find string mentions
-            var messageLower = message.ToLower();
-            foreach (ChatUserMention m in userMentions)
+            if (userMentions != null)
             {
-                if (messageLower.Contains(m.String))
+                var messageLower = message.ToLower();
+                foreach (ChatUserMention m in userMentions)
                 {
-                    matches.Add(m.User.Name);
+                    if (messageLower.Contains(m.String))
+                    {
+                        matches.Add(m.User.Name);
+                    }
                 }
             }
 
