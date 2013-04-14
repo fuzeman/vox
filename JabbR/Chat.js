@@ -844,6 +844,8 @@
 
             if (type == 'append') {
                 ui.addChatMessage(viewModel, clientMessage.room);
+            } else {
+                ui.replaceMessage(viewModel);
             }
 
             // If there's a significant delay in getting the message sent
