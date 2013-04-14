@@ -2071,23 +2071,26 @@
                 ui.addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
 
+            var currentRoomName = getCurrentRoomElements().getName();
+            var roomFocus = roomName == currentRoomName && focus;
+
             if (room.isInitialized()) {
                 if (isMention) {
                     // Mention Sound
-                    if (focus === false && getRoomPreference(roomName, 'hasSound') === true) {
+                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
                         ui.notify(true);
                     }
                     // Mention Popup
-                    if (focus === false && getRoomPreference(roomName, 'canToast') === true) {
+                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
                         ui.toast(message, true, roomName);
                     }
                 } else if (notify == 'all') {
                     // All Sound
-                    if (focus === false && getRoomPreference(roomName, 'hasSound') === true) {
+                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
                         ui.notifyRoom(roomName);
                     }
                     // All Popup
-                    if (focus === false && getRoomPreference(roomName, 'canToast') === true) {
+                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
                         ui.toastRoom(roomName, message);
                     }
                 }
