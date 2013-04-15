@@ -217,7 +217,7 @@ namespace JabbR
             bool anyMentions = false;
 
             foreach (var userName in MentionExtractor.ExtractMentions(message.Content,
-                _repository.GetMentions().ToList()))
+                _repository.GetMentions()))
             {
                 ChatUser mentionedUser = _repository.GetUserByName(userName);
 
