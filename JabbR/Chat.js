@@ -8,7 +8,7 @@
     "use strict";
 
     var chat = connection.chat,
-        messageHistory = [],
+        messageHistory = {},
         historyLocation = 0,
         originalTitle = document.title,
         unread = 0,
@@ -909,25 +909,30 @@
 
         // Store message history
         if (type == 'replace') {
-            for (var i = 0; i < messageHistory.length; i++) {
-                if (messageHistory[i].id == clientMessage.id) {
-                    messageHistory[i] = clientMessage;
+            for (var i = 0; i < (messageHistory[chat.state.activeRoom] || []).length; i++) {
+                if (messageHistory[chat.state.activeRoom][i].id == clientMessage.id) {
+                    messageHistory[chat.state.activeRoom][i] = clientMessage;
                 }
             }
         }
         if (type == 'append') {
-            messageHistory.push(clientMessage);
+            if (messageHistory[chat.state.activeRoom] == undefined) {
+                messageHistory[chat.state.activeRoom] = [];
+            }
+            messageHistory[chat.state.activeRoom].push(clientMessage);
         }
 
         // REVIEW: should this pop items off the top after a certain length?
-        historyLocation = messageHistory.length;
+        historyLocation = (messageHistory[chat.state.activeRoom] || []).length;
     });
 
     $ui.bind(ui.events.setMessageId, function (ev, oldId, newId) {
-        for (var i = 0; i < messageHistory.length; i++) {
-            if (messageHistory[i].id == oldId) {
-                messageHistory[i].id = newId;
-                return;
+        for (var roomName in messageHistory) {
+            for (var i = 0; i < messageHistory[roomName].length; i++) {
+                if (messageHistory[roomName][i].id == oldId) {
+                    messageHistory[roomName][i].id = newId;
+                    return;
+                }
             }
         }
     });
@@ -976,21 +981,25 @@
     $ui.bind(ui.events.prevMessage, function () {
         historyLocation -= 1;
         if (historyLocation < 0) {
-            historyLocation = messageHistory.length - 1;
+            historyLocation = (messageHistory[chat.state.activeRoom] || []).length - 1;
         }
 
-        var message = messageHistory[historyLocation];
-        if (message != undefined) {
-            ui.setMessage(message);
+        if (historyLocation >= 0) {
+            var message = messageHistory[chat.state.activeRoom][historyLocation];
+            if (message != undefined) {
+                ui.setMessage(message);
+            }
         }
     });
 
     $ui.bind(ui.events.nextMessage, function () {
-        historyLocation = (historyLocation + 1) % messageHistory.length;
+        historyLocation = (historyLocation + 1) % (messageHistory[chat.state.activeRoom] || []).length;
 
-        var message = messageHistory[historyLocation];
-        if (message != undefined) {
-            ui.setMessage(message);
+        if (historyLocation >= 0) {
+            var message = messageHistory[chat.state.activeRoom][historyLocation];
+            if (message != undefined) {
+                ui.setMessage(message);
+            }
         }
     });
 
@@ -1008,6 +1017,8 @@
 
         ui.scrollToBottom(room);
         updateCookie();
+
+        historyLocation = (messageHistory[chat.state.activeRoom] || []).length - 1;
     });
 
     $ui.bind(ui.events.scrollRoomTop, function (ev, roomInfo) {
