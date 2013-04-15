@@ -38,21 +38,15 @@ namespace JabbR.Infrastructure
             }
 
             // Find custom mentions
-            if (mentions != null)
+            if (mentions == null) return matches;
+            Regex regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
+            foreach (Match match in regex.Matches(message))
             {
-                Regex regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
-                foreach (Match match in regex.Matches(message))
+                if (!match.Success) continue;
+                for (int i = 1; i < match.Groups.Count; i++)
                 {
-                    if (match.Success)
-                    {
-                        for (int i = 1; i < match.Groups.Count; i++)
-                        {
-                            if (match.Groups[i].Success)
-                            {
-                                matches.Add(regex.GroupNameFromNumber(i));
-                            }
-                        }
-                    }
+                    if (!match.Groups[i].Success) continue;
+                        matches.Add(regex.GroupNameFromNumber(i));
                 }
             }
 
