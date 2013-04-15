@@ -19,6 +19,8 @@ namespace JabbR.Infrastructure
 
             return task.Then(response =>
             {
+                if (response == null) return null;
+
                 using (var reader = new StreamReader(response.GetResponseStream()))
                 {
                     return JsonConvert.DeserializeObject(reader.ReadToEnd());
@@ -35,7 +37,16 @@ namespace JabbR.Infrastructure
                 init(request);
             }
 
-            return Task.Factory.FromAsync((cb, state) => request.BeginGetResponse(cb, state), ar => (HttpWebResponse)request.EndGetResponse(ar), null);
+            return Task.Factory.FromAsync((cb, state) => request.BeginGetResponse(cb, state), ar => {
+                try
+                {
+                    return (HttpWebResponse)request.EndGetResponse(ar);
+                }
+                catch (WebException)
+                {
+                    return null;
+                }
+            }, null);
         }
 
         public static Task<HttpWebResponse> GetAsync(string url, Action<HttpWebRequest> init = null)
