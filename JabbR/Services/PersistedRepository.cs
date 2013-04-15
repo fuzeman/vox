@@ -58,6 +58,12 @@ namespace JabbR.Services
             _db.SaveChanges();
         }
 
+        public void Add(ChatUserMention mention)
+        {
+            _db.Mentions.Add(mention);
+            _db.SaveChanges();
+        }
+
         public void Add(ChatMessage message)
         {
             _db.Messages.Add(message);
@@ -83,6 +89,12 @@ namespace JabbR.Services
         public void Remove(ChatUserIdentity identity)
         {
             _db.Identities.Remove(identity);
+            _db.SaveChanges();
+        }
+
+        public void Remove(ChatUserMention mention)
+        {
+            _db.Mentions.Remove(mention);
             _db.SaveChanges();
         }
 
@@ -184,6 +196,16 @@ namespace JabbR.Services
         public IQueryable<ChatUser> SearchUsers(string name)
         {
             return _db.Users.Online().Where(u => u.Name.Contains(name));
+        }
+
+        public IQueryable<ChatUserMention> GetMentions()
+        {
+            return _db.Mentions;
+        }
+
+        public IQueryable<ChatUserMention> GetMentionsByUser(ChatUser user)
+        {
+            return _db.Mentions.Where(p => p.UserKey == user.Key);
         }
 
         public void AddUserRoom(ChatUser user, ChatRoom room)

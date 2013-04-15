@@ -19,7 +19,8 @@
         $ui = $(ui),
         messageSendingDelay = 1500,
         pendingMessages = {},
-        privateRooms = null;
+        privateRooms = null,
+        userMentions = [];
 
     function failPendingMessages() {
         for (var id in pendingMessages) {
@@ -171,6 +172,19 @@
 
     function getMessageViewModel(message) {
         var re = new RegExp("\\b@?" + chat.state.name.replace(/\./, '\\.') + "\\b", "i");
+
+        var mentioned = re.test(message.Content);
+        if (!mentioned) {
+            var lowerContent = message.Content.toLowerCase();
+            for (var i = 0; i < userMentions.length; i++) {
+                var mi = lowerContent.indexOf(userMentions[i]);
+                if (mi != -1) {
+                    mentioned = true;
+                    break;
+                }
+            }
+        }
+
         return {
             name: message.User.Name,
             hash: message.User.Hash,
@@ -178,7 +192,7 @@
             htmlContent: message.HtmlContent,
             id: message.Id,
             date: message.When.fromJsonDate(),
-            highlight: re.test(message.Content) ? 'highlight' : '',
+            highlight: mentioned ? 'highlight' : '',
             isOwn: re.test(message.User.name),
             isMine: message.User.Name === chat.state.name
         };
@@ -255,16 +269,17 @@
     };
 
     // Called when a returning users join chat
-    chat.client.logOn = function (rooms, myRooms) {
+    chat.client.logOn = function (rooms, myRooms, mentions) {
+        userMentions = mentions;
         privateRooms = myRooms;
 
-           var loadRooms = function () {
-                $.each(rooms, function (index, room) {
-                    if (chat.state.activeRoom !== room.Name) {
-                        populateRoom(room.Name);
-                    }
-                });
-            };
+        var loadRooms = function () {
+            $.each(rooms, function (index, room) {
+                if (chat.state.activeRoom !== room.Name) {
+                    populateRoom(room.Name);
+                }
+            });
+        };
 
         $.each(rooms, function (index, room) {
             ui.addRoom(room);
@@ -469,6 +484,12 @@
     // Called when your gravatar has been changed
     chat.client.gravatarChanged = function () {
         ui.addMessage('Your gravatar has been set', 'notification', this.state.activeRoom);
+    };
+
+    // Called when your mentions have been updated
+    chat.client.mentionsChanged = function (mentions) {
+        userMentions = mentions;
+        ui.addMessage('Your mention strings have been set to ' + mentions.join(", "), 'notification', this.state.activeRoom);
     };
 
     // Called when the server sends a notification message

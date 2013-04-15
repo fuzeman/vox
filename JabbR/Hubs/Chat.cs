@@ -216,7 +216,8 @@ namespace JabbR
         {
             bool anyMentions = false;
 
-            foreach (var userName in MentionExtractor.ExtractMentions(message.Content))
+            foreach (var userName in MentionExtractor.ExtractMentions(message.Content,
+                _repository.GetMentions().ToList()))
             {
                 ChatUser mentionedUser = _repository.GetUserByName(userName);
 
@@ -468,7 +469,7 @@ namespace JabbR
                 }
 
                 // Initialize the chat with the rooms the user is in
-                Clients.Caller.logOn(rooms, privateRooms);
+                Clients.Caller.logOn(rooms, privateRooms, user.Mentions.Select(m => m.String));
             }
         }
 
@@ -708,6 +709,17 @@ namespace JabbR
             foreach (var room in user.Rooms)
             {
                 Clients.Group(room.Name).changeGravatar(userViewModel, room.Name);
+            }
+        }
+
+        void INotificationService.ChangeMentions(ChatUser user, string[] mentions)
+        {
+            Clients.Caller.hash = user.Hash;
+
+            // Update the calling client
+            foreach (var client in user.ConnectedClients)
+            {
+                Clients.Client(client.Id).mentionsChanged(mentions);
             }
         }
 

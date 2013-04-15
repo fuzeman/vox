@@ -42,6 +42,7 @@ namespace JabbR.Models
 
         // List of clients that are currently connected for this user
         public virtual ICollection<ChatUserIdentity> Identities { get; set; }
+        public virtual ICollection<ChatUserMention> Mentions { get; set; }
         public virtual ICollection<ChatClient> ConnectedClients { get; set; }
         public virtual ICollection<ChatRoom> OwnedRooms { get; set; }
         public virtual ICollection<ChatRoom> Rooms { get; set; }
@@ -55,6 +56,7 @@ namespace JabbR.Models
         public ChatUser()
         {
             Identities = new SafeCollection<ChatUserIdentity>();
+            Mentions = new SafeCollection<ChatUserMention>();
             ConnectedClients = new SafeCollection<ChatClient>();
             OwnedRooms = new SafeCollection<ChatRoom>();
             Rooms = new SafeCollection<ChatRoom>();

@@ -48,6 +48,7 @@
         $closedRoomFilter = null,
         updateTimeout = 15000,
         $richness = null,
+        $notify = null,
         lastPrivate = null,
         roomCache = {},
         $reloadMessageNotification = null,
@@ -803,6 +804,20 @@
         }
     }
 
+    function toggleNotify($element, roomName) {
+        var notifyState = roomName ? getRoomPreference(roomName, 'notify') : preferences.notify;
+
+        if (notifyState == 'all' && $element.hasClass('notify-mentions')) {
+            $element.removeClass('notify-mentions');
+            $element.addClass('notify-all');
+            $('.notify-text', $element).text('All');
+        } else if (notifyState == 'mentions' && $element.hasClass('notify-all')) {
+            $element.removeClass('notify-all');
+            $element.addClass('notify-mentions');
+            $('.notify-text', $element).text('Mentions');
+        }
+    }
+
     function toggleElement($element, preferenceName, roomName) {
         var value = roomName ? getRoomPreference(roomName, preferenceName) : preferences[preferenceName];
 
@@ -821,6 +836,7 @@
         toggleElement($sound, 'hasSound', roomName);
         toggleElement($toast, 'canToast', roomName);
         toggleRichness($richness, roomName);
+        toggleNotify($notify, roomName);
     }
 
     function setPreference(name, value) {
@@ -1045,6 +1061,7 @@
             $toast = $('#room-preferences .toast');
             $sound = $('#room-preferences .sound');
             $richness = $('#room-preferences .richness');
+            $notify = $('#room-actions .notify');
             $downloadIcon = $('#room-preferences .download');
             $downloadDialog = $('#download-dialog');
             $downloadDialogButton = $('#download-dialog-button');
@@ -1305,6 +1322,35 @@
                         $this.trigger('click');
                     }
                 });
+            });
+
+            $notify.click(function (e) {
+                e.preventDefault();
+
+                var room = getCurrentRoomElements(),
+                    $richContentMessages = room.messages.find('h3.collapsible_title');
+
+                if (room.isLobby()) {
+                    return;
+                }
+
+                if ($(this).hasClass("notify-all")) {
+                    $(this).removeClass('notify-all');
+                    $(this).addClass('notify-mentions');
+                    $(".notify-text", this).text('Mentions');
+                } else if($(this).hasClass("notify-mentions")) {
+                    $(this).removeClass('notify-mentions');
+                    $(this).addClass('notify-all');
+                    $(".notify-text", this).text('All');
+                }
+
+                if ($(this).hasClass("notify-all")) {
+                    setRoomPreference(room.getName(), 'notify', 'all');
+                    console.log("notify all");
+                } else if ($(this).hasClass("notify-mentions")) {
+                    setRoomPreference(room.getName(), 'notify', 'mentions');
+                    console.log("notify mentions");
+                }
             });
 
             $toast.click(function () {
@@ -1982,7 +2028,8 @@
                 previousTimestamp = new Date().addDays(1), // Tomorrow so we always see a date line
                 showUserName = true,
                 $message = null,
-                isMention = message.highlight;
+                isMention = message.highlight,
+                notify = getRoomPreference(roomName, 'notify');
 
             // bounce out of here if the room is closed
             if (room.isClosed()) {
@@ -2024,22 +2071,26 @@
                 ui.addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
 
+            var currentRoomName = getCurrentRoomElements().getName();
+            var roomFocus = roomName == currentRoomName && focus;
+
             if (room.isInitialized()) {
                 if (isMention) {
-                    // Always do sound notification for mentions if any room as sound enabled
-                    if (anyRoomPreference('hasSound') === true) {
+                    // Mention Sound
+                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
                         ui.notify(true);
                     }
-
-                    if (focus === false && anyRoomPreference('canToast') === true) {
-                        // Only toast if there's no focus (even on mentions)
+                    // Mention Popup
+                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
                         ui.toast(message, true, roomName);
                     }
-                }
-                else {
-                    // Only toast if chat isn't focused
-                    if (focus === false) {
+                } else if (notify == 'all') {
+                    // All Sound
+                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
                         ui.notifyRoom(roomName);
+                    }
+                    // All Popup
+                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
                         ui.toastRoom(roomName, message);
                     }
                 }

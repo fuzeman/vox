@@ -10,6 +10,7 @@ namespace JabbR.Services
     {
         private readonly ICollection<ChatUser> _users;
         private readonly ICollection<ChatUserIdentity> _identities;
+        private readonly ICollection<ChatUserMention> _mentions;
         private readonly ICollection<ChatRoom> _rooms;
         private readonly ICollection<Attachment> _attachments;
         private readonly ICollection<Notification> _notifications;
@@ -19,6 +20,7 @@ namespace JabbR.Services
             _users = new SafeCollection<ChatUser>();
             _rooms = new SafeCollection<ChatRoom>();
             _identities = new SafeCollection<ChatUserIdentity>();
+            _mentions = new SafeCollection<ChatUserMention>();
             _attachments = new SafeCollection<Attachment>();
             _notifications = new SafeCollection<Notification>();
         }
@@ -48,6 +50,15 @@ namespace JabbR.Services
             if (identity.User != null)
             {
                 identity.User.Identities.Add(identity);
+            }
+        }
+
+        public void Add(ChatUserMention mention)
+        {
+            _mentions.Add(mention);
+            if (mention.User != null)
+            {
+                mention.User.Mentions.Add(mention);
             }
         }
 
@@ -88,6 +99,11 @@ namespace JabbR.Services
         public void Remove(ChatUserIdentity identity)
         {
             _identities.Remove(identity);
+        }
+
+        public void Remove(ChatUserMention mention)
+        {
+            _mentions.Remove(mention);
         }
 
         public void Remove(Notification notification)
@@ -170,6 +186,16 @@ namespace JabbR.Services
             return _users.Online()
                          .Where(u => u.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) != -1)
                          .AsQueryable();
+        }
+
+        public IQueryable<ChatUserMention> GetMentions()
+        {
+            return _mentions.AsQueryable();
+        }
+
+        public IQueryable<ChatUserMention> GetMentionsByUser(ChatUser user)
+        {
+            return _mentions.Where(p => p.UserKey == user.Key).AsQueryable();
         }
 
         public ChatUser GetUserByClientId(string clientId)
