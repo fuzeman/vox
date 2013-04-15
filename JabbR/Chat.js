@@ -20,7 +20,7 @@
         messageSendingDelay = 1500,
         pendingMessages = {},
         privateRooms = null,
-        userMentions = [];
+        customMentionRegex = null;
 
     function failPendingMessages() {
         for (var id in pendingMessages) {
@@ -171,19 +171,8 @@
     }
 
     function getMessageViewModel(message) {
-        var re = new RegExp("\\b@?" + chat.state.name.replace(/\./, '\\.') + "\\b", "i");
-
-        var mentioned = re.test(message.Content);
-        if (!mentioned) {
-            var lowerContent = message.Content.toLowerCase();
-            for (var i = 0; i < userMentions.length; i++) {
-                var mi = lowerContent.indexOf(userMentions[i]);
-                if (mi != -1) {
-                    mentioned = true;
-                    break;
-                }
-            }
-        }
+        var reUsername = new RegExp("\\b@?" + chat.state.name.replace(/\./, '\\.') + "\\b", "i");
+        var reCustom = new RegExp(customMentionRegex, "i");
 
         return {
             name: message.User.Name,
@@ -192,8 +181,8 @@
             htmlContent: message.HtmlContent,
             id: message.Id,
             date: message.When.fromJsonDate(),
-            highlight: mentioned ? 'highlight' : '',
-            isOwn: re.test(message.User.name),
+            highlight: (reUsername.test(message.Content) || reCustom.test(message.Content)) ? 'highlight' : '',
+            isOwn: reUsername.test(message.User.name),
             isMine: message.User.Name === chat.state.name
         };
     }
@@ -242,6 +231,12 @@
         updateTitle();
     }
 
+    function generateCustomMentionRegex(strings) {
+        var result = "(<=\\s|,|\\.|\\(|\\[|^)(?:{0})(=\\s|,|\\.|\\)|\\]|$)";
+        result = result.replace("{0}", strings.join("|"));
+        return result;
+    }
+
     // Room commands
 
     // When the /join command gets raised this is called
@@ -270,7 +265,7 @@
 
     // Called when a returning users join chat
     chat.client.logOn = function (rooms, myRooms, mentions) {
-        userMentions = mentions;
+        customMentionRegex = generateCustomMentionRegex(mentions);
         privateRooms = myRooms;
 
         var loadRooms = function () {
@@ -488,7 +483,7 @@
 
     // Called when your mentions have been updated
     chat.client.mentionsChanged = function (mentions) {
-        userMentions = mentions;
+        customMentionRegex = generateCustomMentionRegex(mentions);
         ui.addMessage('Your mention strings have been set to ' + mentions.join(", "), 'notification', this.state.activeRoom);
     };
 

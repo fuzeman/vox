@@ -87,8 +87,8 @@ namespace JabbR.Infrastructure
                             String.Join("|",
                                 p.Select(j => j.String)
                                     .Concat(new [] { p.First().User.Name })
-                            ))
-                        )
+                            )
+                        ))
             ));
             _customCachedPatternMentions = mentions.Select(p => p.Key).ToArray();
             return _customCachedPattern;
