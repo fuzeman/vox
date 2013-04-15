@@ -832,6 +832,11 @@
     function loadRoomPreferences(roomName) {
         var roomPreferences = getRoomPreference(roomName);
 
+        // Set defaults
+        if (getRoomPreference(roomName, 'hasSound') == undefined) {
+            setRoomPreference(roomName, 'hasSound', true);
+        }
+
         // Placeholder for room level preferences
         toggleElement($sound, 'hasSound', roomName);
         toggleElement($toast, 'canToast', roomName);
