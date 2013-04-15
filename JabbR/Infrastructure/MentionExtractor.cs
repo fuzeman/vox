@@ -46,7 +46,7 @@ namespace JabbR.Infrastructure
                 for (int i = 1; i < match.Groups.Count; i++)
                 {
                     if (!match.Groups[i].Success) continue;
-                        matches.Add(regex.GroupNameFromNumber(i));
+                    matches.Add(regex.GroupNameFromNumber(i));
                 }
             }
 
