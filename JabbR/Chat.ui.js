@@ -906,6 +906,8 @@
 
         $newMessage.val('');
         $newMessage.removeAttr('message-id');
+        $newMessage.removeClass('editing');
+        $('#m-' + id).removeClass('editing');
         $newMessage.focus();
 
         // always scroll to bottom after new message sent
@@ -1480,6 +1482,11 @@
                         break;
                     case Keys.Esc:
                         $(this).val('');
+                        if ($(this).attr('message-id') != undefined) {
+                            $('#m-' + $(this).attr('message-id')).removeClass('editing');
+                            $(this).removeAttr('message-id');
+                        }
+                        $(this).removeClass('editing');
                         break;
                     case Keys.Enter:
                         triggerSend();
@@ -1613,6 +1620,13 @@
         setMessage: function (clientMessage) {
             $newMessage.val(clientMessage.content);
             $newMessage.attr('message-id', clientMessage.id);
+            $newMessage.addClass('editing');
+
+            if (lastCycledMessage != null) {
+                $('#m-' + lastCycledMessage).removeClass('editing');
+            }
+            $('#m-' + clientMessage.id).addClass('editing');
+
             lastCycledMessage = clientMessage.id;
 
             if (clientMessage.content) {

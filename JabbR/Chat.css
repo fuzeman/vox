@@ -190,6 +190,10 @@ form#send-message {
                 background: #f5f5f5;
             }
 
+            .messages li.message.my-message.editing {
+                background-color: lightgoldenrodyellow;
+            }
+
         .messages li img.gravatar {
             height: 16px;
             width: 16px;
@@ -713,6 +717,10 @@ li.room {
     height: 20px;
     resize: none;
     overflow: auto;
+}
+
+#new-message.editing {
+    background-color: lightgoldenrodyellow;
 }
 
 #send {
