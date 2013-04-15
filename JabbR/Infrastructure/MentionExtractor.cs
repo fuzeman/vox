@@ -25,7 +25,7 @@ namespace JabbR.Infrastructure
             // Find username mentions
             foreach (var u in Regex.Matches(message, UsernameMentionPattern)
                                    .Where(m => m.Success)
-                                   .Select(m => m.Groups["user"])
+                                   .Select(m => m.Groups["user"].Value.Trim())
                                    .Where(u => !String.IsNullOrEmpty(u))) {
                 matches.Add(u);
             }
@@ -39,7 +39,8 @@ namespace JabbR.Infrastructure
                 for (int i = 1; i < match.Groups.Count; i++)
                 {
                     if (!match.Groups[i].Success) continue;
-                        matches.Add(regex.GroupNameFromNumber(i));
+                    
+                    matches.Add(regex.GroupNameFromNumber(i));
                 }
             }
 
