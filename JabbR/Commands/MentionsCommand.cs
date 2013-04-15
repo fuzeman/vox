@@ -12,21 +12,14 @@ namespace JabbR.Commands
     {
         public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
         {
-            string[] mentions = String.Join(" ", args).Split(',');
+            List<string> pendingAdd = String.Join(" ", args).Split(',')
+                .Select(p => p.Trim().ToLower()).Distinct().ToList();
+            string[] mentions = pendingAdd.ToArray();
 
             if (mentions.Length > 5)
             {
                 throw new InvalidOperationException("You are not allowed more than 5 mention strings.");
             }
-
-            List<string> pendingAdd = new List<string>();
-            foreach (string s in mentions)
-            {
-                var st = s.Trim().ToLower();
-                if (!pendingAdd.Contains(st))
-                    pendingAdd.Add(st);
-            }
-            mentions = pendingAdd.ToArray();
 
             // Remove mentions
             List<ChatUserMention> userMentions = context.Repository.GetMentionsByUser(callingUser).ToList();
