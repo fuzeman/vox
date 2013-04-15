@@ -24,6 +24,7 @@ namespace JabbR.Infrastructure
 
             // Find username mentions
             foreach (var u in Regex.Matches(message, UsernameMentionPattern)
+                                   .Cast<Match>()
                                    .Where(m => m.Success)
                                    .Select(m => m.Groups["user"].Value.Trim())
                                    .Where(u => !String.IsNullOrEmpty(u))) {
@@ -34,7 +35,9 @@ namespace JabbR.Infrastructure
             if (mentions == null) return matches;
             
             Regex regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
-            foreach (Match match in regex.Matches(message).Where(m => m.Success))
+            foreach (Match match in regex.Matches(message)
+                                         .Cast<Match>()
+                                         .Where(m => m.Success))
             {
                 for (int i = 1; i < match.Groups.Count; i++)
                 {
