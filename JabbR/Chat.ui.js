@@ -805,7 +805,7 @@
     }
 
     function toggleNotify($element, roomName) {
-        var notifyState = getRoomPreference(roomName, 'notify') || 'all';
+        var notifyState = getRoomPreference(roomName, 'notify') || 'mentions';
 
         if (notifyState == 'all' && $element.hasClass('notify-mentions')) {
             $element.removeClass('notify-mentions');
@@ -2029,7 +2029,7 @@
                 showUserName = true,
                 $message = null,
                 isMention = message.highlight,
-                notify = getRoomPreference(roomName, 'notify') || 'all';
+                notify = getRoomPreference(roomName, 'notify') || 'mentions';
 
             // bounce out of here if the room is closed
             if (room.isClosed()) {
