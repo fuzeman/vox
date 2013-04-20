@@ -27,7 +27,7 @@ namespace JabbR.ContentProviders
         {
             // TODO: Support rdio.com/artist urls (requires Plexr support)
             if (request.RequestUri.Host.Contains("rdio.com"))
-                return null;
+                return TaskAsyncHelper.FromResult<ContentProviderResult>(null);
 
             var fromService = Services.First(s => s.IsValidContent(request.RequestUri));
             var toService = Services.First(s => !s.IsValidContent(request.RequestUri));
@@ -43,7 +43,7 @@ namespace JabbR.ContentProviders
             return Http.GetJsonAsync(requestUrl).Then(result =>
             {
                 if (result == null)
-                    return (ContentProviderResult) null;
+                    return null;
 
                 return new ContentProviderResult
                 {
