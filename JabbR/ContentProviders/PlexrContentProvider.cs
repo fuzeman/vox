@@ -47,14 +47,14 @@ namespace JabbR.ContentProviders
 
                 return new ContentProviderResult
                 {
-                    Content = "<MusicServiceContentProviderResult>" +
+                    Content = "<PlexrContentProviderResult>" +
                         "<" + fromService.PlexrServiceKey + ">" +
                             fromService.ExtractKey(request.RequestUri) +
                         "</" + fromService.PlexrServiceKey + ">" +
 
                         "<" + result.ServiceKey + ">" + result.Value + "</" + result.ServiceKey + ">" +
-                        "</MusicServiceContentProviderResult>",
-                    Title = "",
+                        "</PlexrContentProviderResult>",
+                    Title = "Plexr",
                     Weight = 1
                 };
             });
