@@ -54,22 +54,27 @@ namespace JabbR.ContentProviders.Core
 
             Task.Factory.ContinueWhenAll(tasks, completedTasks =>
             {
-                var faulted = completedTasks.FirstOrDefault(t => t.IsFaulted);
-                if (faulted != null)
+                ContentProviderResult result = completedTasks.Where(t => !t.IsFaulted && !t.IsCanceled)
+                                                             .Select(t => t.Result)
+                                                             .Where(u => u != null)
+                                                             .OrderByDescending(v => v.Weight)
+                                                             .FirstOrDefault();
+                if (result != null)
                 {
-                    tcs.SetException(faulted.Exception);
-                }
-                else if (completedTasks.Any(t => t.IsCanceled))
-                {
-                    tcs.SetCanceled();
+                    tcs.SetResult(result);
                 }
                 else
                 {
-                    ContentProviderResult result = completedTasks.Select(t => t.Result)
-                                                                 .Where(u => u != null)
-                                                                 .OrderByDescending(v => v.Priority)
-                                                                 .FirstOrDefault(content => content != null);
-                    tcs.SetResult(result);
+
+                    var faulted = completedTasks.FirstOrDefault(t => t.IsFaulted);
+                    if (faulted != null)
+                    {
+                        tcs.SetException(faulted.Exception);
+                    }
+                    else if (completedTasks.Any(t => t.IsCanceled))
+                    {
+                        tcs.SetCanceled();
+                    }
                 }
             });
 
