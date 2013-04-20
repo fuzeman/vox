@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JabbR.Services;
+using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 
@@ -9,5 +10,6 @@ namespace JabbR.ContentProviders.Core
     {
         Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request);
         bool IsValidContent(Uri uri);
+        IJabbrRepository Repository { set; }
     }
 }

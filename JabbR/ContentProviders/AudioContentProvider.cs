@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JabbR.ContentProviders.Core;
 using Microsoft.Security.Application;
+using JabbR.Services;
 
 namespace JabbR.ContentProviders
 {
@@ -23,5 +24,7 @@ namespace JabbR.ContentProviders
                 Title = request.RequestUri.AbsoluteUri
             });
         }
+
+        public IJabbrRepository Repository { get; set; }
     }
 }

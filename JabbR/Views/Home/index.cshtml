@@ -254,6 +254,12 @@
         <div class="jabbrLogo" id="logo"></div>
       </div>
         <div id="preferences" class="btn-group account pull-right">
+            <a class="btn music-service"  data-toggle="dropdown" title="change preferred music service"><i class="icon-music"></i></a>
+            <ul id="music-service-dropdown" class="dropdown-menu">
+                <li class="spotify"><a>Spotify</a></li>
+                <li class="rdio"><a>Rdio</a></li>
+            </ul>
+
             <a class="btn help" aria-haspopup="true" title="display help"><i class="icon-question-sign"></i></a>
             <a class="btn" title="account settings" href="@Url.Content("~/account")" target="_blank"><i class="icon-user"></i></a>
             <a class="btn logout" title="sign out"><i class="icon-signout"></i></a>

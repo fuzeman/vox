@@ -5,16 +5,21 @@ using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Threading.Tasks;
 using JabbR.Services;
+using Ninject;
 
 namespace JabbR.ContentProviders.Core
 {
     public class ResourceProcessor : IResourceProcessor
     {
+        private readonly IKernel _kernel;
+        private readonly IJabbrRepository _repository;
         private readonly IList<IContentProvider> _contentProviders;
 
-        public ResourceProcessor(IApplicationSettings settings)
+        public ResourceProcessor(IKernel kernel)
         {
-            _contentProviders = GetContentProviders(settings);
+            _kernel = kernel;
+            _repository = kernel.Get<IJabbrRepository>();
+            _contentProviders = GetContentProviders(kernel.Get<IApplicationSettings>());
         }
 
         public Task<ContentProviderResult> ExtractResource(string url)
@@ -39,26 +44,37 @@ namespace JabbR.ContentProviders.Core
                 return TaskAsyncHelper.FromResult<ContentProviderResult>(null);
             }
 
-            var tasks = validProviders.Select(c => c.GetContent(request)).ToArray();
+            var tasks = validProviders.Select(c =>
+            {
+                c.Repository = _repository;
+                return c.GetContent(request);
+            }).ToArray();
 
             var tcs = new TaskCompletionSource<ContentProviderResult>();
 
             Task.Factory.ContinueWhenAll(tasks, completedTasks =>
             {
-                var faulted = completedTasks.FirstOrDefault(t => t.IsFaulted);
-                if (faulted != null)
+                ContentProviderResult result = completedTasks.Where(t => !t.IsFaulted && !t.IsCanceled)
+                                                             .Select(t => t.Result)
+                                                             .Where(u => u != null)
+                                                             .OrderByDescending(v => v.Weight)
+                                                             .FirstOrDefault();
+                if (result != null)
                 {
-                    tcs.SetException(faulted.Exception);
-                }
-                else if (completedTasks.Any(t => t.IsCanceled))
-                {
-                    tcs.SetCanceled();
+                    tcs.SetResult(result);
                 }
                 else
                 {
-                    ContentProviderResult result = completedTasks.Select(t => t.Result)
-                                                                 .FirstOrDefault(content => content != null);
-                    tcs.SetResult(result);
+
+                    var faulted = completedTasks.FirstOrDefault(t => t.IsFaulted);
+                    if (faulted != null)
+                    {
+                        tcs.SetException(faulted.Exception);
+                    }
+                    else if (completedTasks.Any(t => t.IsCanceled))
+                    {
+                        tcs.SetCanceled();
+                    }
                 }
             });
 

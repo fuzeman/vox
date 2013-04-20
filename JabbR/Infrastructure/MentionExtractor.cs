@@ -18,35 +18,32 @@ namespace JabbR.Infrastructure
         public static IList<string> ExtractMentions(string message, IQueryable<ChatUserMention> mentions = null)
         {
             if (message == null)
-            {
                 return new List<string>();
-            }
 
             var matches = new List<string>();
 
             // Find username mentions
-            foreach (Match m in Regex.Matches(message, UsernameMentionPattern))
-            {
-                if (m.Success)
-                {
-                    string user = m.Groups["user"].Value.Trim();
-                    if (!String.IsNullOrEmpty(user))
-                    {
-                        matches.Add(user);
-                    }
-                }
+            foreach (var u in Regex.Matches(message, UsernameMentionPattern)
+                                   .Cast<Match>()
+                                   .Where(m => m.Success)
+                                   .Select(m => m.Groups["user"].Value.Trim())
+                                   .Where(u => !String.IsNullOrEmpty(u))) {
+                matches.Add(u);
             }
 
             // Find custom mentions
             if (mentions == null) return matches;
+            
             Regex regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
-            foreach (Match match in regex.Matches(message))
+            foreach (Match match in regex.Matches(message)
+                                         .Cast<Match>()
+                                         .Where(m => m.Success))
             {
-                if (!match.Success) continue;
                 for (int i = 1; i < match.Groups.Count; i++)
                 {
                     if (!match.Groups[i].Success) continue;
-                        matches.Add(regex.GroupNameFromNumber(i));
+                    
+                    matches.Add(regex.GroupNameFromNumber(i));
                 }
             }
 

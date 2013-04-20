@@ -49,6 +49,7 @@
         updateTimeout = 15000,
         $richness = null,
         $notify = null,
+        $musicServiceDropdown = null,
         lastPrivate = null,
         roomCache = {},
         $reloadMessageNotification = null,
@@ -781,6 +782,41 @@
         content = content.replace(/class="collapsible_box/g, 'style="display: none;" class="collapsible_box');
         return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
     }
+    
+    function processRichContent($content) {
+        // TODO: A bit of a dirty hack, Maybe this could be done another way?
+        var $plexrResult = $("PlexrContentProviderResult", $content);
+        
+        if ($plexrResult.length == 1) {
+            var result = processPlexrContentResult($plexrResult);
+            if (result != null) {
+                $("PlexrContentProviderResult", $content).replaceWith(result);
+                var curMusicService = getPreference('music_service');
+                $('.collapsible_title', $content).text(
+                    curMusicService.charAt(0).toUpperCase() + curMusicService.slice(1) +
+                    ' (Plexr) (click to show/hide)');
+            } else {
+                return null;
+            }
+            return $content;
+        } else {
+            return $content;
+        }
+    }
+
+    function processPlexrContentResult($plexrResult) {
+        var preferredMusicService = getPreference('music_service');
+        var $serviceDetails = $plexrResult.find(preferredMusicService);
+
+        if (preferredMusicService == 'spotify') {
+            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() + "\" width=\"300\" height=\"380\" " +
+                    "frameborder=\"0\" allowtransparency=\"true\"></iframe>";
+        } else if (preferredMusicService == 'rdio') {
+            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
+                    "frameborder=\"0\"></iframe>";
+        }
+        return null;
+    }
 
     function triggerFocus() {
         if (focus === false) {
@@ -842,6 +878,10 @@
         toggleElement($toast, 'canToast', roomName);
         toggleRichness($richness, roomName);
         toggleNotify($notify, roomName);
+    }
+    
+    function getPreference(name) {
+        return preferences[name];
     }
 
     function setPreference(name, value) {
@@ -1069,6 +1109,7 @@
             $sound = $('#room-preferences .sound');
             $richness = $('#room-preferences .richness');
             $notify = $('#room-actions .notify');
+            $musicServiceDropdown = $('#music-service-dropdown');
             $downloadIcon = $('#room-preferences .download');
             $downloadDialog = $('#download-dialog');
             $downloadDialogButton = $('#download-dialog-button');
@@ -1133,6 +1174,12 @@
                 preferences.canToast = false;
                 $toast.hide();
             }
+            
+            // Music Service (PlexrContentProvider)
+            if (getPreference('music_service') == undefined) {
+                setPreference('music_service', "spotify");
+            }
+            $('li.' + getPreference('music_service'), $musicServiceDropdown).addClass('active');
 
             // DOM events
             $document.on('click', 'h3.collapsible_title', function () {
@@ -1353,10 +1400,27 @@
 
                 if ($(this).hasClass("notify-all")) {
                     setRoomPreference(room.getName(), 'notify', 'all');
-                    console.log("notify all");
                 } else if ($(this).hasClass("notify-mentions")) {
                     setRoomPreference(room.getName(), 'notify', 'mentions');
-                    console.log("notify mentions");
+                }
+            });
+
+            $('li a', $musicServiceDropdown).click(function (e) {
+                var li = $(this).parent();
+                
+                // TODO: This is pretty dirty, Rewrite later.
+                if (li.hasClass('spotify')) {
+                    if (getPreference('music_service') != 'spotify') {
+                        setPreference('music_service', 'spotify');
+                        $('li.rdio', $musicServiceDropdown).removeClass('active');
+                        $('li.spotify', $musicServiceDropdown).addClass('active');
+                    }
+                } else if (li.hasClass('rdio')) {
+                    if (getPreference('music_service') != 'rdio') {
+                        setPreference('music_service', 'rdio');
+                        $('li.rdio', $musicServiceDropdown).addClass('active');
+                        $('li.spotify', $musicServiceDropdown).removeClass('active');
+                    }
                 }
             });
 
@@ -2141,7 +2205,7 @@
                 content = collapseRichContent(content);
             }
 
-            $message.find('.middle').append('<p>' + content + '</p>');
+            $message.find('.middle').append(processRichContent($('<p>' + content + '</p>')));
         },
         addPrivateMessage: function (content, type) {
             var rooms = getAllRoomElements();

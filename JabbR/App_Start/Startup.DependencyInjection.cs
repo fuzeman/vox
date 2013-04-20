@@ -54,12 +54,11 @@ namespace JabbR
                 .To<CryptoService>()
                 .InSingletonScope();
 
-            kernel.Bind<IResourceProcessor>()
-                .To<ResourceProcessor>()
-                .InSingletonScope();
-
             kernel.Bind<IApplicationSettings>()
                   .ToConstant(settings);
+
+            kernel.Bind<IResourceProcessor>()
+                .ToConstant(new ResourceProcessor(kernel));
 
             kernel.Bind<IJavaScriptMinifier>()
                   .To<AjaxMinMinifier>()
