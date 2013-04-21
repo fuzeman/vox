@@ -232,7 +232,7 @@
     }
 
     function generateCustomMentionRegex(strings) {
-        var result = "(<=\\s|,|\\.|\\(|\\[|^)(?:{0})(=\\s|,|\\.|\\)|\\]|$)";
+        var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\!|\\)|\\]|$)";
         result = result.replace("{0}", strings.join("|"));
         return result;
     }
@@ -880,6 +880,8 @@
             pendingMessages[id] = messageCompleteTimeout;
         }
 
+        historyLocation = 0;
+        
         try {
             chat.server.send(clientMessage)
                 .done(function () {
