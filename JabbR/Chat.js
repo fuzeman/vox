@@ -880,6 +880,8 @@
             pendingMessages[id] = messageCompleteTimeout;
         }
 
+        historyLocation = 0;
+        
         try {
             chat.server.send(clientMessage)
                 .done(function () {
