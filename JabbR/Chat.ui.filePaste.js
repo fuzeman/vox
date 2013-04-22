@@ -110,18 +110,17 @@
         //for mozilla only
         var pasteDiv = $(options.contentEditableDiv)[0];
 
-        function waitForPasteData(pasteDiv) {
+        function waitForPasteData(pasteDiv, event) {
             if (pasteDiv.childNodes && pasteDiv.childNodes.length > 0) {
-                processPaste(pasteDiv);
+                processPaste(pasteDiv, event);
             } else {
                 setTimeout(function () {
-                    waitForPasteData(pasteDiv);
+                    waitForPasteData(pasteDiv, event);
                 }, 20);
             }
         }
 
-        function processPaste(pasteDiv) {
-            
+        function processPaste(pasteDiv, event) {
             var innerHtml = pasteDiv.innerHTML;
             var data = {
                 image: innerHtml.indexOf("<img") !== -1 && innerHtml.indexOf("src=") !== -1,
@@ -130,6 +129,11 @@
             };
 
             if (data.image && data.base64) {
+                if (event.preventDefault) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
+
                 var tag = innerHtml.split('<img src="');
                 tag = tag[1].split('" alt="">');
                 var fileData = {
@@ -153,14 +157,10 @@
 
         function handlePaste(event, pasteDiv) {
             if (event && event.clipboardData && event.clipboardData.getData) {
-                waitForPasteData(pasteDiv);
-                if (event.preventDefault) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
+                waitForPasteData(pasteDiv, event);
                 return false;
             } else {
-                waitForPasteData(pasteDiv);
+                waitForPasteData(pasteDiv, event);
                 return true;
             }
         }
