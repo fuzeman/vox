@@ -29,7 +29,7 @@
         templates = null,
         focus = true,
         readOnly = false,
-        Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Slash: 47, Space: 32, Tab: 9, Question: 191 },
+        Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 },
         scrollTopThreshold = 75,
         toast = window.chat.toast,
         preferences = null,
@@ -536,7 +536,6 @@
     }
     
     function updateNewMessageSize() {
-        console.log(newMessageLines);
         $sendMessage.height(20 + (20 * newMessageLines));
         $newMessage.height(20 * newMessageLines);
         
@@ -545,9 +544,12 @@
         
         // Update Current Room
         var room = getCurrentRoomElements();
-        console.log(room);
         room.messages.css('bottom', 20 + (20 * newMessageLines));
         room.users.css('bottom', 30 + (20 * newMessageLines));
+    }
+    
+    function getNewMessageCursorLine() {
+        return $newMessage.val().substr(0, $newMessage[0].selectionStart).split("\n").length;
     }
 
     function loadPreferences() {
@@ -1277,12 +1279,12 @@
                 var key = ev.keyCode || ev.which;
                 switch (key) {
                     case Keys.Up:
-                        if (cycleMessage(ui.events.prevMessage)) {
+                        if (getNewMessageCursorLine() == 1 && cycleMessage(ui.events.prevMessage)) {
                             ev.preventDefault();
                         }
                         break;
                     case Keys.Down:
-                        if (cycleMessage(ui.events.nextMessage)) {
+                        if (getNewMessageCursorLine() == newMessageLines && cycleMessage(ui.events.nextMessage)) {
                             ev.preventDefault();
                         }
                         break;
@@ -1295,6 +1297,12 @@
                             $(this).removeAttr('message-id');
                         }
                         $(this).removeClass('editing');
+                        break;
+                    case Keys.Backspace:
+                        setTimeout(function() {
+                            newMessageLines = $newMessage.val().split('\n').length;
+                            updateNewMessageSize();
+                        }, 100);
                         break;
                     case Keys.Space:
                         // Check for "/r " to reply to last private message
@@ -1349,7 +1357,6 @@
                     case Keys.Down:
                     case Keys.Esc:
                         break;
-                        
                     case Keys.Enter:
                         if (ev.shiftKey) {
                             newMessageLines += 1;
@@ -1360,7 +1367,6 @@
                             ev.preventDefault();
                         }
                         break;
-                    
                     default:
                         if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
                             return;
@@ -1368,6 +1374,13 @@
                         $ui.trigger(ui.events.typing);
                         break;
                 }
+            });
+
+            $newMessage.bind('paste', function () {
+                setTimeout(function() {
+                    newMessageLines = $newMessage.val().split('\n').length;
+                    updateNewMessageSize();
+                }, 100);
             });
 
             if (!readOnly) {
