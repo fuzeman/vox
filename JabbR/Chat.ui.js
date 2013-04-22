@@ -492,7 +492,7 @@
         
         if ($plexrResult.length == 1) {
             var result = processPlexrContentResult($plexrResult);
-            if (result != null) {
+            if (result !== null) {
                 $("PlexrContentProviderResult", $content).replaceWith(result);
                 var curMusicService = getPreference('music_service');
                 $('.collapsible_title', $content).text(
@@ -576,7 +576,7 @@
         var roomPreferences = getRoomPreference(roomName);
 
         // Set defaults
-        if (getRoomPreference(roomName, 'hasSound') == undefined) {
+        if (getRoomPreference(roomName, 'hasSound') === undefined) {
             setRoomPreference(roomName, 'hasSound', true);
         }
 
@@ -643,7 +643,7 @@
                 ui.showLogin();
             }
             else {
-                if (id == undefined) {
+                if (id === undefined) {
                     $ui.trigger(ui.events.sendMessage, [msg]);
                 } else {
                     $ui.trigger(ui.events.sendMessage, [{ content: msg, id: id }]);
@@ -890,7 +890,7 @@
             }
             
             // Music Service (PlexrContentProvider)
-            if (getPreference('music_service') == undefined) {
+            if (getPreference('music_service') === undefined) {
                 setPreference('music_service', "spotify");
             }
             $('li.' + getPreference('music_service'), $musicServiceDropdown).addClass('active');
@@ -1266,7 +1266,7 @@
                         break;
                     case Keys.Esc:
                         $(this).val('');
-                        if ($(this).attr('message-id') != undefined) {
+                        if ($(this).attr('message-id') !== undefined) {
                             $('#m-' + $(this).attr('message-id')).removeClass('editing');
                             $(this).removeAttr('message-id');
                         }
@@ -1288,7 +1288,7 @@
             // Returns true if a cycle was triggered
             function cycleMessage(messageHistoryDirection) {
                 var currentMessage = $newMessage.attr('message-id');
-                if (currentMessage == undefined || lastCycledMessage === currentMessage) {
+                if (currentMessage === undefined || lastCycledMessage === currentMessage) {
                     $ui.trigger(messageHistoryDirection);
                     return true;
                 }
@@ -1436,7 +1436,7 @@
             $newMessage.attr('message-id', clientMessage.id);
             $newMessage.addClass('editing');
 
-            if (lastCycledMessage != null) {
+            if (lastCycledMessage !== null) {
                 $('#m-' + lastCycledMessage).removeClass('editing');
             }
             $('#m-' + clientMessage.id).addClass('editing');
@@ -1983,7 +1983,7 @@
                 $body.append('<p>' + content + '</p>');
             }
             else {
-            	$middle.append(processRichContent($('<p>' + content + '</p>')));
+                $middle.append(processRichContent($('<p>' + content + '</p>')));
             }
         },
         addPrivateMessage: function (content, type) {

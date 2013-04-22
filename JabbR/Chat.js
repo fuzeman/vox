@@ -235,7 +235,7 @@
     }
 
     function generateCustomMentionRegex(strings) {
-        var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\!|\\)|\\]|$)";
+        var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\)|\\]|$)";
         result = result.replace("{0}", strings.join("|"));
         return result;
     }
@@ -847,7 +847,7 @@
             id = msg.id;
             clientMessage = msg;
 
-            clientMessage['room'] = chat.state.activeRoom;
+            clientMessage.room = chat.state.activeRoom;
         } else {
             type = 'append';
             id = utility.newId();
@@ -933,7 +933,7 @@
             }
         }
         if (type == 'append') {
-            if (messageHistory[chat.state.activeRoom] == undefined) {
+            if (messageHistory[chat.state.activeRoom] === undefined) {
                 messageHistory[chat.state.activeRoom] = [];
             }
             messageHistory[chat.state.activeRoom].push(clientMessage);
@@ -1003,7 +1003,7 @@
 
         if (historyLocation >= 0) {
             var message = messageHistory[chat.state.activeRoom][historyLocation];
-            if (message != undefined) {
+            if (message !== undefined) {
                 ui.setMessage(message);
             }
         }
@@ -1014,7 +1014,7 @@
 
         if (historyLocation >= 0) {
             var message = messageHistory[chat.state.activeRoom][historyLocation];
-            if (message != undefined) {
+            if (message !== undefined) {
                 ui.setMessage(message);
             }
         }
