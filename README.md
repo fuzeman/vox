@@ -49,6 +49,7 @@ Inline image and content support for your favorite sites:
 * SoundCloud
 * MixCloud
 * Spotify
+* Rdio
 * Twitter
 * Uservoice
 
