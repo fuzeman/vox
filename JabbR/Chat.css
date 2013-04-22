@@ -750,6 +750,7 @@ li.room {
     position: absolute;
     right: 0;
     width: 70px;
+    bottom: 10px;
 }
 
 #enable-disable-toast {

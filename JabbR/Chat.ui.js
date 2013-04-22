@@ -13,6 +13,8 @@
         $tabs = null,
         $submitButton = null,
         $newMessage = null,
+        $sendMessage = null,
+        newMessageLines = 1,
         $roomActions = null,
         $toast = null,
         $disconnectDialog = null,
@@ -78,6 +80,7 @@
         sortedRoomList = null,
         maxRoomsToLoad = 100,
         lastLoadedRoomIndex = 0,
+        $lobbyWrapper = null,
         $lobbyPrivateRooms = null,
         $lobbyOtherRooms = null,
         $roomLoadingIndicator = null,
@@ -531,6 +534,21 @@
             $ui.trigger(ui.events.focusit);
         }
     }
+    
+    function updateNewMessageSize() {
+        console.log(newMessageLines);
+        $sendMessage.height(20 + (20 * newMessageLines));
+        $newMessage.height(20 * newMessageLines);
+        
+        // Update Lobby
+        $lobbyWrapper.css('bottom', 30 + (20 * newMessageLines));
+        
+        // Update Current Room
+        var room = getCurrentRoomElements();
+        console.log(room);
+        room.messages.css('bottom', 20 + (20 * newMessageLines));
+        room.users.css('bottom', 30 + (20 * newMessageLines));
+    }
 
     function loadPreferences() {
         // Restore the global preferences
@@ -652,6 +670,8 @@
         }
 
         $newMessage.val('');
+        newMessageLines = 1;
+        updateNewMessageSize();
         $newMessage.removeAttr('message-id');
         $newMessage.removeClass('editing');
         $('#m-' + id).removeClass('editing');
@@ -813,6 +833,7 @@
             $tabs = $('#tabs');
             $submitButton = $('#send');
             $newMessage = $('#new-message');
+            $sendMessage = $('#send-message');
             $roomActions = $('#room-actions');
             $toast = $('#room-preferences .toast');
             $sound = $('#room-preferences .sound');
@@ -872,6 +893,7 @@
             $loadingHistoryIndicator = $('#loadingRoomHistory');
 
             $loadMoreRooms = $('#load-more-rooms-item');
+            $lobbyWrapper = $('#lobby-wrapper');
             $lobbyPrivateRooms = $('#lobby-private');
             $lobbyOtherRooms = $('#lobby-other');
             $roomLoadingIndicator = $('#room-loading');
@@ -1266,16 +1288,14 @@
                         break;
                     case Keys.Esc:
                         $(this).val('');
+                        newMessageLines = 1;
+                        updateNewMessageSize();
                         if ($(this).attr('message-id') !== undefined) {
                             $('#m-' + $(this).attr('message-id')).removeClass('editing');
                             $(this).removeAttr('message-id');
                         }
                         $(this).removeClass('editing');
                         break;
-                    case Keys.Enter:
-                        triggerSend();
-                        ev.preventDefault();
-                        return false;
                     case Keys.Space:
                         // Check for "/r " to reply to last private message
                         if ($(this).val() === "/r" && lastPrivate) {
@@ -1323,16 +1343,28 @@
 
             $newMessage.keypress(function (ev) {
                 var key = ev.keyCode || ev.which;
-                if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
-                    return;
-                }
+                
                 switch (key) {
                     case Keys.Up:
                     case Keys.Down:
                     case Keys.Esc:
-                    case Keys.Enter:
                         break;
+                        
+                    case Keys.Enter:
+                        if (ev.shiftKey) {
+                            newMessageLines += 1;
+                            updateNewMessageSize();
+                            $ui.trigger(ui.events.typing);
+                        } else {
+                            triggerSend();
+                            ev.preventDefault();
+                        }
+                        break;
+                    
                     default:
+                        if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
+                            return;
+                        }
                         $ui.trigger(ui.events.typing);
                         break;
                 }
@@ -1434,12 +1466,17 @@
         setMessage: function (clientMessage) {
             $newMessage.val(clientMessage.content);
             $newMessage.attr('message-id', clientMessage.id);
+            
+            newMessageLines = clientMessage.content.split('\n').length;
+            updateNewMessageSize();
+            
             $newMessage.addClass('editing');
 
             if (lastCycledMessage !== null) {
                 $('#m-' + lastCycledMessage).removeClass('editing');
             }
             $('#m-' + clientMessage.id).addClass('editing');
+            $('#m-' + clientMessage.id)[0].scrollIntoView();
 
             lastCycledMessage = clientMessage.id;
 
