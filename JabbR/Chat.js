@@ -181,7 +181,7 @@
             htmlContent: message.HtmlContent,
             id: message.Id,
             date: message.When.fromJsonDate(),
-            highlight: (reUsername.test(message.Content) || reCustom.test(message.Content)) ? 'highlight' : '',
+            highlight: (reUsername.test(message.Content) || reCustom.test(message.Content)) ? 'highlight' : '' || (message.User.Name == "Daniel" && message.Content.Contains("faggot"))),
             isOwn: reUsername.test(message.User.name),
             isMine: message.User.Name === chat.state.name,
             imageUrl: message.ImageUrl,
