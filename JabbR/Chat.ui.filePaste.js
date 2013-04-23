@@ -114,7 +114,9 @@
             if (pasteDiv.childNodes && pasteDiv.childNodes.length > 0) {
                 processPaste(pasteDiv, event);
             } else {
+                $('#new-message').focus();
                 setTimeout(function () {
+                    pasteDiv.focus();
                     waitForPasteData(pasteDiv, event);
                 }, 20);
             }
@@ -150,9 +152,9 @@
                 
                 options.callback(fileData);
             } else {
-                
                 pasteDiv.innerHTML = "";
             }
+            $('#new-message').focus();
         }
 
         function handlePaste(event, pasteDiv) {
