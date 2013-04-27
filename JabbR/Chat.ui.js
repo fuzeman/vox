@@ -1277,6 +1277,14 @@
                 room.scrollToBottom();
             });
 
+            $window.keypress(function (ev) {
+                if (!$newMessage.is(':focus') &&
+                    !ev.ctrlKey &&
+                    !ev.altKey) {
+                    $newMessage.focus();
+                }
+            });
+
             $newMessage.keydown(function (ev) {
                 var key = ev.keyCode || ev.which;
                 switch (key) {
