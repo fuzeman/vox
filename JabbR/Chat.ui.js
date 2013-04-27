@@ -1480,12 +1480,10 @@
             
             newMessageLines = clientMessage.content.split('\n').length;
             updateNewMessageSize();
-            
+
             $newMessage.addClass('editing');
 
-            if (lastCycledMessage !== null) {
-                $('#m-' + lastCycledMessage).removeClass('editing');
-            }
+            $('.my-message').removeClass('editing');
             $('#m-' + clientMessage.id).addClass('editing');
             $('#m-' + clientMessage.id)[0].scrollIntoView();
 
