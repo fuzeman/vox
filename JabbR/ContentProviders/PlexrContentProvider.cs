@@ -1,9 +1,11 @@
-﻿using Gate;
+﻿using System.Configuration;
+using Gate;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR.ContentProviders
 {
@@ -35,15 +37,20 @@ namespace JabbR.ContentProviders
             // TODO: Allow multiple "to" music services (requires Plexr support)
 
             var requestUrl =
-                "http://plexr-a.apphb.com/api/lookup/" +
+                "http://" + ConfigurationManager.AppSettings["plexr:server"] + "/api/lookup/" +
                 request.RequestUri.Host + request.RequestUri.AbsolutePath +
-                "?to=" + toService.PlexrServiceKey +
-                "&return=" + toService.PlexrReferenceKey;
+                "?return=" + toService.PlexrServiceKey + ':' + toService.PlexrReferenceKey;
 
             return Http.GetJsonAsync(requestUrl).Then(result =>
             {
                 if (result == null)
                     return null;
+
+                var results = (JArray) result;
+                if (!results.Any())
+                    return null;
+
+                dynamic first = results[0];
 
                 return new ContentProviderResult
                 {
@@ -52,7 +59,7 @@ namespace JabbR.ContentProviders
                             fromService.ExtractKey(request.RequestUri) +
                         "</" + fromService.PlexrServiceKey + ">" +
 
-                        "<" + result.ServiceKey + ">" + result.Value + "</" + result.ServiceKey + ">" +
+                        "<" + first.ServiceKey + ">" + first.Value + "</" + first.ServiceKey + ">" +
                         "</PlexrContentProviderResult>",
                     Title = "Plexr",
                     Weight = 1
