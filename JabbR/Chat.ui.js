@@ -1267,7 +1267,9 @@
                 var room = getCurrentRoomElements();
                 room.makeActive();
 
-                triggerFocus();
+                if (!focus) {
+                    triggerFocus();
+                }
             });
 
             $window.resize(function () {
@@ -1427,10 +1429,6 @@
 
                 $ui.trigger(ui.events.fileUploaded, [uploader]);
                 $clipboardUpload.modal('hide');
-            });
-
-            $.imagePaste(function (file) {
-                ui.showClipboardUpload(file);
             });
 
             $hiddenFile.change(function () {
