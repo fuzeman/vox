@@ -1274,6 +1274,7 @@
 
             $window.resize(function () {
                 var room = getCurrentRoomElements();
+                room.makeActive();
                 room.scrollToBottom();
             });
 
