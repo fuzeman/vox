@@ -1059,7 +1059,7 @@
                 if ($li.data('mention') !== undefined && $li.data('mention') !== '') {
                     mention = $li.data('mention').replace(/\b[a-z]/g, function (letter) {
                         return letter.toUpperCase();
-                    });
+                    }) + ',';
                 }
 
                 // Prepend our target username
