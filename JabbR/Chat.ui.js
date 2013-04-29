@@ -800,7 +800,6 @@
     }
 
     var ui = {
-
         //lets store any events to be triggered as constants here to aid intellisense and avoid
         //string duplication everywhere
         events: {
@@ -828,7 +827,7 @@
             user: 'user'
         },
 
-        initialize: function (state) {
+        initialize: function(state) {
             $ui = $(this);
             preferences = state || {};
             $chatArea = $('#chat-area');
@@ -904,15 +903,14 @@
 
             if (toast.canToast()) {
                 $toast.show();
-            }
-            else {
+            } else {
                 $richness.css({ left: '55px' });
                 $downloadIcon.css({ left: '90px' });
                 // We need to set the toast setting to false
                 preferences.canToast = false;
                 $toast.hide();
             }
-            
+
             // Music Service (PlexrContentProvider)
             if (getPreference('music_service') === undefined) {
                 setPreference('music_service', "spotify");
@@ -920,33 +918,32 @@
             $('li.' + getPreference('music_service'), $musicServiceDropdown).addClass('active');
 
             // DOM events
-            $document.on('click', 'h3.collapsible_title', function () {
+            $document.on('click', 'h3.collapsible_title', function() {
                 var nearEnd = ui.isNearTheEnd();
 
-                $(this).next().toggle(0, function () {
+                $(this).next().toggle(0, function() {
                     if (nearEnd) {
                         ui.scrollToBottom();
                     }
                 });
             });
 
-            $document.on('click', '#tabs li', function () {
+            $document.on('click', '#tabs li', function() {
                 ui.setActiveRoom($(this).data('name'));
             });
 
-            $document.on('click', 'li.room .room-row', function () {
+            $document.on('click', 'li.room .room-row', function() {
                 var roomName = $(this).parent().data('name'),
                     room = getRoomElements(roomName);
 
                 if (room.exists()) {
                     ui.setActiveRoom(roomName);
-                }
-                else {
+                } else {
                     $ui.trigger(ui.events.openRoom, [roomName]);
                 }
             });
 
-            $document.on('click', '#load-more-rooms-item', function () {
+            $document.on('click', '#load-more-rooms-item', function() {
                 var spinner = $loadMoreRooms.find('i'),
                     lobby = getLobby();
                 spinner.addClass('icon-spin');
@@ -964,7 +961,7 @@
                 }
             });
 
-            $document.on('click', '#tabs li .close', function (ev) {
+            $document.on('click', '#tabs li .close', function(ev) {
                 var roomName = $(this).closest('li').data('name');
 
                 $ui.trigger(ui.events.closeRoom, [roomName]);
@@ -974,24 +971,23 @@
             });
 
             // handle click on notifications
-            $document.on('click', '.notification a.info', function (ev) {
+            $document.on('click', '.notification a.info', function(ev) {
                 var $notification = $(this).closest('.notification');
 
                 if ($(this).hasClass('collapse')) {
                     ui.collapseNotifications($notification);
-                }
-                else {
+                } else {
                     ui.expandNotifications($notification);
                 }
             });
 
-            $document.on('click', '#reloadMessageNotification a', function () {
+            $document.on('click', '#reloadMessageNotification a', function() {
                 $ui.trigger(ui.events.reloadMessages);
             });
 
             // handle tab cycling - we skip the lobby when cycling
             // handle shift+/ - display help command
-            $document.on('keydown', function (ev) {
+            $document.on('keydown', function(ev) {
                 if (ev.keyCode === Keys.Tab && $newMessage.val() === "") {
                     var current = getCurrentRoomElements(),
                         index = current.tab.index(),
@@ -1020,13 +1016,13 @@
 
             // hack to get Chrome to scroll back to top of help body
             // when redisplaying it after scrolling down and closing it
-            $helpPopup.on('hide', function () {
+            $helpPopup.on('hide', function() {
                 $helpBody.scrollTop(0);
             });
 
             // set the height of the help body when displaying the help dialog
             // so that the scroll bar does not block the rounded corners
-            $helpPopup.on('show', function () {
+            $helpPopup.on('show', function() {
                 if (helpHeight === 0) {
                     helpHeight = $helpPopup.height() - $helpBody.position().top - 10;
                 }
@@ -1034,7 +1030,7 @@
             });
 
             // handle click on names in chat / room list
-            var prepareMessage = function (ev) {
+            var prepareMessage = function(ev) {
                 if (readOnly) {
                     return false;
                 }
@@ -1054,22 +1050,34 @@
                     return false;
                 }
 
+                var mention = '@' + $(this).text().trim();
+
+                var $li = $(this).closest('li');
+                if ($li.data('mention') === undefined) {
+                    $li = $('.users li.user[data-name="' + $li.data('name') + '"]');
+                }
+                if ($li.data('mention') !== undefined && $li.data('mention') !== '') {
+                    mention = $li.data('mention').replace(/\b[a-z]/g, function (letter) {
+                        return letter.toUpperCase();
+                    });
+                }
+
                 // Prepend our target username
-                message = '@' + $(this).text().trim() + ' ' + message;
+                message = mention + ' ' + message;
                 ui.setMessage({ content: message });
                 return false;
             };
             $document.on('click', '.users li.user .name', prepareMessage);
             $document.on('click', '.message .left .name', prepareMessage);
 
-            $submitButton.click(function (ev) {
+            $submitButton.click(function(ev) {
                 triggerSend();
 
                 ev.preventDefault();
                 return false;
             });
 
-            $sound.click(function () {
+            $sound.click(function() {
                 var room = getCurrentRoomElements();
 
                 if (room.isLobby()) {
@@ -1084,7 +1092,7 @@
                 setRoomPreference(room.getName(), 'hasSound', enabled);
             });
 
-            $richness.click(function () {
+            $richness.click(function() {
                 var room = getCurrentRoomElements(),
                     $richContentMessages = room.messages.find('h3.collapsible_title');
 
@@ -1100,7 +1108,7 @@
                 setRoomPreference(room.getName(), 'blockRichness', !enabled);
 
                 // toggle all rich-content for current room
-                $richContentMessages.each(function (index) {
+                $richContentMessages.each(function(index) {
                     var $this = $(this),
                         isCurrentlyVisible = $this.next().is(":visible");
 
@@ -1116,7 +1124,7 @@
                 });
             });
 
-            $notify.click(function (e) {
+            $notify.click(function(e) {
                 e.preventDefault();
 
                 var room = getCurrentRoomElements(),
@@ -1130,7 +1138,7 @@
                     $(this).removeClass('notify-all');
                     $(this).addClass('notify-mentions');
                     $(".notify-text", this).text('Mentions');
-                } else if($(this).hasClass("notify-mentions")) {
+                } else if ($(this).hasClass("notify-mentions")) {
                     $(this).removeClass('notify-mentions');
                     $(this).addClass('notify-all');
                     $(".notify-text", this).text('All');
@@ -1143,9 +1151,9 @@
                 }
             });
 
-            $('li a', $musicServiceDropdown).click(function (e) {
+            $('li a', $musicServiceDropdown).click(function(e) {
                 var li = $(this).parent();
-                
+
                 // TODO: This is pretty dirty, Rewrite later.
                 if (li.hasClass('spotify')) {
                     if (getPreference('music_service') != 'spotify') {
@@ -1162,7 +1170,7 @@
                 }
             });
 
-            $toast.click(function () {
+            $toast.click(function() {
                 var $this = $(this),
                     enabled = !$this.hasClass('off'),
                     room = getCurrentRoomElements();
@@ -1175,25 +1183,24 @@
                     // If it's enabled toggle the preference
                     setRoomPreference(room.getName(), 'canToast', !enabled);
                     $this.toggleClass('off');
-                }
-                else {
+                } else {
                     toast.enableToast()
-                    .done(function () {
-                        setRoomPreference(room.getName(), 'canToast', true);
-                        $this.removeClass('off');
-                    })
-                    .fail(function () {
-                        setRoomPreference(room.getName(), 'canToast', false);
-                        $this.addClass('off');
-                    });
+                        .done(function() {
+                            setRoomPreference(room.getName(), 'canToast', true);
+                            $this.removeClass('off');
+                        })
+                        .fail(function() {
+                            setRoomPreference(room.getName(), 'canToast', false);
+                            $this.addClass('off');
+                        });
                 }
             });
 
-            $(toast).bind('toast.focus', function (ev, room) {
+            $(toast).bind('toast.focus', function(ev, room) {
                 window.focus();
             });
 
-            $downloadIcon.click(function () {
+            $downloadIcon.click(function() {
                 var room = getCurrentRoomElements();
 
                 if (room.isLobby()) {
@@ -1207,7 +1214,7 @@
                 $downloadDialog.modal({ backdrop: true, keyboard: true });
             });
 
-            $downloadDialogButton.click(function () {
+            $downloadDialogButton.click(function() {
                 var room = getCurrentRoomElements();
 
                 var url = document.location.href;
@@ -1215,29 +1222,29 @@
                 url = nav > 0 ? url.substring(0, nav) : url;
                 url = url.replace('default.aspx', '');
                 url += 'api/v1/messages/' +
-                       encodeURI(room.getName()) +
-                       '?download=true&range=' +
-                       encodeURIComponent($downloadRange.val());
+                    encodeURI(room.getName()) +
+                    '?download=true&range=' +
+                    encodeURIComponent($downloadRange.val());
 
                 $('<iframe style="display:none">').attr('src', url).appendTo(document.body);
 
                 $downloadDialog.modal('hide');
             });
 
-            $logout.click(function () {
+            $logout.click(function() {
                 $ui.trigger(ui.events.loggedOut);
             });
 
-            $help.click(function () {
+            $help.click(function() {
                 ui.showHelp();
             });
-            
-            $roomFilterInput.bind('input', function () { $lobbyRoomFilterForm.submit(); })
-                .keyup(function () { $lobbyRoomFilterForm.submit(); });
+
+            $roomFilterInput.bind('input', function() { $lobbyRoomFilterForm.submit(); })
+                .keyup(function() { $lobbyRoomFilterForm.submit(); });
 
             $closedRoomFilter.click(function() { $lobbyRoomFilterForm.submit(); });
 
-            $lobbyRoomFilterForm.submit(function () {
+            $lobbyRoomFilterForm.submit(function() {
                 var room = getCurrentRoomElements(),
                     $lobbyRoomsLists = $lobbyPrivateRooms.add($lobbyOtherRooms);
 
@@ -1249,20 +1256,20 @@
                 // hide all elements except those that match the input / closed filters
                 $lobbyRoomsLists
                     .find('li:not(.empty)')
-                    .each(function () { filterIndividualRoom($(this)); });
-                
-                $lobbyRoomsLists.find('ul').each(function () {
+                    .each(function() { filterIndividualRoom($(this)); });
+
+                $lobbyRoomsLists.find('ul').each(function() {
                     room.setListState($(this));
                 });
                 return false;
             });
 
-            $window.blur(function () {
+            $window.blur(function() {
                 focus = false;
                 $ui.trigger(ui.events.blurit);
             });
 
-            $window.focus(function () {
+            $window.focus(function() {
                 // clear unread count in active room
                 var room = getCurrentRoomElements();
                 room.makeActive();
@@ -1272,12 +1279,13 @@
                 }
             });
 
-            $window.resize(function () {
+            $window.resize(function() {
                 var room = getCurrentRoomElements();
+                room.makeActive();
                 room.scrollToBottom();
             });
 
-            $window.keypress(function (ev) {
+            $window.keypress(function(ev) {
                 if (!$newMessage.is(':focus') &&
                     !ev.ctrlKey &&
                     !ev.altKey) {
@@ -1285,45 +1293,46 @@
                 }
             });
 
-            $newMessage.keydown(function (ev) {
+            $newMessage.keydown(function(ev) {
                 var key = ev.keyCode || ev.which;
                 switch (key) {
-                    case Keys.Up:
-                        if (getNewMessageCursorLine() == 1 && cycleMessage(ui.events.prevMessage)) {
-                            ev.preventDefault();
-                        }
-                        break;
-                    case Keys.Down:
-                        if (getNewMessageCursorLine() == newMessageLines && cycleMessage(ui.events.nextMessage)) {
-                            ev.preventDefault();
-                        }
-                        break;
-                    case Keys.Esc:
-                        $(this).val('');
-                        newMessageLines = 1;
+                case Keys.Up:
+                    if (getNewMessageCursorLine() == 1 && cycleMessage(ui.events.prevMessage)) {
+                        ev.preventDefault();
+                    }
+                    break;
+                case Keys.Down:
+                    if (getNewMessageCursorLine() == newMessageLines && cycleMessage(ui.events.nextMessage)) {
+                        ev.preventDefault();
+                    }
+                    break;
+                case Keys.Esc:
+                    $(this).val('');
+                    newMessageLines = 1;
+                    updateNewMessageSize();
+                    if ($(this).attr('message-id') !== undefined) {
+                        $('#m-' + $(this).attr('message-id')).removeClass('editing');
+                        $(this).removeAttr('message-id');
+                    }
+                    $(this).removeClass('editing');
+                    break;
+                case Keys.Backspace:
+                    setTimeout(function() {
+                        newMessageLines = $newMessage.val().split('\n').length;
                         updateNewMessageSize();
-                        if ($(this).attr('message-id') !== undefined) {
-                            $('#m-' + $(this).attr('message-id')).removeClass('editing');
-                            $(this).removeAttr('message-id');
-                        }
-                        $(this).removeClass('editing');
-                        break;
-                    case Keys.Backspace:
-                        setTimeout(function() {
-                            newMessageLines = $newMessage.val().split('\n').length;
-                            updateNewMessageSize();
-                        }, 100);
-                        break;
-                    case Keys.Space:
-                        // Check for "/r " to reply to last private message
-                        if ($(this).val() === "/r" && lastPrivate) {
-                            ui.setMessage("/msg " + lastPrivate);
-                        }
-                        break;
+                    }, 100);
+                    break;
+                case Keys.Space:
+                    // Check for "/r " to reply to last private message
+                    if ($(this).val() === "/r" && lastPrivate) {
+                        ui.setMessage("/msg " + lastPrivate);
+                    }
+                    break;
                 }
             });
 
             // Returns true if a cycle was triggered
+
             function cycleMessage(messageHistoryDirection) {
                 var currentMessage = $newMessage.attr('message-id');
                 if (currentMessage === undefined || lastCycledMessage === currentMessage) {
@@ -1336,57 +1345,55 @@
             // Auto-complete for user names
             $newMessage.autoTabComplete({
                 prefixMatch: '[@#/:]',
-                get: function (prefix) {
+                get: function(prefix) {
                     switch (prefix) {
-                        case '@':
-                            var room = getCurrentRoomElements();
-                            // exclude current username from autocomplete
-                            return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
-                                         .not('.room')
-                                         .map(function () { return ($(this).data('name') + ' ' || "").toString(); });
-                        case '#':
-                            return getRoomsNames();
-
-                        case '/':
-                            return ui.getCommands()
-                                         .map(function (cmd) { return cmd.Name + ' '; });
-
-                        case ':':
-                            return emoji.getIcons();
-                        default:
-                            return [];
+                    case '@':
+                        var room = getCurrentRoomElements();
+                        // exclude current username from autocomplete
+                        return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
+                            .not('.room')
+                            .map(function() { return ($(this).data('name') + ' ' || "").toString(); });
+                    case '#':
+                        return getRoomsNames();
+                    case '/':
+                        return ui.getCommands()
+                            .map(function(cmd) { return cmd.Name + ' '; });
+                    case ':':
+                        return emoji.getIcons();
+                    default:
+                        return [];
                     }
                 }
             });
 
-            $newMessage.keypress(function (ev) {
+            $newMessage.keypress(function(ev) {
                 var key = ev.keyCode || ev.which;
-                
+
                 switch (key) {
-                    case Keys.Up:
-                    case Keys.Down:
-                    case Keys.Esc:
-                        break;
-                    case Keys.Enter:
-                        if (ev.shiftKey) {
-                            newMessageLines += 1;
-                            updateNewMessageSize();
-                            $ui.trigger(ui.events.typing);
-                        } else {
-                            triggerSend();
-                            ev.preventDefault();
-                        }
-                        break;
-                    default:
-                        if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
-                            return;
-                        }
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.Esc:
+                    break;
+                case Keys.Enter:
+                    if (ev.shiftKey) {
+                        newMessageLines += 1;
+                        updateNewMessageSize();
                         $ui.trigger(ui.events.typing);
-                        break;
+                    } else {
+                        triggerSend();
+                        ev.preventDefault();
+                    }
+                    break;
+                default:
+                    if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
+                        return;
+                    }
+                    $ui.trigger(ui.events.typing);
+                    break;
                 }
             });
 
-            $newMessage.bind('paste', function () {
+            $newMessage.bind('paste', function() {
                 setTimeout(function() {
                     newMessageLines = $newMessage.val().split('\n').length;
                     updateNewMessageSize();
@@ -1406,10 +1413,10 @@
             // Crazy browser hack
             $hiddenFile[0].style.left = '-800px';
 
-            $clipboardUploadButton.on("click", function () {
+            $clipboardUploadButton.on("click", function() {
                 var name = "clipboard-data",
                     uploader = {
-                        submitFile: function (connectionId, room) {
+                        submitFile: function(connectionId, room) {
                             $fileConnectionId.val(connectionId);
 
                             $fileRoom.val(room);
@@ -1424,7 +1431,7 @@
                                     room: room,
                                     connectionId: connectionId
                                 }
-                            }).done(function (result) {
+                            }).done(function(result) {
                                 //remove image from preview
                                 $clipboardUploadPreview.attr("src", "");
                             });
@@ -1439,7 +1446,7 @@
                 $clipboardUpload.modal('hide');
             });
 
-            $hiddenFile.change(function () {
+            $hiddenFile.change(function() {
                 if (!$hiddenFile.val()) {
                     return;
                 }
@@ -1448,7 +1455,7 @@
                     slash = path.lastIndexOf('\\'),
                     name = path.substring(slash + 1),
                     uploader = {
-                        submitFile: function (connectionId, room) {
+                        submitFile: function(connectionId, room) {
                             $fileConnectionId.val(connectionId);
 
                             $fileRoom.val(room);
@@ -1467,12 +1474,12 @@
             // Configure livestamp to only update every 30s since display granularity is by minute anyway (saves CPU cycles)
             $.livestamp.interval(30 * 1000);
 
-            setInterval(function () {
+            setInterval(function() {
                 ui.trimRoomMessageHistory();
             }, trimRoomHistoryFrequency);
         },
-        run: function () {
-            $.history.init(function (hash) {
+        run: function() {
+            $.history.init(function(hash) {
                 var roomName = getRoomNameFromHash(hash);
 
                 if (roomName) {
@@ -1484,18 +1491,22 @@
         },
         setMessage: function (clientMessage) {
             $newMessage.val(clientMessage.content);
-            $newMessage.attr('message-id', clientMessage.id);
             
             newMessageLines = clientMessage.content.split('\n').length;
             updateNewMessageSize();
-
-            $newMessage.addClass('editing');
-
+            
             $('.my-message').removeClass('editing');
-            $('#m-' + clientMessage.id).addClass('editing');
-            $('#m-' + clientMessage.id)[0].scrollIntoView();
 
-            lastCycledMessage = clientMessage.id;
+            if (clientMessage.id !== undefined) {
+                $newMessage.attr('message-id', clientMessage.id);
+
+                $newMessage.addClass('editing');
+                
+                $('#m-' + clientMessage.id).addClass('editing');
+                $('#m-' + clientMessage.id)[0].scrollIntoView();
+
+                lastCycledMessage = clientMessage.id;
+            }
 
             if (clientMessage.content) {
                 $newMessage.selectionEnd = clientMessage.content.length;
@@ -1503,7 +1514,7 @@
         },
         addRoom: addRoom,
         removeRoom: removeRoom,
-        setRoomOwner: function (ownerName, roomName) {
+        setRoomOwner: function(ownerName, roomName) {
             var room = getRoomElements(roomName),
                 $user = room.getUser(ownerName);
             $user
@@ -1511,16 +1522,16 @@
                 .data('owner', true);
             room.updateUserStatus($user);
         },
-        clearRoomOwner: function (ownerName, roomName) {
+        clearRoomOwner: function(ownerName, roomName) {
             var room = getRoomElements(roomName),
                 $user = room.getUser(ownerName);
             $user
-                 .removeAttr('data-owner')
-                 .data('owner', false);
+                .removeAttr('data-owner')
+                .data('owner', false);
             room.updateUserStatus($user);
         },
         setActiveRoom: navigateToRoom,
-        setActiveRoomCore: function (roomName) {
+        setActiveRoomCore: function(roomName) {
             var room = getRoomElements(roomName);
 
             loadRoomPreferences(roomName);
@@ -1560,24 +1571,24 @@
 
             return false;
         },
-        setRoomLocked: function (roomName) {
+        setRoomLocked: function(roomName) {
             var room = getRoomElements(roomName);
 
             room.setLocked();
         },
-        setRoomClosed: function (roomName) {
+        setRoomClosed: function(roomName) {
             var room = getRoomElements(roomName);
 
             room.close();
         },
         updateLobbyRoomCount: updateLobbyRoomCount,
-        updatePrivateLobbyRooms: function (roomName) {
+        updatePrivateLobbyRooms: function(roomName) {
             var lobby = getLobby(),
                 $room = lobby.users.find('li[data-name="' + roomName + '"]');
 
             $room.addClass('locked').appendTo(lobby.owners);
         },
-        updateUnread: function (roomName, isMentioned) {
+        updateUnread: function(roomName, isMentioned) {
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
             if (ui.hasFocus() && room.isActive()) {
@@ -1586,18 +1597,18 @@
 
             room.updateUnread(isMentioned);
         },
-        scrollToBottom: function (roomName) {
+        scrollToBottom: function(roomName) {
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
             if (room.isActive()) {
                 room.scrollToBottom();
             }
         },
-        watchMessageScroll: function (messageIds, roomName) {
+        watchMessageScroll: function(messageIds, roomName) {
             // Given an array of message ids, if there is any embedded content
             // in it, it may cause the window to scroll off of the bottom, so we
             // can watch for that and correct it.
-            messageIds = $.map(messageIds, function (id) { return '#m-' + id; });
+            messageIds = $.map(messageIds, function(id) { return '#m-' + id; });
 
             var $messages = $(messageIds.join(',')),
                 $content = $messages.expandableContent(),
@@ -1608,7 +1619,7 @@
             if (nearTheEndBefore && $content.length > 0) {
                 // Note that the load event does not bubble, so .on() is not
                 // suitable here.
-                $content.load(function (event) {
+                $content.load(function(event) {
                     // If we used to be at the end and our scrollTop() did not
                     // change, then we can safely call scrollToBottom() without
                     // worrying about interrupting the user. We skip this if the
@@ -1627,13 +1638,13 @@
                 });
             }
         },
-        isNearTheEnd: function (roomName) {
+        isNearTheEnd: function(roomName) {
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
             return room.isNearTheEnd();
         },
         setRoomLoading: setRoomLoading,
-        populateLobbyRooms: function (rooms, privateRooms) {
+        populateLobbyRooms: function(rooms, privateRooms) {
             var lobby = getLobby(),
                 i;
             if (!lobby.isInitialized()) {
@@ -1649,10 +1660,10 @@
 
                 // sort private lobby rooms
                 var privateSorted = sortRoomList(privateRooms);
-                
+
                 // sort other lobby rooms but filter out private rooms
-                sortedRoomList = sortRoomList(rooms).filter(function (room) {
-                    return !privateSorted.some(function (allowed) {
+                sortedRoomList = sortRoomList(rooms).filter(function(room) {
+                    return !privateSorted.some(function(allowed) {
                         return allowed.Name === room.Name;
                     });
                 });
@@ -1689,7 +1700,7 @@
             // re-filter lists
             $lobbyRoomFilterForm.submit();
         },
-        addUser: function (userViewModel, roomName) {
+        addUser: function(userViewModel, roomName) {
             var room = getRoomElements(roomName),
                 $user = null;
 
@@ -1707,6 +1718,7 @@
             $user.data('inroom', roomName);
             $user.data('owner', userViewModel.owner);
             $user.data('admin', userViewModel.admin);
+            $user.data('mention', userViewModel.mention);
 
             room.addUser(userViewModel, $user);
             updateNote(userViewModel, $user);
@@ -1714,7 +1726,7 @@
 
             return true;
         },
-        setUserActivity: function (userViewModel) {
+        setUserActivity: function(userViewModel) {
             var $user = $('.users').find(getUserClassName(userViewModel.name)),
                 active = $user.data('active'),
                 $idleSince = $user.find('.idle-since');
@@ -1736,7 +1748,7 @@
 
             updateNote(userViewModel, $user);
         },
-        setUserActive: function ($user) {
+        setUserActive: function($user) {
             var $idleSince = $user.find('.idle-since');
             if ($user.data('active') === true) {
                 return false;
@@ -1749,7 +1761,7 @@
             }
             return true;
         },
-        setUserInActive: function ($user) {
+        setUserInActive: function($user) {
             if ($user.data('active') === false) {
                 return false;
             }
@@ -1758,12 +1770,12 @@
             $user.addClass('idle');
             return true;
         },
-        changeUserName: function (oldName, user, roomName) {
+        changeUserName: function(oldName, user, roomName) {
             var room = getRoomElements(roomName),
                 $user = room.getUserReferences(oldName);
 
             // Update the user's name
-            $user.find('.name').fadeOut('normal', function () {
+            $user.find('.name').fadeOut('normal', function() {
                 $(this).html(user.Name);
                 $(this).fadeIn('normal');
             });
@@ -1771,13 +1783,20 @@
             $user.attr('data-name', user.Name);
             room.sortLists();
         },
-        changeGravatar: function (user, roomName) {
+        changeGravatar: function(user, roomName) {
             var room = getRoomElements(roomName),
                 $user = room.getUserReferences(user.Name),
                 src = 'https://secure.gravatar.com/avatar/' + user.Hash + '?s=16&d=mm';
 
             $user.find('.gravatar')
-                 .attr('src', src);
+                .attr('src', src);
+        },
+        changeMentions: function (user, roomName) {
+            var room = getRoomElements(roomName),
+                $user = room.getUserReferences(user.Name);
+
+            $user.data('mention', user.Mention);
+            $user.attr('data-mention', user.Mention);
         },
         showGravatarProfile: function (profile) {
             var room = getCurrentRoomElements(),

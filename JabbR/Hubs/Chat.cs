@@ -791,6 +791,15 @@ namespace JabbR
             {
                 Clients.Client(client.Id).mentionsChanged(mentions);
             }
+
+            // Create the view model
+            var userViewModel = new UserViewModel(user);
+
+            // Tell all users in rooms to change the gravatar
+            foreach (var room in user.Rooms)
+            {
+                Clients.Group(room.Name).changeMentions(userViewModel, room.Name);
+            }
         }
 
         void INotificationService.OnSelfMessage(ChatRoom room, ChatUser user, string content)
