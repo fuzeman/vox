@@ -9,7 +9,7 @@ namespace JabbR.Infrastructure
     public static class MentionExtractor
     {
         private const string UsernameMentionPattern = @"(?<user>(?<=@{1}(?!@))[a-zA-Z0-9-_\.]{1,50})";
-        private const string CustomMentionPattern = @"(?<=\s|,|\.|\(|\[|^)(?:{0})(?=\s|,|\.|\)|\]|$)";
+        private const string CustomMentionPattern = @"(?<=\s|,|\.|\(|\[|^)(?:{0})(?=\s|,|\.|\!|\?|\)|\]|$)";
         private const string GroupFormat = @"(?<{0}>{1})";
 
         private static string _customCachedPattern = null;

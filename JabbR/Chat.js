@@ -238,7 +238,7 @@
     }
 
     function generateCustomMentionRegex(strings) {
-        var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\)|\\]|$)";
+        var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
         result = result.replace("{0}", strings.join("|"));
         return result;
     }
