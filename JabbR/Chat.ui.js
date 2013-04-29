@@ -1056,7 +1056,7 @@
                 if ($li.data('mention') === undefined) {
                     $li = $('.users li.user[data-name="' + $li.data('name') + '"]');
                 }
-                if ($li.data('mention') !== undefined && $li.data('mention') != '') {
+                if ($li.data('mention') !== undefined && $li.data('mention') !== '') {
                     mention = $li.data('mention').replace(/\b[a-z]/g, function (letter) {
                         return letter.toUpperCase();
                     });
