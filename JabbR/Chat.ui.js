@@ -1365,14 +1365,14 @@
                         return emoji.getIcons();
                     default:
                         // exclude current username from autocomplete
-                        return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
+                        return $.grep(room.users.find('li[data-name != "' + ui.getUserName() + '"]')
                             .not('.room')
                             .map(function() {
                                 if ($(this).data('mention')[0] == prefix.toLowerCase()) {
                                     return ($(this).data('mention').substr(1) + ' ' || "").toString();
                                 }
                                 return "";
-                            });
+                            }), function(s) { return s.length != 0; });
                     }
                 }
             });
