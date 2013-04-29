@@ -1345,10 +1345,11 @@
             // Auto-complete for user names
             $newMessage.autoTabComplete({
                 prefixMatch: '.',
-                get: function(prefix) {
+                get: function (prefix) {
+                    var room = getCurrentRoomElements();
+
                     switch (prefix) {
                     case '@':
-                        var room = getCurrentRoomElements();
                         // exclude current username from autocomplete
                         return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
                             .not('.room')
@@ -1363,7 +1364,6 @@
                     case ':':
                         return emoji.getIcons();
                     default:
-                        var room = getCurrentRoomElements();
                         // exclude current username from autocomplete
                         return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
                             .not('.room')
