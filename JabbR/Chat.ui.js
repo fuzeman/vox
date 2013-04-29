@@ -1344,7 +1344,7 @@
 
             // Auto-complete for user names
             $newMessage.autoTabComplete({
-                prefixMatch: '[@#/:]',
+                prefixMatch: '.',
                 get: function(prefix) {
                     switch (prefix) {
                     case '@':
@@ -1352,7 +1352,9 @@
                         // exclude current username from autocomplete
                         return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
                             .not('.room')
-                            .map(function() { return ($(this).data('name') + ' ' || "").toString(); });
+                            .map(function() {
+                                return ($(this).data('name') + ' ' || "").toString();
+                            });
                     case '#':
                         return getRoomsNames();
                     case '/':
@@ -1361,7 +1363,16 @@
                     case ':':
                         return emoji.getIcons();
                     default:
-                        return [];
+                        var room = getCurrentRoomElements();
+                        // exclude current username from autocomplete
+                        return room.users.find('li[data-name != "' + ui.getUserName() + '"]')
+                            .not('.room')
+                            .map(function() {
+                                if ($(this).data('mention')[0] == prefix.toLowerCase()) {
+                                    return ($(this).data('mention').substr(1) + ' ' || "").toString();
+                                }
+                                return "";
+                            });
                     }
                 }
             });

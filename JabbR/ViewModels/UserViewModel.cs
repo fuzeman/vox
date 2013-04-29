@@ -21,7 +21,7 @@ namespace JabbR.ViewModels
             LastActivity = user.LastActivity;
             IsAdmin = user.IsAdmin;
 
-            var mention = user.Mentions.FirstOrDefault();
+            var mention = user.Mentions.OrderBy(m => m.Key).FirstOrDefault();
             if (mention != null)
                 Mention = mention.String;
         }
