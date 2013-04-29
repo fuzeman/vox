@@ -178,6 +178,7 @@
         return {
             name: message.User.Name,
             hash: message.User.Hash,
+            mention: message.User.Mention,
             message: message.HtmlEncoded ? message.Content : ui.processContent(message.Content),
             htmlContent: message.HtmlContent,
             id: message.Id,
