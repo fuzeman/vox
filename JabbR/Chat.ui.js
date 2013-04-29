@@ -1372,7 +1372,7 @@
                                     return ($(this).data('mention').substr(1) + ' ' || "").toString();
                                 }
                                 return "";
-                            }), function(s) { return s.length != 0; });
+                            }), function(s) { return s.length !== 0; });
                     }
                 }
             });
