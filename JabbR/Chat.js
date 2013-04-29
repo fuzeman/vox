@@ -20,6 +20,7 @@
         messageSendingDelay = 1500,
         pendingMessages = {},
         privateRooms = null,
+        mentionStrings = null,
         customMentionRegex = null;
 
     function failPendingMessages() {
@@ -270,6 +271,7 @@
 
     // Called when a returning users join chat
     chat.client.logOn = function (rooms, myRooms, mentions) {
+        mentionStrings = mentions;
         customMentionRegex = generateCustomMentionRegex(mentions);
         privateRooms = myRooms;
 
@@ -493,6 +495,7 @@
 
     // Called when your mentions have been updated
     chat.client.mentionsChanged = function (mentions) {
+        mentionStrings = mentions;
         customMentionRegex = generateCustomMentionRegex(mentions);
         ui.addMessage('Your mention strings have been set to ' + mentions.join(", "), 'notification', this.state.activeRoom);
     };
@@ -877,6 +880,7 @@
             var viewModel = {
                 name: chat.state.name,
                 hash: chat.state.hash,
+                mention: mentionStrings[0],
                 message: ui.processContent(clientMessage.content),
                 id: clientMessage.id,
                 date: new Date(),
