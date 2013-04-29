@@ -166,7 +166,8 @@
             country: user.Country,
             lastActive: lastActive,
             timeAgo: $.timeago(lastActive),
-            admin: user.IsAdmin
+            admin: user.IsAdmin,
+            mention: user.Mention
         };
     }
 
@@ -441,6 +442,10 @@
         if (!isSelf(user)) {
             ui.addMessage(user.Name + "'s gravatar changed.", 'notification', room);
         }
+    };
+
+    chat.client.changeMentions = function (user, room) {
+        ui.changeMentions(user, room);
     };
 
     // User single client commands
