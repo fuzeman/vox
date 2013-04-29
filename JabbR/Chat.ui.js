@@ -1344,8 +1344,9 @@
 
             // Auto-complete for user names
             $newMessage.autoTabComplete({
-                prefixMatch: '.',
+                prefixMatch: '[a-z@#/:]',
                 get: function (prefix) {
+                    console.log(prefix);
                     var room = getCurrentRoomElements();
 
                     switch (prefix) {
@@ -1368,11 +1369,12 @@
                         return $.grep(room.users.find('li[data-name != "' + ui.getUserName() + '"]')
                             .not('.room')
                             .map(function() {
-                                if ($(this).data('mention')[0] == prefix.toLowerCase()) {
+                                if ($(this).data('mention') !== undefined &&
+                                    $(this).data('mention')[0] == prefix.toLowerCase()) {
                                     return ($(this).data('mention').substr(1) + ' ' || "").toString();
                                 }
                                 return "";
-                            }), function(s) { return s.length != 0; });
+                            }), function(s) { return s.length !== 0; });
                     }
                 }
             });
