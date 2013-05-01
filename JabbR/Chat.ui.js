@@ -43,6 +43,7 @@
         $roomCmdHelp = null,
         $userCmdHelp = null,
         $updatePopup = null,
+        $kickedPopup = null,
         $window = $(window),
         $document = $(document),
         $lobbyRoomFilterForm = null,
@@ -859,6 +860,7 @@
             $roomCmdHelp = $('#jabbr-help #room');
             $userCmdHelp = $('#jabbr-help #user');
             $updatePopup = $('#jabbr-update');
+            $kickedPopup = $('#jabbr-kicked');
             focus = true;
             $lobbyRoomFilterForm = $('#room-filter-form'),
             $roomFilterInput = $('#room-filter'),
@@ -2283,6 +2285,22 @@
                 document.location = document.location.pathname;
             },
             updateTimeout);
+        },
+        showKickUI: function (room, message, imageUrl) {
+            if (message != null) {
+                $('.kick-message', $kickedPopup).text(message);
+            } else {
+                $('.kick-message', $kickedPopup).text('Kicked from #' + room);
+            }
+            
+            if (imageUrl != null) {
+                $('.kick-image', $kickedPopup).css('background-image', 'url("' + imageUrl + '")');
+                $('.kick-image', $kickedPopup).show();
+            } else {
+                $('.kick-image', $kickedPopup).css('background-image', '');
+                $('.kick-image', $kickedPopup).hide();
+            }
+            $kickedPopup.modal();
         },
         showReloadMessageNotification: function () {
             $reloadMessageNotification.appendTo($chatArea);
