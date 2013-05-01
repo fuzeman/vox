@@ -25,7 +25,7 @@
         reset();
 
         $(element).keydown(function (event) {
-            if (event.which === Keys.Tab) {
+            if (event.which === Keys.Tab && !event.ctrlKey) {
                 event.preventDefault();
 
                 var offset = event.shiftKey ? -1 : 1;
