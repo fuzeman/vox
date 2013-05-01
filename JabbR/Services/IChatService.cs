@@ -1,5 +1,6 @@
 ﻿using JabbR.Models;
 using JabbR.UploadHandlers;
+using System;
 
 namespace JabbR.Services
 {
@@ -23,7 +24,7 @@ namespace JabbR.Services
         // Owner commands
         void AddOwner(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
         void RemoveOwner(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
-        void KickUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
+        void KickUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom, string message = null, Uri imageUrl = null);
         void AllowUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
         void UnallowUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
         void LockRoom(ChatUser user, ChatRoom targetRoom);

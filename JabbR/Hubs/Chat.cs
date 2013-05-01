@@ -636,19 +636,21 @@ namespace JabbR
             Clients.Caller.setPassword();
         }
 
-        void INotificationService.KickUser(ChatUser targetUser, ChatRoom room)
+        void INotificationService.KickUser(ChatUser targetUser, ChatRoom room,
+            string message, Uri imageUrl)
         {
+            var userViewModel = new UserViewModel(targetUser);
+
+            // Send user kicked message to everyone
+            Clients.Group(room.Name).kick(userViewModel, room.Name, message, imageUrl);
+
+            // Remove targetUser clients
             foreach (var client in targetUser.ConnectedClients)
             {
-                // Kick the user from this room
-                Clients.Client(client.Id).kick(room.Name);
-
-                // Remove the user from this the room group so he doesn't get the leave message
                 Groups.Remove(client.Id, room.Name);
             }
 
-            // Tell the room the user left
-            LeaveRoom(targetUser, room);
+            OnRoomChanged(room);
         }
 
         void INotificationService.OnUserCreated(ChatUser user)

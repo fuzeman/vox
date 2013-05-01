@@ -696,10 +696,24 @@
         }
     };
 
-    chat.client.kick = function (room) {
-        ui.setActiveRoom('Lobby');
-        ui.removeRoom(room);
-        ui.addMessage('You were kicked from ' + room, 'notification');
+    chat.client.kick = function(user, room, message, imageUrl) {
+        if (isSelf(user)) {
+            ui.showKickUI(room, message, imageUrl);
+            ui.setActiveRoom('Lobby');
+            ui.removeRoom(room);
+            ui.addMessage('You were kicked from ' + room, 'notification');
+        } else {
+            ui.removeUser(user, room);
+            var roomMessage = user.Name + ' was kicked from ' + room;
+            if (message !== null && imageUrl !== null) {
+                roomMessage += ' (' + [message, '<a href="' + imageUrl + '">' + imageUrl + '</a>'].join(' - ') + ')';
+            } else if (message !== null) {
+                roomMessage += ' (' + message + ')';
+            } else if (imageUrl !== null) {
+                roomMessage += ' (<a href="' + imageUrl + '">' + imageUrl + '</a>)';
+            }
+            ui.addMessage({ content: roomMessage, encoded: true }, 'notification', room);
+        }
     };
 
     // Helpish commands

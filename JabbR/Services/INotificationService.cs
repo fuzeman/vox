@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JabbR.Models;
+using System;
 
 namespace JabbR.Services
 {
@@ -35,7 +36,7 @@ namespace JabbR.Services
 
         void AddOwner(ChatUser targetUser, ChatRoom targetRoom);
         void RemoveOwner(ChatUser targetUser, ChatRoom targetRoom);
-        void KickUser(ChatUser targetUser, ChatRoom targetRoom);
+        void KickUser(ChatUser targetUser, ChatRoom targetRoom, string message = null, Uri imageUrl = null);
         void AllowUser(ChatUser targetUser, ChatRoom targetRoom);
         void UnallowUser(ChatUser targetUser, ChatRoom targetRoom);
         void BanUser(ChatUser targetUser);

@@ -493,7 +493,8 @@ namespace JabbR.Services
             targetUser.OwnedRooms.Remove(targetRoom);
         }
 
-        public void KickUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom)
+        public void KickUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom,
+            string message = null, Uri imageUrl = null)
         {
             EnsureOwnerOrAdmin(user, targetRoom);
 
