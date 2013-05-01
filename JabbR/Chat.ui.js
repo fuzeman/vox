@@ -2287,13 +2287,13 @@
             updateTimeout);
         },
         showKickUI: function (room, message, imageUrl) {
-            if (message != null) {
+            if (message !== null) {
                 $('.kick-message', $kickedPopup).text(message);
             } else {
                 $('.kick-message', $kickedPopup).text('Kicked from #' + room);
             }
             
-            if (imageUrl != null) {
+            if (imageUrl !== null) {
                 $('.kick-image', $kickedPopup).css('background-image', 'url("' + imageUrl + '")');
                 $('.kick-image', $kickedPopup).show();
             } else {

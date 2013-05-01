@@ -705,11 +705,11 @@
         } else {
             ui.removeUser(user, room);
             var roomMessage = user.Name + ' was kicked from ' + room;
-            if (message != null && imageUrl != null) {
+            if (message !== null && imageUrl !== null) {
                 roomMessage += ' (' + [message, '<a href="' + imageUrl + '">' + imageUrl + '</a>'].join(' - ') + ')';
-            } else if (message != null) {
+            } else if (message !== null) {
                 roomMessage += ' (' + message + ')';
-            } else if (imageUrl != null) {
+            } else if (imageUrl !== null) {
                 roomMessage += ' (<a href="' + imageUrl + '">' + imageUrl + '</a>)';
             }
             ui.addMessage({ content: roomMessage, encoded: true }, 'notification', room);
