@@ -1287,24 +1287,31 @@
                 room.scrollToBottom();
             });
 
-            $window.keypress(function(ev) {
+            function windowKeyFocus(ev) {
                 if (!$newMessage.is(':focus') &&
                     !ev.ctrlKey &&
                     !ev.altKey) {
                     $newMessage.focus();
                 }
-            });
+            }
 
-            $newMessage.keydown(function(ev) {
+            $window.keypress(windowKeyFocus);
+            $window.keydown(windowKeyFocus);
+
+            $newMessage.keydown(function (ev) {
                 var key = ev.keyCode || ev.which;
                 switch (key) {
                 case Keys.Up:
-                    if (getNewMessageCursorLine() == 1 && cycleMessage(ui.events.prevMessage)) {
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
+                        cycleMessage(ui.events.prevMessage)) {
+                        
                         ev.preventDefault();
                     }
                     break;
                 case Keys.Down:
-                    if (getNewMessageCursorLine() == newMessageLines && cycleMessage(ui.events.nextMessage)) {
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
+                        cycleMessage(ui.events.nextMessage)) {
+                        
                         ev.preventDefault();
                     }
                     break;
@@ -1348,7 +1355,6 @@
             $newMessage.autoTabComplete({
                 prefixMatch: '[a-z@#/:]',
                 get: function (prefix) {
-                    console.log(prefix);
                     var room = getCurrentRoomElements();
 
                     switch (prefix) {
@@ -2073,6 +2079,21 @@
             else {
                 $middle.append(processRichContent($('<p>' + content + '</p>')));
             }
+            
+            // Fancybox
+            $('a.imageContent', $middle).fancybox({
+                openEffect: 'elastic',
+                openSpeed: 400,
+                
+                closeEffect: 'elastic',
+                closeSpeed: 200,
+                
+                helpers: {
+                    overlay: {
+                        closeClick: true
+                    }
+                }
+            });
         },
         addPrivateMessage: function (content, type) {
             var rooms = getAllRoomElements();
