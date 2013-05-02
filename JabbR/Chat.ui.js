@@ -1302,14 +1302,14 @@
                 var key = ev.keyCode || ev.which;
                 switch (key) {
                 case Keys.Up:
-                    if (($newMessage.val() == '' || $newMessage.hasClass('editing')) &&
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
                         cycleMessage(ui.events.prevMessage)) {
                         
                         ev.preventDefault();
                     }
                     break;
                 case Keys.Down:
-                    if (($newMessage.val() == '' || $newMessage.hasClass('editing')) &&
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
                         cycleMessage(ui.events.nextMessage)) {
                         
                         ev.preventDefault();
