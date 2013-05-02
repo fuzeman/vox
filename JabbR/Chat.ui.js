@@ -1355,7 +1355,6 @@
             $newMessage.autoTabComplete({
                 prefixMatch: '[a-z@#/:]',
                 get: function (prefix) {
-                    console.log(prefix);
                     var room = getCurrentRoomElements();
 
                     switch (prefix) {
@@ -2080,6 +2079,21 @@
             else {
                 $middle.append(processRichContent($('<p>' + content + '</p>')));
             }
+            
+            // Fancybox
+            $('a.imageContent', $middle).fancybox({
+                openEffect: 'elastic',
+                openSpeed: 400,
+                
+                closeEffect: 'elastic',
+                closeSpeed: 200,
+                
+                helpers: {
+                    overlay: {
+                        closeClick: true
+                    }
+                }
+            });
         },
         addPrivateMessage: function (content, type) {
             var rooms = getAllRoomElements();
