@@ -865,7 +865,7 @@
 
         var id, clientMessage, type, messageCompleteTimeout = null;
 
-        if (typeof msg == 'object' && 'content' in msg) {
+        if (typeof msg == 'object' && 'content' in msg && msg[0] !== '/') {
             type = 'replace';
             id = msg.id;
             clientMessage = msg;
@@ -1023,6 +1023,14 @@
 
     $ui.bind(ui.events.prevMessage, function () {
         historyLocation -= 1;
+        
+        // Skip Command Messages
+        while (historyLocation >= 0 &&
+               messageHistory[chat.state.activeRoom][historyLocation].content[0] === '/') {
+            historyLocation -= 1;
+        }
+        
+        // Ensure location is valid
         if (historyLocation < 0) {
             historyLocation = (messageHistory[chat.state.activeRoom] || []).length - 1;
         }
@@ -1033,7 +1041,16 @@
     });
 
     $ui.bind(ui.events.nextMessage, function () {
-        historyLocation = (historyLocation + 1) % (messageHistory[chat.state.activeRoom] || []).length;
+        historyLocation += 1;
+        
+        // Skip commands
+        while (historyLocation < (messageHistory[chat.state.activeRoom] || []).length &&
+               messageHistory[chat.state.activeRoom][historyLocation].content[0] === '/') {
+            historyLocation += 1;
+        }
+        
+        // Ensure location is valid
+        historyLocation = (historyLocation) % (messageHistory[chat.state.activeRoom] || []).length;
 
         if (historyLocation >= 0) {
             selectMessage(messageHistory[chat.state.activeRoom][historyLocation]);
