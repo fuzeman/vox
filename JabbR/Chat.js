@@ -877,6 +877,7 @@
 
             clientMessage = {
                 id: id,
+                replaced: false,
                 content: msg,
                 room: chat.state.activeRoom
             };
@@ -972,6 +973,7 @@
             for (var i = 0; i < messageHistory[roomName].length; i++) {
                 if (messageHistory[roomName][i].id == oldId) {
                     messageHistory[roomName][i].id = newId;
+                    messageHistory[roomName][i].replaced = true;
                     return;
                 }
             }
@@ -1026,10 +1028,7 @@
         }
 
         if (historyLocation >= 0) {
-            var message = messageHistory[chat.state.activeRoom][historyLocation];
-            if (message !== undefined) {
-                ui.setMessage(message);
-            }
+            selectMessage(messageHistory[chat.state.activeRoom][historyLocation]);
         }
     });
 
@@ -1037,12 +1036,27 @@
         historyLocation = (historyLocation + 1) % (messageHistory[chat.state.activeRoom] || []).length;
 
         if (historyLocation >= 0) {
-            var message = messageHistory[chat.state.activeRoom][historyLocation];
-            if (message !== undefined) {
-                ui.setMessage(message);
-            }
+            selectMessage(messageHistory[chat.state.activeRoom][historyLocation]);
         }
     });
+    
+    function selectMessage(message) {
+        if (!message.replaced) {
+            var retries = 0;
+            var awaitMessageID = setInterval(function () {
+                if (message.replaced) {
+                    ui.setMessage(message);
+                    clearInterval(awaitMessageID);
+                }
+                if (retries > 25) {
+                    clearInterval(awaitMessageID);
+                }
+                retries += 1;
+            }, 100);
+        } else {
+            ui.setMessage(message);
+        }
+    }
 
     $ui.bind(ui.events.activeRoomChanged, function (ev, room) {
         if (room === 'Lobby') {
