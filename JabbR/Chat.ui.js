@@ -1,4 +1,4 @@
-﻿/// <reference path="Scripts/jquery-1.7.js" />
+﻿/// <reference path="Scripts/jquery-1.9.0.js" />
 /// <reference path="Scripts/jQuery.tmpl.js" />
 /// <reference path="Scripts/jquery.cookie.js" />
 /// <reference path="Chat.toast.js" />
@@ -869,8 +869,8 @@
             $updatePopup = $('#jabbr-update');
             $kickedPopup = $('#jabbr-kicked');
             focus = true;
-            $lobbyRoomFilterForm = $('#room-filter-form'),
-            $roomFilterInput = $('#room-filter'),
+            $lobbyRoomFilterForm = $('#room-filter-form');
+            $roomFilterInput = $('#room-filter');
             $closedRoomFilter = $('#room-filter-closed');
             templates = {
                 userlist: $('#new-userlist-template'),
