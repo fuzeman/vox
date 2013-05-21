@@ -47,5 +47,6 @@ namespace JabbR.Models
         public DbSet<ChatUserMention> Mentions { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Settings> Settings { get; set; }
     }
 }

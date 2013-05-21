@@ -8,6 +8,7 @@ namespace JabbR.Services
     {
         IQueryable<ChatRoom> Rooms { get; }
         IQueryable<ChatUser> Users { get; }
+        IQueryable<ChatClient> Clients { get; }
 
         IQueryable<ChatUser> GetOnlineUsers(ChatRoom room);
         IQueryable<ChatUser> GetOnlineUsers();
@@ -50,7 +51,6 @@ namespace JabbR.Services
         void Remove(ChatUserIdentity identity);
         void Remove(ChatUserMention mention);
         void Update(ChatMessage message);
-        void RemoveAllClients();
         void CommitChanges();
 
         bool IsUserInRoom(ChatUser user, ChatRoom room);

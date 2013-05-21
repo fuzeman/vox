@@ -1,5 +1,4 @@
 ﻿using System.Configuration;
-using Gate;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
 using System;
