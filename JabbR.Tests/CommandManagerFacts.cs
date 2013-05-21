@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using JabbR.Commands;
 using JabbR.Infrastructure;
@@ -1637,7 +1638,7 @@ namespace JabbR.Test
                 Assert.True(result);
                 Assert.False(room.Users.Contains(user3));
                 Assert.False(user3.Rooms.Contains(room));
-                notificationService.Verify(x => x.KickUser(user3, room), Times.Once());
+                notificationService.Verify(x => x.KickUser(user3, room, null, null), Times.Once());
             }
 
             [Fact]
@@ -1806,7 +1807,7 @@ namespace JabbR.Test
                 Assert.True(result);
                 Assert.False(room.Users.Contains(user2));
                 Assert.False(user2.Rooms.Contains(room));
-                notificationService.Verify(x => x.KickUser(user2, room), Times.Once());
+                notificationService.Verify(x => x.KickUser(user2, room, null, null), Times.Once());
             }
         }
 
@@ -3270,6 +3271,184 @@ namespace JabbR.Test
                 Assert.True(result);
                 notificationService.Verify(x => x.AllowUser(user2, room), Times.Once());
                 Assert.True(room.AllowedUsers.Contains(user2));
+            }
+        }
+
+        public class AllowedCommand
+        {
+            [Fact]
+            public void CanGetAllowedUserListDefault()
+            {
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "dfowler",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var room = new ChatRoom
+                {
+                    Name = "room", 
+                    Private = true, 
+                    AllowedUsers = new Collection<ChatUser>() { user },
+                    Users = new Collection<ChatUser>() { user }
+                };
+                repository.Add(room);
+                var service = new ChatService(cache, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        "room",
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+
+                bool result = commandManager.TryHandleCommand("/allowed");
+
+                Assert.True(result);
+                notificationService.Verify(x => x.ListAllowedUsers(room), Times.Once());
+            }
+
+            [Fact]
+            public void CanGetAllowedUserListPublicRoom()
+            {
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "dfowler",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var room = new ChatRoom
+                {
+                    Name = "room",
+                    Private = false,
+                    Users = new Collection<ChatUser>() { user }
+                };
+                repository.Add(room);
+                var service = new ChatService(cache, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        "room",
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+
+                bool result = commandManager.TryHandleCommand("/allowed room");
+
+                Assert.True(result);
+                notificationService.Verify(x => x.ListAllowedUsers(room), Times.Once());
+            }
+
+            [Fact]
+            public void CanGetAllowedUserListSpecified()
+            {
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "dfowler",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var room = new ChatRoom
+                {
+                    Name = "room",
+                    Private = true,
+                    AllowedUsers = new Collection<ChatUser>() { user },
+                };
+                repository.Add(room);
+                var room2 = new ChatRoom
+                {
+                    Name = "room2",
+                    Private = true,
+                    AllowedUsers = new Collection<ChatUser>() { user },
+                    Users = new Collection<ChatUser>() { user }
+                };
+                repository.Add(room2);
+                var service = new ChatService(cache, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        "room2",
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+
+                bool result = commandManager.TryHandleCommand("/allowed room");
+
+                Assert.True(result);
+                notificationService.Verify(x => x.ListAllowedUsers(room), Times.Once());
+            }
+            
+            [Fact]
+            public void CannotGetInfoForInvalidRoom()
+            {
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "dfowler",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var service = new ChatService(cache, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        null,
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+
+                Assert.Throws<InvalidOperationException>(() => commandManager.TryHandleCommand("/allowed room3"));
+            }
+
+            [Fact]
+            public void CannotGetInfoForInaccessiblePrivateRoom()
+            {
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "dfowler",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var room = new ChatRoom
+                {
+                    Name = "room",
+                    Private = true,
+                    AllowedUsers = new Collection<ChatUser>() { },
+                    Users = new Collection<ChatUser>() { }
+                };
+                repository.Add(room);
+                var room2 = new ChatRoom
+                {
+                    Name = "room2",
+                    Private = true,
+                    AllowedUsers = new Collection<ChatUser>() { user },
+                    Users = new Collection<ChatUser>() { user }
+                };
+                repository.Add(room2);
+                var service = new ChatService(cache, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        "room2",
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+
+                Assert.Throws<InvalidOperationException>(() => commandManager.TryHandleCommand("/allowed room"));
             }
         }
 

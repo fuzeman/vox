@@ -17,9 +17,9 @@ namespace JabbR.ContentProviders.Core
 
         public ResourceProcessor(IKernel kernel)
         {
+            _contentProviders = GetContentProviders(kernel);
             _kernel = kernel;
             _repository = kernel.Get<IJabbrRepository>();
-            _contentProviders = GetContentProviders(kernel.Get<IApplicationSettings>());
         }
 
         public Task<ContentProviderResult> ExtractResource(string url)
@@ -82,11 +82,11 @@ namespace JabbR.ContentProviders.Core
         }
 
 
-        private static IList<IContentProvider> GetContentProviders(IApplicationSettings settings)
+        private static IList<IContentProvider> GetContentProviders(IKernel kernel)
         {
             // Use MEF to locate the content providers in this assembly
             var compositionContainer = new CompositionContainer(new AssemblyCatalog(typeof(ResourceProcessor).Assembly));
-            compositionContainer.ComposeExportedValue(settings);
+            compositionContainer.ComposeExportedValue(kernel);
             return compositionContainer.GetExportedValues<IContentProvider>().ToList();
         }
     }
