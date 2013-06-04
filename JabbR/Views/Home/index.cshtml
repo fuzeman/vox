@@ -47,7 +47,7 @@
             <div class="left">
                 {{if showUser}}
                 <img src="https://secure.gravatar.com/avatar/${hash}?s=16&d=mm" class="gravatar" />
-                <div class="name">${trimmedName}</div>
+                <div class="name">${name}</div>
                 {{/if}}
                 <span class="state"></span>
             </div>
@@ -466,7 +466,7 @@
             .Add("~/Scripts/bootstrap.js")
             .Add("~/Scripts/jquery.KeyTips.js")
             .Add("~/Scripts/jquery-ui-1.10.0.min.js")
-            .Add("~/Scripts/jquery.signalR-2.0.0-beta2-130518-b350.min.js")
+            .Add("~/Scripts/jquery.signalR-2.0.0-beta2-130602-b51.min.js")
             .Render("~/Scripts/JabbR1_#.js"));
     }
     <script type="text/javascript" src="@Url.Content("~/signalr/hubs")"></script>
