@@ -1792,7 +1792,7 @@ namespace JabbR.Test
                 Assert.True(result);
                 Assert.False(room.Users.Contains(user3));
                 Assert.False(user3.Rooms.Contains(room));
-                notificationService.Verify(x => x.KickUser(user3, room), Times.Once());
+                notificationService.Verify(x => x.KickUser(user3, room, null, null), Times.Once());
             }
 
             [Fact]
@@ -1926,12 +1926,12 @@ namespace JabbR.Test
                                                         cache,
                                                         notificationService.Object);
 
-                bool result = commandManager.TryHandleCommand("/kick dfowler3 room");
+                bool result = commandManager.TryHandleCommand("/kick dfowler3 you have been kicked from the room room");
 
                 Assert.True(result);
                 Assert.False(room.Users.Contains(user3));
                 Assert.False(user3.Rooms.Contains(room));
-                notificationService.Verify(x => x.KickUser(user3, room, null, null), Times.Once());
+                notificationService.Verify(x => x.KickUser(user3, room, "you have been kicked from the room", null), Times.Once());
             }
 
             [Fact]
