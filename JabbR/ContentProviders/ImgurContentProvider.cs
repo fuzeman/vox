@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JabbR.ContentProviders.Core;
 using System.Text.RegularExpressions;
+using Microsoft.Security.Application;
 
 namespace JabbR.ContentProviders
 {
@@ -19,7 +20,9 @@ namespace JabbR.ContentProviders
 
             return TaskAsyncHelper.FromResult(new ContentProviderResult
             {
-                Content = String.Format(@"<img src=""{0}"" />", url),
+                Content = String.Format(ImageContentProvider.HtmlFormat,
+                    Encoder.HtmlAttributeEncode(request.RequestUri.AbsoluteUri),
+                    Encoder.HtmlAttributeEncode(url)),
                 Title = url,
                 Weight = 1
             });

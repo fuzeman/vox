@@ -18,7 +18,7 @@ namespace JabbR.ContentProviders
         private const string ImgurClientId = "aebab8fdb4d1989";
         private const string ImgurUploadUrl = "https://api.imgur.com/3/image.json?image={0}";
 
-        private const string format = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
+        public const string HtmlFormat = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
 
         private readonly IKernel _kernel;
         private readonly IJabbrConfiguration _configuration;
@@ -41,8 +41,9 @@ namespace JabbR.ContentProviders
 
             return new ContentProviderResult()
             {
-                Content = String.Format(format, Encoder.HtmlAttributeEncode(href), 
-                                                Encoder.HtmlAttributeEncode(imageUrl)),
+                Content = String.Format(HtmlFormat,
+                    Encoder.HtmlAttributeEncode(href),
+                    Encoder.HtmlAttributeEncode(imageUrl)),
                 Title = href
             };
         }
