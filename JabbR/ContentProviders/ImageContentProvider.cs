@@ -105,10 +105,10 @@ namespace JabbR.ContentProviders
             }
 
             dynamic json = JObject.Parse(ReadStream(content));
-            return json.data.link;
+            return ((string)json.data.link).Replace("http://", "https://");
         }
 
-        private static string ReadStream(MemoryStream stream)
+        private static string ReadStream(Stream stream)
         {
             stream.Position = 0;
             string content;
