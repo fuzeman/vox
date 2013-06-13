@@ -8,39 +8,31 @@ using JabbR.Services;
 using JabbR.UploadHandlers;
 using Microsoft.Security.Application;
 using Ninject;
+using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR.ContentProviders
 {
     public class ImageContentProvider : CollapsibleContentProvider
     {
+        private const string ImgurClientId = "aebab8fdb4d1989";
+        private const string ImgurUploadUrl = "https://api.imgur.com/3/image.json?image={0}";
+
+        private const string format = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
+
         private readonly IKernel _kernel;
         private readonly IJabbrConfiguration _configuration;
 
         protected override async Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request)
         {
-            string format = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
-            string imageUrl = request.RequestUri.ToString();
-            string href = imageUrl;
+            var imageUrl = request.RequestUri.ToString();
+            var href = imageUrl;
 
-            // Only proxy what we need to (non https images)
+            // Serve non-https images via imgur
             if (_configuration.RequireHttps &&
                 !request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
-                var uploadProcessor = _kernel.Get<UploadProcessor>();
-                var response = await Http.GetAsync(request.RequestUri);
-                string fileName = Path.GetFileName(request.RequestUri.LocalPath);
-                string contentType = GetContentType(request.RequestUri);
-                long contentLength = response.ContentLength;
-
-                using (Stream stream = response.GetResponseStream())
-                {
-                    UploadResult result = await uploadProcessor.HandleUpload(fileName, contentType, stream, contentLength);
-
-                    if (result != null)
-                    {
-                        imageUrl = result.Url;
-                    }
-                }
+                imageUrl = await Upload(imageUrl);
             }
 
             return new ContentProviderResult()
@@ -92,6 +84,40 @@ namespace JabbR.ContentProviders
             }
 
             return null;
+        }
+
+        private static async Task<string> Upload(string url)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(
+                String.Format(ImgurUploadUrl, Uri.EscapeDataString(url)));
+
+            request.Method = "POST";
+            request.Headers.Set("Authorization", "Client-ID " + ImgurClientId);
+
+            var content = new MemoryStream();
+
+            using (var response = await request.GetResponseAsync())
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    await responseStream.CopyToAsync(content);
+                }
+            }
+
+            dynamic json = JObject.Parse(ReadStream(content));
+            return json.data.link;
+        }
+
+        private static string ReadStream(MemoryStream stream)
+        {
+            stream.Position = 0;
+            string content;
+            using (var reader = new StreamReader(stream))
+            {
+                content = reader.ReadToEnd();
+            }
+            stream.Close();
+            return content;
         }
     }
 }
