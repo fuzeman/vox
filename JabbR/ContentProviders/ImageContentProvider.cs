@@ -8,39 +8,35 @@ using JabbR.Services;
 using JabbR.UploadHandlers;
 using Microsoft.Security.Application;
 using Ninject;
+using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR.ContentProviders
 {
     public class ImageContentProvider : CollapsibleContentProvider
     {
+        private const string ImgurClientId = "aebab8fdb4d1989";
+        private const string ImgurUploadUrl = "https://api.imgur.com/3/image.json?image={0}";
+
+        private const string format = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
+
         private readonly IKernel _kernel;
         private readonly IJabbrConfiguration _configuration;
+        private ILogger _logger;
 
         protected override async Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request)
         {
-            string format = @"<a rel=""nofollow external"" target=""_blank"" href=""{0}"" class=""imageContent""><img src=""{1}"" /></a>";
-            string imageUrl = request.RequestUri.ToString();
-            string href = imageUrl;
+            if(_logger == null)
+                _logger = _kernel.Get<ILogger>();
 
-            // Only proxy what we need to (non https images)
+            var imageUrl = request.RequestUri.ToString();
+            var href = imageUrl;
+
+            // Serve non-https images via imgur
             if (_configuration.RequireHttps &&
                 !request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
-                var uploadProcessor = _kernel.Get<UploadProcessor>();
-                var response = await Http.GetAsync(request.RequestUri);
-                string fileName = Path.GetFileName(request.RequestUri.LocalPath);
-                string contentType = GetContentType(request.RequestUri);
-                long contentLength = response.ContentLength;
-
-                using (Stream stream = response.GetResponseStream())
-                {
-                    UploadResult result = await uploadProcessor.HandleUpload(fileName, contentType, stream, contentLength);
-
-                    if (result != null)
-                    {
-                        imageUrl = result.Url;
-                    }
-                }
+                imageUrl = await Upload(imageUrl);
             }
 
             return new ContentProviderResult()
@@ -92,6 +88,83 @@ namespace JabbR.ContentProviders
             }
 
             return null;
+        }
+
+        private async Task<string> Upload(string url)
+        {
+            try
+            {
+                var request = (HttpWebRequest) WebRequest.Create(
+                    String.Format(ImgurUploadUrl, Uri.EscapeDataString(url)));
+
+                request.Method = "POST";
+                request.Headers.Set("Authorization", "Client-ID " + ImgurClientId);
+
+                var content = new MemoryStream();
+                var task = request.GetResponseAsync();
+
+                if (!task.Wait(new TimeSpan(0, 0, 5)))
+                {
+                    _logger.LogError("Upload Timeout");
+                }
+
+                using (var responseStream = task.Result.GetResponseStream())
+                {
+                    await responseStream.CopyToAsync(content);
+                }
+
+                content.Position = 0;
+                dynamic json = JObject.Parse(ReadStream(content));
+
+                return ((string) json.data.link).Replace("http://", "https://");
+            }
+            catch (WebException ex)
+            {
+                PrintWebException(ex);
+            }
+            catch (AggregateException aex)
+            {
+                if(aex.InnerException is WebException)
+                    PrintWebException(aex.InnerException as WebException);
+                else
+                    _logger.LogError(aex.InnerException.Message);
+            }
+
+            return null;
+        }
+
+        private static string ReadStream(Stream stream)
+        {
+            string content;
+            using (var reader = new StreamReader(stream))
+            {
+                content = reader.ReadToEnd();
+            }
+            stream.Close();
+            return content;
+        }
+
+        private void PrintWebException(WebException webException)
+        {
+            _logger.LogError("(ImageContentProvider)");
+
+            if (webException == null)
+                return;
+
+            _logger.LogError("(ImageContentProvider) [WebException]: " + webException);
+            try
+            {
+                var content = ReadStream(webException.Response.GetResponseStream());
+                _logger.LogError("(ImageContentProvider) Content: {0}", content);
+            }
+            catch (WebException ex)
+            {
+                _logger.LogError("(ImageContentProvider) [WebException] GetResponseStream() [WebException]: " + ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("(ImageContentProvider) [WebException] GetResponseStream() [Exception]: " + ex);
+            }
         }
     }
 }

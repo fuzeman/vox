@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using JabbR.Infrastructure;
 
@@ -13,5 +14,7 @@ namespace JabbR.ContentProviders.Core
         }
 
         public Uri RequestUri { get; private set; }
+
+        public Match Match { get; private set; }
     }
 }

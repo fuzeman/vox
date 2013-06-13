@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using JabbR.ContentProviders.Core;
 using Microsoft.Security.Application;
 using JabbR.Services;
+using System.Text.RegularExpressions;
 
 namespace JabbR.ContentProviders
 {
@@ -23,6 +24,16 @@ namespace JabbR.ContentProviders
                 Content = String.Format(@"<audio controls=""controls"" src=""{0}"">Your browser does not support the audio tag.</audio>", Encoder.HtmlAttributeEncode(url)),
                 Title = request.RequestUri.AbsoluteUri
             });
+        }
+
+        public Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request, Match match)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Match Match(Uri uri)
+        {
+            return null;
         }
 
         public IJabbrRepository Repository { get; set; }

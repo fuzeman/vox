@@ -13,19 +13,26 @@ namespace JabbR.ContentProviders.Core
     {
         public virtual Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request)
         {
-            return GetCollapsibleContent(request).Then(result =>
-            {
-                if (IsCollapsible && result != null)
-                {
-                    result.Content = String.Format(CultureInfo.InvariantCulture,
-                                                      ContentFormat,
-                                                      String.Empty,
-                                                      Encoder.HtmlEncode(result.Title),
-                                                      result.Content);
-                }
+            return GetCollapsibleContent(request).Then(result => ProcessResult(result));
+        }
 
-                return result;
-            });
+        public virtual Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request, Match match)
+        {
+            return GetCollapsibleContent(request, match).Then(result => ProcessResult(result));
+        }
+
+        private ContentProviderResult ProcessResult(ContentProviderResult result)
+        {
+            if (IsCollapsible && result != null)
+            {
+                result.Content = String.Format(CultureInfo.InvariantCulture,
+                                                  ContentFormat,
+                                                  String.Empty,
+                                                  Encoder.HtmlEncode(result.Title),
+                                                  result.Content);
+            }
+
+            return result;
         }
 
         protected virtual Regex ParameterExtractionRegex
@@ -47,11 +54,25 @@ namespace JabbR.ContentProviders.Core
                                 .Where(v => !String.IsNullOrEmpty(v)).ToList();
 
         }
-        protected abstract Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request);
+
+        protected virtual Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request, Match match)
+        {
+            throw new NotImplementedException();
+        }
 
         public virtual bool IsValidContent(Uri uri)
         {
             return false;
+        }
+
+        public virtual Match Match(Uri uri)
+        {
+            return null;
         }
 
         protected virtual bool IsCollapsible { get { return true; } }
