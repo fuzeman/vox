@@ -36,18 +36,27 @@ namespace JabbR.ContentProviders.Core
 
         private Task<ContentProviderResult> ExtractContent(ContentProviderHttpRequest request)
         {
-            var validProviders = _contentProviders.Where(c => c.IsValidContent(request.RequestUri))
-                                                  .ToList();
+            var validProviders = _contentProviders.Select(p =>
+            {
+                var match = p.Match(request.RequestUri);
+
+                return new
+                {
+                    Provider = p,
+                    Match = match,
+                    IsValid = (match != null && match.Success) || p.IsValidContent(request.RequestUri)
+                };
+            }).Where(c => c.IsValid).ToList();
 
             if (validProviders.Count == 0)
-            {
                 return TaskAsyncHelper.FromResult<ContentProviderResult>(null);
-            }
 
             var tasks = validProviders.Select(c =>
             {
-                c.Repository = _repository;
-                return c.GetContent(request);
+                c.Provider.Repository = _repository;
+                return c.Match != null ?
+                    c.Provider.GetContent(request, c.Match) :
+                    c.Provider.GetContent(request);
             }).ToArray();
 
             var tcs = new TaskCompletionSource<ContentProviderResult>();
