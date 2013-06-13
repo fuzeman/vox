@@ -88,7 +88,7 @@ namespace JabbR.ContentProviders
 
         private static async Task<string> Upload(string url)
         {
-            var request = (HttpWebRequest)WebRequest.Create(
+            var request = (HttpWebRequest) WebRequest.Create(
                 String.Format(ImgurUploadUrl, Uri.EscapeDataString(url)));
 
             request.Method = "POST";
@@ -104,13 +104,14 @@ namespace JabbR.ContentProviders
                 }
             }
 
+            content.Position = 0;
             dynamic json = JObject.Parse(ReadStream(content));
-            return ((string)json.data.link).Replace("http://", "https://");
+
+            return ((string) json.data.link).Replace("http://", "https://");
         }
 
         private static string ReadStream(Stream stream)
         {
-            stream.Position = 0;
             string content;
             using (var reader = new StreamReader(stream))
             {
