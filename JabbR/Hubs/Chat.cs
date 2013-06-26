@@ -437,6 +437,12 @@ namespace JabbR
             };
         }
 
+        public int GetMessageCount()
+        {
+            _repository.VerifyUserId(Context.User.GetUserId());
+            return _repository.GetMessageCount();
+        }
+
         public void PostNotification(ClientNotification notification)
         {
             PostNotification(notification, executeContentProviders: true);
