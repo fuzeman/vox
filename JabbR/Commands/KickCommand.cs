@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Linq;
 using JabbR.Models;
 using JabbR.Services;
+using System.Collections.Generic;
 
 namespace JabbR.Commands
 {
     [Command("kick", "Kick a user from the room. Note, this is only valid for owners of the room.",
-        "user [message...] [room] [imageUrl]", "user")]
+        "user [message...] [imageUrl]", "user")]
     public class KickCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
@@ -13,80 +15,46 @@ namespace JabbR.Commands
             if (args.Length == 0)
                 throw new InvalidOperationException("Who are you trying to kick?");
 
-            ChatUser targetUser = context.Repository.VerifyUser(args[0]);
+            var targetUser = context.Repository.VerifyUser(args[0]);
 
-            var parsedArguments = ParseArguments(context, args);
-            var imageUrl = parsedArguments.ImageUrl;
-            var room = parsedArguments.Room;
+            var parsedArguments = ParseArguments(context, args.Skip(1).ToList());
+            var room = context.Repository.VerifyRoom(callerContext.RoomName);
 
-            var messageArgumentCount = args.Length - 1;
-
-            if (imageUrl != null)
-                messageArgumentCount -= 1;
-            if (room != null)
-                messageArgumentCount -= 1;
-
-            if(room == null)
-                room = context.Repository.VerifyRoom(callerContext.RoomName);
-
-
-            string message = messageArgumentCount > 0 ? String.Join(" ", args, 1, messageArgumentCount) : null;
-
-            context.Service.KickUser(callingUser, targetUser, room, message, imageUrl);
-            context.NotificationService.KickUser(targetUser, room, message, imageUrl);
+            context.Service.KickUser(callingUser, targetUser, room, parsedArguments.Item2, parsedArguments.Item1);
+            context.NotificationService.KickUser(targetUser, room, parsedArguments.Item2, parsedArguments.Item1);
 
             context.Repository.CommitChanges();
         }
 
-        private dynamic ParseArguments(CommandContext context, string[] args)
+        private Tuple<Uri, string> ParseArguments(CommandContext context, IReadOnlyList<string> args)
         {
-            dynamic lastArgument = null;
-            if (args.Length >= 2)
-                lastArgument = ParseHybridArgument(context, args[args.Length - 1]);
+            if (args.Count == 0)
+            {
+                return new Tuple<Uri, string>(null, null);
+            }
 
-            dynamic secondToLastArgument = null;
-            if (args.Length >= 3)
-                secondToLastArgument = ParseHybridArgument(context, args[args.Length - 2]);
+            var lastArgument = ParseUri(args[args.Count - 1]);
 
             Uri imageUrl = null;
-            ChatRoom room = null;
+            string message;
 
-            if (!Object.ReferenceEquals(null, lastArgument))
+            if (lastArgument != null)
             {
-                if (lastArgument is Uri)
-                    imageUrl = (Uri)lastArgument;
-
-                if (lastArgument is ChatRoom)
-                    room = (ChatRoom)lastArgument;
+                imageUrl = lastArgument;
+                message = args.Count > 1 ? String.Join(" ", args.Take(args.Count - 1)) : null;
+            }
+            else
+            {
+                message = String.Join(" ", args);
             }
 
-            if (!Object.ReferenceEquals(null, secondToLastArgument))
-            {
-                if (secondToLastArgument is Uri)
-                    imageUrl = (Uri)secondToLastArgument;
-
-                if (secondToLastArgument is ChatRoom)
-                    room = (ChatRoom)secondToLastArgument;
-            }
-
-            return new
-            {
-                ImageUrl = imageUrl,
-                Room = room
-            };
+            return new Tuple<Uri, string>(imageUrl, message);
         }
 
-        private dynamic ParseHybridArgument(CommandContext context, string value)
+        private Uri ParseUri(string value)
         {
             Uri imageUrl;
-            if (Uri.TryCreate(value, UriKind.Absolute, out imageUrl))
-                return imageUrl;
-
-            var room = context.Repository.GetRoomByName(ChatService.NormalizeRoomName(value));
-            if (room != null)
-                return context.Repository.VerifyRoom(room.Name);
-
-            throw new InvalidOperationException("Invalid imageUrl/room argument");
+            return Uri.TryCreate(value, UriKind.Absolute, out imageUrl) ? imageUrl : null;
         }
     }
 }
