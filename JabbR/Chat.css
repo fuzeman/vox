@@ -719,6 +719,45 @@ li.room {
     cursor: default;
 }
 
+#message-ticker {
+    position: absolute;
+    right: 0;
+    bottom: 51px;
+    width: 236px;
+    z-index: 1000;
+    list-style-type: none;
+    font-size: 12px;
+    overflow: hidden;
+    margin: 0;
+    color: #555;
+}
+
+#message-ticker li {
+    border-top: 1px solid #ccc;
+    background-color: #F0F0F0;
+    padding-left: 4px;
+    display: block;
+    overflow: hidden;
+    padding-right: 2px;
+    white-space: nowrap;
+
+    -ms-text-overflow: ellipsis;
+     -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+}
+
+#message-ticker .appending .inner {
+    height: 20px;
+}
+
+#message-ticker .appending {
+    height: 0;
+}
+
+#message-ticker .highlight {
+    background-color: #fff6bd;
+}
+
 #message-box {
     position: absolute;
     left: 0;
@@ -2819,6 +2858,10 @@ h3.userlist-header {
         right: 200px;
     }
 
+    #message-ticker {
+        width: 201px;
+    }
+
     .upload-button {
         display: inline-block;
         position: absolute;
@@ -2868,6 +2911,10 @@ h3.userlist-header {
 
     #send-message {
         right: 5px;
+    }
+
+    #message-ticker {
+        width: 151px;
     }
 
     #message-total {
@@ -2928,6 +2975,14 @@ h3.userlist-header {
     .message.failed .left .state {
         margin-top: 5px;
         margin-right: 8px;
+    }
+
+    #message-ticker {
+        width: 101px;
+    }
+
+    #message-ticker .message {
+        display: none;
     }
 
     .users {

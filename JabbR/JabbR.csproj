@@ -923,6 +923,7 @@
     <EmbeddedResource Include="Migrations\201305211454564_UpstreamDbSettings_MoreClientProperties.resx">
       <DependentUpon>201305211454564_UpstreamDbSettings_MoreClientProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Chat.messageTicker.js" />
     <None Include="Scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\ba-linkify.min.js" />
     <Content Include="Scripts\bootstrap.js" />

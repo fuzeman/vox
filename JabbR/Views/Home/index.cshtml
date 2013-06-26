@@ -335,6 +335,7 @@
                 <input type="submit" id="send" value="Send" class="send btn" />
             </form>
             <div id="message-total" title="Total number of messages processed by the server."></div>
+            <ul id="message-ticker"></ul>
             <form id="upload" action="@Url.Content("~/upload")" method="post" enctype="multipart/form-data" target="upload-frame">
                 <input type="hidden" id="file-connection-id" name="connectionId" />
                 <input type="hidden" id="file-message-id" name="messageId" />
@@ -491,6 +492,7 @@
             .Add("~/Scripts/jquery.fancybox.pack.js")
             .Add("~/Scripts/jquery.easing.1.3.js")
             .Add("~/Chat.emoji.js")
+            .Add("~/Chat.messageTicker.js")
             .Add("~/Chat.utility.js")
             .Add("~/Chat.toast.js")
             .Add("~/Chat.ui.room.js")

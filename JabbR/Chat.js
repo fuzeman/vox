@@ -104,6 +104,7 @@
 
                     var messageIds = [];
                     $.each(roomInfo.RecentMessages, function () {
+                        this.isHistory = true;
                         var viewModel = getMessageViewModel(this);
 
                         messageIds.push(viewModel.id);
@@ -190,6 +191,7 @@
             highlight: (reUsername.test(message.Content) || reCustom.test(message.Content)) ? 'highlight' : '',
             isOwn: reUsername.test(message.User.name),
             isMine: message.User.Name === chat.state.name,
+            isHistory: 'isHistory' in message ? message.isHistory : false,
             imageUrl: message.ImageUrl,
             source: message.Source,
             messageType: message.MessageType

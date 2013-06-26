@@ -6,7 +6,7 @@
 /// <reference path="Scripts/moment.min.js" />
 
 /*jshint bitwise:false */
-(function ($, window, document, chat, utility, emoji, linkify) {
+(function ($, window, document, chat, utility, emoji, linkify, messageTicker) {
     "use strict";
 
     var $chatArea = null,
@@ -2045,6 +2045,8 @@
                 room.addSeparator();
             }
 
+            var currentRoomName = getCurrentRoomElements().getName();
+
             if (isNotification === true) {
                 var model = {
                     id: message.id,
@@ -2058,13 +2060,16 @@
             }
             else {
                 this.appendMessage(templates.message.tmpl(message), room);
+                
+                if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
+                    messageTicker.appendMessage(message, roomName);
+                }
             }
 
             if (message.htmlContent) {
                 ui.addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
 
-            var currentRoomName = getCurrentRoomElements().getName();
             var roomFocus = roomName == currentRoomName && focus;
 
             if (room.isInitialized()) {
@@ -2544,4 +2549,4 @@
         window.chat = {};
     }
     window.chat.ui = ui;
-})(jQuery, window, window.document, window.chat, window.chat.utility, window.Emoji, window.linkify);
+})(jQuery, window, window.document, window.chat, window.chat.utility, window.Emoji, window.linkify, window.MessageTicker);
