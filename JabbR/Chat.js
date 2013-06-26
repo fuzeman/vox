@@ -22,7 +22,9 @@
         privateRooms = null,
         mentionStrings = null,
         customMentionRegex = null,
-        currentMessageCount = 0;
+        currentMessageCount = null,
+        nextMessageCountUpdateAt = null,
+        messagesReceivedSince = 0;
 
     function failPendingMessages() {
         for (var id in pendingMessages) {
@@ -221,6 +223,28 @@
         unread = 0;
         updateUnread(chat.state.activeRoom, false);
     }
+    
+    function incrementMessageCount() {
+        updateMessageCount(1);
+    }
+    
+    function updateMessageCount(delta) {
+        delta = typeof delta !== 'undefined' ? delta : 0;
+
+        if (currentMessageCount == null || messagesReceivedSince > nextMessageCountUpdateAt) {
+            chat.server.getMessageCount()
+                .done(function(count) {
+                    currentMessageCount = count;
+                    messagesReceivedSince = delta;
+                    nextMessageCountUpdateAt = Math.floor((Math.random() * 300) + 100);
+                    console.log(nextMessageCountUpdateAt);
+                    ui.setMessageCount(currentMessageCount + messagesReceivedSince);
+                });
+        } else {
+            messagesReceivedSince += delta;
+            ui.setMessageCount(currentMessageCount + messagesReceivedSince);
+        }
+    }
 
     function updateUnread(room, isMentioned) {
         if (ui.hasFocus() === false) {
@@ -412,8 +436,7 @@
                 ui.replaceMessage(viewModel);
             } else {
                 ui.addChatMessage(viewModel, room);
-                currentMessageCount += 1;
-                ui.setMessageCount(currentMessageCount);
+                incrementMessageCount();
             }
         }, room);
 
@@ -921,8 +944,7 @@
 
             if (type == 'append') {
                 ui.addChatMessage(viewModel, clientMessage.room);
-                currentMessageCount += 1;
-                ui.setMessageCount(currentMessageCount);
+                incrementMessageCount();
             } else {
                 ui.replaceMessage(viewModel);
             }
@@ -1201,11 +1223,7 @@
                                       });
                                   
                                   // get current message count
-                                  chat.server.getMessageCount()
-                                      .done(function (count) {
-                                          currentMessageCount = count;
-                                          ui.setMessageCount(count);
-                                      });
+                                  updateMessageCount();
                               });
                           });
 
