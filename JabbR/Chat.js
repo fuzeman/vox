@@ -231,7 +231,7 @@
     function updateMessageCount(delta) {
         delta = typeof delta !== 'undefined' ? delta : 0;
 
-        if (currentMessageCount == null || messagesReceivedSince > nextMessageCountUpdateAt) {
+        if (currentMessageCount === null || messagesReceivedSince > nextMessageCountUpdateAt) {
             chat.server.getMessageCount()
                 .done(function(count) {
                     currentMessageCount = count;
