@@ -151,6 +151,11 @@ namespace JabbR.Services
             return _db.Messages.FirstOrDefault(m => m.Id == id);
         }
 
+        public int GetMessageCount()
+        {
+            return _db.Messages.Count();
+        }
+
         public IQueryable<ChatRoom> GetAllowedRooms(ChatUser user)
         {
             // All public and private rooms the user can see.

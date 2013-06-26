@@ -15,6 +15,7 @@
         $newMessage = null,
         $sendMessage = null,
         newMessageLines = 1,
+        $messageTotal = null,
         $roomActions = null,
         $toast = null,
         $disconnectDialog = null,
@@ -89,6 +90,10 @@
         roomLoadingTimeout = null,
         Room = chat.Room,
         $unreadNotificationCount = null;
+
+    function numberWithCommas (x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
     function getRoomNameFromHash(hash) {
         if (hash.length && hash[0] === '/') {
@@ -842,6 +847,7 @@
             $submitButton = $('#send');
             $newMessage = $('#new-message');
             $sendMessage = $('#send-message');
+            $messageTotal = $('#message-total');
             $roomActions = $('#room-actions');
             $toast = $('#room-preferences .toast');
             $sound = $('#room-preferences .sound');
@@ -2226,6 +2232,9 @@
         },
         setCommands: function (commands) {
             ui.commands = commands;
+        },
+        setMessageCount: function (count) {
+            $messageTotal.text(numberWithCommas(count));
         },
         setInitialized: function (roomName) {
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();

@@ -700,6 +700,25 @@ li.room {
     right: 235px;
 }
 
+#message-total {
+    position: absolute;
+    bottom: 15px;
+    right: 5px;
+    font-size: 36px;
+    font-weight: bold;
+    color: #BBB;
+
+    -webkit-touch-callout: none;
+
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+
+    cursor: default;
+}
+
 #message-box {
     position: absolute;
     left: 0;
@@ -2849,6 +2868,10 @@ h3.userlist-header {
 
     #send-message {
         right: 5px;
+    }
+
+    #message-total {
+        display: none;
     }
 
     .upload-button {

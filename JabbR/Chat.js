@@ -21,7 +21,8 @@
         pendingMessages = {},
         privateRooms = null,
         mentionStrings = null,
-        customMentionRegex = null;
+        customMentionRegex = null,
+        currentMessageCount = 0;
 
     function failPendingMessages() {
         for (var id in pendingMessages) {
@@ -411,6 +412,8 @@
                 ui.replaceMessage(viewModel);
             } else {
                 ui.addChatMessage(viewModel, room);
+                currentMessageCount += 1;
+                ui.setMessageCount(currentMessageCount);
             }
         }, room);
 
@@ -918,6 +921,8 @@
 
             if (type == 'append') {
                 ui.addChatMessage(viewModel, clientMessage.room);
+                currentMessageCount += 1;
+                ui.setMessageCount(currentMessageCount);
             } else {
                 ui.replaceMessage(viewModel);
             }
@@ -1193,6 +1198,13 @@
                                   chat.server.getShortcuts()
                                       .done(function (shortcuts) {
                                           ui.setShortcuts(shortcuts);
+                                      });
+                                  
+                                  // get current message count
+                                  chat.server.getMessageCount()
+                                      .done(function (count) {
+                                          currentMessageCount = count;
+                                          ui.setMessageCount(count);
                                       });
                               });
                           });
