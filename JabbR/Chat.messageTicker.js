@@ -26,7 +26,7 @@
             '</div></li>'
         );
         
-        if (message.highlight != "") {
+        if (message.highlight !== "") {
             $newTickerMessage.addClass('highlight');
         }
 
