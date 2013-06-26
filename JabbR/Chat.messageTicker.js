@@ -11,13 +11,18 @@
     };
 
     MessageTicker.appendMessage = function (message, roomName) {
+        var isCollapsible = message.message.indexOf('<div class="collapsible_content">') != -1;
+        var messageContent = "";
+        
+        if (!isCollapsible) {
+            messageContent = '<span class="message"> - ' + message.message + '</span>';
+        }
+
         var $newTickerMessage = $(
             '<li class="appending"><div class="inner">' +
                 '#' + roomName + ' ' +
                 message.name +
-                '<span class="message"> - ' +
-                    message.message +
-                '</span>' +
+                messageContent +
             '</div></li>'
         );
         
