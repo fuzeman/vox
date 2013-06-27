@@ -1,4 +1,4 @@
-## iceJabbR [![Build Status](https://travis-ci.org/fuzeman/JabbR.png)](https://travis-ci.org/fuzeman/JabbR)
+## iceJabbR [![Build Status](https://travis-ci.org/fuzeman/iceJabbR.png)](https://travis-ci.org/fuzeman/iceJabbR)
 iceJabbR is a chat application forked from [JabbR](https://github.com/JabbR/JabbR/) and built with ASP.NET using SignalR.
 
 iceJabbR includes a number of extra features *(not available in JabbR upstream yet)*:
