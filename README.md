@@ -1,12 +1,20 @@
-## JabbR [![Build Status](https://travis-ci.org/fuzeman/JabbR.png)](https://travis-ci.org/fuzeman/JabbR)
-JabbR is a chat application built with ASP.NET using SignalR. 
+## iceJabbR [![Build Status](https://travis-ci.org/fuzeman/JabbR.png)](https://travis-ci.org/fuzeman/JabbR)
+iceJabbR is a chat application forked from [JabbR](https://github.com/JabbR/JabbR/) and built with ASP.NET using SignalR.
 
-![jabbr.net](https://jabbr.blob.core.windows.net/jabbr-uploads/Screen%20Shot%202013-04-01%20at%207.57.53%20PM_d6a3.png)
+iceJabbR includes a number of extra features *(not available in JabbR upstream yet)*:
 
-### Features and Bugs
-If you want to discuss the features join discussion in the [meta](http://jabbr.net/#/rooms/meta) room on jabbr. 
+ - Message editing
+ - Room notification filter *- choose between all messages or mentions only*
+ - Custom mention strings *- extra user-definable strings to mark as a mention*
+ - Image lightbox
+ - Rdio provider
+ - Activity ticker *- stream of activity from other rooms*
+ - Cross-service music sharing via [Plexr](https://github.com/fuzeman/Plexr) *- displays inline music content in a users chosen service (Spotify, Rdio)*
 
-## JabbR Features and Commands
+Plus a large number of bug, usability and element alignment fixes.
+
+
+## Features and Commands
     
 ### Public and private chat rooms
 Quickly join a public chat room with
@@ -30,28 +38,41 @@ Assign a gravatar to your nick. Be recognized, even in JabbR!
 ### Content Provider Support
 Inline image and content support for your favorite sites:
 
+**Video**
+
+* Youtube
 * CollegeHumor
-* GitHub Issues
-* NuGet Packages
-* GISTs
-* Google Docs
-* Google Maps
-* imgur
-* join.me
-* NerdDinner
-* Pastie
-* SlideShare
-* Twitter
 * UStream
 * Vimeo
-* Youtube
-* BBC News
+
+**Music**
+
+* Rdio
+* Spotify
 * SoundCloud
 * MixCloud
-* Spotify
-* Rdio
-* Twitter
+
+**Office**
+
+* Pastie
+* join.me
+* SlideShare
 * Uservoice
+* Google Docs
+* Github Gists
+
+**Tech**
+
+* GitHub Issues
+* NuGet Packages
+
+**Other**
+
+* Google Maps
+* imgur
+* Twitter
+* BBC News
+* NerdDinner
 
 #### And if you ever happen to get lost...
     Type /? - to show the full list of JabbR Commands
