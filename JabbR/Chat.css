@@ -58,12 +58,13 @@ form#send-message {
 
 #room-filter-form {
     display: none;
-    margin: -4px 5px;
+    margin: 5px;
 }
 
 #room-filter-closed-area {
-    margin: 0px 5px;
+    margin: 1px 5px;
     font-size: 13px;
+    padding-top: 0;
 }
 
 #preferences a, #room-preferences a {
@@ -71,9 +72,15 @@ form#send-message {
 }
 
 #logo {
+    margin-top: 10px;
+    margin-left: 0;
+}
+
+#heading #logo {
     margin-top: 14px;
     margin-left: 80px;
     margin-right: 10px;
+    margin-bottom: 22px;
 }
 
 #topic-bar {
@@ -2311,15 +2318,24 @@ li.clearfix {
     -moz-border-radius: 5px 5px 0 0;
     -webkit-border-radius: 5px 5px 0 0;
     background-color: #00103F;
-    height: 50px;
+    height: 40px;
     margin: 0 auto;
-    padding-top: 10px;
-    padding-bottom: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     color: #FFFFFF;
 }
 
     .login-header h1 {
         font-size: 20px;
+        margin: 0 0 0 15px;
+    }
+
+    .login-header #logo {
+        margin-top: 4px;
+    }
+
+    .login-header .poweredby {
+        margin-top: 10px;
     }
 
     .account-details .flag {
