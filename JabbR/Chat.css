@@ -24,8 +24,14 @@ form#send-message {
 .jabbrLogo {
     background-image: url('Content/images/logo32.png');
     background-repeat: no-repeat;
-    width: 32px;
-    height: 32px;
+
+       -moz-background-size: 24px 24px;
+         -o-background-size: 24px 24px;
+    -webkit-background-size: 24px 24px;
+            background-size: 24px 24px;
+
+    width: 24px;
+    height: 24px;
 }
 
 .banner > div {
@@ -52,12 +58,13 @@ form#send-message {
 
 #room-filter-form {
     display: none;
-    margin: -4px 5px;
+    margin: 5px;
 }
 
 #room-filter-closed-area {
-    margin: 0px 5px;
+    margin: 1px 5px;
     font-size: 13px;
+    padding-top: 0;
 }
 
 #preferences a, #room-preferences a {
@@ -66,16 +73,22 @@ form#send-message {
 
 #logo {
     margin-top: 10px;
-    margin-left: 0px;
+    margin-left: 0;
+}
+
+#heading #logo {
+    margin-top: 14px;
+    margin-left: 80px;
+    margin-right: 10px;
+    margin-bottom: 22px;
 }
 
 #topic-bar {
     position: absolute;
     top: 60px;
     left: 0;
-    padding-top: 10px;
     width: 100%;
-    height: 30px;
+    height: 40px;
     -webkit-box-shadow: 0px 0px 2px 1px #888;
     -moz-box-shadow: 0px 0px 2px 1px #888;
     box-shadow: 0px 0px 2px 1px #888;
@@ -134,7 +147,9 @@ form#send-message {
 }
 
     #heading h1 {
-        margin-left: 5px;
+        position: absolute;
+        margin-left: 10px;
+        margin-top: 17px;
         line-height: normal;
         font-size: 20px;
     }
@@ -210,6 +225,7 @@ form#send-message {
 .roomTopic {
     position: absolute;
     margin-left: 5px;
+    margin-top: 10px;
 }
 
 .users {
@@ -2302,15 +2318,24 @@ li.clearfix {
     -moz-border-radius: 5px 5px 0 0;
     -webkit-border-radius: 5px 5px 0 0;
     background-color: #00103F;
-    height: 50px;
+    height: 40px;
     margin: 0 auto;
-    padding-top: 10px;
-    padding-bottom: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     color: #FFFFFF;
 }
 
     .login-header h1 {
         font-size: 20px;
+        margin: 0 0 0 15px;
+    }
+
+    .login-header #logo {
+        margin-top: 4px;
+    }
+
+    .login-header .poweredby {
+        margin-top: 10px;
     }
 
     .account-details .flag {
@@ -2580,7 +2605,7 @@ h3.userlist-header {
 }
 
 .account {
-    margin: 10px 10px;
+    margin: 15px;
 }
 
 .form-horizontal .label-align-left {
@@ -2611,7 +2636,8 @@ h3.userlist-header {
 }
 
 #room-actions {
-    margin-right: 10px;
+    margin-right: 14px;
+    margin-top: 7px;
     display: none;
 }
 
@@ -2722,7 +2748,7 @@ h3.userlist-header {
 .connection-status {
     float: left;
     position: relative;
-    top: 17px;
+    top: 22px;
 }
 
 .icon-connection-status {
