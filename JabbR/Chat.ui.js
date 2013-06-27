@@ -2061,6 +2061,7 @@
             else {
                 this.appendMessage(templates.message.tmpl(message), room);
                 
+                // Add message to ticker
                 if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
                     messageTicker.appendMessage(message, roomName);
                 }

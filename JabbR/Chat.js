@@ -239,7 +239,7 @@
                     currentMessageCount = count;
                     messagesReceivedSince = delta;
                     nextMessageCountUpdateAt = Math.floor((Math.random() * 300) + 100);
-                    console.log(nextMessageCountUpdateAt);
+
                     ui.setMessageCount(currentMessageCount + messagesReceivedSince);
                 });
         } else {
@@ -426,7 +426,9 @@
 
         var isMentioned = viewModel.highlight === 'highlight';
 
-        updateUnread(room, isMentioned);
+        if (!viewModel.isMine) {
+            updateUnread(room, isMentioned);
+        }
     };
 
     chat.client.addMessage = function (message, room) {
@@ -444,7 +446,9 @@
 
         var isMentioned = viewModel.highlight === 'highlight';
 
-        updateUnread(room, isMentioned);
+        if (!viewModel.isMine) {
+            updateUnread(room, isMentioned);
+        }
     };
 
     chat.client.addUser = function (user, room, isOwner) {
