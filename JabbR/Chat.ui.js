@@ -1526,39 +1526,6 @@
             // Crazy browser hack
             $hiddenFile[0].style.left = '-800px';
 
-            $.imagePaste(function (file) {
-                showUploadPreview(file, 'clipboard', function() {
-                    var name = 'clipboard-data',
-                        uploader = {
-                            submitFile: function (connectionId, room) {
-                                $fileConnectionId.val(connectionId);
-
-                                $fileRoom.val(room);
-                                $.ajax({
-                                    url: '/upload-clipboard',
-                                    dataType: 'json',
-                                    type: 'POST',
-                                    data: {
-                                        file: $imageUploadPreview.attr('src'),
-                                        room: room,
-                                        connectionId: connectionId
-                                    }
-                                }).done(function (result) {
-                                    //remove image from preview
-                                    $imageUploadPreview.attr('src', '');
-                                });
-
-                                $hiddenFile.val(''); //hide upload dialog
-                            }
-                        };
-
-                    ui.addMessage('Uploading \'' + name + '\'.', 'broadcast');
-
-                    $ui.trigger(ui.events.fileUploaded, [uploader]);
-
-                });
-            });
-
             $previewUploadButton.on('click', function () {
                 // Callback is initialized when previewUpload is
                 // created. This button is only available when

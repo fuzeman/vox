@@ -858,8 +858,8 @@
       <DependentUpon>201305211454564_UpstreamDbSettings_MoreClientProperties.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="Chat.messageTicker.js" />
-    <EmbeddedResource Include="Migrations\201306180311195_ExtendChatUserFlagLength.resx">
-      <DependentUpon>201306180311195_ExtendChatUserFlagLength.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.resx">
+      <DependentUpon>201307031047292_UpstreamExtendChatUserFlagLength.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\ba-linkify.min.js" />
@@ -990,11 +990,11 @@
     <Compile Include="Migrations\201305211454564_UpstreamDbSettings_MoreClientProperties.Designer.cs">
       <DependentUpon>201305211454564_UpstreamDbSettings_MoreClientProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\ChatUserMention.cs" />
-    <Compile Include="Migrations\201306180311195_ExtendChatUserFlagLength.cs" />
-    <Compile Include="Migrations\201306180311195_ExtendChatUserFlagLength.Designer.cs">
-      <DependentUpon>201306180311195_ExtendChatUserFlagLength.cs</DependentUpon>
+    <Compile Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.cs" />
+    <Compile Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.Designer.cs">
+      <DependentUpon>201307031047292_UpstreamExtendChatUserFlagLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\ClientNotification.cs" />
     <Compile Include="Models\Mapping\AttachmentMap.cs" />
