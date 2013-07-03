@@ -13,7 +13,7 @@ namespace JabbR.Commands
         public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
         {
             if (args.Length == 0)
-                throw new InvalidOperationException("Who are you trying to kick?");
+                throw new InvalidOperationException("Who do you want to to kick?");
 
             var targetUser = context.Repository.VerifyUser(args[0]);
 

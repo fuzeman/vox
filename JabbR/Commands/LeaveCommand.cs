@@ -12,10 +12,10 @@ namespace JabbR.Commands
 
             if (String.IsNullOrEmpty(targetRoomName))
             {
-                throw new InvalidOperationException("Which room?");
+                throw new InvalidOperationException("Which room do you want to leave?");
             }
 
-            ChatRoom room = context.Repository.VerifyRoom(targetRoomName);
+            ChatRoom room = context.Repository.VerifyRoom(targetRoomName, mustBeOpen: false);
 
             context.Service.LeaveRoom(callingUser, room);
 
