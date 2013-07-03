@@ -480,16 +480,16 @@
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
 
-        message.message = processItalics(message)
+        message.message = processItalics(message.message);
 
         if (collapseContent) {
             message.message = collapseRichContent(message.message);
         }
     }
     
-    function processItalics(message) {
+    function processItalics(content) {
         //Replaces /test/ occurrences in message with <i>test</i> so you can use italics
-        return message.message.replace(/\B\/([^\/]*?)\/\B/g, "<i>$1</i>").replace("<i></i>", "")    
+        return content.replace(/\B\/([^\/]*?)\/\B/g, "<i>$1</i>").replace("<i></i>", "");
     }
 
     function isFromCollapsibleContentProvider(content) {
