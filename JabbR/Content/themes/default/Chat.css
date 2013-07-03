@@ -593,7 +593,7 @@ li.user.typing .user-status {
 
 #tabs {
     padding: 0 0 0 0;
-    margin: 9px 90px;
+    margin: 9px 90px 9px 110px;
     left: 0;
     right: 160px;
     position: absolute;
@@ -679,7 +679,7 @@ li.user.typing .user-status {
 
         #tabs li:hover,
         #tabs li.current:hover {
-            background-color: #e5e5e5;
+            background-color: #F2F2F2;
             color: #00103f;
         }
 
@@ -2688,7 +2688,7 @@ h3.userlist-header {
 }
 
 #room-actions {
-    margin-right: 5px;
+    margin-right: 7px;
     margin-top: 8px;
     display: none;
 }
@@ -2800,14 +2800,14 @@ h3.userlist-header {
 .connection-status {
     float: left;
     position: relative;
-    top: 9px;
+    top: 7px;
 }
 
 .icon-connection-status {
     width: 6px;
     background-color: #39BF24;
     display: inline-block;
-    height: 36px;
+    height: 38px;
 }
 
 .reconnecting .icon-connection-status {
@@ -2873,11 +2873,11 @@ h3.userlist-header {
 .navbar-inner {
     min-height: 35px;
     padding: 0;
-    background: #f5f5f5;
+    background: #fff;
     box-shadow: none;
     border: 1px solid #e5e5e5;
     border-radius: 4px 4px 0 0;
-    margin: 9px 5px 0 0;
+    margin: 7px 7px 0 0;
 }
 
 .navbar .nav {
@@ -2895,12 +2895,12 @@ h3.userlist-header {
 
         .navbar .nav > li > a {
             text-shadow: none;
-            color: #00103f;
+            color: #404040;
             padding: 8px 10px 8px;
         }
 
 .navbar .nav > li > a:hover {
-                background: #e5e5e5;
+                background: #F2F2F2;
             }
 
 @media (max-width:900px) {
