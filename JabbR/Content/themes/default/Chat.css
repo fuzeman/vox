@@ -139,6 +139,7 @@ form#send-message {
     margin: 0 3px;
     padding: 5px;
     overflow: hidden;
+    line-height: 18px;
 }
 
     .upload-button input {
@@ -801,6 +802,7 @@ li.room {
     position: absolute;
     right: 0;
     width: 70px;
+    height: 30px;
     bottom: 10px;
 }
 
@@ -968,10 +970,14 @@ li.error {
     font-size: 1.25em;
 }
 
+#notifications {
+    position: relative;
+}
+
 #notification-unread-count.badge {
     display: none;
     position: absolute;
-    left: 19px;
+    right: 3px;
     top: 2px;
     font-size: 0.55em;
     padding: 0 3px;
@@ -2597,6 +2603,14 @@ pre {
     border-radius: 0;
 }
 
+.btn {
+    background-color: white;
+}
+
+.btn:hover {
+    background-color: #F2F2F2;
+}
+
 .btn-small .caret {
     margin-top: 8px;
 }
@@ -2951,16 +2965,6 @@ h3.userlist-header {
         width: 201px;
     }
 
-    .upload-button {
-        display: inline-block;
-        position: absolute;
-        right: 270px;
-        bottom: 10px;
-        margin: 0 3px;
-        padding: 5px;
-        overflow: hidden;
-    }
-
     .users {
         width: 200px;
     }
@@ -3008,16 +3012,6 @@ h3.userlist-header {
 
     #message-total {
         display: none;
-    }
-
-    .upload-button {
-        display: inline-block;
-        position: absolute;
-        right: 75px;
-        bottom: 10px;
-        margin: 0 3px;
-        padding: 5px;
-        overflow: hidden;
     }
 
     .user .details .name-container .admin {
