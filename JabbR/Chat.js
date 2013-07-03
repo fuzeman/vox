@@ -432,11 +432,12 @@
     };
 
     chat.client.addMessage = function (message, room) {
-        var viewModel = getMessageViewModel(message);
+        var viewModel = getMessageViewModel(message),
+            edited = ui.messageExists(viewModel.id);
 
         scrollIfNecessary(function () {
             // Update your message when it comes from the server
-            if (ui.messageExists(viewModel.id)) {
+            if (edited) {
                 ui.replaceMessage(viewModel);
             } else {
                 ui.addChatMessage(viewModel, room);
@@ -446,7 +447,7 @@
 
         var isMentioned = viewModel.highlight === 'highlight';
 
-        if (!viewModel.isMine) {
+        if (!viewModel.isMine && !edited) {
             updateUnread(room, isMentioned);
         }
     };
