@@ -3,7 +3,7 @@ namespace JabbR.Models.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class ExtendChatUserFlagLength : DbMigration
+    public partial class UpstreamExtendChatUserFlagLength : DbMigration
     {
         public override void Up()
         {

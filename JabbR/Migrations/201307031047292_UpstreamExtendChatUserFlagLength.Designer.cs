@@ -5,13 +5,13 @@ namespace JabbR.Models.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    public sealed partial class ExtendChatUserFlagLength : IMigrationMetadata
+    public sealed partial class UpstreamExtendChatUserFlagLength : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ExtendChatUserFlagLength));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpstreamExtendChatUserFlagLength));
         
         string IMigrationMetadata.Id
         {
-            get { return "201306180311195_ExtendChatUserFlagLength"; }
+            get { return "201307031047292_UpstreamExtendChatUserFlagLength"; }
         }
         
         string IMigrationMetadata.Source
