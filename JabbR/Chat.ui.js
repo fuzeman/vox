@@ -489,7 +489,9 @@
     
     function processItalics(content) {
         //Replaces /test/ occurrences in message with <i>test</i> so you can use italics
-        return content.replace(/\B\/([^\/]*?)\/\B/g, "<i>$1</i>").replace("<i></i>", "");
+        return content.replace("//", "7bc0ee636b3b83484fc3b9348863bd22") //Replace // with md5(//) because the regex is stupid
+                      .replace(/\s\/([^\/]*?)\/\s/g, " <i>$1</i> ") //Pad <li> with space because it captures a space either side
+                      .replace("7bc0ee636b3b83484fc3b9348863bd22", "//"); //Turn md5(//) back into //
     }
 
     function isFromCollapsibleContentProvider(content) {
