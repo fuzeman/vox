@@ -2149,7 +2149,7 @@
                 $body.append('<p>' + content + '</p>');
             }
             else {
-                $middle.append(processRichContent(content));
+                $middle.append(processRichContent($(content)));
             }
             
             // Fancybox
