@@ -474,7 +474,9 @@
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
 
-        //message.message = processItalics(message.message);
+        if (!message.isHistory) {
+            message.message = processItalics(message.message);
+        }
 
         if (collapseContent) {
             message.message = collapseRichContent(message.message);
@@ -1939,6 +1941,7 @@
 
             // Mark the user as typing
             $user.addClass('typing');
+            $(".user-status-container", $user).addClass('animated pulse');
             var oldTimeout = $user.data('typing');
 
             if (oldTimeout) {
@@ -1947,6 +1950,7 @@
 
             timeout = window.setTimeout(function () {
                 $user.removeClass('typing');
+                $(".user-status-container", $user).removeClass('animated pulse');
             },
             3000);
 
