@@ -539,7 +539,7 @@ form#send-message {
 }
 
 .user-status {
-    background-color: #39BF24;
+    background-color: #0ACF00;
     display: inline-block;
     width: 3px;
     height: 16px;
@@ -558,7 +558,7 @@ form#send-message {
 }
 
 .users .idle .user-status {
-    background-color: #BFBC24;
+    background-color: #ffaa22;
 }
 
 .users .details {
@@ -2814,17 +2814,17 @@ h3.userlist-header {
 
 .icon-connection-status {
     width: 6px;
-    background-color: #39BF24;
+    background-color: #0ACF00;
     display: inline-block;
     height: 38px;
 }
 
 .reconnecting .icon-connection-status {
-    background-color: #BFBC24;
+    background-color: #ffaa22;
 }
 
 .disconnected .icon-connection-status {
-    background-color: #BF2424;
+    background-color: #FF2222;
 }
 
 #connection-info-popover .popover-title-icon {
