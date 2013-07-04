@@ -474,7 +474,7 @@
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
 
-        message.message = processItalics(message.message);
+        //message.message = processItalics(message.message);
 
         if (collapseContent) {
             message.message = collapseRichContent(message.message);
