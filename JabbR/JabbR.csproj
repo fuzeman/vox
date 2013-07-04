@@ -228,9 +228,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
-    <Content Include="App\client.js" />
+    <Content Include="App\jabbr\client.js" />
+    <Content Include="App\jabbr\components\help.js" />
     <Content Include="App\main.js" />
-    <Content Include="App\ui.js" />
+    <Content Include="App\jabbr\state.js" />
+    <Content Include="App\jabbr\ui.js" />
+    <Content Include="App\plugins\noext.js" />
     <Content Include="Content\animate.min.css" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />

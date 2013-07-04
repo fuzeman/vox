@@ -470,6 +470,9 @@
         </section>
     </section>
     <div id="paste" contenteditable="true" style="height: 1px; width: 1px;"></div>
+    <script type="text/javascript">
+        window.jabbrVersion = '@Model.Version';
+    </script>
     @{
         WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
             .Add("~/Scripts/require.js")
@@ -487,9 +490,6 @@
 //            .Render("~/Scripts/JabbR1_#.js"));
     }
     <!--<script type="text/javascript" src="@Url.Content("~/signalr/hubs")"></script>-->
-    <script type="text/javascript">
-        window.jabbrVersion = '@Model.Version';
-    </script>
     @{
 //        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
 //            .Add("~/Scripts/jQuery.tmpl.min.js")
