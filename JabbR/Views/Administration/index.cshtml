@@ -1,7 +1,9 @@
-﻿@using SquishIt.Framework;
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationSettings>
+
+@using SquishIt.Framework;
 @using JabbR
+@using JabbR.ViewModels
 @using JabbR.Services
-@model ApplicationSettings
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">

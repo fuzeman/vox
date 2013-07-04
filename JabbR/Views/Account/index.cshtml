@@ -1,6 +1,9 @@
-﻿@using JabbR
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ProfilePageViewModel>
+
+@using System
+@using System.Linq
+@using JabbR
 @using JabbR.ViewModels
-@model ProfilePageViewModel
 
 @{
     var userModel = Model;

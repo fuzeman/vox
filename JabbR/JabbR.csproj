@@ -228,6 +228,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
+    <Content Include="App\client.js" />
+    <Content Include="App\main.js" />
+    <Content Include="App\ui.js" />
     <Content Include="Content\animate.min.css" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
@@ -908,6 +911,7 @@
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
     <Content Include="Content\themes\default\Chat.dictionary.css" />
+    <Content Include="Scripts\require.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

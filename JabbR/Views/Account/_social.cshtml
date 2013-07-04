@@ -1,13 +1,7 @@
-﻿@using System;
-@using System.Linq;
-@using JabbR;
-@using JabbR.Infrastructure;
-@using JabbR.Models;
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<SocialLoginViewModel>
 @using JabbR.ViewModels;
-@using Nancy;
-@using Nancy.Helpers;
-@model SocialLoginViewModel
-    <div class="control-group">
+
+<div class="control-group">
         <div class="controls">
             <form action="@Url.Content("~/account/unlink")" method="POST">
                 <div class="row">
