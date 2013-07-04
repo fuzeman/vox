@@ -18,5 +18,13 @@ namespace JabbR.Hubs
             _logger.LogError("{0}: Failure while invoking '{1}'.", context.Hub.Context.Request.User.GetUserId(), context.MethodDescriptor.Name);
             _logger.Log(ex);
         }
+
+        protected override bool OnBeforeAuthorizeConnect(HubDescriptor hubDescriptor, Microsoft.AspNet.SignalR.IRequest request)
+        {
+            _logger.Log("OnBeforeAuthorizeConnect " + 
+                "RemoteIpAddress:\"" + request.Environment["server.RemoteIpAddress"] + "\" " + 
+                "User-Agent: \"" + request.Headers["User-Agent"] + "\"");
+            return base.OnBeforeAuthorizeConnect(hubDescriptor, request);
+        }
     }
 }
