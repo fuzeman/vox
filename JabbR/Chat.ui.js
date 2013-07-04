@@ -1939,6 +1939,7 @@
 
             // Mark the user as typing
             $user.addClass('typing');
+            $(".user-status-container", $user).addClass('animated pulse');
             var oldTimeout = $user.data('typing');
 
             if (oldTimeout) {
@@ -1947,6 +1948,7 @@
 
             timeout = window.setTimeout(function () {
                 $user.removeClass('typing');
+                $(".user-status-container", $user).removeClass('animated pulse');
             },
             3000);
 

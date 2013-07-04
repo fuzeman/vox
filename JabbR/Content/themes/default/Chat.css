@@ -517,13 +517,6 @@ form#send-message {
         margin-right: 43px;
     }
 
-    .users li.typing {
-        background-image: url('../../images/typing.png');
-        background-repeat: no-repeat;
-        background-position: 5px 12px;
-        background-size: 12px auto;
-    }
-
     .users li.room.locked .lock {
         position: relative;
         width: 19px;
@@ -550,16 +543,18 @@ form#send-message {
     display: inline-block;
     width: 3px;
     height: 16px;
-}   
+}
 
-li.user.typing .user-status {
-    border: inherit;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    background: none;
-    padding-left: 5px;
-    padding-right: 5px;
+.users .typing .user-status {
+    background-color: #000;
+}
+
+.users .typing .user-status-container {
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -ms-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
 }
 
 .users .idle .user-status {

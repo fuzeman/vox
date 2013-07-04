@@ -228,6 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
+    <Content Include="Content\animate.min.css" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Chat.documentOnWrite.js" />
@@ -788,7 +789,6 @@
     <Content Include="Content\images\sound-off.png" />
     <Content Include="Content\images\sound-on.png" />
     <Content Include="Content\images\twitter_white.png" />
-    <Content Include="Content\images\typing.png" />
     <Content Include="Content\images\Clippy.png" />
     <Content Include="Content\images\StopWatch.png" />
     <Content Include="Content\images\unlink.png" />
