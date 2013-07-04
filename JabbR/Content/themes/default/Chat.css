@@ -539,7 +539,7 @@ form#send-message {
 }
 
 .user-status {
-    background-color: #268a16;
+    background-color: #39BF24;
     display: inline-block;
     width: 3px;
     height: 16px;
@@ -558,7 +558,7 @@ form#send-message {
 }
 
 .users .idle .user-status {
-    background-color: #ffaa22;
+    background-color: #BFBC24;
 }
 
 .users .details {
