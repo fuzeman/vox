@@ -3,10 +3,11 @@
     'jabbr/client',
     'jabbr/components/rooms.ui',
     'jabbr/utility'
-], function (state, client, rooms, utility) {
+], function (state, client, ru, utility) {
     console.log('[jabbr/ui]');
     
-    var $hiddenFile = $('#hidden-file'),
+    var $window = $(window),
+        $hiddenFile = $('#hidden-file'),
         $submitButton = $('#send'),
         $newMessage = $('#new-message'),
         $fileUploadButton = $('.upload-button');
@@ -76,11 +77,11 @@
     
     // Room
 
-    rooms.bind(rooms.events.activateRoom, function(event, activateRoom) {
+    ru.bind(ru.events.activateRoom, function(event, activateRoom) {
         toggleMessageSection(activateRoom.isClosed());
     });
 
-    rooms.bind(rooms.events.focusRoom, function() {
+    ru.bind(ru.events.focus, function() {
         triggerFocus();
     });
 
@@ -97,28 +98,28 @@
     });
 
     client.bind(client.events.logOn, function (event, currentRooms) {
-        rooms.addRooms(currentRooms);
+        ru.addRooms(currentRooms);
 
         // Process any urls that may contain room names
-        rooms.openRoomFromHash();
+        ru.openRoomFromHash();
 
         // Otherwise set the active room
-        rooms.setActiveRoom(state.get().activeRoom || 'Lobby');
+        ru.setActiveRoom(state.get().activeRoom || 'Lobby');
         
         var loadRooms = function () {
             $.each(currentRooms, function (index, loadRoom) {
                 if (client.chat.state.activeRoom !== loadRoom.Name) {
-                    rooms.client.populateRoom(loadRoom.Name);
+                    ru.client.populateRoom(loadRoom.Name);
                 }
             });
         };
         
         // Populate lobby rooms for intellisense
-        rooms.lobby.updateRooms();
+        ru.lobby.updateRooms();
         
         if (state.get().activeRoom) {
             // Always populate the active room first then load the other rooms so it looks fast :)
-            rooms.client.populateRoom(state.get().activeRoom).done(loadRooms);
+            ru.client.populateRoom(state.get().activeRoom).done(loadRooms);
         }
         else {
             // There's no active room so we don't care
@@ -126,6 +127,18 @@
         }
     });
     
+    // DOM
+    
+    $window.focus(function () {
+        // clear unread count in active room
+        var room = ru.getCurrentRoomElements();
+        room.makeActive();
+
+        if (!focus) {
+            triggerFocus();
+        }
+    });
+
     return {
     }
 });

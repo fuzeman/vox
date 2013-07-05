@@ -21,7 +21,7 @@
 
     var events = {
         activateRoom: 'jabbr.components.rooms.ui.activateRoom',
-        focusRoom: 'jabbr.components.rooms.ui.focusRoom',
+        focus: 'jabbr.components.rooms.ui.focus',
     };
 
     var $document = $(document),
@@ -242,7 +242,7 @@
             $this.trigger(events.activateRoom, room);
 
             rc.activeRoomChanged(roomName);
-            $this.trigger(events.focusRoom, room);
+            $this.trigger(events.focus, room);
 
             return true;
         }

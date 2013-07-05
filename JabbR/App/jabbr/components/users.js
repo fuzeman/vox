@@ -43,6 +43,10 @@
         return user;
     }
     
+    function get(user) {
+        
+    }
+    
     function remove(user, roomName) {
         var room = ru.getRoomElements(roomName),
             $user = room.getUser(user.Name);
