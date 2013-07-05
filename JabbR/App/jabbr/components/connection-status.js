@@ -2,10 +2,12 @@
     'jabbr/client',
     'jabbr/ui',
     'jquery',
+    'logger',
         
     'bootstrap'
-], function (client, ui, $) {
-    console.log('[jabbr/components/connection-status]');
+], function (client, ui, $, Logger) {
+    var logger = new Logger('jabbr/components/connection-status');
+    logger.trace('loaded');
 
     var $connectionStatus = $('#connectionStatus'),
         $connectionStateChangedPopover = $('#connection-state-changed-popover'),
@@ -103,14 +105,14 @@
     }
 
     client.bind(client.events.reconnecting, function(event, change, initial) {
-        console.log('[jabbr/connection-status] reconnecting');
+        logger.info('reconnecting');
 
         //failPendingMessages();
         showStatus(1, '');
     });
     
     client.bind(client.events.connected, function(event, change, initial) {
-        console.log('[jabbr/connection-status] connected');
+        logger.info('connected');
 
         if (!initial) {
             showStatus(0, $.connection.hub.transport.name);

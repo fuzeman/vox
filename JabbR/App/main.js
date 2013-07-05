@@ -52,14 +52,19 @@
 });
 
 window.onload = function() {
-    require(['jquery.signalr'], function(signalr) {
+    require(['jquery.signalr', 'logger'], function (signalr, Logger) {
+        var logger = new Logger('main');
+        logger.trace('loading');
+        
         require(['jabbr/client', 'jabbr/ui'], function (client, ui) {
+            
             require([
                 'jabbr/components/connection-status',
                 'jabbr/components/rooms.ui'
-            ], function() {
+            ], function () {
+                
                 client.bind(client.events.started, function() {
-                    console.log('started');
+                    logger.trace('started');
 
                     require([
                         'jabbr/components/help'

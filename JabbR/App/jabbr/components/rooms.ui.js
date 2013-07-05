@@ -8,14 +8,16 @@
     'jabbr/components/users',
     'jabbr/components/lobby',
     'jabbr/components/messages',
+    'logger',
     
     'jquery-migrate',
     'jquery.history',
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function(client, state, templates, Room, Message, rc, users, lobby, messages) {
-    console.log('[jabbr/components/rooms.ui]');
+], function (client, state, templates, Room, Message, rc, users, lobby, messages, Logger) {
+    var logger = new Logger('jabbr/components/rooms.ui');
+    logger.trace('loaded');
 
     var ru = {};
 
@@ -185,7 +187,7 @@
     // Room Navigation/Loading
 
     function activateOrOpenRoom(roomName) {
-        console.log('[jabbr/components/rooms.ui] activateOrOpenRoom(' + roomName + ')')
+        logger.trace('activateOrOpenRoom(' + roomName + ')')
         var room = getRoomElements(roomName);
         
         if (room.exists()) {
@@ -196,7 +198,7 @@
     }
 
     function setActiveRoom(roomName) {
-        console.log('setActiveRoom(' + roomName + ')');
+        logger.trace('setActiveRoom(' + roomName + ')');
 
         var hash = (document.location.hash || '#').substr(1),
             hashRoomName = rc.getRoomNameFromHash(hash);
@@ -283,7 +285,7 @@
     function addRoom(roomViewModel) {
         // Do nothing if the room exists
         var roomName = roomViewModel.Name;
-        console.log("adding room: " + roomName);
+        logger.trace("addRoom(" + roomName + ")");
 
         var room = getRoomElements(roomViewModel.Name),
             roomId = null,
@@ -447,7 +449,7 @@
     // Client
 
     client.bind(client.events.updateUnread, function (event, roomName, isMentioned) {
-        console.log("updateUnread(" + roomName + ", " + isMentioned + ")");
+        logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
         var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
         if (focus && room.isActive()) {

@@ -1,6 +1,10 @@
 ﻿define([
-    'jabbr/viewmodels/user'
-], function (User) {
+    'jabbr/viewmodels/user',
+    'logger'
+], function (User, Logger) {
+    var logger = new Logger('jabbr/components/users');
+    logger.trace('loaded');
+
     // Templates
     var templates = {
         user: $('#new-user-template'),
@@ -13,7 +17,7 @@
     var ru = null;
 
     function add(userdata, roomName) {
-        console.log("addUser(" + userdata + ", " + roomName + ")");
+        logger.trace("addUser(" + userdata + ", " + roomName + ")");
 
         var user = new User(ru, userdata);
 

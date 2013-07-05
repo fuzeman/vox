@@ -1,11 +1,16 @@
-﻿define(['jabbr/client', 'jabbr/ui'], function(client, ui) {
-    console.log('[jabbr/components/help]');
+﻿define([
+    'jabbr/client',
+    'jabbr/ui',
+    'logger'
+], function (client, ui, Logger) {
+    var logger = new Logger('jabbr/components/help');
+    logger.trace('loaded');
 
     client.chat.server.getCommands().done(function(commands) {
-        //console.log(commands);
+        logger.trace("loaded " + commands.length + " commands");
     });
 
     client.chat.server.getShortcuts().done(function(shortcuts) {
-        //console.log(shortcuts);
+        logger.trace("loaded " + shortcuts.length + " shortcuts");
     });
 });

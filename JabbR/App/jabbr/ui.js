@@ -2,9 +2,11 @@
     'jabbr/state',
     'jabbr/client',
     'jabbr/components/rooms.ui',
-    'jabbr/utility'
-], function (state, client, ru, utility) {
-    console.log('[jabbr/ui]');
+    'jabbr/utility',
+    'logger'
+], function (state, client, ru, utility, Logger) {
+    var logger = new Logger('jabbr/ui');
+    logger.trace('loaded');
     
     var $window = $(window),
         $hiddenFile = $('#hidden-file'),

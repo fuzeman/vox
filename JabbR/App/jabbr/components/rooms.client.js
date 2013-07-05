@@ -1,9 +1,11 @@
 ﻿define([
     'jabbr/client',
     'jabbr/ui',
-    'jabbr/state'
-], function (client, ui, state) {
-    console.log('[jabbr/components/rooms.client]');
+    'jabbr/state',
+    'logger'
+], function (client, ui, state, Logger) {
+    var logger = new Logger('jabbr/components/rooms.client');
+    logger.trace('loaded');
 
     var events = {        
         scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
@@ -108,7 +110,7 @@
         populateRoom: populateRoom,
         
         joinRoom: function (roomName) {
-            console.log('joinRoom(' + roomName + ')');
+            logger.trace('joinRoom(' + roomName + ')');
             try {
                 client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
                     .fail(function (e) {
@@ -120,7 +122,7 @@
             }
         },
         leaveRoom: function (roomName) {
-            console.log('leaveRoom(' + roomName + ')');
+            logger.trace('leaveRoom(' + roomName + ')');
             try {
                 client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
                     .fail(function (e) {

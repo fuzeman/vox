@@ -1,10 +1,13 @@
 ﻿define([
-    'jquery',    
+    'jquery',
+    'logger',
+    
     'jquery.cookie',
     'jquery.signalr',
     'noext!signalr/hubs'
-], function($) {
-    console.log('[jabbr/client]');
+], function ($, Logger) {
+    var logger = new Logger('jabbr/client');
+    logger.trace('loaded');
 
     var events = {
         started: 'jabbr.client.started',
@@ -73,7 +76,7 @@
     //
 
     chat.client.logOn = function(rooms, myRooms, mentions) {
-        console.log('[jabbr/client] logOn');
+        logger.trace('logOn');
 
         privateRooms = myRooms;
 
@@ -147,7 +150,7 @@
         start: function() {
             connection.hub.start(options).done(function() {
                 chat.server.join().fail(function(e) {
-                    console.log('[jabbr/client] join failed');
+                    logger.warn('join failed');
                 }).done(function() {
                     $this.trigger(events.started);
                 });

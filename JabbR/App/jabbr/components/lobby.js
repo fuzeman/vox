@@ -1,8 +1,10 @@
 ﻿define([
     'jabbr/client',
     'jabbr/state',
-], function (client, state) {
-    console.log('[jabbr/components/lobby]');
+    'logger'
+], function (client, state, Logger) {
+    var logger = new Logger('jabbr/components/lobby');
+    logger.trace('loaded');
 
     var $roomFilterInput = $('#room-filter'),
         $closedRoomFilter = $('#room-filter-closed'),
