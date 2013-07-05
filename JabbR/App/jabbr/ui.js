@@ -71,7 +71,7 @@
     }
 
     //
-    // Event Handlers
+    // Event Handlersl
     //
     
     // Room
@@ -105,24 +105,24 @@
         // Otherwise set the active room
         rooms.setActiveRoom(state.get().activeRoom || 'Lobby');
         
+        var loadRooms = function () {
+            $.each(currentRooms, function (index, loadRoom) {
+                if (client.chat.state.activeRoom !== loadRoom.Name) {
+                    rooms.client.populateRoom(loadRoom.Name);
+                }
+            });
+        };
+        
+        // Populate lobby rooms for intellisense
+        rooms.lobby.updateRooms();
+        
         if (state.get().activeRoom) {
-            // Populate lobby rooms for intellisense
-            rooms.lobby.updateRooms();
-            
-            var loadRooms = function () {
-                $.each(currentRooms, function (index, loadRoom) {
-                    if (client.chat.state.activeRoom !== loadRoom.Name) {
-                        rooms.client.populateRoom(loadRoom.Name);
-                    }
-                });
-            };
-
             // Always populate the active room first then load the other rooms so it looks fast :)
             rooms.client.populateRoom(state.get().activeRoom).done(loadRooms);
         }
         else {
             // There's no active room so we don't care
-            rooms.loadRooms();
+            loadRooms();
         }
     });
     

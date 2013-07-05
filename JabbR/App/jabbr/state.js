@@ -21,8 +21,6 @@
             };
             var jsonState = window.JSON.stringify(newState);
 
-            console.log('saving new state: ' + newState);
-
             $.cookie('jabbr.state', jsonState, { path: '/', expires: 30 });
         }
     };
