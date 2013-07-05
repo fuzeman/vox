@@ -20,7 +20,8 @@
         'markdown': '../Scripts/Markdown.Converter',
         'moment': '../Scripts/moment.min',
         'livestamp': '../Scripts/livestamp.min',
-        'linkify': '../Scripts/ba-linkify.min'
+        'linkify': '../Scripts/ba-linkify.min',
+        'stacktrace': '../Scripts/stacktrace-min-0.4'
     },
 
     shim: {
@@ -44,6 +45,9 @@
         'linkify': {
             exports: 'linkify'
         },
+        'stacktrace': {
+            exports: 'printStackTrace'
+        },
         
         'noext!signalr/hubs': {
             deps: ['jquery', 'jquery.signalr']
@@ -53,6 +57,8 @@
 
 window.onload = function() {
     require(['jquery.signalr', 'logger'], function (signalr, Logger) {
+        Logger.prototype.traceEnabled = true;
+
         var logger = new Logger('main');
         logger.trace('loading');
         

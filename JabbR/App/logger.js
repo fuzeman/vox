@@ -1,7 +1,11 @@
-﻿define([], function() {
+﻿define([
+    'stacktrace'
+], function () {
     function Logger(tag) {
         this.tag = tag;
     }
+
+    Logger.prototype.traceEnabled = false;
 
     var levels = {
         TRACE: 0,
@@ -55,12 +59,69 @@
 
         return replicate(len - text.length, ch) + text;
     }
+    
+    function getCaller() {
+        var trace = printStackTrace();
+        var foundLoggerTrace = false;
+        var callerTrace = null;
+        
+        for (var i = 0; i < trace.length; i++) {
+            if (!foundLoggerTrace) {
+                if (trace[i].indexOf('Logger.prototype.write@') != -1) {
+                    foundLoggerTrace = true;
+                }
+            } else {
+                if (trace[i].indexOf('Logger.prototype') == -1) {
+                    callerTrace = trace[i];
+                    break;
+                }
+            }
+        }
+        
+        if (callerTrace != null) {
+            var split = callerTrace.split('@http://');
+            
+            if (split.length != 2) {
+                return null;
+            }
 
-    Logger.prototype.write = function(level, message) {
-        console.log("[" + padRight(this.tag, 32) + "] (" + padRight(toLevelString(level), 5) + ") " + message);
+            var lineNumberSepPos = split[1].lastIndexOf(':');
+
+            var name = split[0];
+            var path = split[1].slice(split[1].indexOf('/'), lineNumberSepPos);
+            var filename = path.slice(path.lastIndexOf('/') + 1);
+            var line = split[1].slice(lineNumberSepPos + 1);
+            
+            return {
+                name: name,
+                path: path,
+                filename: filename,
+                line: line
+            }
+        }
+
+
+        return null;
+    }
+
+    Logger.prototype.write = function (level, message) {
+        if (this.traceEnabled) {
+            var caller = getCaller();
+            
+            console.log(
+                "[" + padRight(this.tag, 32) + "]  " +
+                "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
+                "(" + padRight(toLevelString(level), 5) + ")    " + message
+            );
+        } else {
+            console.log(
+                "[" + padRight(this.tag, 32) + "]  " +
+                "(" + padRight(toLevelString(level), 5) + ")    " + message
+            );
+        }
     }
     
-    Logger.prototype.trace = function(message) {
+    Logger.prototype.trace = function (message) {
         this.write(levels.TRACE, message);
     }
     

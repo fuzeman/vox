@@ -929,6 +929,7 @@
     <Content Include="Scripts\qunit.js" />
     <Content Include="Content\themes\default\Chat.dictionary.css" />
     <Content Include="Scripts\require.js" />
+    <Content Include="Scripts\stacktrace-min-0.4.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
