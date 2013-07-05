@@ -444,7 +444,8 @@
 
     // Client
 
-    events.bind(events.ui.updateUnread, function (event, roomName, isMentioned) {
+    events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
+        console.log(event);
         logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
         var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 

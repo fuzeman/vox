@@ -16,7 +16,10 @@
         $fileUploadButton = $('.upload-button');
 
     var readOnly = false,
-        focus = true;
+        focus = true,
+        originalTitle = document.title,
+        unread = 0,
+        isUnreadMessageForUser = false;
     
     //
     // Private Functions
@@ -73,10 +76,51 @@
             client.focus();
         }
     }
+    
+    function updateUnread(room, isMentioned) {
+        room = typeof room !== 'undefined' ? room : client.chat.state.activeRoom;
+        isMentioned = typeof isMentioned !== 'undefined' ? isMentioned : false;
+
+        clearUnread();
+
+        if (focus === false) {
+            isUnreadMessageForUser = (isUnreadMessageForUser || isMentioned);
+
+            unread = unread + 1;
+        } else {
+            //we're currently focused so remove
+            //the * notification
+            isUnreadMessageForUser = false;
+        }
+
+        events.trigger(events.rooms.ui.updateUnread, [room, isMentioned]);
+
+        updateTitle();
+    }
+
+    function clearUnread() {
+        isUnreadMessageForUser = false;
+        unread = 0;
+    }
+
+    function updateTitle() {
+        // ugly hack via http://stackoverflow.com/a/2952386/188039
+        setTimeout(function () {
+            if (unread === 0) {
+                document.title = originalTitle;
+            } else {
+                document.title = (isUnreadMessageForUser ? '*' : '') + '(' + unread + ') ' + originalTitle;
+            }
+        }, 200);
+    }
 
     //
-    // Event Handlersl
+    // Event Handlers
     //
+
+    events.bind(events.ui.clearUnread, clearUnread);
+    events.bind(events.ui.updateUnread, updateUnread);
+    events.bind(events.ui.updateTitle, updateTitle);
     
     // Room
 

@@ -28,13 +28,16 @@
         
         ui: {
             // Handles
-            updateUnread: 'jabbr.ui.updateUnread'
+            clearUnread: 'jabbr.core.ui.clearUnread',
+            updateUnread: 'jabbr.core.ui.updateUnread',
+            updateTitle: 'jabbr.core.ui.updateTitle',
             
             // Emits
         },
         
         rooms: {
             ui: {
+                updateUnread: 'jabbr.components.rooms.ui.updateUnread',
                 activateRoom: 'jabbr.components.rooms.ui.activateRoom',
             },
             client: {

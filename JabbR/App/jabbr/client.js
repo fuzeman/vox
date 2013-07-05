@@ -17,48 +17,11 @@
         options = {},
         initial = true;
 
-    var originalTitle = document.title,
-        privateRooms = null,
-        unread = 0,
-        isUnreadMessageForUser = false;
+    var privateRooms = null;
     
     //
     // Private Functions
     //
-    
-    function updateUnread(room, isMentioned) {
-        if (ui.focus === false) {
-            isUnreadMessageForUser = (isUnreadMessageForUser || isMentioned);
-
-            unread = unread + 1;
-        } else {
-            //we're currently focused so remove
-            //the * notification
-            isUnreadMessageForUser = false;
-        }
-
-        events.trigger(events.ui.updateUnread, [room, isMentioned]);
-        //ui.updateUnread(room, isMentioned);
-
-        updateTitle();
-    }
-    
-    function clearUnread() {
-        isUnreadMessageForUser = false;
-        unread = 0;
-        updateUnread(chat.state.activeRoom, false);
-    }
-    
-    function updateTitle() {
-        // ugly hack via http://stackoverflow.com/a/2952386/188039
-        setTimeout(function () {
-            if (unread === 0) {
-                document.title = originalTitle;
-            } else {
-                document.title = (isUnreadMessageForUser ? '*' : '') + '(' + unread + ') ' + originalTitle;
-            }
-        }, 200);
-    }
 
     //
     // Chat Event Handlers
@@ -135,7 +98,7 @@
     }
     
     function focused() {
-        clearUnread();
+        events.trigger(events.ui.updateUnread);
 
         try {
             chat.server.updateActivity();
