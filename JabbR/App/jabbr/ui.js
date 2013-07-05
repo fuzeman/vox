@@ -1,10 +1,9 @@
 ﻿define([
     'jabbr/state',
     'jabbr/client',
-    'jabbr/models/user',
-    'jabbr/components/room.ui',
+    'jabbr/components/rooms.ui',
     'jabbr/utility'
-], function (state, client, user, room, utility) {
+], function (state, client, rooms, utility) {
     console.log('[jabbr/ui]');
     
     var $hiddenFile = $('#hidden-file'),
@@ -77,11 +76,11 @@
     
     // Room
 
-    room.bind(room.events.activateRoom, function(event, activateRoom) {
+    rooms.bind(rooms.events.activateRoom, function(event, activateRoom) {
         toggleMessageSection(activateRoom.isClosed());
     });
 
-    room.bind(room.events.focusRoom, function() {
+    rooms.bind(rooms.events.focusRoom, function() {
         triggerFocus();
     });
 
@@ -97,12 +96,34 @@
         setReadOnly(true);
     });
 
-    client.bind(client.events.logOn, function (event, rooms) {
-        room.addRooms(rooms);
+    client.bind(client.events.logOn, function (event, currentRooms) {
+        rooms.addRooms(currentRooms);
 
-        room.openRoomFromHash();
+        // Process any urls that may contain room names
+        rooms.openRoomFromHash();
 
-        room.setActiveRoom(state.get().activeRoom || 'Lobby');
+        // Otherwise set the active room
+        rooms.setActiveRoom(state.get().activeRoom || 'Lobby');
+        
+        if (state.get().activeRoom) {
+            // Populate lobby rooms for intellisense
+            rooms.lobby.updateRooms();
+            
+            var loadRooms = function () {
+                $.each(currentRooms, function (index, loadRoom) {
+                    if (client.chat.state.activeRoom !== loadRoom.Name) {
+                        rooms.populateRoom(loadRoom.Name);
+                    }
+                });
+            };
+
+            // Always populate the active room first then load the other rooms so it looks fast :)
+            rooms.client.populateRoom(state.get().activeRoom).done(loadRooms);
+        }
+        else {
+            // There's no active room so we don't care
+            rooms.loadRooms();
+        }
     });
     
     return {

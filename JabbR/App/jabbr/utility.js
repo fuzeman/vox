@@ -1,8 +1,12 @@
 ﻿define([
     'jquery',
     'jabbr/components/emoji',
-    'markdown'
+    'markdown',
+    'moment',
+    'linkify'
 ], function ($, emoji) {
+    var utility = {};
+
     // getting the browser's name for use in isMobile
     var nav = navigator.userAgent || navigator.vendor || window.opera;
 
@@ -158,7 +162,7 @@
         }
     }
 
-    return {
+    utility = {
         trim: function (value, length) {
             if (value.length > length) {
                 return value.substr(0, length - 3) + '...';
@@ -189,4 +193,6 @@
         newId: guidGenerator,
         processContent: processContent
     };
+
+    return utility;
 });

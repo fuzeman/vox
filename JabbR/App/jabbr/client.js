@@ -138,8 +138,12 @@
         connection: connection,
         chat: chat,
         
-        initial: function() {
+        getInitial: function() {
             return initial;
+        },
+        
+        getPrivateRooms: function() {
+            return privateRooms;
         },
 
         start: function() {

@@ -248,14 +248,13 @@
         }
     };
 
-    Room.prototype.addUser = function(userViewModel, $user) {
-        if (userViewModel.owner) {
-            this.addUserToList($user, this.owners);
+    Room.prototype.addUser = function (user) {
+        if (user.owner) {
+            this.addUserToList(user.$user, this.owners);
         } else {
-            this.changeIdle($user, userViewModel.active);
+            this.changeIdle(user.$user, user.active);
 
-            this.addUserToList($user, this.activeUsers);
-
+            this.addUserToList(user.$user, this.activeUsers);
         }
     };
 

@@ -1,16 +1,19 @@
 ﻿define([
     'jabbr/client',
     'jabbr/ui',
-    'jabbr/state',
+    'jabbr/state'
 ], function (client, ui, state) {
-    console.log('[jabbr/components/room.client]');
+    console.log('[jabbr/components/rooms.client]');
 
     var events = {        
-        activateRoom: 'jabbr.components.room.client.activateRoom'
+        activateRoom: 'jabbr.components.rooms.client.activateRoom',
+        addUser: 'jabbr.components.rooms.client.addUser',
+        createMessage: 'jabbr.components.rooms.client.addMessage'
     };
 
     var $this = $(this),
         messageHistory = {},
+        messageIds = [],
         historyLocation = 0;
     
     //
@@ -19,6 +22,50 @@
 
     function getRoomPreferenceKey(roomName) {
         return '_room_' + roomName;
+    }
+    
+    function populateRoom(room) {
+        var d = $.Deferred();
+
+        client.connection.hub.log('getRoomInfo(' + room + ')');
+
+        // Populate the list of users rooms and messages 
+        client.chat.server.getRoomInfo(room).done(function (roomInfo) {
+            client.connection.hub.log('getRoomInfo.done(' + room + ')');
+
+            $.each(roomInfo.Users, function () {
+                $this.trigger(events.addUser, [this, room]);
+            });
+
+            $.each(roomInfo.Owners, function () {
+                ui.setRoomOwner(this, room);
+            });
+
+            var messageIds = [];
+            $.each(roomInfo.RecentMessages, function () {
+                this.isHistory = true;
+                $this.trigger(events.createMessage, [this, room]);
+            });
+
+            ui.changeRoomTopic(roomInfo);
+
+            // mark room as initialized to differentiate messages
+            // that are added after initial population
+            ui.setInitialized(room);
+            ui.scrollToBottom(room);
+            ui.setRoomListStatuses(room);
+
+            d.resolveWith(chat);
+
+            // Watch the messages after the defer, since room messages
+            // may be appended if we are just joining the room
+            ui.watchMessageScroll(messageIds, room);
+        }).fail(function (e) {
+            connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
+            d.rejectWith(chat);
+        });
+
+        return d.promise();
     }
 
     return {
@@ -56,6 +103,11 @@
             state.save(client.chat.state.activeRoom);
 
             historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;
+        },
+        populateRoom: populateRoom,
+        
+        addMessage: function(message) {
+            messageIds.push(message.id);
         },
 
         // Preferences
