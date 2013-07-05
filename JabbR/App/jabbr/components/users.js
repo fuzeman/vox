@@ -1,7 +1,8 @@
 ﻿define([
     'jabbr/viewmodels/user',
+    'jabbr/viewmodels/room-user',
     'logger'
-], function (User, Logger) {
+], function (User, RoomUser, Logger) {
     var logger = new Logger('jabbr/components/users');
     logger.trace('loaded');
 
@@ -14,44 +15,66 @@
     
 
     // Variables
-    var ru = null;
+    var ru = null,
+        users = {};  // { <username>: <User> }
 
-    function add(userdata, roomName) {
-        logger.trace("addUser(" + userdata + ", " + roomName + ")");
+    function createUser(userdata) {
+        if (userdata.Name in users) {
+            logger.trace("User already exists, returning existing one.")
+            return users[userdata.Name];
+        }
+        
+        logger.trace("Creating User userdata.Name: '" + userdata.Name + "'");
 
-        var user = new User(ru, userdata);
+        users[userdata.Name] = new User(ru, userdata);
+
+        return users[userdata.Name];
+    }
+    
+    function createRoomUser(userdata, roomName) {
+        var user = createUser(userdata);
+        
+        if (roomName in user.roomUsers) {
+            logger.trace("RoomUser already exists, returning existing one.")
+            return user.roomUsers[roomName];
+        }
+        
+        logger.trace("Creating RoomUser userdata.Name: '" + userdata.Name + "', roomName: '" + roomName + "'");
 
         var room = ru.getRoomElements(roomName);
+
+        var roomUser = new RoomUser(ru, user, roomName, room);
+        user.roomUsers[roomName] = roomUser;
 
         // Remove all users that are being removed
         room.users.find('.removing').remove();
 
         // Get the user element
-        user.$user = room.getUser(userdata.name);
+        var $roomUser = room.getUser(userdata.name);
 
-        if (user.$user.length) {
+        if ($roomUser.length) {
             return null;
         }
 
-        user.$user = templates.user.tmpl(user);
-        user.$user.data('inroom', roomName);
-        user.$user.data('owner', user.owner);
-        user.$user.data('admin', user.admin);
-        user.$user.data('mention', user.mention);
-        
-        room.addUser(user);
-        
-        user.updateNote();
-        user.updateFlag();
+        $roomUser = templates.user.tmpl(user);
+        $roomUser.data('inroom', roomName);
+        $roomUser.data('owner', user.owner);
+        $roomUser.data('admin', user.admin);
+        $roomUser.data('mention', user.mention);
 
-        return user;
-    }
-    
-    function get(user) {
+        roomUser.$roomUser = $roomUser;
         
+        room.addUser(roomUser);
+
+        roomUser.updateNote();
+        roomUser.updateFlag();
+        roomUser.updateActivity();
+
+        return user.roomUsers[roomName];
     }
     
     function remove(user, roomName) {
+        // TODO: Update this to user 'users' dictionary
         var room = ru.getRoomElements(roomName),
             $user = room.getUser(user.Name);
 
@@ -67,12 +90,26 @@
                 }
             });
     }
+    
+    //
+    // Event Handlers
+    //
+    
+    // Hub
+    
+    // TODO: Handle user update events here
 
     return {
         initialize: function(roomUi) {
             ru = roomUi;
         },
-        add: add,
         remove: remove,
+        
+        get: function(name) {
+            return users[name];
+        },
+        
+        createUser: createUser,
+        createRoomUser: createRoomUser,
     }
 });

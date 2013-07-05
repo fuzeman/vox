@@ -2,14 +2,14 @@
     'jabbr/client',
     'jabbr/ui',
     'jabbr/state',
+    'jabbr/components/users',
     'logger'
-], function (client, ui, state, Logger) {
+], function (client, ui, state, users, Logger) {
     var logger = new Logger('jabbr/components/rooms.client');
     logger.trace('loaded');
 
     var events = {        
         scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
-        addUser: 'jabbr.components.rooms.client.addUser',
         createMessage: 'jabbr.components.rooms.client.addMessage',
         lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened',
         
@@ -39,11 +39,11 @@
             client.connection.hub.log('getRoomInfo.done(' + room + ')');
 
             $.each(roomInfo.Users, function () {
-                $this.trigger(events.addUser, [this, room]);
+                users.createRoomUser(this, room);
             });
 
             $.each(roomInfo.Owners, function () {
-                ui.setRoomOwner(this, room);
+                users.get(this).roomUsers[room].setOwner();
             });
 
             $.each(roomInfo.RecentMessages, function () {

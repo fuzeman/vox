@@ -250,11 +250,11 @@
 
     Room.prototype.addUser = function (user) {
         if (user.owner) {
-            this.addUserToList(user.$user, this.owners);
+            this.addUserToList(user.$roomUser, this.owners);
         } else {
-            this.changeIdle(user.$user, user.active);
+            this.changeIdle(user.$roomUser, user.active);
 
-            this.addUserToList(user.$user, this.activeUsers);
+            this.addUserToList(user.$roomUser, this.activeUsers);
         }
     };
 

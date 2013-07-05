@@ -430,11 +430,6 @@
         scrollToBottom(roomName);
     });
 
-    rc.bind(rc.events.addUser, function(event, userdata, room) {
-        var user = users.add(userdata, room);
-        user.updateActivity();
-    });
-
     rc.bind(rc.events.createMessage, function(event, data, room) {
         var viewModel = new Message(ru, data);
 

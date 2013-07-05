@@ -240,6 +240,7 @@
     <Content Include="App\jabbr\components\users.js" />
     <Content Include="App\jabbr\templates.js" />
     <Content Include="App\jabbr\viewmodels\message.js" />
+    <Content Include="App\jabbr\viewmodels\room-user.js" />
     <Content Include="App\jabbr\viewmodels\user.js" />
     <Content Include="App\jabbr\viewmodels\room.js" />
     <Content Include="App\jabbr\utility.js" />
