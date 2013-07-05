@@ -230,7 +230,14 @@
     <Content Include="apple-touch-icon.png" />
     <Content Include="App\jabbr\client.js" />
     <Content Include="App\jabbr\components\connection-status.js" />
+    <Content Include="App\jabbr\components\emoji.js" />
     <Content Include="App\jabbr\components\help.js" />
+    <Content Include="App\jabbr\components\notifications.js" />
+    <Content Include="App\jabbr\components\room.client.js" />
+    <Content Include="App\jabbr\components\room.ui.js" />
+    <Content Include="App\jabbr\models\room.js" />
+    <Content Include="App\jabbr\models\user.js" />
+    <Content Include="App\jabbr\utility.js" />
     <Content Include="App\main.js" />
     <Content Include="App\jabbr\state.js" />
     <Content Include="App\jabbr\ui.js" />

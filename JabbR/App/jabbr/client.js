@@ -13,6 +13,10 @@
         connected: 'jabbr.client.connected',
         disconnected: 'jabbr.client.disconnected',
         reconnecting: 'jabbr.client.reconnecting',
+        
+        logOn: 'jabbr.client.logOn',
+        
+        updateUnread: 'jabbr.client.updateUnread',
     };
 
     var $this = $(this),
@@ -20,13 +24,60 @@
         chat = connection.chat,
         options = {},
         initial = true;
+
+    var originalTitle = document.title,
+        privateRooms = null,
+        unread = 0,
+        isUnreadMessageForUser = false;
     
+    //
+    // Private Functions
+    //
+    
+    function updateUnread(room, isMentioned) {
+        if (ui.hasFocus() === false) {
+            isUnreadMessageForUser = (isUnreadMessageForUser || isMentioned);
+
+            unread = unread + 1;
+        } else {
+            //we're currently focused so remove
+            //the * notification
+            isUnreadMessageForUser = false;
+        }
+
+        $this.trigger(events.updateUnread, [room, isMentioned])
+        //ui.updateUnread(room, isMentioned);
+
+        updateTitle();
+    }
+    
+    function clearUnread() {
+        isUnreadMessageForUser = false;
+        unread = 0;
+        updateUnread(chat.state.activeRoom, false);
+    }
+    
+    function updateTitle() {
+        // ugly hack via http://stackoverflow.com/a/2952386/188039
+        setTimeout(function () {
+            if (unread === 0) {
+                document.title = originalTitle;
+            } else {
+                document.title = (isUnreadMessageForUser ? '*' : '') + '(' + unread + ') ' + originalTitle;
+            }
+        }, 200);
+    }
+
     //
     // Chat Event Handlers
     //
 
     chat.client.logOn = function(rooms, myRooms, mentions) {
         console.log('[jabbr/client] logOn');
+
+        privateRooms = myRooms;
+
+        $this.trigger(events.logOn, [rooms, myRooms, mentions]);
     };
 
     //
@@ -107,6 +158,17 @@
                 // Make all pending messages failed if there's an error
                 //failPendingMessages();
             });
+        },
+        
+        focus: function() {
+            clearUnread();
+
+            try {
+                chat.server.updateActivity();
+            }
+            catch (e) {
+                connection.hub.log('updateActivity failed');
+            }
         },
         
         bind: function(eventType, handler) {
