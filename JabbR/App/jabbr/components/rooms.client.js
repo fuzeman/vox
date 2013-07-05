@@ -2,19 +2,12 @@
     'jabbr/client',
     'jabbr/ui',
     'jabbr/state',
+    'jabbr/events',
     'jabbr/components/users',
     'logger'
-], function (client, ui, state, users, Logger) {
+], function (client, ui, state, events, users, Logger) {
     var logger = new Logger('jabbr/components/rooms.client');
     logger.trace('loaded');
-
-    var events = {        
-        scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
-        createMessage: 'jabbr.components.rooms.client.addMessage',
-        lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened',
-        
-        error: 'jabbr.components.rooms.client.error'
-    };
 
     var $this = $(this),
         messageHistory = {},
@@ -48,7 +41,7 @@
 
             $.each(roomInfo.RecentMessages, function () {
                 this.isHistory = true;
-                $this.trigger(events.createMessage, [this, room]);
+                $this.trigger(events.rooms.client.createMessage, [this, room]);
             });
 
             //TODO: ui.changeRoomTopic(roomInfo);
@@ -73,8 +66,6 @@
     }
 
     return {
-        events: events,
-
         getRoomId: function(roomName) {
             return window.escape(roomName.toString().toLowerCase()).replace(/[^A-Za-z0-9]/g, '_');
         },
@@ -92,7 +83,7 @@
         },
         activeRoomChanged: function (room) {
             if (room === 'Lobby') {
-                $this.trigger(events.lobbyOpened);
+                $this.trigger(events.rooms.client.lobbyOpened);
 
                 // Remove the active room
                 client.chat.state.activeRoom = undefined;
@@ -102,7 +93,7 @@
                 client.chat.state.activeRoom = room;
             }
 
-            $this.trigger(events.scrollToBottom, room);
+            $this.trigger(events.rooms.client.scrollToBottom, room);
             state.save(client.chat.state.activeRoom);
 
             historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;

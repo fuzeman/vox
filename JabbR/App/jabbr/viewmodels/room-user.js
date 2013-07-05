@@ -1,5 +1,4 @@
 ﻿define([
-    'jquery.timeago',
     'livestamp'
 ], function () {
     var ru = null;

@@ -1,28 +1,17 @@
 ﻿define([
     'jquery',
     'logger',
+    'jabbr/events',
     
     'jquery.cookie',
     'jquery.signalr',
     'noext!signalr/hubs'
-], function ($, Logger) {
+], function ($, Logger, events) {
     var logger = new Logger('jabbr/client');
     logger.trace('loaded');
 
-    var events = {
-        started: 'jabbr.client.started',
-        
-        stateChanged: 'jabbr.client.stateChanged',
-        connected: 'jabbr.client.connected',
-        disconnected: 'jabbr.client.disconnected',
-        reconnecting: 'jabbr.client.reconnecting',
-        
-        logOn: 'jabbr.client.logOn',
-        
-        updateUnread: 'jabbr.client.updateUnread',
-    };
-
-    var $this = $(this),
+    var $window = $(window),
+        $this = $(this),
         connection = $.connection,
         chat = connection.chat,
         options = {},
@@ -38,7 +27,7 @@
     //
     
     function updateUnread(room, isMentioned) {
-        if (ui.hasFocus() === false) {
+        if (ui.focus === false) {
             isUnreadMessageForUser = (isUnreadMessageForUser || isMentioned);
 
             unread = unread + 1;
@@ -48,7 +37,7 @@
             isUnreadMessageForUser = false;
         }
 
-        $this.trigger(events.updateUnread, [room, isMentioned])
+        events.trigger(events.ui.updateUnread, [room, isMentioned]);
         //ui.updateUnread(room, isMentioned);
 
         updateTitle();
@@ -80,8 +69,10 @@
 
         privateRooms = myRooms;
 
-        $this.trigger(events.logOn, [rooms, myRooms, mentions]);
+        $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions]);
     };
+
+    chat.client.logOut = performLogout;
 
     //
     // Core Event Handlers
@@ -89,20 +80,20 @@
 
     function stateChanged(change) {
         var eventData = [change, initial];
-        $this.trigger(events.stateChanged, eventData);
+        $this.trigger(events.client.stateChanged, eventData);
 
         if (change.newState === $.connection.connectionState.connected) {
-            $this.trigger(events.connected, eventData);
+            $this.trigger(events.client.connected, eventData);
             initial = false;
         } else if (change.newState === $.connection.connectionState.reconnecting) {
-            $this.trigger(events.reconnecting, eventData);
+            $this.trigger(events.client.reconnecting, eventData);
         }
     }
 
     function disconnected() {
         connection.hub.log('Dropped the connection from the server. Restarting in 5 seconds.');
 
-        $this.trigger(events.disconnected);
+        $this.trigger(events.client.disconnected);
 
         // Restart the connection
         setTimeout(function () {
@@ -132,6 +123,39 @@
     }
     initialize();
     
+    function performLogout() {
+        var d = $.Deferred();
+        
+        $.post('account/logout', {}).done(function () {
+            d.resolveWith(null);
+            document.location = document.location.pathname;
+        });
+
+        return d.promise();
+    }
+    
+    function focused() {
+        clearUnread();
+
+        try {
+            chat.server.updateActivity();
+        }
+        catch (e) {
+            connection.hub.log('updateActivity failed');
+        }
+    }
+
+    $window.bind(events.focused, focused);
+
+    function logout() {
+        performLogout().done(function () {
+            chat.server.send('/logout', chat.state.activeRoom)
+                .fail(function (e) {
+                    $window.trigger(events.error, [e, 'error', chat.state.activeRoom]);
+                });
+        });
+    }
+
     return {
         events: events,
         
@@ -151,8 +175,8 @@
             connection.hub.start(options).done(function() {
                 chat.server.join().fail(function(e) {
                     logger.warn('join failed');
-                }).done(function() {
-                    $this.trigger(events.started);
+                }).done(function () {
+                    $this.trigger(events.client.started);
                 });
             });
 
@@ -165,16 +189,8 @@
             });
         },
         
-        focus: function() {
-            clearUnread();
-
-            try {
-                chat.server.updateActivity();
-            }
-            catch (e) {
-                connection.hub.log('updateActivity failed');
-            }
-        },
+        focused: focused,
+        logout: logout,
 
         bind: function(eventType, handler) {
             $this.bind(eventType, handler);

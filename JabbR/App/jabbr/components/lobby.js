@@ -1,8 +1,9 @@
 ﻿define([
     'jabbr/client',
     'jabbr/state',
+    'jabbr/templates',
     'logger'
-], function (client, state, Logger) {
+], function (client, state, templates, Logger) {
     var logger = new Logger('jabbr/components/lobby');
     logger.trace('loaded');
 
@@ -13,10 +14,6 @@
         $lobbyPrivateRooms = $('#lobby-private'),
         $lobbyOtherRooms = $('#lobby-other'),
         $loadMoreRooms = $('#load-more-rooms-item');
-    
-    var templates = {
-        lobbyroom: $('#new-lobby-room-template'),
-    };
 
     var ru = null,
         sortedRoomList = null,

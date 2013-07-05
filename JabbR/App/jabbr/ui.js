@@ -1,10 +1,11 @@
 ﻿define([
     'jabbr/state',
     'jabbr/client',
+    'jabbr/events',
     'jabbr/components/rooms.ui',
     'jabbr/utility',
     'logger'
-], function (state, client, ru, utility, Logger) {
+], function (state, client, events, ru, utility, Logger) {
     var logger = new Logger('jabbr/ui');
     logger.trace('loaded');
     
@@ -79,27 +80,23 @@
     
     // Room
 
-    ru.bind(ru.events.activateRoom, function(event, activateRoom) {
+    ru.bind(events.rooms.ui.activateRoom, function(event, activateRoom) {
         toggleMessageSection(activateRoom.isClosed());
-    });
-
-    ru.bind(ru.events.focus, function() {
-        triggerFocus();
     });
 
     // Client
     
-    client.bind(client.events.connected, function(event, change, initial) {
+    client.bind(events.client.connected, function(event, change, initial) {
         if (!initial) {
             setReadOnly(false);
         }
     });
 
-    client.bind(client.events.disconnected, function() {
+    client.bind(events.client.disconnected, function() {
         setReadOnly(true);
     });
 
-    client.bind(client.events.logOn, function (event, currentRooms) {
+    client.bind(events.client.loggedOn, function (event, currentRooms) {
         ru.addRooms(currentRooms);
 
         // Process any urls that may contain room names

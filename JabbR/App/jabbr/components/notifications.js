@@ -1,4 +1,4 @@
-﻿define(['jabbr/client'], function (client) {
+﻿define(['jabbr/client', 'jabbr/events'], function (client, events) {
     var $unreadNotificationCount = $('#notification-unread-count');
 
     function setUnreadNotifications(unreadCount) {
@@ -11,7 +11,7 @@
         }
     }
 
-    client.bind(client.events.logOn, function() {
+    client.bind(events.client.loggedOn, function() {
         setUnreadNotifications(chat.state.unreadNotifications);
     });
 });

@@ -1,6 +1,7 @@
 ﻿define([
     'jabbr/client',
     'jabbr/state',
+    'jabbr/events',
     'jabbr/templates',
     'jabbr/viewmodels/room',
     'jabbr/viewmodels/message',
@@ -15,16 +16,16 @@
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function (client, state, templates, Room, Message, rc, users, lobby, messages, Logger) {
+], function (client, state, events, templates, Room, Message, rc, users, lobby, messages, Logger) {
     var logger = new Logger('jabbr/components/rooms.ui');
     logger.trace('loaded');
 
     var ru = {};
 
-    var events = {
-        activateRoom: 'jabbr.components.rooms.ui.activateRoom',
-        focus: 'jabbr.components.rooms.ui.focus',
-    };
+    //var events = {
+    //    activateRoom: 'jabbr.components.rooms.ui.activateRoom',
+    //    focus: 'jabbr.components.rooms.ui.focus',
+    //};
 
     var $document = $(document),
         $toast = $('#room-preferences .toast'),
@@ -241,10 +242,10 @@
                 room.messages.hide();
             }
 
-            $this.trigger(events.activateRoom, room);
+            $this.trigger(events.rooms.ui.activateRoom, room);
 
             rc.activeRoomChanged(roomName);
-            $this.trigger(events.focus, room);
+            events.trigger(events.focused, room);
 
             return true;
         }
@@ -426,24 +427,24 @@
 
     // Room Client
 
-    rc.bind(rc.events.scrollToBottom, function (event, roomName) {
+    rc.bind(events.rooms.client.scrollToBottom, function (event, roomName) {
         scrollToBottom(roomName);
     });
 
-    rc.bind(rc.events.createMessage, function(event, data, room) {
+    rc.bind(events.rooms.client.createMessage, function (event, data, room) {
         var viewModel = new Message(ru, data);
 
         rc.addMessage(viewModel.id);
         messages.addChatMessage(viewModel, room);
     });
 
-    rc.bind(rc.events.error, function(event, content, type) {
+    events.bind(events.error, function(event, content, type) {
         messages.addMessage(content, type);
     });
 
     // Client
 
-    client.bind(client.events.updateUnread, function (event, roomName, isMentioned) {
+    events.bind(events.ui.updateUnread, function (event, roomName, isMentioned) {
         logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
         var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
@@ -483,7 +484,6 @@
     });
 
     ru = {
-        events: events,
         client: rc,
         lobby: lobby,
         
