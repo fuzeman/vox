@@ -116,7 +116,6 @@
         }, 5000);
     }
 
-
     function initialize() {
         var logging = $.cookie('jabbr.logging') === '1',
             transport = $.cookie('jabbr.transport');
@@ -128,7 +127,6 @@
         connection.hub.logging = logging;
         connection.hub.qs = "version=" + window.jabbrVersion;
     }
-
     initialize();
     
     return {
@@ -174,7 +172,7 @@
                 connection.hub.log('updateActivity failed');
             }
         },
-        
+
         bind: function(eventType, handler) {
             $this.bind(eventType, handler);
         },

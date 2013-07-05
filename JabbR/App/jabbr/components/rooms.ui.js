@@ -121,6 +121,16 @@
         return nextListElement;
     }
 
+    function isNearTheEnd(roomName) {
+        var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
+
+        return room.isNearTheEnd();
+    }
+
+    function isSelf(user) {
+        return client.chat.state.name === user.Name;
+    }
+
     // Preferences
 
     function loadRoomPreferences(roomName) {
@@ -174,29 +184,20 @@
 
     // Room Navigation/Loading
 
-    function openRoom(roomName) {
-        try {
-            client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
-                .fail(function(e) {
-                    setActiveRoom('Lobby');
-                    //ui.addMessage(e, 'error');
-                });
-        } catch(e) {
-            client.connection.hub.log('openRoom failed');
-        }
-    }
-
     function activateOrOpenRoom(roomName) {
+        console.log('[jabbr/components/rooms.ui] activateOrOpenRoom(' + roomName + ')')
         var room = getRoomElements(roomName);
         
         if (room.exists()) {
             setActiveRoom(roomName);
         } else {
-            openRoom(roomName);
+            rc.joinRoom(roomName);
         }
     }
 
     function setActiveRoom(roomName) {
+        console.log('setActiveRoom(' + roomName + ')');
+
         var hash = (document.location.hash || '#').substr(1),
             hashRoomName = rc.getRoomNameFromHash(hash);
 
@@ -247,6 +248,23 @@
         }
 
         return false;
+    }
+
+    function removeRoom(roomName) {
+        var room = getRoomElements(roomName),
+            scrollHandler = null;
+
+        if (room.exists()) {
+            // Remove the scroll handler from this room
+            scrollHandler = room.messages.data('scrollHandler');
+            room.messages.unbind('scrollHandler', scrollHandler);
+
+            room.tab.remove();
+            room.messages.remove();
+            room.users.remove();
+            room.roomTopic.remove();
+            setAccessKeys();
+        }
     }
 
     function setAccessKeys() {
@@ -333,7 +351,7 @@
             // bar is small enough that we're at the bottom edge, ignore it.
             // We have to use the ui version because the room object above is
             // not fully initialized, so there are no messages.
-            if ($(this).scrollTop() <= scrollTopThreshold && !ui.isNearTheEnd(roomId)) {
+            if ($(this).scrollTop() <= scrollTopThreshold && !isNearTheEnd(roomId)) {
                 var $child = $messages.children('.message:first');
                 if ($child.length > 0) {
                     messageId = $child.attr('id')
@@ -363,9 +381,63 @@
         }
     }
 
+    function removeUser(user, roomName) {
+        var room = getRoomElements(roomName),
+            $user = room.getUser(user.Name);
+
+        $user.addClass('removing')
+            .fadeOut('slow', function () {
+                var owner = $user.data('owner') || false;
+                $(this).remove();
+
+                if (owner === true) {
+                    room.setListState(room.owners);
+                } else {
+                    room.setListState(room.activeUsers);
+                }
+            });
+    }
+
     //
     // Event Handlers
     //
+    
+    // Hub
+    
+    // When the /join command gets raised this is called
+    client.chat.client.joinRoom = function (room) {
+        var added = addRoom(room);
+
+        setActiveRoom(room.Name);
+
+        /*if (room.Private) {
+            ui.setRoomLocked(room.Name);
+        }
+        if (room.Closed) {
+            ui.setRoomClosed(room.Name);
+        }*/
+
+        if (added) {
+            rc.populateRoom(room.Name).done(function () {
+                messages.addMessage('You just entered ' + room.Name, 'notification', room.Name);
+
+                if (room.Welcome) {
+                    messages.addMessage(room.Welcome, 'welcome', room.Name);
+                }
+            });
+        }
+    };
+    
+    client.chat.client.leave = function (user, room) {
+        if (isSelf(user)) {
+            setActiveRoom('Lobby');
+            removeRoom(room);
+        }
+        else {
+            removeUser(user, room);
+            messages.addMessage(user.Name + ' left ' + room, 'notification', room);
+        }
+    };
 
     // Room Client
 
@@ -383,6 +455,10 @@
 
         rc.addMessage(viewModel.id);
         messages.addChatMessage(viewModel, room);
+    });
+
+    rc.bind(rc.events.error, function(event, content, type) {
+        messages.addMessage(content, type);
     });
 
     // Client
@@ -409,6 +485,22 @@
         var roomName = $(this).data('name');
         activateOrOpenRoom(roomName);
     });
+    
+    $document.on('mousedown', '#tabs li.room', function (ev) {
+        // if middle mouse
+        if (ev.which === 2) {
+            rc.leaveRoom($(this).data('name'));
+        }
+    });
+    
+    $document.on('click', '#tabs li .close', function (ev) {
+        var roomName = $(this).closest('li').data('name');
+
+        rc.leaveRoom(roomName);
+
+        ev.preventDefault();
+        return false;
+    });
 
     ru = {
         events: events,
@@ -419,14 +511,13 @@
         getCurrentRoomElements: getCurrentRoomElements,
         getNextRoomListElement: getNextRoomListElement,
 
-        openRoom: openRoom,
         openRoomFromHash: function() {
             $.history.init(function(hash) {
                 var roomName = rc.getRoomNameFromHash(hash);
 
                 if (roomName) {
                     if (setActiveRoomCore(roomName) === false && roomName !== 'Lobby') {
-                        openRoom(roomName);
+                        rc.joinRoom(roomName);
                     }
                 }
             })

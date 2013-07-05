@@ -9,7 +9,9 @@
         scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
         addUser: 'jabbr.components.rooms.client.addUser',
         createMessage: 'jabbr.components.rooms.client.addMessage',
-        lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened'
+        lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened',
+        
+        error: 'jabbr.components.rooms.client.error'
     };
 
     var $this = $(this),
@@ -105,6 +107,31 @@
         },
         populateRoom: populateRoom,
         
+        joinRoom: function (roomName) {
+            console.log('joinRoom(' + roomName + ')');
+            try {
+                client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
+                    .fail(function (e) {
+                        setActiveRoom('Lobby');
+                        $this.trigger(events.error, [e, 'error']);
+                    });
+            } catch (e) {
+                client.connection.hub.log('openRoom failed');
+            }
+        },
+        leaveRoom: function (roomName) {
+            console.log('leaveRoom(' + roomName + ')');
+            try {
+                client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
+                    .fail(function (e) {
+                        $this.trigger(events.error, [e, 'error']);
+                    });
+            } catch (e) {
+                // This can fail if the server is offline
+                client.connection.hub.log('closeRoom room failed');
+            }
+        },
+
         addMessage: function(message) {
             messageIds.push(message.id);
         },

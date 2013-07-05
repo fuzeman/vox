@@ -288,11 +288,43 @@
         return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
     }
 
+    function collapseNotifications($notification) {
+        // collapse multiple notifications
+        var $notifications = $notification.prevUntil(':not(.notification)');
+        if ($notifications.length > 3) {
+            $notifications
+                .hide()
+                .find('.info').text('');    // clear any prior text
+            $notification.find('.info')
+                .text(' (plus ' + $notifications.length + ' hidden... click to expand)')
+                .removeClass('collapse');
+        }
+    }
+    
+    function expandNotifications($notification) {
+        // expand collapsed notifications
+        var $notifications = $notification.prevUntil(':not(.notification)'),
+            topBefore = $notification.position().top;
+
+        $notification.find('.info')
+            .text(' (click to collapse)')
+            .addClass('collapse');
+        $notifications.show();
+
+        var room = getCurrentRoomElements(),
+            topAfter = $notification.position().top,
+            scrollTop = room.messages.scrollTop();
+
+        // make sure last notification is visible
+        room.messages.scrollTop(scrollTop + topAfter - topBefore + $notification.height());
+    }
+
     return {
         initialize: function(roomUi) {
             ru = roomUi;
         },
 
-        addChatMessage: addChatMessage
+        addChatMessage: addChatMessage,
+        addMessage: addMessage
     }
 });
