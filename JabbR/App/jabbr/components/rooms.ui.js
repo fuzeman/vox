@@ -381,23 +381,6 @@
         }
     }
 
-    function removeUser(user, roomName) {
-        var room = getRoomElements(roomName),
-            $user = room.getUser(user.Name);
-
-        $user.addClass('removing')
-            .fadeOut('slow', function () {
-                var owner = $user.data('owner') || false;
-                $(this).remove();
-
-                if (owner === true) {
-                    room.setListState(room.owners);
-                } else {
-                    room.setListState(room.activeUsers);
-                }
-            });
-    }
-
     //
     // Event Handlers
     //
@@ -434,7 +417,7 @@
             removeRoom(room);
         }
         else {
-            removeUser(user, room);
+            users.remove(user, room);
             messages.addMessage(user.Name + ' left ' + room, 'notification', room);
         }
     };

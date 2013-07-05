@@ -42,11 +42,29 @@
 
         return user;
     }
+    
+    function remove(user, roomName) {
+        var room = ru.getRoomElements(roomName),
+            $user = room.getUser(user.Name);
+
+        $user.addClass('removing')
+            .fadeOut('slow', function () {
+                var owner = $user.data('owner') || false;
+                $(this).remove();
+
+                if (owner === true) {
+                    room.setListState(room.owners);
+                } else {
+                    room.setListState(room.activeUsers);
+                }
+            });
+    }
 
     return {
         initialize: function(roomUi) {
             ru = roomUi;
         },
         add: add,
+        remove: remove,
     }
 });
