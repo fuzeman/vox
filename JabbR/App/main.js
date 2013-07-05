@@ -14,6 +14,7 @@
         'jquery.tmpl': '../Scripts/jQuery.tmpl',
         'jquery.sortElements': '../Scripts/jquery.sortElements',
         'jquery.timeago': '../Scripts/jquery.timeago.0.10',
+        'jquery.fancybox': '../Scripts/jquery.fancybox',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',

@@ -6,9 +6,10 @@
     console.log('[jabbr/components/rooms.client]');
 
     var events = {        
-        activateRoom: 'jabbr.components.rooms.client.activateRoom',
+        scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
         addUser: 'jabbr.components.rooms.client.addUser',
-        createMessage: 'jabbr.components.rooms.client.addMessage'
+        createMessage: 'jabbr.components.rooms.client.addMessage',
+        lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened'
     };
 
     var $this = $(this),
@@ -41,25 +42,24 @@
                 ui.setRoomOwner(this, room);
             });
 
-            var messageIds = [];
             $.each(roomInfo.RecentMessages, function () {
                 this.isHistory = true;
                 $this.trigger(events.createMessage, [this, room]);
             });
 
-            ui.changeRoomTopic(roomInfo);
+            //TODO: ui.changeRoomTopic(roomInfo);
 
             // mark room as initialized to differentiate messages
             // that are added after initial population
-            ui.setInitialized(room);
-            ui.scrollToBottom(room);
-            ui.setRoomListStatuses(room);
+            //TODO: ui.setInitialized(room);
+            //TODO: ui.scrollToBottom(room);
+            //TODO: ui.setRoomListStatuses(room);
 
-            d.resolveWith(chat);
+            d.resolveWith(client.chat);
 
             // Watch the messages after the defer, since room messages
             // may be appended if we are just joining the room
-            ui.watchMessageScroll(messageIds, room);
+            //TODO: ui.watchMessageScroll(messageIds, room);
         }).fail(function (e) {
             connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
             d.rejectWith(chat);
@@ -86,10 +86,9 @@
 
             return null;
         },
-        setActiveRoom: function (room) {
-            console.log("setActiveRoom(" + room + ")");
+        activeRoomChanged: function (room) {
             if (room === 'Lobby') {
-                populateLobbyRooms();
+                $this.trigger(events.lobbyOpened);
 
                 // Remove the active room
                 client.chat.state.activeRoom = undefined;
@@ -99,7 +98,7 @@
                 client.chat.state.activeRoom = room;
             }
 
-            $this.trigger(events.activateRoom, room);
+            $this.trigger(events.scrollToBottom, room);
             state.save(client.chat.state.activeRoom);
 
             historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;
@@ -126,6 +125,13 @@
             roomPreferences[name] = value;
 
             state.save(client.chat.state.activeRoom);
+        },
+        getPreference: function(name) {
+            return preferences[name];
+        },
+        setPreference: function(name, value) {
+            preferences[name] = value;
+            //TODO: $(ui).trigger(ui.events.preferencesChanged);
         },
         
         bind: function (eventType, handler) {

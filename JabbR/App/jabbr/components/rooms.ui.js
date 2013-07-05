@@ -21,10 +21,11 @@
 
     var events = {
         activateRoom: 'jabbr.components.rooms.ui.activateRoom',
-        focusRoom: 'jabbr.components.rooms.ui.focusRoom'
+        focusRoom: 'jabbr.components.rooms.ui.focusRoom',
     };
 
-    var $toast = $('#room-preferences .toast'),
+    var $document = $(document),
+        $toast = $('#room-preferences .toast'),
         $sound = $('#room-preferences .sound'),
         $richness = $('#room-preferences .richness'),
         $roomActions = $('#room-actions'),
@@ -45,8 +46,6 @@
     // Elements
 
     function getRoomElements(roomName) {
-        console.log("getRoomElements(" + roomName + ")");
-
         var roomId = rc.getRoomId(roomName);
         var room = new Room($('#tabs-' + roomId),
             $('#userlist-' + roomId),
@@ -175,11 +174,11 @@
 
     // Room Navigation/Loading
 
-    function openRoom(room) {
+    function openRoom(roomName) {
         try {
-            client.chat.server.send('/join ' + room, client.chat.state.activeRoom)
+            client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
                 .fail(function(e) {
-                    //ui.setActiveRoom('Lobby');
+                    setActiveRoom('Lobby');
                     //ui.addMessage(e, 'error');
                 });
         } catch(e) {
@@ -187,16 +186,35 @@
         }
     }
 
-    function setActiveRoomCore(roomName) {
-        console.log("setActiveRoomCore (" + roomName + ")");
+    function activateOrOpenRoom(roomName) {
+        var room = getRoomElements(roomName);
+        
+        if (room.exists()) {
+            setActiveRoom(roomName);
+        } else {
+            openRoom(roomName);
+        }
+    }
 
+    function setActiveRoom(roomName) {
+        var hash = (document.location.hash || '#').substr(1),
+            hashRoomName = rc.getRoomNameFromHash(hash);
+
+        if (hashRoomName && hashRoomName === roomName) {
+            setActiveRoomCore(roomName);
+        } else {
+            document.location.hash = '#/rooms/' + roomName;
+        }
+    }
+
+    function setActiveRoomCore(roomName) {
         var room = getRoomElements(roomName);
 
         loadRoomPreferences(roomName);
 
         if (room.isActive()) {
             // Still trigger the event (just do less overall work)
-            rc.setActiveRoom(roomName);
+            rc.activeRoomChanged(roomName);
             return true;
         }
 
@@ -222,8 +240,7 @@
 
             $this.trigger(events.activateRoom, room);
 
-            rc.setActiveRoom(roomName);
-
+            rc.activeRoomChanged(roomName);
             $this.trigger(events.focusRoom, room);
 
             return true;
@@ -339,7 +356,6 @@
     }
 
     function scrollToBottom(roomName) {
-        console.log("scrollToBottom(" + roomName + ")");
         var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
         if (room.isActive()) {
@@ -353,8 +369,8 @@
 
     // Room Client
 
-    rc.bind(rc.events.activateRoom, function(event, activateRoom) {
-        scrollToBottom(activateRoom);
+    rc.bind(rc.events.scrollToBottom, function (event, roomName) {
+        scrollToBottom(roomName);
     });
 
     rc.bind(rc.events.addUser, function(event, userdata, room) {
@@ -380,6 +396,18 @@
         }
 
         room.updateUnread(isMentioned);
+    });
+    
+    // DOM
+    
+    $document.on('click', 'li.room .room-row', function () {
+        var roomName = $(this).parent().data('name');
+        activateOrOpenRoom(roomName);
+    });
+
+    $document.on('click', '#tabs li', function () {
+        var roomName = $(this).data('name');
+        activateOrOpenRoom(roomName);
     });
 
     ru = {
@@ -413,16 +441,7 @@
             return rc.getRoomPreference(room.getName(), name);
         },
 
-        setActiveRoom: function(roomName) {
-            var hash = (document.location.hash || '#').substr(1),
-                hashRoomName = rc.getRoomNameFromHash(hash);
-
-            if (hashRoomName && hashRoomName === roomName) {
-                setActiveRoomCore(roomName);
-            } else {
-                document.location.hash = '#/rooms/' + roomName;
-            }
-        },
+        setActiveRoom: setActiveRoom,
         setActiveRoomCore: setActiveRoomCore,
 
         addRoom: addRoom,

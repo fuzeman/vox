@@ -112,7 +112,7 @@
             var loadRooms = function () {
                 $.each(currentRooms, function (index, loadRoom) {
                     if (client.chat.state.activeRoom !== loadRoom.Name) {
-                        rooms.populateRoom(loadRoom.Name);
+                        rooms.client.populateRoom(loadRoom.Name);
                     }
                 });
             };

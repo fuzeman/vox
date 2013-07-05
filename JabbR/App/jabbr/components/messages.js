@@ -1,7 +1,9 @@
 ﻿define([
     'jabbr/components/rooms.client',
     'jabbr/templates',
-    'jabbr/utility'
+    'jabbr/utility',
+        
+    'jquery.fancybox'
 ], function (rc, templates, utility) {
     var ru = null;
 
@@ -73,7 +75,7 @@
         }
 
         if (message.htmlContent) {
-            ui.addChatMessageContent(message.id, message.htmlContent, room.getName());
+            addChatMessageContent(message.id, message.htmlContent, room.getName());
         }
 
         var roomFocus = roomName == currentRoomName && focus;
@@ -101,6 +103,38 @@
         }
     }
     
+    function addChatMessageContent(id, content, roomName) {
+        var $message = $('#m-' + id),
+            $middle = $message.find('.middle'),
+            $body = $message.find('.content');
+
+        if (shouldCollapseContent(content, roomName)) {
+            content = collapseRichContent(content);
+        }
+
+        if ($middle.length === 0) {
+            $body.append('<p>' + content + '</p>');
+        }
+        else {
+            $middle.append(processRichContent($(content)));
+        }
+            
+        // Fancybox
+        $('a.imageContent', $middle).fancybox({
+            openEffect: 'elastic',
+            openSpeed: 400,
+                
+            closeEffect: 'elastic',
+            closeSpeed: 200,
+                
+            helpers: {
+                overlay: {
+                    closeClick: true
+                }
+            }
+        });
+    }
+
     function processMessage(message, roomName) {
         var isFromCollapibleContentProvider = isFromCollapsibleContentProvider(message.message),
             collapseContent = shouldCollapseContent(message.message, roomName);
@@ -214,6 +248,46 @@
         return utility.processContent(content, templates, ru.roomCache);
     }
     
+    function processRichContent($content) {
+        // TODO: A bit of a dirty hack, Maybe this could be done another way?
+        var $plexrResult = $("PlexrContentProviderResult", $content);
+
+        if ($plexrResult.length == 1) {
+            var result = processPlexrContentResult($plexrResult);
+            if (result !== null) {
+                $("PlexrContentProviderResult", $content).replaceWith(result);
+                var curMusicService = rc.getPreference('music_service');
+                $('.collapsible_title', $content).text(
+                    curMusicService.charAt(0).toUpperCase() + curMusicService.slice(1) +
+                    ' (Plexr) (click to show/hide)');
+            } else {
+                return null;
+            }
+            return $content;
+        } else {
+            return $content;
+        }
+    }
+    
+    function processPlexrContentResult($plexrResult) {
+        var preferredMusicService = rc.getPreference('music_service');
+        var $serviceDetails = $plexrResult.find(preferredMusicService);
+
+        if (preferredMusicService == 'spotify') {
+            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() + "\" width=\"300\" height=\"380\" " +
+                    "frameborder=\"0\" allowtransparency=\"true\"></iframe>";
+        } else if (preferredMusicService == 'rdio') {
+            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
+                    "frameborder=\"0\"></iframe>";
+        }
+        return null;
+    }
+    
+    function collapseRichContent(content) {
+        content = content.replace(/class="collapsible_box/g, 'style="display: none;" class="collapsible_box');
+        return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
+    }
+
     return {
         initialize: function(roomUi) {
             ru = roomUi;

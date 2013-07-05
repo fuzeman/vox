@@ -139,8 +139,6 @@
     }
     
     function filterIndividualRoom($room) {
-        console.log($room);
-
         var filter = $roomFilterInput.val().toUpperCase(),
             showClosedRooms = $closedRoomFilter.is(':checked');
 
@@ -150,6 +148,14 @@
             $room.hide();
         }
     }
+
+    //
+    // Event Handlers
+    //
+
+    client.bind(client.events.lobbyOpened, function() {
+        updateRooms();
+    });
 
     return {
         initialize: function(roomui) {
