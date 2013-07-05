@@ -11,6 +11,7 @@
 
     var $this = $(this),
         messageHistory = {},
+        pendingMessages = {},
         messageIds = [],
         historyLocation = 0;
     
@@ -66,6 +67,9 @@
     }
 
     return {
+        messageHistory: messageHistory,
+        pendingMessages: pendingMessages,
+
         getRoomId: function(roomName) {
             return window.escape(roomName.toString().toLowerCase()).replace(/[^A-Za-z0-9]/g, '_');
         },

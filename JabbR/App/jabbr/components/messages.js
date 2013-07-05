@@ -1,11 +1,14 @@
 ﻿define([
     'jabbr/components/rooms.client',
+    'jabbr/client',
     'jabbr/templates',
+    'jabbr/events',
     'jabbr/utility',
         
     'jquery.fancybox'
-], function (rc, templates, utility) {
-    var ru = null;
+], function (rc, client, templates, events, utility) {
+    var ru = null,
+        messageSendingDelay = 1500;
 
     function addChatMessage(message, roomName) {
         var room = ru.getRoomElements(roomName),
@@ -63,7 +66,7 @@
                 encoded: true
             };
 
-            ui.addMessage(model, 'postedNotification', roomName);
+            addMessage(model, 'postedNotification', roomName);
         }
         else {
             appendMessage(templates.message.tmpl(message), room);
@@ -84,20 +87,20 @@
             if (isMention) {
                 // Mention Sound
                 if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
-                    ui.notify(true);
+                    notify(true);
                 }
                 // Mention Popup
                 if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
-                    ui.toast(message, true, roomName);
+                    toast(message, true, roomName);
                 }
             } else if (notify == 'all') {
                 // All Sound
                 if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
-                    ui.notifyRoom(roomName);
+                    notifyRoom(roomName);
                 }
                 // All Popup
                 if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
-                    ui.toastRoom(roomName, message);
+                    toastRoom(roomName, message);
                 }
             }
         }
@@ -133,50 +136,6 @@
                 }
             }
         });
-    }
-
-    function processMessage(message, roomName) {
-        var isFromCollapibleContentProvider = isFromCollapsibleContentProvider(message.message),
-            collapseContent = shouldCollapseContent(message.message, roomName);
-
-        message.when = message.date.formatTime(true);
-        message.fulldate = message.date.toLocaleString();
-
-        if (!message.isHistory) {
-            message.message = processItalics(message.message);
-        }
-
-        if (collapseContent) {
-            message.message = collapseRichContent(message.message);
-        }
-    }
-    
-    function processItalics(content) {
-        var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
-            match = null,
-            result = content;
-
-        //Replaces *test* occurrences in message with <i>test</i> so you can use italics
-        while ((match = re.exec(result)) != null) {
-            if (match[1].length > 0) {
-                var head = result.substring(0, match.index);
-                var tail = result.substring(match.index + match[0].length, result.length);
-                result = head + "<i>" + match[1] + "</i>" + tail;
-            }
-        }
-
-        return result;
-    }
-    
-    function isFromCollapsibleContentProvider(content) {
-        return content.indexOf('class="collapsible_box') > -1; // leaving off trailing " purposefully
-    }
-
-    function shouldCollapseContent(content, roomName) {
-        var collapsible = isFromCollapsibleContentProvider(content),
-            collapseForRoom = roomName ? rc.getRoomPreference(roomName, 'blockRichness') : ru.getActiveRoomPreference('blockRichness');
-
-        return collapsible && collapseForRoom;
     }
     
     function appendMessage(newMessage, room) {
@@ -224,26 +183,122 @@
         return $element;
     }
     
-    function prepareNotificationMessage(options, type) {
-        if (typeof options === 'string') {
-            options = { content: options, encoded: false };
+    function sendMessage(msg) {
+        events.trigger(events.ui.clearUnread);
+
+        var id, clientMessage, type, messageCompleteTimeout = null;
+
+        if (typeof msg == 'object' && 'content' in msg && msg[0] !== '/') {
+            type = 'replace';
+            id = msg.id;
+            clientMessage = msg;
+
+            clientMessage.room = client.chat.state.activeRoom;
+        } else {
+            type = 'append';
+            id = utility.newId();
+
+            clientMessage = {
+                id: id,
+                replaced: false,
+                content: msg,
+                room: client.chat.state.activeRoom
+            };
         }
 
-        var now = new Date(),
-        message = {  // TODO: use jabbr/viewmodels/message ?
-            message: options.encoded ? options.content : processContent(options.content),
-            type: type,
-            date: now,
-            when: now.formatTime(true),
-            fulldate: now.toLocaleString(),
-            img: options.img,
-            source: options.source,
-            id: options.id
-        };
+        if (msg[0] !== '/') {
 
-        return templates.notification.tmpl(message);
+            // if you're in the lobby, you can't send mesages (only commands)
+            if (client.chat.state.activeRoom === undefined) {
+                addMessage('You cannot send messages within the Lobby', 'error');
+                return false;
+            }
+
+            // Added the message to the ui first
+            var viewModel = {
+                name: client.chat.state.name,
+                hash: client.chat.state.hash,
+                //mention: mentionStrings[0],
+                message: processContent(clientMessage.content),
+                id: clientMessage.id,
+                date: new Date(),
+                highlight: '',
+                isMine: true
+            };
+
+            if (type == 'append') {
+                addChatMessage(viewModel, clientMessage.room);
+                //incrementMessageCount();
+            } else {
+                replaceMessage(viewModel);
+            }
+
+            // If there's a significant delay in getting the message sent
+            // mark it as pending
+            messageCompleteTimeout = window.setTimeout(function () {
+                if ($.connection.hub.state === $.connection.connectionState.reconnecting) {
+                    failMessage(id);
+                }
+                else {
+                    // If after a second
+                    markMessagePending(id);
+                }
+            },
+            messageSendingDelay);
+
+            rc.pendingMessages[id] = messageCompleteTimeout;
+        }
+
+        rc.historyLocation = 0;
+
+        try {
+            client.chat.server.send(clientMessage)
+                .done(function () {
+                    if (messageCompleteTimeout) {
+                        clearTimeout(messageCompleteTimeout);
+                        delete rc.pendingMessages[id];
+                    }
+
+                    confirmMessage(id);
+                })
+                .fail(function (e) {
+                    failMessage(id);
+                    addMessage(e, 'error');
+                });
+        }
+        catch (e) {
+            connection.hub.log('Failed to send via websockets');
+
+            clearTimeout(rc.pendingMessages[id]);
+            failMessage(id);
+        }
+
+        // Store message history
+        if (type == 'replace') {
+            for (var i = 0; i < (rc.messageHistory[client.chat.state.activeRoom] || []).length; i++) {
+                if (rc.messageHistory[client.chat.state.activeRoom][i].id == clientMessage.id) {
+                    rc.messageHistory[client.chat.state.activeRoom][i] = clientMessage;
+                }
+            }
+        }
+        if (type == 'append') {
+            if (rc.messageHistory[client.chat.state.activeRoom] === undefined) {
+                rc.messageHistory[client.chat.state.activeRoom] = [];
+            }
+            rc.messageHistory[client.chat.state.activeRoom].push(clientMessage);
+        }
+
+        // REVIEW: should this pop items off the top after a certain length?
+        rc.historyLocation = (rc.messageHistory[client.chat.state.activeRoom] || []).length;
     }
-    
+
+    function confirmMessage(id) {
+        $('#m-' + id).removeClass('failed')
+                     .removeClass('loading');
+    }
+
+    // process content
+
     function processContent(content) {
         return utility.processContent(content, templates, ru.roomCache);
     }
@@ -288,6 +343,72 @@
         return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
     }
 
+    function processMessage(message, roomName) {
+        var isFromCollapibleContentProvider = isFromCollapsibleContentProvider(message.message),
+            collapseContent = shouldCollapseContent(message.message, roomName);
+
+        message.when = message.date.formatTime(true);
+        message.fulldate = message.date.toLocaleString();
+
+        if (!message.isHistory) {
+            message.message = processItalics(message.message);
+        }
+
+        if (collapseContent) {
+            message.message = collapseRichContent(message.message);
+        }
+    }
+
+    function processItalics(content) {
+        var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
+            match = null,
+            result = content;
+
+        //Replaces *test* occurrences in message with <i>test</i> so you can use italics
+        while ((match = re.exec(result)) != null) {
+            if (match[1].length > 0) {
+                var head = result.substring(0, match.index);
+                var tail = result.substring(match.index + match[0].length, result.length);
+                result = head + "<i>" + match[1] + "</i>" + tail;
+            }
+        }
+
+        return result;
+    }
+
+    function isFromCollapsibleContentProvider(content) {
+        return content.indexOf('class="collapsible_box') > -1; // leaving off trailing " purposefully
+    }
+
+    function shouldCollapseContent(content, roomName) {
+        var collapsible = isFromCollapsibleContentProvider(content),
+            collapseForRoom = roomName ? rc.getRoomPreference(roomName, 'blockRichness') : ru.getActiveRoomPreference('blockRichness');
+
+        return collapsible && collapseForRoom;
+    }
+
+    // notifications
+
+    function prepareNotificationMessage(options, type) {
+        if (typeof options === 'string') {
+            options = { content: options, encoded: false };
+        }
+
+        var now = new Date(),
+        message = {  // TODO: use jabbr/viewmodels/message ?
+            message: options.encoded ? options.content : processContent(options.content),
+            type: type,
+            date: now,
+            when: now.formatTime(true),
+            fulldate: now.toLocaleString(),
+            img: options.img,
+            source: options.source,
+            id: options.id
+        };
+
+        return templates.notification.tmpl(message);
+    }
+
     function collapseNotifications($notification) {
         // collapse multiple notifications
         var $notifications = $notification.prevUntil(':not(.notification)');
@@ -325,6 +446,7 @@
         },
 
         addChatMessage: addChatMessage,
-        addMessage: addMessage
+        addMessage: addMessage,
+        sendMessage: sendMessage
     }
 });

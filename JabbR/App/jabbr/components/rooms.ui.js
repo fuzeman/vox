@@ -486,6 +486,7 @@
 
     ru = {
         client: rc,
+        messages: messages,
         lobby: lobby,
         
         getRoomElements: getRoomElements,

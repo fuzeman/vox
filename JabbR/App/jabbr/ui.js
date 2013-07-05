@@ -19,7 +19,8 @@
         focus = true,
         originalTitle = document.title,
         unread = 0,
-        isUnreadMessageForUser = false;
+        isUnreadMessageForUser = false,
+        newMessageLines = 1;
     
     //
     // Private Functions
@@ -77,6 +78,43 @@
         }
     }
     
+    function triggerSend() {
+        if (readOnly) {
+            return;
+        }
+
+        var id = $newMessage.attr('message-id');
+        var msg = $.trim($newMessage.val());
+
+        focus = true;
+
+        if (msg) {
+            if (msg.toUpperCase() === '/LOGIN') {
+                ui.showLogin();
+            }
+            else {
+                if (id === undefined) {
+                    ru.messages.sendMessage(msg);
+                } else {
+                    ru.messages.sendMessage({ content: msg, id: id });
+                }
+            }
+        }
+
+        $newMessage.val('');
+        newMessageLines = 1;
+        //TODO: updateNewMessageSize();
+        $newMessage.removeAttr('message-id');
+        $newMessage.removeClass('editing');
+        $('#m-' + id).removeClass('editing');
+        $newMessage.focus();
+
+        // always scroll to bottom after new message sent
+        var room = ru.getCurrentRoomElements();
+        room.scrollToBottom();
+        room.removeSeparator();
+    }
+
     function updateUnread(room, isMentioned) {
         room = typeof room !== 'undefined' ? room : client.chat.state.activeRoom;
         isMentioned = typeof isMentioned !== 'undefined' ? isMentioned : false;
@@ -180,6 +218,13 @@
         if (!focus) {
             triggerFocus();
         }
+    });
+    
+    $submitButton.click(function (ev) {
+        triggerSend();
+
+        ev.preventDefault();
+        return false;
     });
 
     return {
