@@ -1,7 +1,7 @@
 ﻿define([
     'jabbr/events'
 ], function (events) {
-    return function (processor) {
+    return function (processor, ru) {
         processor.bind(events.processor.beforeProcessPlainContent, function (event, handler) {
             var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
                 match = null,

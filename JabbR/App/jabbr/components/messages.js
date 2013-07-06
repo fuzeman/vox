@@ -5,9 +5,8 @@
     'jabbr/events',
     'jabbr/utility',
     'jabbr/messageprocessors/processor',
-        
-    'jquery.fancybox'
-], function (rc, client, templates, events, utility, messageProcessor) {
+    'jabbr/messageprocessors/collapse'
+], function (rc, client, templates, events, utility, messageProcessor, collapse) {
     var ru = null,
         messageSendingDelay = 1500;
 
@@ -112,31 +111,20 @@
             $middle = $message.find('.middle'),
             $body = $message.find('.content');
 
-        if (shouldCollapseContent(content, roomName)) {
-            content = collapseRichContent(content);
-        }
+        content = messageProcessor.processRichContent(content, {
+            roomName: roomName
+        });
 
         if ($middle.length === 0) {
             $body.append('<p>' + content + '</p>');
         }
         else {
-            $middle.append(processRichContent($(content)));
+            $middle.append(
+                messageProcessor.beforeRichElementAttached($(content))
+            );
         }
-            
-        // Fancybox
-        $('a.imageContent', $middle).fancybox({
-            openEffect: 'elastic',
-            openSpeed: 400,
-                
-            closeEffect: 'elastic',
-            closeSpeed: 200,
-                
-            helpers: {
-                overlay: {
-                    closeClick: true
-                }
-            }
-        });
+
+        messageProcessor.afterRichElementAttached($middle);
     }
     
     function appendMessage(newMessage, room) {
@@ -335,32 +323,13 @@
         return null;
     }
     
-    function collapseRichContent(content) {
-        content = content.replace(/class="collapsible_box/g, 'style="display: none;" class="collapsible_box');
-        return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
-    }
-
     function processMessage(message, roomName) {
-        var isFromCollapibleContentProvider = isFromCollapsibleContentProvider(message.message),
-            collapseContent = shouldCollapseContent(message.message, roomName);
-
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
 
-        if (collapseContent) {
-            message.message = collapseRichContent(message.message);
-        }
-    }
-
-    function isFromCollapsibleContentProvider(content) {
-        return content.indexOf('class="collapsible_box') > -1; // leaving off trailing " purposefully
-    }
-
-    function shouldCollapseContent(content, roomName) {
-        var collapsible = isFromCollapsibleContentProvider(content),
-            collapseForRoom = roomName ? rc.getRoomPreference(roomName, 'blockRichness') : ru.getActiveRoomPreference('blockRichness');
-
-        return collapsible && collapseForRoom;
+        message.message = collapse.process(message.message, {
+            roomName: roomName
+        });
     }
 
     // notifications

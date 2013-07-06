@@ -53,6 +53,9 @@
             
             beforeProcessRichContent: 'jabbr.processor.beforeProcessRichContent',
             afterProcessRichContent: 'jabbr.processor.afterProcessRichContent',
+            
+            beforeRichElementAttached: 'jabbr.processor.beforeRichElementAttached',
+            afterRichElementAttached: 'jabbr.processor.afterRichElementAttached',
         }
     }
 });
