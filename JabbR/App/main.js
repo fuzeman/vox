@@ -6,7 +6,7 @@
 
         'bootstrap': '../Scripts/bootstrap',
 
-        'jquery': '../Scripts/jquery-1.9.0',
+        'jquery': '../Scripts/jquery-1.9.1',
         'jquery-migrate': '../Scripts/jquery-migrate-1.2.1.min',
         'jquery.cookie': '../Scripts/jquery.cookie',
         'jquery.signalr': '../Scripts/jquery.signalR-2.0.0-rc1-130629-b89',
