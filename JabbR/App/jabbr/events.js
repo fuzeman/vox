@@ -46,5 +46,13 @@
                 lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened',
             },
         },
+        
+        processor: {
+            beforeProcessPlainContent: 'jabbr.processor.beforeProcessPlainContent',
+            afterProcessPlainContent: 'jabbr.processor.afterProcessPlainContent',
+            
+            beforeProcessRichContent: 'jabbr.processor.beforeProcessRichContent',
+            afterProcessRichContent: 'jabbr.processor.afterProcessRichContent',
+        }
     }
 });

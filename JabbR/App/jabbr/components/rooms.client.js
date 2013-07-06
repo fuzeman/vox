@@ -37,13 +37,21 @@
             });
 
             $.each(roomInfo.Owners, function () {
-                users.get(this).roomUsers[room].setOwner();
+                var user = users.get(this);
+                
+                if (user != undefined && room in user.roomUsers) {
+                    user.roomUsers[room].setOwner();
+                } else {
+                    logger.warn('unable to find user "' + this + '"');
+                }
             });
 
+            logger.info('loading recent messages');
             $.each(roomInfo.RecentMessages, function () {
                 this.isHistory = true;
                 $this.trigger(events.rooms.client.createMessage, [this, room]);
             });
+            logger.info('finished loading recent messages');
 
             //TODO: ui.changeRoomTopic(roomInfo);
 

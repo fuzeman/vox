@@ -4,9 +4,10 @@
     'jabbr/templates',
     'jabbr/events',
     'jabbr/utility',
+    'jabbr/messageprocessors/processor',
         
     'jquery.fancybox'
-], function (rc, client, templates, events, utility) {
+], function (rc, client, templates, events, utility, messageProcessor) {
     var ru = null,
         messageSendingDelay = 1500;
 
@@ -219,7 +220,7 @@
                 name: client.chat.state.name,
                 hash: client.chat.state.hash,
                 //mention: mentionStrings[0],
-                message: processContent(clientMessage.content),
+                message: messageProcessor.processPlainContent(clientMessage.content),
                 id: clientMessage.id,
                 date: new Date(),
                 highlight: '',
@@ -298,10 +299,6 @@
     }
 
     // process content
-
-    function processContent(content) {
-        return utility.processContent(content, templates, ru.roomCache);
-    }
     
     function processRichContent($content) {
         // TODO: A bit of a dirty hack, Maybe this could be done another way?
@@ -334,7 +331,7 @@
         } else if (preferredMusicService == 'rdio') {
             return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
                     "frameborder=\"0\"></iframe>";
-        }
+        }it
         return null;
     }
     
@@ -350,30 +347,9 @@
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
 
-        if (!message.isHistory) {
-            message.message = processItalics(message.message);
-        }
-
         if (collapseContent) {
             message.message = collapseRichContent(message.message);
         }
-    }
-
-    function processItalics(content) {
-        var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
-            match = null,
-            result = content;
-
-        //Replaces *test* occurrences in message with <i>test</i> so you can use italics
-        while ((match = re.exec(result)) != null) {
-            if (match[1].length > 0) {
-                var head = result.substring(0, match.index);
-                var tail = result.substring(match.index + match[0].length, result.length);
-                result = head + "<i>" + match[1] + "</i>" + tail;
-            }
-        }
-
-        return result;
     }
 
     function isFromCollapsibleContentProvider(content) {
@@ -396,7 +372,7 @@
 
         var now = new Date(),
         message = {  // TODO: use jabbr/viewmodels/message ?
-            message: options.encoded ? options.content : processContent(options.content),
+            message: options.encoded ? options.content : messageProcessor.processPlainContent(options.content),
             type: type,
             date: now,
             when: now.formatTime(true),

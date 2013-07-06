@@ -121,7 +121,8 @@
         return new Date(this.getTime() + 1000 * 3600 * 24 * days);
     };
 
-    function processContent(content, templates, roomCache) {
+    function processContent(content, templates, roomCache, encoded) {
+        encoded = typeof encoded !== 'undefined' ? encoded : false;
         content = content || '';
 
         var hasNewline = content.indexOf('\n') !== -1;
@@ -134,7 +135,8 @@
             content = utility.parseEmojis(content);
 
             // Html encode
-            content = utility.encodeHtml(content);
+            if (!encoded)
+                content = utility.encodeHtml(content);
 
             // Transform emoji to html
             content = utility.transformEmojis(content);

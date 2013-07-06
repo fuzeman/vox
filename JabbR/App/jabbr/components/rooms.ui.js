@@ -3,6 +3,7 @@
     'jabbr/state',
     'jabbr/events',
     'jabbr/templates',
+    'jabbr/messageprocessors/processor',
     'jabbr/viewmodels/room',
     'jabbr/viewmodels/message',
     'jabbr/components/rooms.client',
@@ -16,7 +17,7 @@
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function (client, state, events, templates, Room, Message, rc, users, lobby, messages, Logger) {
+], function (client, state, events, templates, processor, Room, Message, rc, users, lobby, messages, Logger) {
     var logger = new Logger('jabbr/components/rooms.ui');
     logger.trace('loaded');
 
@@ -541,6 +542,7 @@
     users.initialize(ru);
     lobby.initialize(ru);
     messages.initialize(ru);
+    processor.initialize(ru);
 
     return ru;
 });

@@ -239,6 +239,10 @@
     <Content Include="App\jabbr\components\rooms.ui.js" />
     <Content Include="App\jabbr\components\users.js" />
     <Content Include="App\jabbr\events.js" />
+    <Content Include="App\jabbr\messageprocessors\italics.js" />
+    <Content Include="App\jabbr\messageprocessors\plexr.js" />
+    <Content Include="App\jabbr\messageprocessors\processor.js" />
+    <Content Include="App\jabbr\messageprocessors\processor.rich.js" />
     <Content Include="App\jabbr\templates.js" />
     <Content Include="App\jabbr\viewmodels\message.js" />
     <Content Include="App\jabbr\viewmodels\room-user.js" />
