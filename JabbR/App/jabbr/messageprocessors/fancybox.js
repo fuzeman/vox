@@ -6,12 +6,8 @@
 ], function (events, $) {
     return function (processor, ru) {
         processor.bind(events.processor.afterRichElementAttached, function (event, $middle) {
-            console.log('fancybox attached');
-            console.log($middle);
-            var $imageContent = $('a.imageContent', $middle);
-            console.log($imageContent);
-            $imageContent.fancybox({
-                /*openEffect: 'elastic',
+            $('a.imageContent', $middle).fancybox({
+                openEffect: 'elastic',
                 openSpeed: 400,
 
                 closeEffect: 'elastic',
@@ -21,7 +17,7 @@
                     overlay: {
                         closeClick: true
                     }
-                }*/
+                }
             });
         });
     }
