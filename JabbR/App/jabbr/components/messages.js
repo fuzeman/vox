@@ -288,41 +288,6 @@
 
     // process content
     
-    function processRichContent($content) {
-        // TODO: A bit of a dirty hack, Maybe this could be done another way?
-        var $plexrResult = $("PlexrContentProviderResult", $content);
-
-        if ($plexrResult.length == 1) {
-            var result = processPlexrContentResult($plexrResult);
-            if (result !== null) {
-                $("PlexrContentProviderResult", $content).replaceWith(result);
-                var curMusicService = rc.getPreference('music_service');
-                $('.collapsible_title', $content).text(
-                    curMusicService.charAt(0).toUpperCase() + curMusicService.slice(1) +
-                    ' (Plexr) (click to show/hide)');
-            } else {
-                return null;
-            }
-            return $content;
-        } else {
-            return $content;
-        }
-    }
-    
-    function processPlexrContentResult($plexrResult) {
-        var preferredMusicService = rc.getPreference('music_service');
-        var $serviceDetails = $plexrResult.find(preferredMusicService);
-
-        if (preferredMusicService == 'spotify') {
-            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() + "\" width=\"300\" height=\"380\" " +
-                    "frameborder=\"0\" allowtransparency=\"true\"></iframe>";
-        } else if (preferredMusicService == 'rdio') {
-            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
-                    "frameborder=\"0\"></iframe>";
-        }it
-        return null;
-    }
-    
     function processMessage(message, roomName) {
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();

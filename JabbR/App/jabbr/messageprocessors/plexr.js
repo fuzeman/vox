@@ -1,9 +1,43 @@
 ﻿define([
     'jabbr/events'
-], function(events) {
+], function (events) {
+    function processResult($plexrResult, service) {
+        var $serviceDetails = $plexrResult.find(service);
+
+        if (service == 'spotify') {
+            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() + "\" width=\"300\" height=\"380\" " +
+                    "frameborder=\"0\" allowtransparency=\"true\"></iframe>";
+        } else if (service == 'rdio') {
+            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
+                    "frameborder=\"0\"></iframe>";
+        }
+        return null;
+    }
+
     return function (processor, ru) {
-        //processor.bind(events.processor.beforeProcessRichContent, function(event, handler) {
-        //
-        //});
+        processor.bind(events.processor.beforeProcessRichContent, function (event, handler) {
+            var $content = $(handler.get());
+            var $plexrResult = $("PlexrContentProviderResult", $content);
+
+            if ($plexrResult.length == 1) {
+                console.log("Processing plexr result...");
+                
+                var service = handler.ru.client.getPreference('music_service') || 'spotify';
+                var result = processResult($plexrResult, service);
+                
+                if (result !== null) {
+                    $("PlexrContentProviderResult", $content).replaceWith(result);
+
+                    $('.collapsible_title', $content).text(
+                        service.charAt(0).toUpperCase() + service.slice(1) +
+                            ' (Plexr) (click to show/hide)'
+                    );
+                } else {
+                    $("PlexrContentProviderResult", $content).replaceWith("An error occured while trying to process the content.");
+                }
+                
+                handler.set($content[0].outerHTML);
+            }
+        });
     }
 });
