@@ -1,4 +1,5 @@
 ﻿define([
+    'logger',
     'jabbr/client',
     'jabbr/state',
     'jabbr/events',
@@ -10,14 +11,23 @@
     'jabbr/components/users',
     'jabbr/components/lobby',
     'jabbr/components/messages',
-    'logger',
+    'jabbr/components/notifications',
     
     'jquery-migrate',
     'jquery.history',
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function (client, state, events, templates, processor, Room, Message, rc, users, lobby, messages, Logger) {
+], function (Logger,
+    // Core
+    client, state, events, templates, processor,
+    
+    // View Models
+    Room, Message,
+    
+    // Components
+    rc, users, lobby, messages, notifications
+) {
     var logger = new Logger('jabbr/components/rooms.ui');
     logger.trace('loaded');
 
@@ -533,6 +543,16 @@
         },
         
         scrollToBottom: scrollToBottom,
+        
+        scrollIfNecessary: function(callback, room) {
+            var nearEnd = isNearTheEnd(room);
+
+            callback();
+
+            if (nearEnd) {
+                this.scrollToBottom(room);
+            }
+        },
 
         bind: function(eventType, handler) {
             $this.bind(eventType, handler);
@@ -543,6 +563,7 @@
     lobby.initialize(ru);
     messages.initialize(ru);
     processor.initialize(ru);
+    notifications.initialize(ru);
 
     return ru;
 });

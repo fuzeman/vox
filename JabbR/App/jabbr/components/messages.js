@@ -3,10 +3,15 @@
     'jabbr/client',
     'jabbr/templates',
     'jabbr/events',
+    'jabbr/components/notifications',
     'jabbr/utility',
+    'jabbr/viewmodels/message',
     'jabbr/messageprocessors/processor',
     'jabbr/messageprocessors/collapse'
-], function (rc, client, templates, events, utility, messageProcessor, collapse) {
+], function (rc, client, templates, events, notifications, utility,
+    Message,
+    messageProcessor, collapse
+) {
     var ru = null,
         messageSendingDelay = 1500;
 
@@ -16,9 +21,6 @@
             previousUser = null,
             previousTimestamp = new Date().addDays(1), // Tomorrow so we always see a date line
             showUserName = true,
-            $message = null,
-            isMention = message.highlight,
-            notify = rc.getRoomPreference(roomName, 'notify') || 'mentions',
             isNotification = message.messageType === 1;
 
         // bounce out of here if the room is closed
@@ -55,8 +57,6 @@
             room.addSeparator();
         }
 
-        var currentRoomName = ru.getCurrentRoomElements().getName();
-
         if (isNotification === true) {
             var model = {
                 id: message.id,
@@ -81,29 +81,8 @@
             addChatMessageContent(message.id, message.htmlContent, room.getName());
         }
 
-        var roomFocus = roomName == currentRoomName && focus;
-
-        if (room.isInitialized()) {
-            if (isMention) {
-                // Mention Sound
-                if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
-                    notify(true);
-                }
-                // Mention Popup
-                if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
-                    toast(message, true, roomName);
-                }
-            } else if (notify == 'all') {
-                // All Sound
-                if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
-                    notifyRoom(roomName);
-                }
-                // All Popup
-                if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
-                    toastRoom(roomName, message);
-                }
-            }
-        }
+        // Trigger notification
+        notifications.messageNotification(message, room);
     }
     
     function addChatMessageContent(id, content, roomName) {
@@ -196,7 +175,6 @@
         }
 
         if (msg[0] !== '/') {
-
             // if you're in the lobby, you can't send mesages (only commands)
             if (client.chat.state.activeRoom === undefined) {
                 addMessage('You cannot send messages within the Lobby', 'error');
@@ -207,7 +185,6 @@
             var viewModel = {
                 name: client.chat.state.name,
                 hash: client.chat.state.hash,
-                //mention: mentionStrings[0],
                 message: messageProcessor.processPlainContent(clientMessage.content),
                 id: clientMessage.id,
                 date: new Date(),
@@ -217,7 +194,6 @@
 
             if (type == 'append') {
                 addChatMessage(viewModel, clientMessage.room);
-                //incrementMessageCount();
             } else {
                 replaceMessage(viewModel);
             }
@@ -240,30 +216,36 @@
 
         rc.historyLocation = 0;
 
+        sendClientMessage(clientMessage, messageCompleteTimeout);
+        historyPush(type, clientMessage);
+    }
+
+    function sendClientMessage(clientMessage, messageCompleteTimeout) {
         try {
             client.chat.server.send(clientMessage)
-                .done(function () {
+                .done(function() {
                     if (messageCompleteTimeout) {
                         clearTimeout(messageCompleteTimeout);
-                        delete rc.pendingMessages[id];
+                        delete rc.pendingMessages[clientMessage.id];
                     }
 
-                    confirmMessage(id);
+                    confirmMessage(clientMessage.id);
                 })
-                .fail(function (e) {
-                    failMessage(id);
+                .fail(function(e) {
+                    failMessage(clientMessage.id);
                     addMessage(e, 'error');
                 });
-        }
-        catch (e) {
+        } catch(e) {
             connection.hub.log('Failed to send via websockets');
 
-            clearTimeout(rc.pendingMessages[id]);
-            failMessage(id);
+            clearTimeout(rc.pendingMessages[clientMessage.id]);
+            failMessage(clientMessage.id);
         }
+    }
 
-        // Store message history
+    function historyPush(type, clientMessage) {
         if (type == 'replace') {
+            // Search for message in history and replace it
             for (var i = 0; i < (rc.messageHistory[client.chat.state.activeRoom] || []).length; i++) {
                 if (rc.messageHistory[client.chat.state.activeRoom][i].id == clientMessage.id) {
                     rc.messageHistory[client.chat.state.activeRoom][i] = clientMessage;
@@ -271,9 +253,11 @@
             }
         }
         if (type == 'append') {
+            // Ensure room exists
             if (rc.messageHistory[client.chat.state.activeRoom] === undefined) {
                 rc.messageHistory[client.chat.state.activeRoom] = [];
             }
+            
             rc.messageHistory[client.chat.state.activeRoom].push(clientMessage);
         }
 
@@ -286,8 +270,6 @@
                      .removeClass('loading');
     }
 
-    // process content
-    
     function processMessage(message, roomName) {
         message.when = message.date.formatTime(true);
         message.fulldate = message.date.toLocaleString();
@@ -295,6 +277,10 @@
         message.message = collapse.process(message.message, {
             roomName: roomName
         });
+    }
+
+    function messageExists(id) {
+        return $('#m-' + id).length > 0;
     }
 
     // notifications
@@ -349,6 +335,30 @@
         // make sure last notification is visible
         room.messages.scrollTop(scrollTop + topAfter - topBefore + $notification.height());
     }
+
+    //
+    // Hub Events
+    //
+
+    client.chat.client.addMessage = function(message, room) {
+        var viewModel = new Message(ru, message),
+            edited = messageExists(viewModel.id);
+
+        ru.scrollIfNecessary(function() {
+            // Update your message when it comes from the server
+            if (edited) {
+                replaceMessage(viewModel);
+            } else {
+                addChatMessage(viewModel, room);
+            }
+        }, room);
+
+        var isMentioned = viewModel.highlight === 'highlight';
+
+        if (!viewModel.isMine && !edited) {
+            events.trigger(events.ui.updateUnread, [room, isMentioned]);
+        }
+    };
 
     return {
         initialize: function(roomUi) {

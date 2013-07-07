@@ -107,12 +107,14 @@
     Logger.prototype.write = function (level, message) {
         if (this.traceEnabled) {
             var caller = getCaller();
-            
-            console.log(
-                "[" + padRight(this.tag, 32) + "]  " +
-                "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
-                "(" + padRight(toLevelString(level), 5) + ")    " + message
-            );
+
+            if (caller != null) {
+                console.log(
+                    "[" + padRight(this.tag, 32) + "]  " +
+                    "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
+                    "(" + padRight(toLevelString(level), 5) + ")    " + message
+                );
+            }
         } else {
             console.log(
                 "[" + padRight(this.tag, 32) + "]  " +

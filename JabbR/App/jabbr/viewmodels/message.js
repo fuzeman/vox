@@ -1,11 +1,18 @@
 ﻿define([
+    'logger',
     'jabbr/client',
     'jabbr/utility',
     'jabbr/templates',
     'jabbr/messageprocessors/processor'
-], function(client, utility, templates, messageProcessor) {
+], function (Logger, client, utility, templates, messageProcessor) {
+    var logger = new Logger('jabbr/viewmodels/message');
 
     function Message(ru, data) {
+        if (data == null) {
+            logger.trace('invalid message data');
+            return;
+        }
+
         var reUsername = new RegExp("\\b@?" + client.chat.state.name.replace(/\./, '\\.') + "\\b", "i");
         //var reCustom = new RegExp(customMentionRegex, "i");
 
