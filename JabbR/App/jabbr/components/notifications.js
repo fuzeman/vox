@@ -4,9 +4,8 @@ define([
     'jabbr/client',
     'jabbr/events'
 ], function ($, client, events) {
-    var $unreadNotificationCount = $('#notification-unread-count');
-
-    var ru = null,
+    var $unreadNotificationCount = $('#notification-unread-count'),
+        ru = null,
         rc = null;
 
     function setUnreadNotifications(unreadCount) {
@@ -33,25 +32,28 @@ define([
                 isMention = message.highlight,
                 notify = rc.getRoomPreference(roomName, 'notify') || 'mentions',
                 currentRoomName = ru.getCurrentRoomElements().getName(),
-                roomFocus = roomName === currentRoomName && focus;
+                roomFocus = roomName === currentRoomName && ru.ui.isFocused();
 
             if (room.isInitialized()) {
+                var hasSound = rc.getRoomPreference(roomName, 'hasSound'),
+                    canToast = rc.getRoomPreference(roomName, 'canToast');
+
                 if (isMention) {
                     // Mention Sound
-                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
+                    if (roomFocus === false && hasSound === true) {
                         notify(true);
                     }
                     // Mention Popup
-                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
+                    if (roomFocus === false && canToast === true) {
                         toast(message, true, roomName);
                     }
                 } else if (notify === 'all') {
                     // All Sound
-                    if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
+                    if (roomFocus === false && hasSound === true) {
                         notifyRoom(roomName);
                     }
                     // All Popup
-                    if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
+                    if (roomFocus === false && canToast === true) {
                         toastRoom(roomName, message);
                     }
                 }

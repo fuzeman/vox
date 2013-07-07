@@ -33,7 +33,8 @@ define([
     var logger = new Logger('jabbr/components/rooms.ui');
     logger.trace('loaded');
 
-    var ru = {};
+    var ru = {},
+        ui;
 
     //var events = {
     //    activateRoom: 'jabbr.components.rooms.ui.activateRoom',
@@ -460,7 +461,7 @@ define([
         logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
         var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
-        if (focus && room.isActive()) {
+        if (ui.isFocused() && room.isActive()) {
             return;
         }
 
@@ -496,9 +497,14 @@ define([
     });
 
     ru = {
+        ui: ui,
         client: rc,
         messages: messages,
         lobby: lobby,
+
+        initialize: function (initUi) {
+            ui = initUi;
+        },
 
         getRoomElements: getRoomElements,
         getCurrentRoomElements: getCurrentRoomElements,

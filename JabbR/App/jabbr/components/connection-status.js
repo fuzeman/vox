@@ -1,4 +1,4 @@
-﻿/*global define, clearTimeout*/
+﻿/*global define, setTimeout, clearTimeout*/
 define([
     'jabbr/client',
     'jabbr/ui',

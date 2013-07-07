@@ -1,4 +1,4 @@
-﻿/*global define, clearTimeout*/
+﻿/*global define, window, clearTimeout, moment*/
 define([
     'jquery',
     'jabbr/components/rooms.client',

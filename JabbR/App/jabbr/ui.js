@@ -1,4 +1,4 @@
-﻿/*global define, document*/
+﻿/*global define, window, document, setTimeout*/
 define([
     'jquery',
     'jabbr/state',
@@ -227,6 +227,13 @@ define([
         return false;
     });
 
-    return {
+    var ui = {
+        isFocused: function () {
+            return focus;
+        }
     };
+
+    ru.initialize(ui);
+
+    return ui;
 });

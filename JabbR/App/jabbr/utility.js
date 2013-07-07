@@ -1,4 +1,4 @@
-﻿/*global define*/
+﻿/*global define, window, navigator, moment, linkify, markdown*/
 define([
     'jquery',
     'jabbr/components/emoji',

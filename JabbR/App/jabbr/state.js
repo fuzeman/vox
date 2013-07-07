@@ -1,4 +1,4 @@
-﻿/*global define*/
+﻿/*global define, window*/
 define(['jquery', 'jquery.cookie'], function ($) {
     var stateCookie = null;
     var state = null;
