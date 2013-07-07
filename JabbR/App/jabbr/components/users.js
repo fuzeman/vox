@@ -1,18 +1,19 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'jabbr/viewmodels/user',
     'jabbr/viewmodels/room-user',
     'logger'
-], function (User, RoomUser, Logger) {
+], function ($, User, RoomUser, Logger) {
     var logger = new Logger('jabbr/components/users');
     logger.trace('loaded');
 
     // Templates
     var templates = {
-        user: $('#new-user-template'),
+        user: $('#new-user-template')
     };
-    
+
     // Elements
-    
 
     // Variables
     var ru = null,
@@ -20,25 +21,25 @@
 
     function createUser(userdata) {
         if (userdata.Name in users) {
-            logger.trace("User already exists, returning existing one.")
+            logger.trace("User already exists, returning existing one.");
             return users[userdata.Name];
         }
-        
+
         logger.trace("Creating User userdata.Name: '" + userdata.Name + "'");
 
         users[userdata.Name] = new User(ru, userdata);
 
         return users[userdata.Name];
     }
-    
+
     function createRoomUser(userdata, roomName) {
         var user = createUser(userdata);
-        
+
         if (roomName in user.roomUsers) {
-            logger.trace("RoomUser already exists, returning existing one.")
+            logger.trace("RoomUser already exists, returning existing one.");
             return user.roomUsers[roomName];
         }
-        
+
         logger.trace("Creating RoomUser userdata.Name: '" + userdata.Name + "', roomName: '" + roomName + "'");
 
         var room = ru.getRoomElements(roomName);
@@ -63,7 +64,7 @@
         $roomUser.data('mention', user.mention);
 
         roomUser.$roomUser = $roomUser;
-        
+
         room.addUser(roomUser);
 
         roomUser.updateNote();
@@ -72,7 +73,7 @@
 
         return user.roomUsers[roomName];
     }
-    
+
     function remove(user, roomName) {
         // TODO: Update this to user 'users' dictionary
         var room = ru.getRoomElements(roomName),
@@ -90,26 +91,26 @@
                 }
             });
     }
-    
+
     //
     // Event Handlers
     //
-    
+
     // Hub
-    
+
     // TODO: Handle user update events here
 
     return {
-        initialize: function(roomUi) {
+        initialize: function (roomUi) {
             ru = roomUi;
         },
         remove: remove,
-        
-        get: function(name) {
+
+        get: function (name) {
             return users[name];
         },
-        
+
         createUser: createUser,
-        createRoomUser: createRoomUser,
-    }
+        createRoomUser: createRoomUser
+    };
 });

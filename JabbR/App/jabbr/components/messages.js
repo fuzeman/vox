@@ -1,4 +1,6 @@
-﻿define([
+﻿/*global define, clearTimeout*/
+define([
+    'jquery',
     'jabbr/components/rooms.client',
     'jabbr/client',
     'jabbr/templates',
@@ -8,9 +10,8 @@
     'jabbr/viewmodels/message',
     'jabbr/messageprocessors/processor',
     'jabbr/messageprocessors/collapse'
-], function (rc, client, templates, events, notifications, utility,
-    Message,
-    messageProcessor, collapse
+], function ($, rc, client, templates, events, notifications, utility,
+    Message, messageProcessor, collapse
 ) {
     var ru = null,
         messageSendingDelay = 1500;
@@ -67,8 +68,7 @@
             };
 
             addMessage(model, 'postedNotification', roomName);
-        }
-        else {
+        } else {
             appendMessage(templates.message.tmpl(message), room);
 
             // TODO: Add message to ticker
@@ -84,7 +84,7 @@
         // Trigger notification
         notifications.messageNotification(message, room);
     }
-    
+
     function addChatMessageContent(id, content, roomName) {
         var $message = $('#m-' + id),
             $middle = $message.find('.middle'),
@@ -96,8 +96,7 @@
 
         if ($middle.length === 0) {
             $body.append('<p>' + content + '</p>');
-        }
-        else {
+        } else {
             $middle.append(
                 messageProcessor.beforeRichElementAttached($(content))
             );
@@ -105,7 +104,7 @@
 
         messageProcessor.afterRichElementAttached($middle);
     }
-    
+
     function appendMessage(newMessage, room) {
         // Determine if we need to show a new date header: Two conditions
         // for instantly skipping are if this message is a date header, or
@@ -130,7 +129,7 @@
 
         $(newMessage).appendTo(room.messages);
     }
-    
+
     function addMessage(content, type, roomName) {
         var room = roomName ? ru.getRoomElements(roomName) : ru.getCurrentRoomElements(),
             nearEnd = room.isNearTheEnd(),
@@ -150,13 +149,13 @@
 
         return $element;
     }
-    
+
     function sendMessage(msg) {
         events.trigger(events.ui.clearUnread);
 
         var id, clientMessage, type, messageCompleteTimeout = null;
 
-        if (typeof msg == 'object' && 'content' in msg && msg[0] !== '/') {
+        if (typeof msg === 'object' && 'content' in msg && msg[0] !== '/') {
             type = 'replace';
             id = msg.id;
             clientMessage = msg;
@@ -192,7 +191,7 @@
                 isMine: true
             };
 
-            if (type == 'append') {
+            if (type === 'append') {
                 addChatMessage(viewModel, clientMessage.room);
             } else {
                 replaceMessage(viewModel);
@@ -203,8 +202,7 @@
             messageCompleteTimeout = window.setTimeout(function () {
                 if ($.connection.hub.state === $.connection.connectionState.reconnecting) {
                     failMessage(id);
-                }
-                else {
+                } else {
                     // If after a second
                     markMessagePending(id);
                 }
@@ -223,7 +221,7 @@
     function sendClientMessage(clientMessage, messageCompleteTimeout) {
         try {
             client.chat.server.send(clientMessage)
-                .done(function() {
+                .done(function () {
                     if (messageCompleteTimeout) {
                         clearTimeout(messageCompleteTimeout);
                         delete rc.pendingMessages[clientMessage.id];
@@ -231,12 +229,12 @@
 
                     confirmMessage(clientMessage.id);
                 })
-                .fail(function(e) {
+                .fail(function (e) {
                     failMessage(clientMessage.id);
                     addMessage(e, 'error');
                 });
-        } catch(e) {
-            connection.hub.log('Failed to send via websockets');
+        } catch (e) {
+            client.connection.hub.log('Failed to send via websockets');
 
             clearTimeout(rc.pendingMessages[clientMessage.id]);
             failMessage(clientMessage.id);
@@ -244,7 +242,7 @@
     }
 
     function historyPush(type, clientMessage) {
-        if (type == 'replace') {
+        if (type === 'replace') {
             // Search for message in history and replace it
             for (var i = 0; i < (rc.messageHistory[client.chat.state.activeRoom] || []).length; i++) {
                 if (rc.messageHistory[client.chat.state.activeRoom][i].id == clientMessage.id) {
@@ -257,7 +255,7 @@
             if (rc.messageHistory[client.chat.state.activeRoom] === undefined) {
                 rc.messageHistory[client.chat.state.activeRoom] = [];
             }
-            
+
             rc.messageHistory[client.chat.state.activeRoom].push(clientMessage);
         }
 
@@ -317,7 +315,7 @@
                 .removeClass('collapse');
         }
     }
-    
+
     function expandNotifications($notification) {
         // expand collapsed notifications
         var $notifications = $notification.prevUntil(':not(.notification)'),
@@ -340,11 +338,11 @@
     // Hub Events
     //
 
-    client.chat.client.addMessage = function(message, room) {
+    client.chat.client.addMessage = function (message, room) {
         var viewModel = new Message(ru, message),
             edited = messageExists(viewModel.id);
 
-        ru.scrollIfNecessary(function() {
+        ru.scrollIfNecessary(function () {
             // Update your message when it comes from the server
             if (edited) {
                 replaceMessage(viewModel);
@@ -361,12 +359,12 @@
     };
 
     return {
-        initialize: function(roomUi) {
+        initialize: function (roomUi) {
             ru = roomUi;
         },
 
         addChatMessage: addChatMessage,
         addMessage: addMessage,
         sendMessage: sendMessage
-    }
+    };
 });

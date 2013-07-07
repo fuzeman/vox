@@ -1,6 +1,7 @@
-﻿define([
+﻿/*global define*/
+define([
     'jquery'
-], function($) {
+], function ($) {
     var trimRoomHistoryMaxMessages = 200;
 
     function glowTab($tab, n) {
@@ -10,7 +11,7 @@
         }
 
         // Go light
-        $tab.animate({ backgroundColor: '#e5e5e5', color: '#575757' }, 1600, function() {
+        $tab.animate({ backgroundColor: '#e5e5e5', color: '#575757' }, 1600, function () {
             // Stop if we're not unread anymore
             if (!$tab.hasClass('unread')) {
                 return;
@@ -21,7 +22,7 @@
             // Check if we're on our last glow
             if (n !== 0) {
                 // Go dark
-                $tab.animate({ backgroundColor: '#219FC2', color: '#ffffff' }, 1600, function() {
+                $tab.animate({ backgroundColor: '#219FC2', color: '#ffffff' }, 1600, function () {
                     // Glow the tab again
                     glowTab($tab, n);
                 });
@@ -47,45 +48,44 @@
         this.templates = {
             separator: $('#message-separator-template')
         };
-
     }
 
-    Room.prototype.isLocked = function() {
+    Room.prototype.isLocked = function () {
         return this.tab.hasClass('locked');
     };
 
-    Room.prototype.isLobby = function() {
+    Room.prototype.isLobby = function () {
         return this.tab.hasClass('lobby');
     };
 
-    Room.prototype.hasUnread = function() {
+    Room.prototype.hasUnread = function () {
         return this.tab.hasClass('unread');
     };
 
-    Room.prototype.hasMessages = function() {
+    Room.prototype.hasMessages = function () {
         return this.tab.data('messages');
     };
 
-    Room.prototype.updateMessages = function(value) {
+    Room.prototype.updateMessages = function (value) {
         this.tab.data('messages', value);
     };
 
-    Room.prototype.getUnread = function() {
+    Room.prototype.getUnread = function () {
         return this.tab.data('unread') || 0;
     };
 
-    Room.prototype.hasSeparator = function() {
+    Room.prototype.hasSeparator = function () {
         return this.messages.find('.message-separator').length > 0;
     };
 
-    Room.prototype.needsSeparator = function() {
+    Room.prototype.needsSeparator = function () {
         if (this.isActive()) {
             return false;
         }
         return this.isInitialized() && this.getUnread() === 5;
     };
 
-    Room.prototype.addSeparator = function() {
+    Room.prototype.addSeparator = function () {
         if (this.isLobby()) {
             return;
         }
@@ -100,13 +100,13 @@
         this.scrollToBottom();
     };
 
-    Room.prototype.removeSeparator = function() {
-        this.messages.find('.message-separator').fadeOut(2000, function() {
+    Room.prototype.removeSeparator = function () {
+        this.messages.find('.message-separator').fadeOut(2000, function () {
             $(this).remove();
         });
     };
 
-    Room.prototype.updateUnread = function(isMentioned) {
+    Room.prototype.updateUnread = function (isMentioned) {
         var $tab = this.tab.addClass('unread'),
             $content = $tab.find('.content'),
             unread = ($tab.data('unread') || 0) + 1,
@@ -124,7 +124,7 @@
         }
     };
 
-    Room.prototype.scrollToBottom = function() {
+    Room.prototype.scrollToBottom = function () {
         // IE will repaint if we do the Chrome bugfix and look jumpy
         if ($.browser.webkit) {
             // Chrome fix for hiding and showing scroll areas
@@ -133,45 +133,45 @@
         this.messages.scrollTop(this.messages[0].scrollHeight);
     };
 
-    Room.prototype.isNearTheEnd = function() {
+    Room.prototype.isNearTheEnd = function () {
         return this.messages.isNearTheEnd();
     };
 
-    Room.prototype.getName = function() {
+    Room.prototype.getName = function () {
         return this.tab.data('name');
     };
 
-    Room.prototype.isActive = function() {
+    Room.prototype.isActive = function () {
         return this.tab.hasClass('current');
     };
 
-    Room.prototype.exists = function() {
+    Room.prototype.exists = function () {
         return this.tab.length > 0;
     };
 
-    Room.prototype.isClosed = function() {
+    Room.prototype.isClosed = function () {
         return this.tab.attr('data-closed') === 'true';
     };
 
-    Room.prototype.close = function() {
+    Room.prototype.close = function () {
         this.tab.attr('data-closed', true);
         this.tab.addClass('closed');
         this.tab.find('.readonly').removeClass('hide');
     };
 
-    Room.prototype.unClose = function() {
+    Room.prototype.unClose = function () {
         this.tab.attr('data-closed', false);
         this.tab.removeClass('closed');
         this.tab.find('.readonly').addClass('hide');
     };
 
-    Room.prototype.clear = function() {
+    Room.prototype.clear = function () {
         this.messages.empty();
         this.owners.empty();
         this.activeUsers.empty();
     };
 
-    Room.prototype.makeInactive = function() {
+    Room.prototype.makeInactive = function () {
         this.tab.removeClass('current');
 
         this.messages.removeClass('current')
@@ -184,7 +184,7 @@
             .hide();
     };
 
-    Room.prototype.makeActive = function() {
+    Room.prototype.makeActive = function () {
         var currUnread = this.getUnread(),
             lastUnread = this.messages.find('.message-separator').data('unread') || 0;
 
@@ -214,32 +214,32 @@
         }
     };
 
-    Room.prototype.setInitialized = function() {
+    Room.prototype.setInitialized = function () {
         this.tab.data('initialized', true);
     };
 
-    Room.prototype.isInitialized = function() {
+    Room.prototype.isInitialized = function () {
         return this.tab.data('initialized') === true;
     };
 
     // Users
-    Room.prototype.getUser = function(userName) {
+    Room.prototype.getUser = function (userName) {
         return this.users.find(getUserClassName(userName));
     };
 
-    Room.prototype.getUserReferences = function(userName) {
+    Room.prototype.getUserReferences = function (userName) {
         return $.merge(this.getUser(userName),
             this.messages.find(getUserClassName(userName)));
     };
 
-    Room.prototype.setLocked = function() {
+    Room.prototype.setLocked = function () {
         this.tab.addClass('locked');
         this.tab.find('.lock').removeClass('hide');
     };
 
-    Room.prototype.setListState = function(list) {
+    Room.prototype.setListState = function (list) {
         var emptyStatus = list.children('li.empty'),
-            visibleItems = list.children('li:not(.empty)').filter(function() { return $(this).css('display') !== 'none'; });
+            visibleItems = list.children('li:not(.empty)').filter(function () { return $(this).css('display') !== 'none'; });
 
         if (visibleItems.length > 0) {
             emptyStatus.remove();
@@ -258,7 +258,7 @@
         }
     };
 
-    Room.prototype.changeIdle = function($user, isActive) {
+    Room.prototype.changeIdle = function ($user, isActive) {
         if (isActive) {
             $user.removeClass('idle');
         } else {
@@ -266,7 +266,7 @@
         }
     };
 
-    Room.prototype.addUserToList = function($user, list) {
+    Room.prototype.addUserToList = function ($user, list) {
         var oldParentList = $user.parent('ul');
         $user.appendTo(list);
         this.setListState(list);
@@ -276,11 +276,11 @@
         this.sortList(list, $user);
     };
 
-    Room.prototype.appearsInList = function($user, list) {
+    Room.prototype.appearsInList = function ($user, list) {
         return $user.parent('ul').attr('id') === list.attr('id');
     };
 
-    Room.prototype.updateUserStatus = function($user) {
+    Room.prototype.updateUserStatus = function ($user) {
         var owner = $user.data('owner') || false;
 
         if (owner === true) {
@@ -302,7 +302,7 @@
         }
     };
 
-    Room.prototype.sortLists = function(user) {
+    Room.prototype.sortLists = function (user) {
         var isOwner = $(user).data('owner');
         if (isOwner) {
             this.sortList(this.owners, user);
@@ -311,7 +311,7 @@
         }
     };
 
-    Room.prototype.sortList = function(listToSort, user) {
+    Room.prototype.sortList = function (listToSort, user) {
         var listItems = listToSort.children('li:not(.empty)').get(),
             userName = ($(user).data('name') || '').toString(),
             userActive = $(user).data('active');
@@ -334,15 +334,15 @@
         }
     };
 
-    Room.prototype.canTrimHistory = function() {
+    Room.prototype.canTrimHistory = function () {
         return this.tab.data('trimmable') !== false;
     };
 
-    Room.prototype.setTrimmable = function(canTrimMessages) {
+    Room.prototype.setTrimmable = function (canTrimMessages) {
         this.tab.data('trimmable', canTrimMessages);
     };
 
-    Room.prototype.trimHistory = function(numberOfMessagesToKeep) {
+    Room.prototype.trimHistory = function (numberOfMessagesToKeep) {
         var lastIndex = null,
             $messagesToRemove = null,
             $roomMessages = this.messages.find('li'),

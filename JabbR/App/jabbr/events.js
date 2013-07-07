@@ -1,4 +1,5 @@
-﻿define(['jquery'], function ($) {
+﻿/*global define*/
+define(['jquery'], function ($) {
     var root = $(this);
 
     return {
@@ -23,39 +24,39 @@
             disconnected: 'jabbr.client.disconnected',
             reconnecting: 'jabbr.client.reconnecting',
 
-            loggedOn: 'jabbr.client.loggedOn',
+            loggedOn: 'jabbr.client.loggedOn'
         },
-        
+
         ui: {
             // Handles
             clearUnread: 'jabbr.core.ui.clearUnread',
             updateUnread: 'jabbr.core.ui.updateUnread',
-            updateTitle: 'jabbr.core.ui.updateTitle',
-            
+            updateTitle: 'jabbr.core.ui.updateTitle'
+
             // Emits
         },
-        
+
         rooms: {
             ui: {
                 updateUnread: 'jabbr.components.rooms.ui.updateUnread',
-                activateRoom: 'jabbr.components.rooms.ui.activateRoom',
+                activateRoom: 'jabbr.components.rooms.ui.activateRoom'
             },
             client: {
                 scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
                 createMessage: 'jabbr.components.rooms.client.addMessage',
-                lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened',
-            },
+                lobbyOpened: 'jabbr.components.rooms.client.lobbyOpened'
+            }
         },
-        
+
         processor: {
             beforeProcessPlainContent: 'jabbr.processor.beforeProcessPlainContent',
             afterProcessPlainContent: 'jabbr.processor.afterProcessPlainContent',
-            
+
             beforeProcessRichContent: 'jabbr.processor.beforeProcessRichContent',
             afterProcessRichContent: 'jabbr.processor.afterProcessRichContent',
-            
+
             beforeRichElementAttached: 'jabbr.processor.beforeRichElementAttached',
-            afterRichElementAttached: 'jabbr.processor.afterRichElementAttached',
+            afterRichElementAttached: 'jabbr.processor.afterRichElementAttached'
         }
-    }
+    };
 });

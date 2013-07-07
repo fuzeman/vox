@@ -1,8 +1,9 @@
-﻿define([
+﻿/*global define, document*/
+define([
     'jquery',
     'logger',
     'jabbr/events',
-    
+    // Libraries
     'jquery.cookie',
     'jquery.signalr',
     'noext!signalr/hubs'
@@ -18,7 +19,7 @@
         initial = true;
 
     var privateRooms = null;
-    
+
     //
     // Private Functions
     //
@@ -27,7 +28,7 @@
     // Chat Event Handlers
     //
 
-    chat.client.logOn = function(rooms, myRooms, mentions) {
+    chat.client.logOn = function (rooms, myRooms, mentions) {
         logger.trace('logOn');
 
         privateRooms = myRooms;
@@ -65,7 +66,7 @@
                 // ui.showReloadMessageNotification();
 
                 // Turn the firehose back on
-                chat.server.join(true).fail(function (e) {
+                chat.server.join(true).fail(function () {
                     // So refresh the page, our auth token is probably gone
                     //performLogout();
                 });
@@ -85,10 +86,10 @@
         connection.hub.qs = "version=" + window.jabbrVersion;
     }
     initialize();
-    
+
     function performLogout() {
         var d = $.Deferred();
-        
+
         $.post('account/logout', {}).done(function () {
             d.resolveWith(null);
             document.location = document.location.pathname;
@@ -96,14 +97,13 @@
 
         return d.promise();
     }
-    
+
     function focused() {
         events.trigger(events.ui.updateUnread);
 
         try {
             chat.server.updateActivity();
-        }
-        catch (e) {
+        } catch (e) {
             connection.hub.log('updateActivity failed');
         }
     }
@@ -121,22 +121,22 @@
 
     return {
         events: events,
-        
+
         $this: $this,
         connection: connection,
         chat: chat,
-        
-        getInitial: function() {
+
+        getInitial: function () {
             return initial;
         },
-        
-        getPrivateRooms: function() {
+
+        getPrivateRooms: function () {
             return privateRooms;
         },
 
-        start: function() {
-            connection.hub.start(options).done(function() {
-                chat.server.join().fail(function(e) {
+        start: function () {
+            connection.hub.start(options).done(function () {
+                chat.server.join().fail(function () {
                     logger.warn('join failed');
                 }).done(function () {
                     $this.trigger(events.client.started);
@@ -146,17 +146,17 @@
             connection.hub.stateChanged(stateChanged);
             connection.hub.disconnected(disconnected);
 
-            connection.hub.error(function(err) {
+            connection.hub.error(function () {
                 // Make all pending messages failed if there's an error
                 //failPendingMessages();
             });
         },
-        
+
         focused: focused,
         logout: logout,
 
-        bind: function(eventType, handler) {
+        bind: function (eventType, handler) {
             $this.bind(eventType, handler);
-        },
-    }
+        }
+    };
 });

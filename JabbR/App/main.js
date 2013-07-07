@@ -1,4 +1,5 @@
-﻿require.config({
+﻿/*global require, window*/
+require.config({
     baseUrl: '/app',
 
     paths: {
@@ -48,28 +49,26 @@
         'stacktrace': {
             exports: 'printStackTrace'
         },
-        
+
         'noext!signalr/hubs': {
             deps: ['jquery', 'jquery.signalr']
-        },
+        }
     }
 });
 
-window.onload = function() {
+window.onload = function () {
     require(['jquery.signalr', 'logger'], function (signalr, Logger) {
         Logger.prototype.traceEnabled = true;
 
         var logger = new Logger('main');
         logger.trace('loading');
-        
-        require(['jabbr/client', 'jabbr/ui'], function (client, ui) {
-            
+
+        require(['jabbr/client', 'jabbr/ui'], function (client) {
             require([
                 'jabbr/components/connection-status',
                 'jabbr/components/rooms.ui'
             ], function () {
-                
-                client.bind(client.events.started, function() {
+                client.bind(client.events.started, function () {
                     logger.trace('started');
 
                     require([
@@ -80,4 +79,4 @@ window.onload = function() {
             });
         });
     });
-}
+};

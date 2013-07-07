@@ -1,10 +1,11 @@
-﻿define([
+﻿/*global define, clearTimeout*/
+define([
     'jabbr/client',
     'jabbr/ui',
     'jabbr/events',
     'jquery',
     'logger',
-        
+
     'bootstrap'
 ], function (client, ui, events, $, Logger) {
     var logger = new Logger('jabbr/components/connection-status');
@@ -26,7 +27,7 @@
             html: true,
             trigger: 'hover',
             template: $connectionStateChangedPopover,
-            content: function() {
+            content: function () {
                 return statusText;
             }
         };
@@ -42,7 +43,7 @@
                 hide: 500
             },
             template: $connectionInfoPopover,
-            content: function() {
+            content: function () {
                 var connectionInfo = $connectionInfoContent;
                 connectionInfo.find(connectionInfoStatus).text('Status: Connected');
                 connectionInfo.find(connectionInfoTransport).text('Transport: ' + transport);
@@ -62,10 +63,10 @@
             if (popoverTimer) {
                 clearTimeout(popoverTimer);
             }
-            
+
             connectionState = status;
             $connectionStatus.popover('destroy');
-            
+
             switch (status) {
                 case 0:
                     // Connected
@@ -73,19 +74,19 @@
                     $connectionStatus.popover(getStateChangedPopoverOptions('You\'re connected.'));
                     $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-ok-sign');
                     $connectionStatus.popover('show');
-                    popoverTimer = setTimeout(function() {
+                    popoverTimer = setTimeout(function () {
                         $connectionStatus.popover('destroy');
                         initializeConnectionStatus(transport);
                         popoverTimer = null;
                     }, 2000);
                     break;
                 case 1:
-                     // Reconnecting
+                    // Reconnecting
                     $connectionStatus.removeClass('disconnected').addClass('reconnecting');
                     $connectionStatus.popover(getStateChangedPopoverOptions('The connection to JabbR has been temporarily lost, trying to reconnect.'));
                     $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-question-sign');
                     $connectionStatus.popover('show');
-                    popoverTimer = setTimeout(function() {
+                    popoverTimer = setTimeout(function () {
                         $connectionStatus.popover('hide');
                         popoverTimer = null;
                     }, 5000);
@@ -96,7 +97,7 @@
                     $connectionStatus.popover(getStateChangedPopoverOptions('The connection to JabbR has been lost, trying to reconnect.'));
                     $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-exclamation-sign');
                     $connectionStatus.popover('show');
-                    popoverTimer = setTimeout(function() {
+                    popoverTimer = setTimeout(function () {
                         $connectionStatus.popover('hide');
                         popoverTimer = null;
                     }, 5000);
@@ -105,14 +106,14 @@
         }
     }
 
-    client.bind(events.client.reconnecting, function(event, change, initial) {
+    client.bind(events.client.reconnecting, function () {
         logger.info('reconnecting');
 
         //failPendingMessages();
         showStatus(1, '');
     });
-    
-    client.bind(events.client.connected, function(event, change, initial) {
+
+    client.bind(events.client.connected, function (event, change, initial) {
         logger.info('connected');
 
         if (!initial) {
@@ -121,7 +122,7 @@
             initializeConnectionStatus($.connection.hub.transport.name);
         }
     });
-    
+
     client.bind(events.client.disconnected, function () {
         //failPendingMessages();
 

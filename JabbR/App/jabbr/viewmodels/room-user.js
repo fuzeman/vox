@@ -1,42 +1,44 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'livestamp'
-], function () {
+], function ($) {
     var ru = null;
 
     function RoomUser(roomUi, user, roomName, room) {
         ru = roomUi;
 
         this.user = user;
-        
+
         this.roomName = roomName;
         this.room = room;
 
         this.$roomUser = null;
-    };
+    }
 
-    RoomUser.prototype.setOwner = function() {
+    RoomUser.prototype.setOwner = function () {
         this.$roomUser
             .attr('data-owner', true)
             .data('owner', true);
-        
+
         this.room.updateUserStatus(this.$roomUser);
     };
 
     RoomUser.prototype.setActive = function () {
         var $idleSince = this.$roomUser.find('.idle-since');
-        
+
         if (this.$roomUser.data('active') === true) {
             return false;
         }
-        
+
         this.$roomUser.attr('data-active', true);
         this.$roomUser.data('active', true);
         this.$roomUser.removeClass('idle');
-        
+
         if ($idleSince.livestamp('isLiveStamp')) {
             $idleSince.livestamp('destroy');
         }
-        
+
         return true;
     };
 
@@ -44,11 +46,11 @@
         if (this.$roomUser.data('active') === false) {
             return false;
         }
-        
+
         this.$roomUser.attr('data-active', false);
         this.$roomUser.data('active', false);
         this.$roomUser.addClass('idle');
-        
+
         return true;
     };
 
@@ -61,11 +63,9 @@
         if (this.user.noteClass === 'afk') {
             noteText = this.user.note + ' (' + this.user.timeAgo + ')';
             requireRoomUpdate = this.setActive();
-        }
-        else if (this.user.active) {
+        } else if (this.user.active) {
             requireRoomUpdate = this.setActive();
-        }
-        else {
+        } else {
             requireRoomUpdate = this.setInActive();
         }
 

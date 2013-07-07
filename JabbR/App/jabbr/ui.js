@@ -1,14 +1,16 @@
-﻿define([
+﻿/*global define, document*/
+define([
+    'jquery',
     'jabbr/state',
     'jabbr/client',
     'jabbr/events',
     'jabbr/components/rooms.ui',
     'jabbr/utility',
     'logger'
-], function (state, client, events, ru, utility, Logger) {
+], function ($, state, client, events, ru, utility, Logger) {
     var logger = new Logger('jabbr/ui');
     logger.trace('loaded');
-    
+
     var $window = $(window),
         $hiddenFile = $('#hidden-file'),
         $submitButton = $('#send'),
@@ -21,7 +23,7 @@
         unread = 0,
         isUnreadMessageForUser = false,
         newMessageLines = 1;
-    
+
     //
     // Private Functions
     //
@@ -42,7 +44,7 @@
         }
     }
     setReadOnly(false); // TODO: is this actually needed?
-    
+
     function toggleMessageSection(disabledIt) {
         if (disabledIt) {
             // disable send button, textarea and file upload
@@ -66,7 +68,7 @@
             $hiddenFile.removeAttr('disabled');
         }
     }
-    
+
     function triggerFocus() {
         if (!utility.isMobile && !readOnly) {
             $newMessage.focus();
@@ -77,7 +79,7 @@
             client.focus();
         }
     }
-    
+
     function triggerSend() {
         if (readOnly) {
             return;
@@ -91,8 +93,7 @@
         if (msg) {
             if (msg.toUpperCase() === '/LOGIN') {
                 ui.showLogin();
-            }
-            else {
+            } else {
                 if (id === undefined) {
                     ru.messages.sendMessage(msg);
                 } else {
@@ -159,22 +160,22 @@
     events.bind(events.ui.clearUnread, clearUnread);
     events.bind(events.ui.updateUnread, updateUnread);
     events.bind(events.ui.updateTitle, updateTitle);
-    
+
     // Room
 
-    ru.bind(events.rooms.ui.activateRoom, function(event, activateRoom) {
+    ru.bind(events.rooms.ui.activateRoom, function (event, activateRoom) {
         toggleMessageSection(activateRoom.isClosed());
     });
 
     // Client
-    
-    client.bind(events.client.connected, function(event, change, initial) {
+
+    client.bind(events.client.connected, function (event, change, initial) {
         if (!initial) {
             setReadOnly(false);
         }
     });
 
-    client.bind(events.client.disconnected, function() {
+    client.bind(events.client.disconnected, function () {
         setReadOnly(true);
     });
 
@@ -186,7 +187,7 @@
 
         // Otherwise set the active room
         ru.setActiveRoom(state.get().activeRoom || 'Lobby');
-        
+
         var loadRooms = function () {
             $.each(currentRooms, function (index, loadRoom) {
                 if (client.chat.state.activeRoom !== loadRoom.Name) {
@@ -194,22 +195,21 @@
                 }
             });
         };
-        
+
         // Populate lobby rooms for intellisense
         ru.lobby.updateRooms();
-        
+
         if (state.get().activeRoom) {
             // Always populate the active room first then load the other rooms so it looks fast :)
             ru.client.populateRoom(state.get().activeRoom).done(loadRooms);
-        }
-        else {
+        } else {
             // There's no active room so we don't care
             loadRooms();
         }
     });
-    
+
     // DOM
-    
+
     $window.focus(function () {
         // clear unread count in active room
         var room = ru.getCurrentRoomElements();
@@ -219,7 +219,7 @@
             triggerFocus();
         }
     });
-    
+
     $submitButton.click(function (ev) {
         triggerSend();
 
@@ -228,5 +228,5 @@
     });
 
     return {
-    }
+    };
 });

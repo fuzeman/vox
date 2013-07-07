@@ -1,4 +1,5 @@
-﻿define(['jquery'], function($) {
+﻿/*global define*/
+define(['jquery'], function ($) {
     return {
         userlist: $('#new-userlist-template'),
         user: $('#new-user-template'),

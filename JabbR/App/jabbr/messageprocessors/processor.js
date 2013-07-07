@@ -1,9 +1,11 @@
-﻿define([
+﻿/*global define, require*/
+define([
+    'jquery',
     'logger',
     'jabbr/events',
     'jabbr/utility',
-    'jabbr/templates',
-], function (Logger, events, utility, templates) {
+    'jabbr/templates'
+], function ($, Logger, events, utility, templates) {
     var logger = new Logger('jabbr/messageprocessors/processor');
     logger.trace('loaded');
 
@@ -13,39 +15,39 @@
     function trigger(type, data) {
         $this.trigger(type, data);
     }
-    
+
     function createProcessHandler(content, data) {
         return {
             ru: ru,
             data: data,
-            _content: content,
-            get: function() {
-                return this._content;
+            content: content,
+            get: function () {
+                return this.content;
             },
-            set: function(newContent) {
-                this._content = newContent;
+            set: function (newContent) {
+                this.content = newContent;
             }
         };
     }
 
     function getEventHandlerResult(type, content, data) {
         var handler = createProcessHandler(content, data);
-        
+
         trigger(type, handler);
         return handler.get();
     }
-    
+
     //
     // Public Functions
     //
 
     function processPlainContent(content, isHistory) {
         isHistory = typeof isHistory !== 'undefined' ? isHistory : false;
-        
+
         var handlerData = {
             isHistory: isHistory
-        }
-        
+        };
+
         // Pre-encode content
         content = utility.encodeHtml(content);
 
@@ -54,7 +56,7 @@
             events.processor.beforeProcessPlainContent,
             content, handlerData
         );
-        
+
         content = utility.processContent(content, templates, ru.roomCache, true);
 
         // afterProcessPlainContent
@@ -65,7 +67,7 @@
 
         return content;
     }
-    
+
     function processRichContent(content, data) {
         data = typeof data !== 'undefined' ? data : {};
 
@@ -74,7 +76,7 @@
             events.processor.beforeProcessRichContent,
             content, data
         );
-        
+
         // afterProcessRichContent
         content = getEventHandlerResult(
             events.processor.afterProcessRichContent,
@@ -83,7 +85,7 @@
 
         return content;
     }
-    
+
     function beforeRichElementAttached($elem, data) {
         data = typeof data !== 'undefined' ? data : {};
 
@@ -96,28 +98,28 @@
 
     function afterRichElementAttached($elem, data) {
         data = typeof data !== 'undefined' ? data : {};
-        
+
         // afterRichElementAttached
         trigger(events.processor.afterRichElementAttached, [$elem, data]);
     }
 
     var processor = {
         initialize: initialize,
-        
+
         processPlainContent: processPlainContent,
         processRichContent: processRichContent,
-        
+
         beforeRichElementAttached: beforeRichElementAttached,
         afterRichElementAttached: afterRichElementAttached,
-        
+
         bind: function (eventType, handler) {
             $this.bind(eventType, handler);
-        },
-    }
-    
+        }
+    };
+
     function initialize(roomUi) {
         ru = roomUi;
-        
+
         // Load message processors
         // TODO: this needs to be moved somewhere else to ensure it's loaded
         // before it needs to be used.
@@ -131,12 +133,9 @@
                 collapse, fancybox, italics, plexr
             ];
 
-            console.log(processor);
-            console.log(ru);
-
             for (var i = 0; i < initializeProcessors.length; i++) {
                 var p = initializeProcessors[i];
-                
+
                 if ('initialize' in p) {
                     p.initialize(processor, ru);
                     p.bind();
@@ -148,6 +147,6 @@
             logger.info('loaded message processors');
         });
     }
-    
+
     return processor;
 });

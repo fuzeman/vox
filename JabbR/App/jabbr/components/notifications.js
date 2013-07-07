@@ -1,4 +1,9 @@
-﻿define(['jabbr/client', 'jabbr/events'], function (client, events) {
+﻿/*global define*/
+define([
+    'jquery',
+    'jabbr/client',
+    'jabbr/events'
+], function ($, client, events) {
     var $unreadNotificationCount = $('#notification-unread-count');
 
     var ru = null,
@@ -14,12 +19,12 @@
         }
     }
 
-    client.bind(events.client.loggedOn, function() {
+    client.bind(events.client.loggedOn, function () {
         setUnreadNotifications(client.chat.state.unreadNotifications);
     });
-    
+
     return {
-        initialize: function(roomUi) {
+        initialize: function (roomUi) {
             ru = roomUi;
             rc = roomUi.client;
         },
@@ -28,7 +33,7 @@
                 isMention = message.highlight,
                 notify = rc.getRoomPreference(roomName, 'notify') || 'mentions',
                 currentRoomName = ru.getCurrentRoomElements().getName(),
-                roomFocus = roomName == currentRoomName && focus;
+                roomFocus = roomName === currentRoomName && focus;
 
             if (room.isInitialized()) {
                 if (isMention) {
@@ -40,7 +45,7 @@
                     if (roomFocus === false && getRoomPreference(roomName, 'canToast') === true) {
                         toast(message, true, roomName);
                     }
-                } else if (notify == 'all') {
+                } else if (notify === 'all') {
                     // All Sound
                     if (roomFocus === false && getRoomPreference(roomName, 'hasSound') === true) {
                         notifyRoom(roomName);
@@ -52,5 +57,5 @@
                 }
             }
         }
-    }
+    };
 });

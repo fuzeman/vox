@@ -1,16 +1,18 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'jabbr/client',
     'jabbr/state',
     'jabbr/templates',
     'logger'
-], function (client, state, templates, Logger) {
+], function ($, client, state, templates, Logger) {
     var logger = new Logger('jabbr/components/lobby');
     logger.trace('loaded');
 
     var $roomFilterInput = $('#room-filter'),
         $closedRoomFilter = $('#room-filter-closed'),
         $lobbyRoomFilterForm = $('#room-filter-form'),
-        $lobbyWrapper = $('#lobby-wrapper'),
+//        $lobbyWrapper = $('#lobby-wrapper'),
         $lobbyPrivateRooms = $('#lobby-private'),
         $lobbyOtherRooms = $('#lobby-other'),
         $loadMoreRooms = $('#load-more-rooms-item');
@@ -19,7 +21,7 @@
         sortedRoomList = null,
         maxRoomsToLoad = 100,
         lastLoadedRoomIndex = 0;
-    
+
     function getLobby() {
         return ru.getRoomElements('Lobby');
     }
@@ -28,12 +30,12 @@
         try {
             // Populate the user list with room names
             client.chat.server.getRooms()
-                .done(function(rooms) {
+                .done(function (rooms) {
                     populateRooms(rooms, client.getPrivateRooms());
                     //ui.setInitialized('Lobby');
                 });
-        } catch(e) {
-            connection.hub.log('getRooms failed');
+        } catch (e) {
+            client.connection.hub.log('getRooms failed');
         }
     }
 
@@ -42,7 +44,6 @@
             roomCache = ru.getRoomCache(),
             i;
         if (!lobby.isInitialized()) {
-
             // Populate the room cache
             for (i = 0; i < rooms.length; ++i) {
                 roomCache[rooms[i].Name.toString().toUpperCase()] = true;
@@ -56,8 +57,8 @@
             var privateSorted = sortRoomList(privateRooms);
 
             // sort other lobby rooms but filter out private rooms
-            sortedRoomList = sortRoomList(rooms).filter(function(room) {
-                return !privateSorted.some(function(allowed) {
+            sortedRoomList = sortRoomList(rooms).filter(function (room) {
+                return !privateSorted.some(function (allowed) {
                     return allowed.Name === room.Name;
                 });
             });
@@ -94,11 +95,11 @@
         // re-filter lists
         $lobbyRoomFilterForm.submit();
     }
-    
+
     function populateRoomList(item, template, listToPopulate) {
         $.tmpl(template, item).appendTo(listToPopulate);
     }
-    
+
     function sortRoomList(listToSort) {
         var sortedList = listToSort.sort(function (a, b) {
             if (a.Closed && !b.Closed) {
@@ -117,7 +118,7 @@
         });
         return sortedList;
     }
-    
+
     function addRoom(roomViewModel) {
         var lobby = getLobby(),
             $room = templates.lobbyroom.tmpl(roomViewModel),
@@ -136,7 +137,7 @@
 
         filterIndividualRoom($room);
     }
-    
+
     function filterIndividualRoom($room) {
         var filter = $roomFilterInput.val().toUpperCase(),
             showClosedRooms = $closedRoomFilter.is(':checked');
@@ -152,24 +153,24 @@
     // Event Handlers
     //
 
-    client.bind(client.events.lobbyOpened, function() {
+    client.bind(client.events.lobbyOpened, function () {
         updateRooms();
     });
 
     return {
-        initialize: function(roomui) {
+        initialize: function (roomui) {
             ru = roomui;
         },
 
         addRoom: addRoom,
         updateRooms: updateRooms,
         populateRooms: populateRooms,
-        
-        hideForm: function() {
+
+        hideForm: function () {
             $lobbyRoomFilterForm.hide();
         },
-        showForm: function() {
+        showForm: function () {
             $lobbyRoomFilterForm.show();
         }
-    }
+    };
 });

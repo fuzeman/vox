@@ -1,11 +1,13 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'jabbr/client',
     'jabbr/ui',
     'jabbr/state',
     'jabbr/events',
     'jabbr/components/users',
     'logger'
-], function (client, ui, state, events, users, Logger) {
+], function ($, client, ui, state, events, users, Logger) {
     var logger = new Logger('jabbr/components/rooms.client');
     logger.trace('loaded');
 
@@ -14,7 +16,7 @@
         pendingMessages = {},
         messageIds = [],
         historyLocation = 0;
-    
+
     //
     // Private Functions
     //
@@ -22,13 +24,13 @@
     function getRoomPreferenceKey(roomName) {
         return '_room_' + roomName;
     }
-    
+
     function populateRoom(room) {
         var d = $.Deferred();
 
         client.connection.hub.log('getRoomInfo(' + room + ')');
 
-        // Populate the list of users rooms and messages 
+        // Populate the list of users rooms and messages
         client.chat.server.getRoomInfo(room).done(function (roomInfo) {
             client.connection.hub.log('getRoomInfo.done(' + room + ')');
 
@@ -38,8 +40,8 @@
 
             $.each(roomInfo.Owners, function () {
                 var user = users.get(this);
-                
-                if (user != undefined && room in user.roomUsers) {
+
+                if (user !== undefined && room in user.roomUsers) {
                     user.roomUsers[room].setOwner();
                 } else {
                     logger.warn('unable to find user "' + this + '"');
@@ -67,8 +69,8 @@
             // may be appended if we are just joining the room
             //TODO: ui.watchMessageScroll(messageIds, room);
         }).fail(function (e) {
-            connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
-            d.rejectWith(chat);
+            client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
+            d.rejectWith(client.chat);
         });
 
         return d.promise();
@@ -78,10 +80,10 @@
         messageHistory: messageHistory,
         pendingMessages: pendingMessages,
 
-        getRoomId: function(roomName) {
+        getRoomId: function (roomName) {
             return window.escape(roomName.toString().toLowerCase()).replace(/[^A-Za-z0-9]/g, '_');
         },
-        getRoomNameFromHash: function(hash) {
+        getRoomNameFromHash: function (hash) {
             if (hash.length && hash[0] === '/') {
                 hash = hash.substr(1);
             }
@@ -99,8 +101,7 @@
 
                 // Remove the active room
                 client.chat.state.activeRoom = undefined;
-            }
-            else {
+            } else {
                 // When the active room changes update the client state and the cookie
                 client.chat.state.activeRoom = room;
             }
@@ -111,7 +112,7 @@
             historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;
         },
         populateRoom: populateRoom,
-        
+
         joinRoom: function (roomName) {
             logger.trace('joinRoom(' + roomName + ')');
             try {
@@ -137,16 +138,16 @@
             }
         },
 
-        addMessage: function(message) {
+        addMessage: function (message) {
             messageIds.push(message.id);
         },
 
         // Preferences
         getRoomPreferenceKey: getRoomPreferenceKey,
-        getRoomPreference: function(roomName, name) {
+        getRoomPreference: function (roomName, name) {
             return (preferences[getRoomPreferenceKey(roomName)] || {})[name];
         },
-        setRoomPreference: function(roomName, name, value) {
+        setRoomPreference: function (roomName, name, value) {
             var roomPreferences = preferences[getRoomPreferenceKey(roomName)];
 
             if (!roomPreferences) {
@@ -158,16 +159,16 @@
 
             state.save(client.chat.state.activeRoom);
         },
-        getPreference: function(name) {
+        getPreference: function (name) {
             return preferences[name];
         },
-        setPreference: function(name, value) {
+        setPreference: function (name, value) {
             preferences[name] = value;
             //TODO: $(ui).trigger(ui.events.preferencesChanged);
         },
-        
+
         bind: function (eventType, handler) {
             $this.bind(eventType, handler);
-        },
-    }
+        }
+    };
 });

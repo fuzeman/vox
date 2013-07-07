@@ -26,6 +26,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <JSLintSkip>\Chat.documentOnWrite.js|\Chat.emoji.js|\Chat.githubissues.js|\Chat.js|\Chat.messageTicker.js|\Chat.pinnedWindows.js|\Chat.toast.js|\Chat.twitter.js|\Chat.ui.js|\Chat.ui.room.js|\Chat.utility.js|\Scripts\|\notifications.unreadcounter.js|\notifications.js</JSLintSkip>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
