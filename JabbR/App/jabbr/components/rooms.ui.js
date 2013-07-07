@@ -34,7 +34,7 @@ define([
     logger.trace('loaded');
 
     var ru = {},
-        ui;
+        ui = null;
 
     //var events = {
     //    activateRoom: 'jabbr.components.rooms.ui.activateRoom',
@@ -497,13 +497,20 @@ define([
     });
 
     ru = {
-        ui: ui,
+        ui: null,
         client: rc,
         messages: messages,
         lobby: lobby,
 
         initialize: function (initUi) {
             ui = initUi;
+            this.ui = initUi;
+
+            notifications.initialize(this);
+            users.initialize(this);
+            lobby.initialize(this);
+            messages.initialize(this);
+            processor.initialize(this);
         },
 
         getRoomElements: getRoomElements,
@@ -564,12 +571,6 @@ define([
             $this.bind(eventType, handler);
         }
     };
-
-    users.initialize(ru);
-    lobby.initialize(ru);
-    messages.initialize(ru);
-    processor.initialize(ru);
-    notifications.initialize(ru);
 
     return ru;
 });
