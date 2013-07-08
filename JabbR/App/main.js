@@ -74,7 +74,6 @@ window.onload = function () {
             events.trigger(events.activated);
 
             require([
-                'jabbr/components/connection-status',
                 'jabbr/components/rooms.ui'
             ], function () {
                 client.bind(client.events.started, function () {

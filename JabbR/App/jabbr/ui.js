@@ -5,10 +5,13 @@ define([
     'kernel',
     'jabbr/state',
     'jabbr/events',
+    'jabbr/components/connection-status',
     'jabbr/components/rooms.ui',
     'jabbr/utility',
     'logger'
-], function ($, Logger, kernel, state, events, ru, utility) {
+], function ($, Logger, kernel, state, events,
+    connectionStatus, ru, utility
+) {
     var logger = new Logger('jabbr/ui'),
         client = null,
         rc = null,
@@ -271,6 +274,7 @@ define([
                 messages = kernel.get('jabbr/components/messages');
 
                 ru.activate();
+                connectionStatus.activate();
                 
                 logger.trace('activated');
                 
@@ -292,6 +296,7 @@ define([
         if (object === null) {
             // initialize sub-modules
             ru = ru();
+            connectionStatus = connectionStatus();
 
             object = initialize();
             kernel.bind('jabbr/ui', object);
