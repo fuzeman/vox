@@ -1,4 +1,5 @@
-﻿define([
+﻿/*global define*/
+define([
     'logger'
 ], function (Logger) {
     var logger = new Logger('kernel'),

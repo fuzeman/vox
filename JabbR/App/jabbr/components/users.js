@@ -104,8 +104,14 @@ define([
 
         // Hub
 
-        function updateActivity(user) {
+        function updateActivity(userdata) {
             logger.trace('updateActivity');
+            
+            if (userdata.Name in users) {
+                users[userdata.Name].setUserActivity(userdata);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
+            }
         }
 
         return {
@@ -115,7 +121,7 @@ define([
                 rc = kernel.get('jabbr/components/rooms.client');
 
                 logger.trace('activated');
-                
+
                 // Bind events
                 client.chat.client.updateActivity = updateActivity;
             },
@@ -134,7 +140,7 @@ define([
     return function () {
         if (object === null) {
             object = initialize();
-            
+
             kernel.bind('jabbr/components/users', object);
         }
 
