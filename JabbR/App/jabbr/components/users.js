@@ -10,6 +10,7 @@ define([
         client = null,
         ru = null,
         rc = null,
+        messages = null,
         object = null;
 
     logger.trace('loaded');
@@ -38,7 +39,9 @@ define([
             return users[userdata.Name];
         }
 
-        function createRoomUser(userdata, roomName) {
+        function createRoomUser(userdata, roomName, isOwner) {
+            isOwner = typeof isOwner !== 'undefined' ? isOwner : false;
+
             var user = createUser(userdata);
 
             if (roomName in user.roomUsers) {
@@ -76,18 +79,28 @@ define([
             roomUser.updateNote();
             roomUser.updateFlag();
             roomUser.updateActivity();
+            
+            if (isOwner) {
+                roomUser.setOwner();
+            }
 
             return user.roomUsers[roomName];
         }
 
-        function remove(user, roomName) {
-            // TODO: Update this to user 'users' dictionary
-            var room = ru.getRoomElements(roomName),
-                $user = room.getUser(user.Name);
+        function remove(userdata, roomName) {
+            if (!(userdata.Name in users) || !(roomName in users[userdata.Name].roomUsers)) {
+                logger.warn('unable to find user "' + userdata.Name + '" in #' + roomName + ' to remove');
+                return;
+            }
 
-            $user.addClass('removing')
+            var room = ru.getRoomElements(roomName),
+                user = users[userdata.Name],
+                roomUser = user.roomUsers[roomName],
+                $roomUser = roomUser.$roomUser;
+
+            $roomUser.addClass('removing')
                 .fadeOut('slow', function () {
-                    var owner = $user.data('owner') || false;
+                    var owner = $roomUser.data('owner') || false;
                     $(this).remove();
 
                     if (owner === true) {
@@ -95,6 +108,8 @@ define([
                     } else {
                         room.setListState(room.activeUsers);
                     }
+
+                    delete user.roomUsers[roomName];
                 });
         }
 
@@ -103,10 +118,10 @@ define([
         //
 
         // Hub
+        // ReSharper disable InconsistentNaming
+        function client_updateActivity(userdata) {
+            logger.trace('client_updateActivity');
 
-        function updateActivity(userdata) {
-            logger.trace('updateActivity');
-            
             if (userdata.Name in users) {
                 users[userdata.Name].setUserActivity(userdata);
             } else {
@@ -114,23 +129,43 @@ define([
             }
         }
         
-        function markInactive(inactiveUsers) {
+        function client_markInactive(inactiveUsers) {
+            logger.trace('client_markInactive');
+
             $.each(inactiveUsers, function () {
                 updateActivity(this)
             });
         }
+        
+        function client_addUser(userdata, room, isOwner) {
+            logger.trace('client_addUser');
+            
+            var user = createUser(userdata);
+            var added = !(room in user.roomUsers);
+
+            createRoomUser(userdata, room, isOwner);
+
+            if (added) {
+                if (!ru.isSelf(userdata)) {
+                    messages.addMessage(userdata.Name + ' just entered ' + room, 'notification', room);
+                }
+            }
+        }
+        // ReSharper restore InconsistentNaming
 
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
                 ru = kernel.get('jabbr/components/rooms.ui');
                 rc = kernel.get('jabbr/components/rooms.client');
+                messages = kernel.get('jabbr/components/messages');
 
                 logger.trace('activated');
 
                 // Bind events
-                client.chat.client.updateActivity = updateActivity;
-                client.chat.client.markInactive = markInactive;
+                client.chat.client.updateActivity = client_updateActivity;
+                client.chat.client.markInactive = client_markInactive;
+                client.chat.client.addUser = client_addUser;
             },
 
             remove: remove,

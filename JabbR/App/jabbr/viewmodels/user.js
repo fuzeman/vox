@@ -32,7 +32,6 @@ define([
     }
 
     function update(user, userdata) {
-        console.log(userdata);
         var lastActive = userdata.LastActivity.fromJsonDate();
 
         user.name = userdata.Name;
@@ -66,7 +65,6 @@ define([
 
     User.prototype.update = function(userdata) {
         update(this, userdata);
-        logger.trace('updated user');
     };
     
     User.prototype.each = function(callback) {

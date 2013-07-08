@@ -537,6 +537,8 @@ define([
                 var room = getCurrentRoomElements();
                 return rc.getRoomPreference(room.getName(), name);
             },
+            
+            isSelf: isSelf,
 
             setActiveRoom: setActiveRoom,
             setActiveRoomCore: setActiveRoomCore,
