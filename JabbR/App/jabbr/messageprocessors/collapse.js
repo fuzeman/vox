@@ -1,8 +1,9 @@
 ﻿/*global define*/
 define([
     'logger',
+    'kernel',
     'jabbr/events'
-], function (Logger, events) {
+], function (Logger, kernel, events) {
     var logger = new Logger('jabbr/messageprocessors/collapse');
     logger.trace('loaded');
 
@@ -37,10 +38,10 @@ define([
     }
 
     return {
-        initialize: function (initProcessor, initRu) {
-            processor = initProcessor;
-            ru = initRu;
-            rc = initRu.client;
+        initialize: function () {
+            processor = kernel.get('jabbr/messageprocessors/processor');
+            ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
             logger.trace('initialized');
         },
 

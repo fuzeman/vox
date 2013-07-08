@@ -1,116 +1,143 @@
 ﻿/*global define*/
 define([
     'jquery',
+    'logger',
+    'kernel',
     'jabbr/viewmodels/user',
-    'jabbr/viewmodels/room-user',
-    'logger'
-], function ($, User, RoomUser, Logger) {
-    var logger = new Logger('jabbr/components/users');
+    'jabbr/viewmodels/room-user'
+], function ($, Logger, kernel, User, RoomUser) {
+    var logger = new Logger('jabbr/components/users'),
+        client = null,
+        ru = null,
+        rc = null,
+        object = null;
+
     logger.trace('loaded');
 
-    // Templates
-    var templates = {
-        user: $('#new-user-template')
-    };
+    var initialize = function () {
+        // Templates
+        var templates = {
+            user: $('#new-user-template')
+        };
 
-    // Elements
+        // Elements
 
-    // Variables
-    var ru = null,
-        users = {};  // { <username>: <User> }
+        // Variables
+        var users = {}; // { <username>: <User> }
 
-    function createUser(userdata) {
-        if (userdata.Name in users) {
-            logger.trace("User already exists, returning existing one.");
+        function createUser(userdata) {
+            if (userdata.Name in users) {
+                logger.trace("User already exists, returning existing one.");
+                return users[userdata.Name];
+            }
+
+            logger.trace("Creating User userdata.Name: '" + userdata.Name + "'");
+
+            users[userdata.Name] = new User(ru, userdata);
+
             return users[userdata.Name];
         }
 
-        logger.trace("Creating User userdata.Name: '" + userdata.Name + "'");
+        function createRoomUser(userdata, roomName) {
+            var user = createUser(userdata);
 
-        users[userdata.Name] = new User(ru, userdata);
+            if (roomName in user.roomUsers) {
+                logger.trace("RoomUser already exists, returning existing one.");
+                return user.roomUsers[roomName];
+            }
 
-        return users[userdata.Name];
-    }
+            logger.trace("Creating RoomUser userdata.Name: '" + userdata.Name + "', roomName: '" + roomName + "'");
 
-    function createRoomUser(userdata, roomName) {
-        var user = createUser(userdata);
+            var room = ru.getRoomElements(roomName);
 
-        if (roomName in user.roomUsers) {
-            logger.trace("RoomUser already exists, returning existing one.");
+            var roomUser = new RoomUser(ru, user, roomName, room);
+            user.roomUsers[roomName] = roomUser;
+
+            // Remove all users that are being removed
+            room.users.find('.removing').remove();
+
+            // Get the user element
+            var $roomUser = room.getUser(userdata.name);
+
+            if ($roomUser.length) {
+                return null;
+            }
+
+            $roomUser = templates.user.tmpl(user);
+            $roomUser.data('inroom', roomName);
+            $roomUser.data('owner', user.owner);
+            $roomUser.data('admin', user.admin);
+            $roomUser.data('mention', user.mention);
+
+            roomUser.$roomUser = $roomUser;
+
+            room.addUser(roomUser);
+
+            roomUser.updateNote();
+            roomUser.updateFlag();
+            roomUser.updateActivity();
+
             return user.roomUsers[roomName];
         }
 
-        logger.trace("Creating RoomUser userdata.Name: '" + userdata.Name + "', roomName: '" + roomName + "'");
+        function remove(user, roomName) {
+            // TODO: Update this to user 'users' dictionary
+            var room = ru.getRoomElements(roomName),
+                $user = room.getUser(user.Name);
 
-        var room = ru.getRoomElements(roomName);
+            $user.addClass('removing')
+                .fadeOut('slow', function () {
+                    var owner = $user.data('owner') || false;
+                    $(this).remove();
 
-        var roomUser = new RoomUser(ru, user, roomName, room);
-        user.roomUsers[roomName] = roomUser;
-
-        // Remove all users that are being removed
-        room.users.find('.removing').remove();
-
-        // Get the user element
-        var $roomUser = room.getUser(userdata.name);
-
-        if ($roomUser.length) {
-            return null;
+                    if (owner === true) {
+                        room.setListState(room.owners);
+                    } else {
+                        room.setListState(room.activeUsers);
+                    }
+                });
         }
 
-        $roomUser = templates.user.tmpl(user);
-        $roomUser.data('inroom', roomName);
-        $roomUser.data('owner', user.owner);
-        $roomUser.data('admin', user.admin);
-        $roomUser.data('mention', user.mention);
+        //
+        // Event Handlers
+        //
 
-        roomUser.$roomUser = $roomUser;
+        // Hub
 
-        room.addUser(roomUser);
+        function updateActivity(user) {
+            logger.trace('updateActivity');
+        }
 
-        roomUser.updateNote();
-        roomUser.updateFlag();
-        roomUser.updateActivity();
+        return {
+            activate: function () {
+                client = kernel.get('jabbr/client');
+                ru = kernel.get('jabbr/components/rooms.ui');
+                rc = kernel.get('jabbr/components/rooms.client');
 
-        return user.roomUsers[roomName];
+                logger.trace('activated');
+                
+                // Bind events
+                client.chat.client.updateActivity = updateActivity;
+            },
+
+            remove: remove,
+
+            get: function (name) {
+                return users[name];
+            },
+
+            createUser: createUser,
+            createRoomUser: createRoomUser
+        };
     }
 
-    function remove(user, roomName) {
-        // TODO: Update this to user 'users' dictionary
-        var room = ru.getRoomElements(roomName),
-            $user = room.getUser(user.Name);
+    return function () {
+        if (object === null) {
+            object = initialize();
+            
+            kernel.bind('jabbr/components/users', object);
+        }
 
-        $user.addClass('removing')
-            .fadeOut('slow', function () {
-                var owner = $user.data('owner') || false;
-                $(this).remove();
-
-                if (owner === true) {
-                    room.setListState(room.owners);
-                } else {
-                    room.setListState(room.activeUsers);
-                }
-            });
+        return object;
     }
-
-    //
-    // Event Handlers
-    //
-
-    // Hub
-
-    // TODO: Handle user update events here
-
-    return {
-        initialize: function (roomUi) {
-            ru = roomUi;
-        },
-        remove: remove,
-
-        get: function (name) {
-            return users[name];
-        },
-
-        createUser: createUser,
-        createRoomUser: createRoomUser
-    };
 });

@@ -63,7 +63,16 @@ window.onload = function () {
         var logger = new Logger('main');
         logger.trace('loading');
 
-        require(['jabbr/client', 'jabbr/ui'], function (client) {
+        require(['jabbr/client', 'jabbr/ui', 'jabbr/events'], function (client, ui, events) {
+            // Initialize sub-modules
+            client = client();
+            ui = ui();
+            
+            ui.activate();
+            client.activate();
+
+            events.trigger(events.activated);
+
             require([
                 'jabbr/components/connection-status',
                 'jabbr/components/rooms.ui'

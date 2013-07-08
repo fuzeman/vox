@@ -1,8 +1,11 @@
 ﻿/*global define*/
 define([
+    'kernel',
     'jabbr/events'
-], function (events) {
-    return function (processor) {
+], function (kernel, events) {
+    return function () {
+        var processor = kernel.get('jabbr/messageprocessors/processor');
+
         processor.bind(events.processor.beforeProcessPlainContent, function (event, handler) {
             var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
                 match = null,

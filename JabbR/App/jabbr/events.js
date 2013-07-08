@@ -12,6 +12,7 @@ define(['jquery'], function ($) {
 
         error: 'jabbr.error',
         focused: 'jabbr.focus',
+        activated: 'jabbr.activated',
 
         client: {
             // Handles

@@ -1,14 +1,27 @@
 ﻿/*global define*/
 define([
     'logger',
-    'jabbr/client',
+    'kernel',
+    'jabbr/events',
     'jabbr/utility',
-    'jabbr/templates',
-    'jabbr/messageprocessors/processor'
-], function (Logger, client, utility, templates, messageProcessor) {
-    var logger = new Logger('jabbr/viewmodels/message');
+    'jabbr/templates'
+], function (Logger, kernel, events, utility, templates) {
+    var logger = new Logger('jabbr/viewmodels/message'),
+        client = null,
+        ru = null,
+        processor = null;
 
-    function Message(ru, data) {
+    events.bind(events.activated, function() {
+        client = kernel.get('jabbr/client');
+        ru = kernel.get('jabbr/components/rooms.ui')
+        processor = kernel.get('jabbr/messageprocessors/processor');
+
+        logger.trace('activated');
+    });
+
+    logger.trace('loaded');
+
+    function Message(data) {
         if (data === null) {
             logger.warn('invalid message data');
             return;
@@ -30,7 +43,7 @@ define([
         this.messageType = data.MessageType;
 
         this.message = data.HtmlEncoded ? data.Content :
-            messageProcessor.processPlainContent(data.Content, this.isHistory);
+            processor.processPlainContent(data.Content, this.isHistory);
 
         this.htmlContent = data.HtmlContent;
     }

@@ -1,8 +1,9 @@
 ﻿/*global define*/
 define([
     'jquery',
+    'kernel',
     'jabbr/events'
-], function ($, events) {
+], function ($, kernel, events) {
     function processResult($plexrResult, service) {
         var $serviceDetails = $plexrResult.find(service);
 
@@ -16,13 +17,16 @@ define([
         return null;
     }
 
-    return function (processor) {
+    return function () {
+        var processor = kernel.get('jabbr/messageprocessors/processor')
+            rc = kernel.get('jabbr/components/rooms.client');
+
         processor.bind(events.processor.beforeProcessRichContent, function (event, handler) {
             var $content = $(handler.get());
             var $plexrResult = $("PlexrContentProviderResult", $content);
 
             if ($plexrResult.length === 1) {
-                var service = handler.ru.client.getPreference('music_service') || 'spotify';
+                var service = rc.getPreference('music_service') || 'spotify';
                 var result = processResult($plexrResult, service);
 
                 if (result !== null) {

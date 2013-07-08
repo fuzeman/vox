@@ -1,11 +1,14 @@
 ﻿/*global define*/
 define([
-    'jabbr/events',
     'jquery',
+    'kernel',
+    'jabbr/events',
 
     'jquery.fancybox'
-], function (events, $) {
-    return function (processor) {
+], function ($, kernel, events) {
+    return function () {
+        var processor = kernel.get('jabbr/messageprocessors/processor');
+        
         processor.bind(events.processor.afterRichElementAttached, function (event, $middle) {
             $('a.imageContent', $middle).fancybox({
                 openEffect: 'elastic',
