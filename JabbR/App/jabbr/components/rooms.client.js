@@ -8,8 +8,10 @@ define([
     'jabbr/events',
 ], function ($, Logger, kernel, ui, state, events) {
     var logger = new Logger('jabbr/components/rooms.client'),
+        ru = null,
         client = null,
         users = null,
+        messages = null,
         object = null;
 
     logger.trace('loaded');
@@ -63,15 +65,15 @@ define([
 
                 // mark room as initialized to differentiate messages
                 // that are added after initial population
-                //TODO: ui.setInitialized(room);
-                //TODO: ui.scrollToBottom(room);
+                ru.setInitialized(room);
+                ru.scrollToBottom(room);
                 //TODO: ui.setRoomListStatuses(room);
 
                 d.resolveWith(client.chat);
 
                 // Watch the messages after the defer, since room messages
                 // may be appended if we are just joining the room
-                //TODO: ui.watchMessageScroll(messageIds, room);
+                messages.watchMessageScroll(messageIds, room);
             }).fail(function (e) {
                 client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
                 d.rejectWith(client.chat);
@@ -79,11 +81,17 @@ define([
 
             return d.promise();
         }
+        
+        //
+        // Public Functions
+        //
 
         return {
             activate: function () {
+                ru = kernel.get('jabbr/components/rooms.ui');
                 client = kernel.get('jabbr/client');
                 users = kernel.get('jabbr/components/users');
+                messages = kernel.get('jabbr/components/messages');
 
                 logger.trace('activated');
             },

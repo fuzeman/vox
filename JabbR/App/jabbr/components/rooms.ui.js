@@ -142,6 +142,11 @@ define([
             return client.chat.state.name === user.Name;
         }
 
+        function setInitialized(roomName) {
+            var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
+            room.setInitialized();
+        }
+
         // Preferences
 
         function loadRoomPreferences(roomName) {
@@ -539,6 +544,7 @@ define([
             },
             
             isSelf: isSelf,
+            setInitialized: setInitialized,
 
             setActiveRoom: setActiveRoom,
             setActiveRoomCore: setActiveRoomCore,

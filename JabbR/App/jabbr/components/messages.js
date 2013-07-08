@@ -486,7 +486,9 @@ define([
 
             addChatMessage: addChatMessage,
             addMessage: addMessage,
-            sendMessage: sendMessage
+            sendMessage: sendMessage,
+
+            watchMessageScroll: watchMessageScroll
         };
     };
 
