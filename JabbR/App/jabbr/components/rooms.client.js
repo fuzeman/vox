@@ -11,10 +11,10 @@ define([
         client = null,
         users = null,
         object = null;
-    
+
     logger.trace('loaded');
 
-    var initialize = function() {
+    var initialize = function () {
         var $this = $(this),
             messageHistory = {},
             pendingMessages = {},
@@ -35,14 +35,14 @@ define([
             client.connection.hub.log('getRoomInfo(' + room + ')');
 
             // Populate the list of users rooms and messages
-            client.chat.server.getRoomInfo(room).done(function(roomInfo) {
+            client.chat.server.getRoomInfo(room).done(function (roomInfo) {
                 client.connection.hub.log('getRoomInfo.done(' + room + ')');
 
-                $.each(roomInfo.Users, function() {
+                $.each(roomInfo.Users, function () {
                     users.createRoomUser(this, room);
                 });
 
-                $.each(roomInfo.Owners, function() {
+                $.each(roomInfo.Owners, function () {
                     var user = users.get(this);
 
                     if (user !== undefined && room in user.roomUsers) {
@@ -53,7 +53,7 @@ define([
                 });
 
                 logger.info('loading recent messages');
-                $.each(roomInfo.RecentMessages, function() {
+                $.each(roomInfo.RecentMessages, function () {
                     this.isHistory = true;
                     $this.trigger(events.rooms.client.createMessage, [this, room]);
                 });
@@ -72,7 +72,7 @@ define([
                 // Watch the messages after the defer, since room messages
                 // may be appended if we are just joining the room
                 //TODO: ui.watchMessageScroll(messageIds, room);
-            }).fail(function(e) {
+            }).fail(function (e) {
                 client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
                 d.rejectWith(client.chat);
             });
@@ -91,10 +91,10 @@ define([
             messageHistory: messageHistory,
             pendingMessages: pendingMessages,
 
-            getRoomId: function(roomName) {
+            getRoomId: function (roomName) {
                 return window.escape(roomName.toString().toLowerCase()).replace(/[^A-Za-z0-9]/g, '_');
             },
-            getRoomNameFromHash: function(hash) {
+            getRoomNameFromHash: function (hash) {
                 if (hash.length && hash[0] === '/') {
                     hash = hash.substr(1);
                 }
@@ -106,7 +106,7 @@ define([
 
                 return null;
             },
-            activeRoomChanged: function(room) {
+            activeRoomChanged: function (room) {
                 if (room === 'Lobby') {
                     $this.trigger(events.rooms.client.lobbyOpened);
 
@@ -124,41 +124,41 @@ define([
             },
             populateRoom: populateRoom,
 
-            joinRoom: function(roomName) {
+            joinRoom: function (roomName) {
                 logger.trace('joinRoom(' + roomName + ')');
                 try {
                     client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
-                        .fail(function(e) {
-                            setActiveRoom('Lobby');
+                        .fail(function (e) {
+                            // TODO: setActiveRoom('Lobby');
                             $this.trigger(events.error, [e, 'error']);
                         });
-                } catch(e) {
+                } catch (e) {
                     client.connection.hub.log('openRoom failed');
                 }
             },
-            leaveRoom: function(roomName) {
+            leaveRoom: function (roomName) {
                 logger.trace('leaveRoom(' + roomName + ')');
                 try {
                     client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
-                        .fail(function(e) {
+                        .fail(function (e) {
                             $this.trigger(events.error, [e, 'error']);
                         });
-                } catch(e) {
+                } catch (e) {
                     // This can fail if the server is offline
                     client.connection.hub.log('closeRoom room failed');
                 }
             },
 
-            addMessage: function(message) {
+            addMessage: function (message) {
                 messageIds.push(message.id);
             },
 
             // Preferences
             getRoomPreferenceKey: getRoomPreferenceKey,
-            getRoomPreference: function(roomName, name) {
+            getRoomPreference: function (roomName, name) {
                 return (preferences[getRoomPreferenceKey(roomName)] || {})[name];
             },
-            setRoomPreference: function(roomName, name, value) {
+            setRoomPreference: function (roomName, name, value) {
                 var roomPreferences = preferences[getRoomPreferenceKey(roomName)];
 
                 if (!roomPreferences) {
@@ -170,21 +170,21 @@ define([
 
                 state.save(client.chat.state.activeRoom);
             },
-            getPreference: function(name) {
+            getPreference: function (name) {
                 return preferences[name];
             },
-            setPreference: function(name, value) {
+            setPreference: function (name, value) {
                 preferences[name] = value;
                 //TODO: $(ui).trigger(ui.events.preferencesChanged);
             },
 
-            bind: function(eventType, handler) {
+            bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
         };
     };
-    
-    return function() {
+
+    return function () {
         if (object == null) {
             object = initialize();
             kernel.bind('jabbr/components/rooms.client', object);

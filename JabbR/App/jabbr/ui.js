@@ -18,10 +18,10 @@ define([
         lobby = null,
         messages = null,
         object = null;
-    
+
     logger.trace('loaded');
-    
-    var initialize = function() {
+
+    var initialize = function () {
         var $window = $(window),
             $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
@@ -105,7 +105,7 @@ define([
 
             if (msg) {
                 if (msg.toUpperCase() === '/LOGIN') {
-                    ui.showLogin();
+                    //TODO: ui.showLogin(); is this used?
                 } else {
                     if (id === undefined) {
                         messages.sendMessage(msg);
@@ -157,7 +157,7 @@ define([
 
         function updateTitle() {
             // ugly hack via http://stackoverflow.com/a/2952386/188039
-            setTimeout(function() {
+            setTimeout(function () {
                 if (unread === 0) {
                     document.title = originalTitle;
                 } else {
@@ -197,8 +197,8 @@ define([
             // Otherwise set the active room
             ru.setActiveRoom(state.get().activeRoom || 'Lobby');
 
-            var loadRooms = function() {
-                $.each(currentRooms, function(index, loadRoom) {
+            var loadRooms = function () {
+                $.each(currentRooms, function (index, loadRoom) {
                     if (client.chat.state.activeRoom !== loadRoom.Name) {
                         rc.populateRoom(loadRoom.Name);
                     }
@@ -224,7 +224,7 @@ define([
 
         // DOM
 
-        $window.focus(function() {
+        $window.focus(function () {
             // clear unread count in active room
             var room = ru.getCurrentRoomElements();
             room.makeActive();
@@ -234,35 +234,35 @@ define([
             }
         });
 
-        $submitButton.click(function(ev) {
+        $submitButton.click(function (ev) {
             triggerSend();
 
             ev.preventDefault();
             return false;
         });
 
-        $newMessage.keypress(function(ev) {
+        $newMessage.keypress(function (ev) {
             var key = ev.keyCode || ev.which;
 
             switch (key) {
-            case Keys.Up:
-            case Keys.Down:
-            case Keys.Esc:
-                break;
-            case Keys.Enter:
-                if (ev.shiftKey) {
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.Esc:
+                    break;
+                case Keys.Enter:
+                    if (ev.shiftKey) {
+                        //$ui.trigger(ui.events.typing);
+                    } else {
+                        triggerSend();
+                        ev.preventDefault();
+                    }
+                    break;
+                default:
+                    if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
+                        return;
+                    }
                     //$ui.trigger(ui.events.typing);
-                } else {
-                    triggerSend();
-                    ev.preventDefault();
-                }
-                break;
-            default:
-                if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
-                    return;
-                }
-                //$ui.trigger(ui.events.typing);
-                break;
+                    break;
             }
         });
 
@@ -275,9 +275,9 @@ define([
 
                 ru.activate();
                 connectionStatus.activate();
-                
+
                 logger.trace('activated');
-                
+
                 // Bind events
                 ru.bind(events.rooms.ui.activateRoom, ruActivateRoom);
 
@@ -286,12 +286,12 @@ define([
                 client.bind(events.client.loggedOn, clientLoggedOn);
             },
 
-            isFocused: function() {
+            isFocused: function () {
                 return focus;
             }
         };
     }
-    
+
     return function () {
         if (object === null) {
             // initialize sub-modules

@@ -28,11 +28,11 @@ define([
 
         function createUser(userdata) {
             if (userdata.Name in users) {
-                logger.trace("User already exists, returning existing one.");
+                logger.trace("User '" + userdata.Name + "' already exists, returning existing one.");
                 return users[userdata.Name];
             }
 
-            logger.trace("Creating User userdata.Name: '" + userdata.Name + "'");
+            logger.trace("Creating user '" + userdata.Name + "'");
 
             users[userdata.Name] = new User(ru, userdata);
 
@@ -45,11 +45,11 @@ define([
             var user = createUser(userdata);
 
             if (roomName in user.roomUsers) {
-                logger.trace("RoomUser already exists, returning existing one.");
+                logger.trace("RoomUser '" + userdata.Name + "' #" + roomName + " already exists, returning existing one.");
                 return user.roomUsers[roomName];
             }
 
-            logger.trace("Creating RoomUser userdata.Name: '" + userdata.Name + "', roomName: '" + roomName + "'");
+            logger.trace("Creating RoomUser '" + userdata.Name + "' #" + roomName);
 
             var room = ru.getRoomElements(roomName);
 
@@ -79,7 +79,7 @@ define([
             roomUser.updateNote();
             roomUser.updateFlag();
             roomUser.updateActivity();
-            
+
             if (isOwner) {
                 roomUser.setOwner();
             }
@@ -128,18 +128,18 @@ define([
                 logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
             }
         }
-        
+
         function client_markInactive(inactiveUsers) {
             logger.trace('client_markInactive');
 
             $.each(inactiveUsers, function () {
-                updateActivity(this)
+                client_updateActivity(this)
             });
         }
-        
+
         function client_addUser(userdata, room, isOwner) {
             logger.trace('client_addUser');
-            
+
             var user = createUser(userdata);
             var added = !(room in user.roomUsers);
 

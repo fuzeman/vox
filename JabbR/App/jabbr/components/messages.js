@@ -18,7 +18,7 @@ define([
         processor = null,
         object = null;
 
-    var initialize = function() {
+    var initialize = function () {
         var messageSendingDelay = 1500;
 
         function addChatMessage(message, roomName) {
@@ -199,12 +199,12 @@ define([
                 if (type === 'append') {
                     addChatMessage(viewModel, clientMessage.room);
                 } else {
-                    replaceMessage(viewModel);
+                    replaceMessageElement(viewModel);
                 }
 
                 // If there's a significant delay in getting the message sent
                 // mark it as pending
-                messageCompleteTimeout = window.setTimeout(function() {
+                messageCompleteTimeout = window.setTimeout(function () {
                     if ($.connection.hub.state === $.connection.connectionState.reconnecting) {
                         failMessage(id);
                     } else {
@@ -226,7 +226,7 @@ define([
         function sendClientMessage(clientMessage, messageCompleteTimeout) {
             try {
                 client.chat.server.send(clientMessage)
-                    .done(function() {
+                    .done(function () {
                         if (messageCompleteTimeout) {
                             clearTimeout(messageCompleteTimeout);
                             delete rc.pendingMessages[clientMessage.id];
@@ -234,11 +234,11 @@ define([
 
                         confirmMessage(clientMessage.id);
                     })
-                    .fail(function(e) {
+                    .fail(function (e) {
                         failMessage(clientMessage.id);
                         addMessage(e, 'error');
                     });
-            } catch(e) {
+            } catch (e) {
                 client.connection.hub.log('Failed to send via websockets');
 
                 clearTimeout(rc.pendingMessages[clientMessage.id]);
@@ -282,8 +282,50 @@ define([
             });
         }
 
+        function changeMessageId(oldId, newId) {
+            for (var roomName in rc.messageHistory) {
+                for (var i = 0; i < rc.messageHistory[roomName].length; i++) {
+                    if (rc.messageHistory[roomName][i].id == oldId) {
+                        rc.messageHistory[roomName][i].id = newId;
+                        rc.messageHistory[roomName][i].replaced = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        function overwriteMessage(id, message) {
+            var $message = $('#m-' + id);
+            processMessage(message);
+
+            $message.find('.middle').html(message.message);
+            $message.attr('id', 'm-' + message.id);
+
+            changeMessageId(id, message.id);
+        }
+
+        function replaceMessageElement(message) {
+            processMessage(message);
+
+            $('#m-' + message.id).find('.middle')
+                                 .html(message.message);
+        }
+
         function messageExists(id) {
             return $('#m-' + id).length > 0;
+        }
+
+        function failMessage(id) {
+            $('#m-' + id).removeClass('loading')
+                         .addClass('failed');
+        }
+
+        function markMessagePending(id) {
+            var $message = $('#m-' + id);
+
+            if ($message.hasClass('failed') === false) {
+                $message.addClass('loading');
+            }
         }
 
         // notifications
@@ -295,7 +337,7 @@ define([
 
             var now = new Date(),
                 message = {
-// TODO: use jabbr/viewmodels/message ?
+                    // TODO: use jabbr/viewmodels/message ?
                     message: options.encoded ? options.content : processor.processPlainContent(options.content),
                     type: type,
                     date: now,
@@ -332,7 +374,7 @@ define([
                 .addClass('collapse');
             $notifications.show();
 
-            var room = getCurrentRoomElements(),
+            var room = ru.getCurrentRoomElements(),
                 topAfter = $notification.position().top,
                 scrollTop = room.messages.scrollTop();
 
@@ -340,18 +382,53 @@ define([
             room.messages.scrollTop(scrollTop + topAfter - topBefore + $notification.height());
         }
 
+        function watchMessageScroll(messageIds, roomName) {
+            // Given an array of message ids, if there is any embedded content
+            // in it, it may cause the window to scroll off of the bottom, so we
+            // can watch for that and correct it.
+            messageIds = $.map(messageIds, function (id) { return '#m-' + id; });
+
+            var $messages = $(messageIds.join(',')),
+                $content = $messages.expandableContent(),
+                room = ru.getRoomElements(roomName),
+                nearTheEndBefore = room.messages.isNearTheEnd(),
+                scrollTopBefore = room.messages.scrollTop();
+
+            if (nearTheEndBefore && $content.length > 0) {
+                // Note that the load event does not bubble, so .on() is not
+                // suitable here.
+                $content.load(function (event) {
+                    // If we used to be at the end and our scrollTop() did not
+                    // change, then we can safely call scrollToBottom() without
+                    // worrying about interrupting the user. We skip this if the
+                    // room is already at the end in the event of multiple
+                    // images loading at the same time.
+                    if (!room.messages.isNearTheEnd() && scrollTopBefore === room.messages.scrollTop()) {
+                        room.scrollToBottom();
+                        // Reset our scrollTopBefore so we know we are allowed
+                        // to move it again if another image loads and the user
+                        // hasn't touched it
+                        scrollTopBefore = room.messages.scrollTop();
+                    }
+
+                    // unbind the event from this object after it executes
+                    $(this).unbind(event);
+                });
+            }
+        }
+
         //
         // Hub Events
         //
 
         function chatAddMessage(message, room) {
-            var viewModel = new Message(ru, message),
+            var viewModel = new Message(message),
                 edited = messageExists(viewModel.id);
 
-            ru.scrollIfNecessary(function() {
+            ru.scrollIfNecessary(function () {
                 // Update your message when it comes from the server
                 if (edited) {
-                    replaceMessage(viewModel);
+                    replaceMessageElement(viewModel);
                 } else {
                     addChatMessage(viewModel, room);
                 }
@@ -362,7 +439,34 @@ define([
             if (!viewModel.isMine && !edited) {
                 events.trigger(events.ui.updateUnread, [room, isMentioned]);
             }
-        };
+        }
+
+        function chatReplaceMessage(id, message, room) {
+            confirmMessage(id);
+
+            var viewModel = new Message(message);
+
+            ru.scrollIfNecessary(function () {
+                // Update your message when it comes from the server
+                overwriteMessage(id, viewModel);
+            }, room);
+
+            var isMentioned = viewModel.highlight === 'highlight';
+
+            if (!viewModel.isMine) {
+                events.trigger(events.ui.updateUnread, [room, isMentioned]);
+            }
+        }
+
+        function chatAddMessageContent(id, content, room) {
+            ru.scrollIfNecessary(function () {
+                addChatMessageContent(id, content, room);
+            }, room);
+
+            events.trigger(events.ui.updateUnread, [room, false]); /* isMentioned: this is outside normal messages and user shouldn't be mentioned */
+
+            watchMessageScroll([id], room);
+        }
 
         return {
             activate: function () {
@@ -373,9 +477,11 @@ define([
                 processor = kernel.get('jabbr/messageprocessors/processor');
 
                 logger.trace('activated');
-                
+
                 // Bind events
                 client.chat.client.addMessage = chatAddMessage;
+                client.chat.client.replaceMessage = chatReplaceMessage;
+                client.chat.client.addMessageContent = chatAddMessageContent;
             },
 
             addChatMessage: addChatMessage,
@@ -384,7 +490,7 @@ define([
         };
     };
 
-    return function() {
+    return function () {
         if (object === null) {
             object = initialize();
             kernel.bind('jabbr/components/messages', object);

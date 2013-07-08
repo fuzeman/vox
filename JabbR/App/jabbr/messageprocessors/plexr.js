@@ -18,7 +18,7 @@ define([
     }
 
     return function () {
-        var processor = kernel.get('jabbr/messageprocessors/processor')
+        var processor = kernel.get('jabbr/messageprocessors/processor'),
             rc = kernel.get('jabbr/components/rooms.client');
 
         processor.bind(events.processor.beforeProcessRichContent, function (event, handler) {
