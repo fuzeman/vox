@@ -13,6 +13,7 @@ define([
         client = null,
         rc = null,
         lobby = null,
+        messages = null,
         object = null;
     
     logger.trace('loaded');
@@ -104,9 +105,9 @@ define([
                     ui.showLogin();
                 } else {
                     if (id === undefined) {
-                        ru.messages.sendMessage(msg);
+                        messages.sendMessage(msg);
                     } else {
-                        ru.messages.sendMessage({ content: msg, id: id });
+                        messages.sendMessage({ content: msg, id: id });
                     }
                 }
             }
@@ -267,6 +268,7 @@ define([
                 client = kernel.get('jabbr/client');
                 rc = kernel.get('jabbr/components/rooms.client');
                 lobby = kernel.get('jabbr/components/lobby');
+                messages = kernel.get('jabbr/components/messages');
 
                 ru.activate();
                 
