@@ -113,6 +113,12 @@ define([
                 logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
             }
         }
+        
+        function markInactive(inactiveUsers) {
+            $.each(inactiveUsers, function () {
+                updateActivity(this)
+            });
+        }
 
         return {
             activate: function () {
@@ -124,6 +130,7 @@ define([
 
                 // Bind events
                 client.chat.client.updateActivity = updateActivity;
+                client.chat.client.markInactive = markInactive;
             },
 
             remove: remove,
