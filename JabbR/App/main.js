@@ -59,30 +59,36 @@ require.config({
 });
 
 window.onload = function () {
-    require(['jquery.signalr', 'logger'], function (signalr, Logger) {
+    require([
+            'jquery',
+            'jquery.signalr',
+            'logger',
+            'jabbr/client',
+            'jabbr/ui',
+            'jabbr/events'],
+    function ($, signalr, Logger, client, ui, events) {
         Logger.prototype.traceEnabled = true;
 
         var logger = new Logger('main');
         logger.trace('loading');
+        
+        // Initialize sub-modules
+        client = client();
+        ui = ui();
+        
+        // Activate all the modules
+        ui.activate();
+        client.activate();
 
-        require(['jabbr/client', 'jabbr/ui', 'jabbr/events'], function (client, ui, events) {
-            // Initialize sub-modules
-            client = client();
-            ui = ui();
-            
-            ui.activate();
-            client.activate();
+        events.trigger(events.activated);
 
-            events.trigger(events.activated);
-
-            require([
-                'jabbr/components/rooms.ui'
-            ], function () {
-                client.bind(client.events.started, function () {
-                    logger.trace('started');
-                });
-                client.start();
+        require([
+            'jabbr/components/rooms.ui'
+        ], function () {
+            client.bind(client.events.started, function () {
+                logger.trace('started');
             });
+            client.start();
         });
     });
 };
