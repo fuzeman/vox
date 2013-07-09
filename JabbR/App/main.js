@@ -80,10 +80,6 @@ window.onload = function () {
             ], function () {
                 client.bind(client.events.started, function () {
                     logger.trace('started');
-
-                    require([
-                        'jabbr/components/help'
-                    ]);
                 });
                 client.start();
             });

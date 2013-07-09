@@ -7,10 +7,12 @@ define([
     'jabbr/events',
     'jabbr/components/connection-status',
     'jabbr/components/rooms.ui',
+    'jabbr/components/help',
     'jabbr/utility',
     'jquery.pulse'
 ], function ($, Logger, kernel, state, events,
-    connectionStatus, ru, utility
+    connectionStatus, ru, help,
+    utility
 ) {
     var logger = new Logger('jabbr/ui'),
         client = null,
@@ -305,8 +307,9 @@ define([
                 lobby = kernel.get('jabbr/components/lobby');
                 messages = kernel.get('jabbr/components/messages');
 
-                ru.activate();
                 connectionStatus.activate();
+                ru.activate();
+                help.activate();
 
                 logger.trace('activated');
 
@@ -329,8 +332,9 @@ define([
     return function () {
         if (object === null) {
             // initialize sub-modules
-            ru = ru();
             connectionStatus = connectionStatus();
+            ru = ru();
+            help = help();
 
             object = initialize();
             kernel.bind('jabbr/ui', object);
