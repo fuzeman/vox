@@ -473,55 +473,20 @@
     <script type="text/javascript">
         window.jabbrVersion = '@Model.Version';
     </script>
-    @{
+    @if (Model.DebugMode)
+    {
+        // Load un-optimized require.js modules
         WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
             .Add("~/Scripts/require.js")
             .Add("~/App/main.js")
             .Render("~/Scripts/JabbR2_#.js"));
-//        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
-//            .Add("~/Scripts/jquery-1.9.0.min.js")
-//            .Add("~/Scripts/jquery-migrate-1.0.0.min.js")
-//            .Add("~/Scripts/json2.min.js")
-//            .Add("~/Scripts/bootstrap.js")
-//            .Add("~/Scripts/jquery.color-2.1.2.min.js")
-//            .Add("~/Scripts/jquery.pulse.min.js")
-//            .Add("~/Scripts/jquery.KeyTips.js")
-//            .Add("~/Scripts/jquery.signalR-2.0.0-rc1-130629-b89.min.js")
-//            .Render("~/Scripts/JabbR1_#.js"));
     }
-    <!--<script type="text/javascript" src="@Url.Content("~/signalr/hubs")"></script>-->
-    @{
-//        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
-//            .Add("~/Scripts/jQuery.tmpl.min.js")
-//            .Add("~/Scripts/jquery.cookie.js")
-//            .Add("~/Scripts/jquery.autotabcomplete.js")
-//            .Add("~/Scripts/jquery.timeago.0.10.js")
-//            .Add("~/Scripts/jquery.captureDocumentWrite.min.js")
-//            .Add("~/Scripts/jquery.sortElements.js")
-//            .Add("~/Scripts/ba-linkify.min.js")
-//            .Add("~/Scripts/quicksilver.js")
-//            .Add("~/Scripts/Markdown.Converter.js")
-//            .Add("~/Scripts/jquery.history.js")
-//            .Add("~/Scripts/moment.min.js")
-//            .Add("~/Scripts/livestamp.min.js")
-//            .Add("~/Scripts/jquery.fancybox.pack.js")
-//            .Add("~/Scripts/jquery.easing.1.3.js")
-//            .Add("~/Chat.emoji.js")
-//            .Add("~/Chat.messageTicker.js")
-//            .Add("~/Chat.utility.js")
-//            .Add("~/Chat.toast.js")
-//            .Add("~/Chat.ui.room.js")
-//            .Add("~/Chat.ui.js")
-//            .Add("~/Chat.documentOnWrite.js")
-//            .Add("~/Chat.twitter.js")
-//            .Add("~/Chat.pinnedWindows.js")
-//            .Add("~/Chat.githubissues.js")
-//            .Add("~/Chat.js")
-//            .Render("~/Scripts/JabbR2_#.js"));
-    }
-    @if (Model.DebugMode)
+    else
     {
-    @*<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.network.mock.js")"></script>*@
+        // Load optimized require.js module
+        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
+            .Add("~/Build/main.js")
+            .Render("~/Scripts/JabbR2_#.js"));
     }
 </body>
 </html>
