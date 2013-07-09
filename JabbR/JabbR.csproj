@@ -938,7 +938,12 @@
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
     <Content Include="Content\themes\default\Chat.dictionary.css" />
-    <Content Include="Scripts\require.js" />
+    <Content Include="Scripts\r.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\require.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\stacktrace-min-0.4.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1376,7 +1381,10 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (
-  node $(ProjectDir)Scripts\r.js -o $(ProjectDir)App\build.js
+  dir
+  echo $(ProjectDir)
+  echo $(OutDir)
+  node $(ProjectDir)Scripts\r.js -o $(ProjectDir)App\build.js dir=$(OutDir)Build baseUrl=$(ProjectDir)App
 )</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -3377,23 +3377,12 @@ define('node/file', ['fs', 'path', 'prim'], function (fs, path, prim) {
         return path.replace(/\\/g, '/');
     }
 
-    function exists(path) {
-        if (isWindows && path.charAt(path.length - 1) === '/' &&
-            path.charAt(path.length - 2) !== ':') {
-            path = path.substring(0, path.length - 1);
-        }
-
-        try {
-            fs.statSync(path);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-
     function mkDir(dir) {
         if (!exists(dir) && (!isWindows || !windowsDriveRegExp.test(dir))) {
-            fs.mkdirSync(dir, 511);
+            // PATCH: fixes issues when running r.js on AppHarbor ~fuzeman
+            try {
+                fs.mkdirSync(dir, 511);
+            } catch (e) { }
         }
     }
 
