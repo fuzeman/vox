@@ -28,7 +28,8 @@ define([
             $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
-            $fileUploadButton = $('.upload-button');
+            $fileUploadButton = $('.upload-button'),
+            $logout = $('#preferences .logout');
 
         var readOnly = false,
             focus = true,
@@ -298,6 +299,10 @@ define([
                     //$ui.trigger(ui.events.typing);
                     break;
             }
+        });
+
+        $logout.click(function() {
+            client.performLogout();
         });
 
         return {

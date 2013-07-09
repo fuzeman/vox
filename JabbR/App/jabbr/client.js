@@ -161,6 +161,7 @@ define([
             },
 
             focused: focused,
+            performLogout: performLogout,
             logout: logout,
 
             bind: function (eventType, handler) {
