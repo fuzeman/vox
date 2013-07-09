@@ -43,7 +43,10 @@ define([
         this.messageType = data.MessageType;
 
         this.message = data.HtmlEncoded ? data.Content :
-            processor.processPlainContent(data.Content, this.isHistory);
+            processor.processPlainContent(data.Content, {
+                isHistory: this.isHistory,
+                messageType: this.messageType
+            });
 
         this.htmlContent = data.HtmlContent;
     }

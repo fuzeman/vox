@@ -7,6 +7,12 @@ define([
         var processor = kernel.get('jabbr/messageprocessors/processor');
 
         processor.bind(events.processor.beforeProcessPlainContent, function (event, handler) {
+            var type = (handler.data || {})['type'] || '';
+            
+            if (type == 'pm') {
+                return;
+            }
+
             var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
                 match = null,
                 result = handler.get();

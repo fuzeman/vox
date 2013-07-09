@@ -44,12 +44,7 @@ define([
         // Public Functions
         //
 
-        function processPlainContent(content, isHistory) {
-            isHistory = typeof isHistory !== 'undefined' ? isHistory : false;
-
-            var handlerData = {
-                isHistory: isHistory
-            };
+        function processPlainContent(content, data) {
 
             // Pre-encode content
             content = utility.encodeHtml(content);
@@ -57,7 +52,7 @@ define([
             // beforeProcessPlainContent
             content = getEventHandlerResult(
                 events.processor.beforeProcessPlainContent,
-                content, handlerData
+                content, data
             );
 
             content = utility.processContent(content, templates, ru.roomCache, true);
@@ -65,7 +60,7 @@ define([
             // afterProcessPlainContent
             content = getEventHandlerResult(
                 events.processor.afterProcessPlainContent,
-                content, handlerData
+                content, data
             );
 
             return content;

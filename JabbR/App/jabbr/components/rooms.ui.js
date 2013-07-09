@@ -88,6 +88,14 @@ define([
             return room;
         }
 
+        function getAllRoomElements() {
+            var rooms = [];
+            $("ul#tabs > li.room").each(function () {
+                rooms[rooms.length] = getRoomElements($(this).data("name"));
+            });
+            return rooms;
+        }
+
         function getNextRoomListElement($targetList, roomName, count, closed) {
             var nextListElement = null;
 
@@ -421,7 +429,6 @@ define([
         // Hub
 
         // When the /join command gets raised this is called
-
         function chatJoinRoom(room) {
             var added = addRoom(room);
 
@@ -525,6 +532,7 @@ define([
 
             getRoomElements: getRoomElements,
             getCurrentRoomElements: getCurrentRoomElements,
+            getAllRoomElements: getAllRoomElements,
             getNextRoomListElement: getNextRoomListElement,
 
             openRoomFromHash: function () {

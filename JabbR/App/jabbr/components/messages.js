@@ -155,6 +155,15 @@ define([
             return $element;
         }
 
+        function addPrivateMessage(content, type) {
+            var rooms = ru.getAllRoomElements();
+            for (var r in rooms) {
+                if (rooms[r].getName() !== undefined && rooms[r].isClosed() === false) {
+                    addMessage(content, type, rooms[r].getName());
+                }
+            }
+        }
+
         function sendMessage(msg) {
             events.trigger(events.ui.clearUnread);
 
@@ -338,7 +347,10 @@ define([
             var now = new Date(),
                 message = {
                     // TODO: use jabbr/viewmodels/message ?
-                    message: options.encoded ? options.content : processor.processPlainContent(options.content),
+                    message: options.encoded ? options.content : processor.processPlainContent(options.content, {
+                        type: type,
+                        source: options.source
+                    }),
                     type: type,
                     date: now,
                     when: now.formatTime(true),
@@ -482,10 +494,29 @@ define([
                 client.chat.client.addMessage = chatAddMessage;
                 client.chat.client.replaceMessage = chatReplaceMessage;
                 client.chat.client.addMessageContent = chatAddMessageContent;
+
+                client.chat.client.postMessage = function (msg, type, room) {
+                    addMessage(msg, type, room);
+                };
+
+                client.chat.client.sendMeMessage = function (name, message, room) {
+                    addMessage('*' + name + ' ' + message, 'action', room);
+                };
+
+                client.chat.client.sendPrivateMessage = function (from, to, message) {
+                    if (ru.isSelf({ Name: to })) {
+                        // Force notification for direct messages
+                        notifications.notify(true);
+                        //TODO: ui.setLastPrivate(from);
+                    }
+
+                    addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
+                };
             },
 
             addChatMessage: addChatMessage,
             addMessage: addMessage,
+            addPrivateMessage: addPrivateMessage,
             sendMessage: sendMessage,
 
             watchMessageScroll: watchMessageScroll
