@@ -5,7 +5,7 @@ define([
     'kernel',
     'jabbr/ui',
     'jabbr/state',
-    'jabbr/events',
+    'jabbr/events'
 ], function ($, Logger, kernel, ui, state, events) {
     var logger = new Logger('jabbr/components/rooms.client'),
         ru = null,
@@ -26,10 +26,6 @@ define([
         //
         // Private Functions
         //
-
-        function getRoomPreferenceKey(roomName) {
-            return '_room_' + roomName;
-        }
 
         function populateRoom(room) {
             var d = $.Deferred();
@@ -81,7 +77,7 @@ define([
 
             return d.promise();
         }
-        
+
         //
         // Public Functions
         //
@@ -161,31 +157,6 @@ define([
                 messageIds.push(message.id);
             },
 
-            // Preferences
-            getRoomPreferenceKey: getRoomPreferenceKey,
-            getRoomPreference: function (roomName, name) {
-                return (preferences[getRoomPreferenceKey(roomName)] || {})[name];
-            },
-            setRoomPreference: function (roomName, name, value) {
-                var roomPreferences = preferences[getRoomPreferenceKey(roomName)];
-
-                if (!roomPreferences) {
-                    roomPreferences = {};
-                    preferences[getRoomPreferenceKey(roomName)] = roomPreferences;
-                }
-
-                roomPreferences[name] = value;
-
-                state.save(client.chat.state.activeRoom);
-            },
-            getPreference: function (name) {
-                return preferences[name];
-            },
-            setPreference: function (name, value) {
-                preferences[name] = value;
-                //TODO: $(ui).trigger(ui.events.preferencesChanged);
-            },
-
             bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
@@ -193,11 +164,11 @@ define([
     };
 
     return function () {
-        if (object == null) {
+        if (object === null) {
             object = initialize();
             kernel.bind('jabbr/components/rooms.client', object);
         }
 
         return object;
-    }
+    };
 });

@@ -10,10 +10,10 @@ define([
     var logger = new Logger('jabbr/messageprocessors/processor'),
         ru = null,
         object = null;
-    
+
     logger.trace('loaded');
 
-    var initialize = function() {
+    var initialize = function () {
         var $this = $(this);
 
         function trigger(type, data) {
@@ -24,10 +24,10 @@ define([
             return {
                 data: data,
                 content: content,
-                get: function() {
+                get: function () {
                     return this.content;
                 },
-                set: function(newContent) {
+                set: function (newContent) {
                     this.content = newContent;
                 }
             };
@@ -147,18 +147,18 @@ define([
             beforeRichElementAttached: beforeRichElementAttached,
             afterRichElementAttached: afterRichElementAttached,
 
-            bind: function(eventType, handler) {
+            bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
         };
     };
-    
-    return function() {
+
+    return function () {
         if (object === null) {
             object = initialize();
             kernel.bind('jabbr/messageprocessors/processor', object);
         }
 
         return object;
-    }
+    };
 });

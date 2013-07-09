@@ -12,10 +12,10 @@ define([
         ru = null,
         rc = null,
         object = null;
-    
+
     logger.trace('loaded');
 
-    var initialize = function() {
+    var initialize = function () {
         var $roomFilterInput = $('#room-filter'),
             $closedRoomFilter = $('#room-filter-closed'),
             $lobbyRoomFilterForm = $('#room-filter-form'),
@@ -36,11 +36,11 @@ define([
             try {
                 // Populate the user list with room names
                 client.chat.server.getRooms()
-                    .done(function(rooms) {
+                    .done(function (rooms) {
                         populateRooms(rooms, client.getPrivateRooms());
                         //ui.setInitialized('Lobby');
                     });
-            } catch(e) {
+            } catch (e) {
                 client.connection.hub.log('getRooms failed');
             }
         }
@@ -63,8 +63,8 @@ define([
                 var privateSorted = sortRoomList(privateRooms);
 
                 // sort other lobby rooms but filter out private rooms
-                sortedRoomList = sortRoomList(rooms).filter(function(room) {
-                    return !privateSorted.some(function(allowed) {
+                sortedRoomList = sortRoomList(rooms).filter(function (room) {
+                    return !privateSorted.some(function (allowed) {
                         return allowed.Name === room.Name;
                     });
                 });
@@ -107,7 +107,7 @@ define([
         }
 
         function sortRoomList(listToSort) {
-            var sortedList = listToSort.sort(function(a, b) {
+            var sortedList = listToSort.sort(function (a, b) {
                 if (a.Closed && !b.Closed) {
                     return 1;
                 } else if (b.Closed && !a.Closed) {
@@ -170,7 +170,7 @@ define([
                 rc = kernel.get('jabbr/components/rooms.client');
 
                 logger.trace('activated');
-                
+
                 // Bind events
                 rc.bind(events.rooms.client.lobbyOpened, lobbyOpened);
             },
@@ -179,17 +179,17 @@ define([
             updateRooms: updateRooms,
             populateRooms: populateRooms,
 
-            hideForm: function() {
+            hideForm: function () {
                 $lobbyRoomFilterForm.hide();
             },
-            showForm: function() {
+            showForm: function () {
                 $lobbyRoomFilterForm.show();
             }
         };
     };
 
-    return function() {
-        if (object == null) {
+    return function () {
+        if (object === null) {
             object = initialize();
             kernel.bind('jabbr/components/lobby', object);
         }

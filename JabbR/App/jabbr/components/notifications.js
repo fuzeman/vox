@@ -3,8 +3,9 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/state',
     'jabbr/events'
-], function ($, Logger, kernel, events) {
+], function ($, Logger, kernel, state, events) {
     var logger = new Logger('jabbr/components/notifications'),
         client = null,
         ui = null,
@@ -12,7 +13,7 @@ define([
         ru = null,
         object = null;
 
-    var initialize = function() {
+    var initialize = function () {
         var $unreadNotificationCount = $('#notification-unread-count');
 
         function setUnreadNotifications(unreadCount) {
@@ -26,7 +27,6 @@ define([
         }
 
         function clientLoggedOn() {
-            
         }
         return {
             activate: function () {
@@ -36,20 +36,20 @@ define([
                 ru = kernel.get('jabbr/components/rooms.ui');
 
                 logger.trace('activated');
-                
+
                 // Bind events
                 client.bind(events.client.loggedOn, clientLoggedOn);
             },
-            messageNotification: function(message, room) {
+            messageNotification: function (message, room) {
                 var roomName = room.getName(),
                     isMention = message.highlight,
-                    notify = rc.getRoomPreference(roomName, 'notify') || 'mentions',
+                    notify = state.getRoomPreference(roomName, 'notify') || 'mentions',
                     currentRoomName = ru.getCurrentRoomElements().getName(),
                     roomFocus = roomName === currentRoomName && ui.isFocused();
 
                 if (room.isInitialized()) {
-                    var hasSound = rc.getRoomPreference(roomName, 'hasSound'),
-                        canToast = rc.getRoomPreference(roomName, 'canToast');
+                    var hasSound = state.getRoomPreference(roomName, 'hasSound'),
+                        canToast = state.getRoomPreference(roomName, 'canToast');
 
                     if (isMention) {
                         // Mention Sound
@@ -74,13 +74,13 @@ define([
             }
         };
     };
-    
+
     return function () {
-        if (object == null) {
+        if (object === null) {
             object = initialize();
             kernel.bind('jabbr/components/notifications', object);
         }
 
         return object;
-    }
+    };
 });

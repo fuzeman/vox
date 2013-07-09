@@ -11,9 +11,9 @@ define([
         ru = null,
         processor = null;
 
-    events.bind(events.activated, function() {
+    events.bind(events.activated, function () {
         client = kernel.get('jabbr/client');
-        ru = kernel.get('jabbr/components/rooms.ui')
+        ru = kernel.get('jabbr/components/rooms.ui');
         processor = kernel.get('jabbr/messageprocessors/processor');
 
         logger.trace('activated');

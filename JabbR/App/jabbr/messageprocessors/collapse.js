@@ -2,8 +2,9 @@
 define([
     'logger',
     'kernel',
+    'jabbr/state',
     'jabbr/events'
-], function (Logger, kernel, events) {
+], function (Logger, kernel, state, events) {
     var logger = new Logger('jabbr/messageprocessors/collapse');
     logger.trace('loaded');
 
@@ -26,7 +27,7 @@ define([
     function shouldCollapseContent(content, roomName) {
         var collapsible = isFromCollapsibleContentProvider(content),
             collapseForRoom = roomName ?
-                rc.getRoomPreference(roomName, 'blockRichness') :
+                state.getRoomPreference(roomName, 'blockRichness') :
                 ru.getActiveRoomPreference('blockRichness');
 
         return collapsible && collapseForRoom;

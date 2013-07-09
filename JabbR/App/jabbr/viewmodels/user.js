@@ -36,7 +36,7 @@ define([
 
         user.name = userdata.Name;
         user.hash = userdata.Hash;
-        
+
         user.admin = userdata.IsAdmin;
 
         user.active = userdata.Active;
@@ -63,20 +63,20 @@ define([
         this.roomUsers = {};  // { <roomName>: <RoomUser> }
     }
 
-    User.prototype.update = function(userdata) {
+    User.prototype.update = function (userdata) {
         update(this, userdata);
     };
-    
-    User.prototype.each = function(callback) {
+
+    User.prototype.each = function (callback) {
         $.each(this.roomUsers, callback);
-    }
+    };
 
     User.prototype.setUserActivity = function (userdata) {
         this.update(userdata);
 
         this.each(function (roomName, roomUser) {
             logger.trace('setUserActivity  (' + roomUser.user.name + ') #' + roomName);
-            
+
             var $roomUser = roomUser.$roomUser,
                 $idleSince = $roomUser.find('.idle-since');
 

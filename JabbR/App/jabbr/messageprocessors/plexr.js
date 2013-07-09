@@ -2,8 +2,9 @@
 define([
     'jquery',
     'kernel',
+    'jabbr/state',
     'jabbr/events'
-], function ($, kernel, events) {
+], function ($, kernel, state, events) {
     function processResult($plexrResult, service) {
         var $serviceDetails = $plexrResult.find(service);
 
@@ -26,7 +27,7 @@ define([
             var $plexrResult = $("PlexrContentProviderResult", $content);
 
             if ($plexrResult.length === 1) {
-                var service = rc.getPreference('music_service') || 'spotify';
+                var service = state.getPreference('music_service') || 'spotify';
                 var result = processResult($plexrResult, service);
 
                 if (result !== null) {

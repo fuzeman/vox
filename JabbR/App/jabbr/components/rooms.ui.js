@@ -19,7 +19,7 @@ define([
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function($, Logger, kernel,
+], function ($, Logger, kernel,
     // Core
     state, events, templates,
     // View Models
@@ -34,7 +34,7 @@ define([
 
     logger.trace('loaded');
 
-    var initialize = function() {
+    var initialize = function () {
         var $document = $(document),
             $toast = $('#room-preferences .toast'),
             $sound = $('#room-preferences .sound'),
@@ -92,7 +92,7 @@ define([
             var nextListElement = null;
 
             // move the item to before the next element
-            $targetList.find('li').each(function() {
+            $targetList.find('li').each(function () {
                 var $this = $(this),
                     liRoomCount = $this.data('count'),
                     liRoomClosed = $this.hasClass('closed'),
@@ -150,11 +150,11 @@ define([
         // Preferences
 
         function loadRoomPreferences(roomName) {
-            //var roomPreferences = rc.getRoomPreference(roomName);
+            //var roomPreferences = state.getRoomPreference(roomName);
 
             // Set defaults
-            if (rc.getRoomPreference(roomName, 'hasSound') === undefined) {
-                rc.setRoomPreference(roomName, 'hasSound', true);
+            if (state.getRoomPreference(roomName, 'hasSound') === undefined) {
+                state.setRoomPreference(roomName, 'hasSound', true);
             }
 
             // Placeholder for room level preferences
@@ -165,7 +165,9 @@ define([
         }
 
         function toggleRichness($element, roomName) {
-            var blockRichness = roomName ? rc.getRoomPreference(roomName, 'blockRichness') : preferences.blockRichness;
+            var blockRichness = roomName ?
+                state.getRoomPreference(roomName, 'blockRichness') :
+                state.get().preferences.blockRichness;
 
             if (blockRichness === true) {
                 $element.addClass('off');
@@ -175,7 +177,7 @@ define([
         }
 
         function toggleNotify($element, roomName) {
-            var notifyState = rc.getRoomPreference(roomName, 'notify') || 'mentions';
+            var notifyState = state.getRoomPreference(roomName, 'notify') || 'mentions';
 
             if (notifyState === 'all' && $element.hasClass('notify-mentions')) {
                 $element.removeClass('notify-mentions');
@@ -189,7 +191,9 @@ define([
         }
 
         function toggleElement($element, preferenceName, roomName) {
-            var value = roomName ? rc.getRoomPreference(roomName, preferenceName) : preferences[preferenceName];
+            var value = roomName ?
+                state.getRoomPreference(roomName, preferenceName) :
+                this.get().preferences[preferenceName];
 
             if (value === true) {
                 $element.removeClass('off');
@@ -284,7 +288,7 @@ define([
         }
 
         function setAccessKeys() {
-            $.each($tabs.find('li.room'), function(index, item) {
+            $.each($tabs.find('li.room'), function (index, item) {
                 $(item).children('button').attr('accesskey', getRoomAccessKey(index));
             });
         }
@@ -351,11 +355,11 @@ define([
 
             $tabs.find('li')
                 .not('.lobby')
-                .sortElements(function(a, b) {
+                .sortElements(function (a, b) {
                     return $(a).data('name').toString().toUpperCase() > $(b).data('name').toString().toUpperCase() ? 1 : -1;
                 });
 
-            scrollHandler = function() {
+            scrollHandler = function () {
                 var messageId = null;
 
                 // Do nothing if there's nothing else
@@ -417,6 +421,7 @@ define([
         // Hub
 
         // When the /join command gets raised this is called
+
         function chatJoinRoom(room) {
             var added = addRoom(room);
 
@@ -455,7 +460,7 @@ define([
         events.bind(events.error, function (event, content, type) {
             messages.addMessage(content, type);
         });
-        
+
         events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
             logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
@@ -469,24 +474,24 @@ define([
 
         // DOM
 
-        $document.on('click', 'li.room .room-row', function() {
+        $document.on('click', 'li.room .room-row', function () {
             var roomName = $(this).parent().data('name');
             activateOrOpenRoom(roomName);
         });
 
-        $document.on('click', '#tabs li', function() {
+        $document.on('click', '#tabs li', function () {
             var roomName = $(this).data('name');
             activateOrOpenRoom(roomName);
         });
 
-        $document.on('mousedown', '#tabs li.room', function(ev) {
+        $document.on('mousedown', '#tabs li.room', function (ev) {
             // if middle mouse
             if (ev.which === 2) {
                 rc.leaveRoom($(this).data('name'));
             }
         });
 
-        $document.on('click', '#tabs li .close', function(ev) {
+        $document.on('click', '#tabs li .close', function (ev) {
             var roomName = $(this).closest('li').data('name');
 
             rc.leaveRoom(roomName);
@@ -509,21 +514,21 @@ define([
                 processor.activate();
 
                 logger.trace('activated');
-                
+
                 // Bind events
                 rc.bind(events.rooms.client.scrollToBottom, rcScrollToBottom);
                 rc.bind(events.rooms.client.createMessage, rcCreateMessage);
-                
+
                 client.chat.client.joinRoom = chatJoinRoom;
                 client.chat.client.leave = chatLeave;
             },
-            
+
             getRoomElements: getRoomElements,
             getCurrentRoomElements: getCurrentRoomElements,
             getNextRoomListElement: getNextRoomListElement,
 
-            openRoomFromHash: function() {
-                $.history.init(function(hash) {
+            openRoomFromHash: function () {
+                $.history.init(function (hash) {
                     var roomName = rc.getRoomNameFromHash(hash);
 
                     if (roomName) {
@@ -534,15 +539,15 @@ define([
                 });
             },
 
-            getRoomCache: function() {
+            getRoomCache: function () {
                 return roomCache;
             },
 
-            getActiveRoomPreference: function(name) {
+            getActiveRoomPreference: function (name) {
                 var room = getCurrentRoomElements();
-                return rc.getRoomPreference(room.getName(), name);
+                return state.getRoomPreference(room.getName(), name);
             },
-            
+
             isSelf: isSelf,
             setInitialized: setInitialized,
 
@@ -550,8 +555,8 @@ define([
             setActiveRoomCore: setActiveRoomCore,
 
             addRoom: addRoom,
-            addRooms: function(rooms) {
-                $.each(rooms, function(index, room) {
+            addRooms: function (rooms) {
+                $.each(rooms, function (index, room) {
                     addRoom(room);
 
                     /*if (room.Private) {
@@ -565,7 +570,7 @@ define([
 
             scrollToBottom: scrollToBottom,
 
-            scrollIfNecessary: function(callback, room) {
+            scrollIfNecessary: function (callback, room) {
                 var nearEnd = isNearTheEnd(room);
 
                 callback();
@@ -575,13 +580,13 @@ define([
                 }
             },
 
-            bind: function(eventType, handler) {
+            bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
         };
-    }
+    };
 
-    return function() {
+    return function () {
         if (object === null) {
             // initialize sub-modules
             rc = rc();

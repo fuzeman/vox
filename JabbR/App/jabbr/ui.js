@@ -290,7 +290,7 @@ define([
                 return focus;
             }
         };
-    }
+    };
 
     return function () {
         if (object === null) {
@@ -303,5 +303,5 @@ define([
         }
 
         return object;
-    }
+    };
 });

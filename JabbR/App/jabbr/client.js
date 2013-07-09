@@ -13,7 +13,7 @@ define([
         object = null;
     logger.trace('loaded');
 
-    var initialize = function() {
+    var initialize = function () {
         var $window = $(window),
             $this = $(this),
             connection = $.connection,
@@ -31,7 +31,7 @@ define([
         // Chat Event Handlers
         //
 
-        chat.client.logOn = function(rooms, myRooms, mentions) {
+        chat.client.logOn = function (rooms, myRooms, mentions) {
             logger.trace('logOn');
 
             privateRooms = myRooms;
@@ -63,13 +63,13 @@ define([
             $this.trigger(events.client.disconnected);
 
             // Restart the connection
-            setTimeout(function() {
-                connection.hub.start(options).done(function() {
+            setTimeout(function () {
+                connection.hub.start(options).done(function () {
                     // When this works uncomment it.
                     // ui.showReloadMessageNotification();
 
                     // Turn the firehose back on
-                    chat.server.join(true).fail(function() {
+                    chat.server.join(true).fail(function () {
                         // So refresh the page, our auth token is probably gone
                         //performLogout();
                     });
@@ -94,7 +94,7 @@ define([
         function performLogout() {
             var d = $.Deferred();
 
-            $.post('account/logout', {}).done(function() {
+            $.post('account/logout', {}).done(function () {
                 d.resolveWith(null);
                 document.location = document.location.pathname;
             });
@@ -107,7 +107,7 @@ define([
 
             try {
                 chat.server.updateActivity();
-            } catch(e) {
+            } catch (e) {
                 connection.hub.log('updateActivity failed');
             }
         }
@@ -115,16 +115,16 @@ define([
         $window.bind(events.focused, focused);
 
         function logout() {
-            performLogout().done(function() {
+            performLogout().done(function () {
                 chat.server.send('/logout', chat.state.activeRoom)
-                    .fail(function(e) {
+                    .fail(function (e) {
                         $window.trigger(events.error, [e, 'error', chat.state.activeRoom]);
                     });
             });
         }
 
         return {
-            activate: function() {
+            activate: function () {
                 logger.trace('activated');
             },
 
@@ -134,19 +134,19 @@ define([
             connection: connection,
             chat: chat,
 
-            getInitial: function() {
+            getInitial: function () {
                 return initial;
             },
 
-            getPrivateRooms: function() {
+            getPrivateRooms: function () {
                 return privateRooms;
             },
 
-            start: function() {
-                connection.hub.start(options).done(function() {
-                    chat.server.join().fail(function() {
+            start: function () {
+                connection.hub.start(options).done(function () {
+                    chat.server.join().fail(function () {
                         logger.warn('join failed');
-                    }).done(function() {
+                    }).done(function () {
                         $this.trigger(events.client.started);
                     });
                 });
@@ -154,7 +154,7 @@ define([
                 connection.hub.stateChanged(stateChanged);
                 connection.hub.disconnected(disconnected);
 
-                connection.hub.error(function() {
+                connection.hub.error(function () {
                     // Make all pending messages failed if there's an error
                     //failPendingMessages();
                 });
@@ -163,18 +163,18 @@ define([
             focused: focused,
             logout: logout,
 
-            bind: function(eventType, handler) {
+            bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
         };
     };
-    
-    return function() {
+
+    return function () {
         if (object === null) {
             object = initialize();
             kernel.bind('jabbr/client', object);
         }
 
         return object;
-    }
+    };
 });

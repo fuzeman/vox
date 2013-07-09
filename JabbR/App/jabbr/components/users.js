@@ -119,6 +119,7 @@ define([
 
         // Hub
         // ReSharper disable InconsistentNaming
+
         function client_updateActivity(userdata) {
             logger.trace('client_updateActivity');
 
@@ -133,7 +134,7 @@ define([
             logger.trace('client_markInactive');
 
             $.each(inactiveUsers, function () {
-                client_updateActivity(this)
+                client_updateActivity(this);
             });
         }
 
@@ -151,6 +152,7 @@ define([
                 }
             }
         }
+
         // ReSharper restore InconsistentNaming
 
         return {
@@ -177,7 +179,7 @@ define([
             createUser: createUser,
             createRoomUser: createRoomUser
         };
-    }
+    };
 
     return function () {
         if (object === null) {
@@ -187,5 +189,5 @@ define([
         }
 
         return object;
-    }
+    };
 });
