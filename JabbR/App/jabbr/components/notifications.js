@@ -147,6 +147,18 @@ define([
             client.chat.client.roomLocked = function (room) {
                 messages.addMessage(room + ' is now locked.', 'notification', state.get().activeRoom);
             };
+            
+            client.chat.client.topicChanged = function (roomName, isCleared, topic, who) {
+                var action = isCleared ? 'cleared' : 'set';
+                var to = topic ? ' to ' + '"' + topic + '"' : '';
+                var message = action + ' the room topic' + to;
+                if (who === client.chat.state.name) {
+                    message = 'You have ' + message;
+                } else {
+                    message = who + ' has ' + message;
+                }
+                messages.addMessage(message, 'notification', roomName);
+            };
         }
 
         function notifyRoom(roomName) {

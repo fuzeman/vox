@@ -57,7 +57,7 @@ define([
                 });
                 logger.info('finished loading recent messages');
 
-                //TODO: ui.changeRoomTopic(roomInfo);
+                ru.updateRoomTopic(roomInfo);
 
                 // mark room as initialized to differentiate messages
                 // that are added after initial population

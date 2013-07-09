@@ -160,6 +160,26 @@ define([
             room.setTrimmable(canTrimMessages);
         }
 
+        function updateRoomTopic(roomdata) {
+            var room = getRoomElements(roomdata.Name);
+            var topic = roomdata.Topic;
+            var topicHtml = topic === '' ?
+                'You\'re chatting in ' + roomdata.Name :
+                processor.processPlainContent(topic);
+            var roomTopic = room.roomTopic;
+            var isVisibleRoom = getCurrentRoomElements().getName() === roomdata.Name;
+
+            if (isVisibleRoom) {
+                roomTopic.hide();
+            }
+
+            roomTopic.html(topicHtml);
+
+            if (isVisibleRoom) {
+                roomTopic.fadeIn(2000);
+            }
+        }
+
         // Preferences
 
         function loadRoomPreferences(roomName) {
@@ -533,6 +553,7 @@ define([
 
                 client.chat.client.joinRoom = chatJoinRoom;
                 client.chat.client.leave = chatLeave;
+                client.chat.client.changeTopic = updateRoomTopic;
             },
 
             getRoomElements: getRoomElements,
@@ -564,6 +585,7 @@ define([
             isSelf: isSelf,
             setInitialized: setInitialized,
             setRoomTrimmable: setRoomTrimmable,
+            updateRoomTopic: updateRoomTopic,
 
             setActiveRoom: setActiveRoom,
             setActiveRoomCore: setActiveRoomCore,
