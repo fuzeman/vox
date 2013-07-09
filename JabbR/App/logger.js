@@ -131,12 +131,12 @@ define([
             
             var filename = path.slice(path.lastIndexOf('/') + 1);
             var line = split[split.length - 2];
-            
+
             return {
                 path: path,
                 filename: filename,
                 line: line
-            }
+            };
         }
 
         return null;

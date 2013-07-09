@@ -87,7 +87,7 @@ define([
             },
 
             show: show
-        }
+        };
     };
 
     return function () {
