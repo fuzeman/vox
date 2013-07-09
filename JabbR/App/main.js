@@ -27,6 +27,8 @@ require.config({
     },
 
     shim: {
+        'jabbr/client': ['jquery.signalr'],
+        
         'bootstrap': ['jquery'],
 
         'jquery-migrate': ['jquery'],
