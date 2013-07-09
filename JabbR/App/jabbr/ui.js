@@ -37,7 +37,9 @@ define([
             unread = 0,
             isUnreadMessageForUser = false,
             newMessageLines = 1,
-            Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 };
+            Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 },
+            checkingStatus = false,
+            typing = false;
 
         //
         // Private Functions
@@ -130,6 +132,30 @@ define([
             var room = ru.getCurrentRoomElements();
             room.scrollToBottom();
             room.removeSeparator();
+        }
+
+        function triggerTyping() {
+            // If not in a room, don't try to send typing notifications
+            if (!client.chat.state.activeRoom) {
+                return;
+            }
+
+            if (checkingStatus === false && typing === false) {
+                typing = true;
+
+                try {
+                    ru.setRoomTrimmable(client.chat.state.activeRoom, typing);
+                    client.chat.server.typing(client.chat.state.activeRoom);
+                }
+                catch (e) {
+                    client.connection.hub.log('Failed to send via websockets');
+                }
+
+                window.setTimeout(function () {
+                    typing = false;
+                },
+                3000);
+            }
         }
 
         function updateUnread(room, isMentioned) {
@@ -286,7 +312,7 @@ define([
                     break;
                 case Keys.Enter:
                     if (ev.shiftKey) {
-                        //$ui.trigger(ui.events.typing);
+                        triggerTyping();
                     } else {
                         triggerSend();
                         ev.preventDefault();
@@ -296,7 +322,7 @@ define([
                     if ($newMessage.val()[0] === '/' || key === Keys.Slash) {
                         return;
                     }
-                    //$ui.trigger(ui.events.typing);
+                    triggerTyping();
                     break;
             }
         });

@@ -155,6 +155,11 @@ define([
             room.setInitialized();
         }
 
+        function setRoomTrimmable(roomName, canTrimMessages) {
+            var room = getRoomElements(roomName);
+            room.setTrimmable(canTrimMessages);
+        }
+
         // Preferences
 
         function loadRoomPreferences(roomName) {
@@ -558,6 +563,7 @@ define([
 
             isSelf: isSelf,
             setInitialized: setInitialized,
+            setRoomTrimmable: setRoomTrimmable,
 
             setActiveRoom: setActiveRoom,
             setActiveRoomCore: setActiveRoomCore,

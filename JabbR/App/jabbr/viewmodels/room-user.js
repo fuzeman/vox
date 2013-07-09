@@ -1,9 +1,20 @@
 ﻿/*global define*/
 define([
     'jquery',
+    'logger',
+    'kernel',
+    'jabbr/events',
     'livestamp'
-], function ($) {
-    var ru = null;
+], function ($, Logger, kernel, events) {
+    var logger = new Logger('jabbr/viewmodels/message'),
+        ru = null,
+        client = null;
+    
+    events.bind(events.activated, function () {
+        client = kernel.get('jabbr/client');
+
+        logger.trace('activated');
+    });
 
     function RoomUser(roomUi, user, roomName, room) {
         ru = roomUi;
@@ -125,6 +136,38 @@ define([
         }
 
         this.updateNote();
+    };
+
+    RoomUser.prototype.setUserTyping = function() {
+        var $roomUser = this.$roomUser,
+            timeout = null;
+
+        // if the user is somehow missing from room, add them
+        if ($roomUser.length === 0) {
+            //TODO ui.addUser(userViewModel, roomName);
+        }
+
+        // Do not show typing indicator for current user
+        if (this.user.name === client.chat.state.name) {
+            return;
+        }
+
+        // Mark the user as typing
+        $roomUser.addClass('typing');
+        $(".user-status-container", $roomUser).addClass('animated pulse');
+        var oldTimeout = $roomUser.data('typing');
+
+        if (oldTimeout) {
+            clearTimeout(oldTimeout);
+        }
+
+        timeout = window.setTimeout(function() {
+            $roomUser.removeClass('typing');
+            $(".user-status-container", $roomUser).removeClass('animated pulse');
+        },
+            3000);
+
+        $roomUser.data('typing', timeout);
     };
 
     return RoomUser;

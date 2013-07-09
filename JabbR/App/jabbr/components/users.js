@@ -153,6 +153,16 @@ define([
             }
         }
 
+        function client_setTyping(userdata, room) {
+            logger.trace('client_setTyping');
+
+            if (userdata.Name in users && room in users[userdata.Name].roomUsers) {
+                users[userdata.Name].roomUsers[room].setUserTyping(room);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to set typing.');
+            }
+        }
+
         // ReSharper restore InconsistentNaming
 
         return {
@@ -168,6 +178,7 @@ define([
                 client.chat.client.updateActivity = client_updateActivity;
                 client.chat.client.markInactive = client_markInactive;
                 client.chat.client.addUser = client_addUser;
+                client.chat.client.setTyping = client_setTyping;
             },
 
             remove: remove,
