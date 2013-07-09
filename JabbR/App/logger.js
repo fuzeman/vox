@@ -1,7 +1,9 @@
 ﻿/*global define, printStackTrace, console*/
 define([
-    'stacktrace'
-], function () {
+    'jquery',
+    'stacktrace',
+    'jquery-migrate'
+], function ($) {
     function Logger(tag) {
         this.tag = tag;
     }
@@ -64,24 +66,29 @@ define([
 
         return replicate(len - text.length, ch) + text;
     }
-
-    function getCaller() {
-        var trace = printStackTrace();
+    
+    function findCallerTrace(trace, writeTrace, endTrace) {
         var foundLoggerTrace = false;
         var callerTrace = null;
 
         for (var i = 0; i < trace.length; i++) {
             if (!foundLoggerTrace) {
-                if (trace[i].indexOf('Logger.prototype.write@') != -1) {
+                if (trace[i].indexOf(writeTrace) != -1) {
                     foundLoggerTrace = true;
                 }
             } else {
-                if (trace[i].indexOf('Logger.prototype') == -1) {
+                if (trace[i].indexOf(endTrace) == -1) {
                     callerTrace = trace[i];
                     break;
                 }
             }
         }
+
+        return callerTrace;
+    }
+    
+    function parseMozillaTrace(trace) {
+        var callerTrace = findCallerTrace(trace, 'Logger.prototype.write@', 'Logger.prototype');
 
         if (callerTrace !== null) {
             var split = callerTrace.split('@http://');
@@ -107,6 +114,49 @@ define([
 
         return null;
     }
+    
+    function parseWebkitTrace(trace) {
+        var callerTrace = findCallerTrace(trace, 'at Logger.write (', 'at Logger.');
+        
+        if (callerTrace !== null) {
+            callerTrace = callerTrace.replace('at', '').trim();
+            var split = callerTrace.split(':');
+            
+            if (split.length < 3) {
+                return null;
+            }
+
+            var path = split[split.length - 3];
+            path = path.slice(path.indexOf('/'));
+            
+            var filename = path.slice(path.lastIndexOf('/') + 1);
+            var line = split[split.length - 2];
+            
+            return {
+                path: path,
+                filename: filename,
+                line: line
+            }
+        }
+
+        return null;
+
+        //at http://localhost:16207/App/main.js:66:16
+    }
+
+    function getCaller() {
+        var trace = printStackTrace();
+        
+        if ($.browser.mozilla === true) {
+            return parseMozillaTrace(trace);
+        }
+        
+        if ($.browser.webkit === true) {
+            return parseWebkitTrace(trace);
+        }
+
+        return null;
+    }
 
     Logger.prototype.write = function (level, message) {
         if (this.traceEnabled) {
@@ -118,13 +168,13 @@ define([
                     "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
                     "(" + padRight(toLevelString(level), 5) + ")    " + message
                 );
+                return;
             }
-        } else {
-            console.log(
-                "[" + padRight(this.tag, 32) + "]  " +
-                "(" + padRight(toLevelString(level), 5) + ")    " + message
-            );
         }
+        console.log(
+            "[" + padRight(this.tag, 32) + "]  " +
+            "(" + padRight(toLevelString(level), 5) + ")    " + message
+        );
     };
 
     Logger.prototype.trace = function (message) {
