@@ -72,9 +72,7 @@ define([
         // DOM Event Handlers
         //
 
-        $help.click(function () {
-            show();
-        });
+        $help.click(show);
 
         return {
             activate: function () {
@@ -85,9 +83,7 @@ define([
 
                 client.bind(events.client.loggedOn, clientLoggedOn);
 
-                client.chat.client.showCommands = function () {
-                    show();
-                };
+                client.chat.client.showCommands = show;
             },
 
             show: show
