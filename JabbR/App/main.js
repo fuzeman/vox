@@ -16,6 +16,7 @@ require.config({
         'jquery.sortElements': '../Scripts/jquery.sortElements',
         'jquery.timeago': '../Scripts/jquery.timeago.0.10',
         'jquery.fancybox': '../Scripts/jquery.fancybox',
+        'jquery.pulse': '../Scripts/jquery.pulse',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',
@@ -35,6 +36,7 @@ require.config({
         'jquery.tmpl': ['jquery'],
         'jquery.sortElements': ['jquery'],
         'jquery.timeago': ['jquery'],
+        'jquery.pulse': ['jquery'],
 
         'markdown': {
             exports: 'Markdown'
