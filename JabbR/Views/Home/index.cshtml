@@ -10,13 +10,13 @@
     <meta charset="UTF-8">
     <title>iceJabbR</title>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A real-time chat application." />
     <meta name="keywords" content="chat,realtime chat,signalr,jabbr" />
     <link href="@Url.Content("~/Content/images/logo32.png")" rel="icon" type="image/png" sizes="32x32">
     <link href="@Url.Content("~/Content/images/logo64.png")" rel="icon" type="image/png" sizes="64x64">
     <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16">
-    @{ 
+    @{
         WriteLiteral(Bundle.Css().ForceDebugIf(() => Model.DebugMode)
             .Add("~/Content/bootstrap.min.css")
             .Add("~/Content/bootstrap-responsive.min.css")
@@ -142,7 +142,7 @@
         <li id="tabs-${id}" class="room" data-name="${name}" data-closed="${closed}" data-trimmable="true" role="tab">
             <span class="lock hide"><i class="icon-lock"></i></span>
             <span class="readonly hide"><i class="icon-ban-circle"></i></span>
-            <button> 
+            <button>
                 <span class="content">${name}</span>
             </button>
             <button class="close">&times;</button>
@@ -150,7 +150,7 @@
     </script>
     <script id="command-help-template" type="text/x-jquery-tmpl">
         <dt>
-            <span class="command command-name">${Name}</span> 
+            <span class="command command-name">${Name}</span>
             {{if Arguments}}<span class="command command-args">${Arguments}</span>{{/if}}
         </dt>
         <dd>${Description}</dd>
@@ -160,7 +160,7 @@
         <div class="collapsible_content">
             {{html html}}
         </div>
-        <time class="js-relative-date" datetime="${created_at}">${created_at}</time> 
+        <time class="js-relative-date" datetime="${created_at}">${created_at}</time>
     </script>
     <!-- /TweetContentProvider -->
     <!-- /GitHub Issues Content Provider -->
@@ -258,7 +258,6 @@
         <header id="heading" role="heading">
             <div class="banner" role="banner">
                 <h1>iceJabbR</h1>
-
             </div>
             <nav>
                 <ul id="tabs" role="tablist">
@@ -403,7 +402,7 @@
                             <div id="releaseArea">
                                 <p id="releaseTag">
                                     Deployed from <a target="_blank" href="https://github.com/JabbR/JabbR/commit/@Model.Sha" title="View the commit.">@Model.Sha.Substring(0, 10)</a>
-                                    on <a target="_blank" href="https://github.com/JabbR/JabbR/branches/@Model.Branch" title="View the branch.">@Model.Branch</a> 
+                                    on <a target="_blank" href="https://github.com/JabbR/JabbR/branches/@Model.Branch" title="View the branch.">@Model.Branch</a>
                                     at @Model.Time.
                                 </p>
                             </div>
@@ -484,9 +483,7 @@
     else
     {
         // Load optimized require.js module
-        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
-            .Add("~/Build/main.js")
-            .Render("~/Scripts/JabbR2_#.js"));
+        @: <script type="text/javascript" src="/Build/main.js"></script>
     }
 </body>
 </html>
