@@ -81,7 +81,7 @@ define([
             roomUser.updateActivity();
 
             if (isOwner) {
-                roomUser.setOwner();
+                roomUser.setOwner(true);
             }
 
             return user.roomUsers[roomName];
@@ -113,6 +113,13 @@ define([
                 });
         }
 
+        function exists(username, roomname) {
+            if (username !== undefined && roomname !== undefined) {
+                return username in users && roomname in users[username].roomUsers;
+            }
+            return username in users;
+        }
+
         //
         // Event Handlers
         //
@@ -123,7 +130,7 @@ define([
         function client_updateActivity(userdata) {
             logger.trace('client_updateActivity');
 
-            if (userdata.Name in users) {
+            if (exists(userdata.Name)) {
                 users[userdata.Name].setUserActivity(userdata);
             } else {
                 logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
@@ -153,13 +160,53 @@ define([
             }
         }
 
-        function client_setTyping(userdata, room) {
+        function client_setTyping(userdata, roomname) {
             logger.trace('client_setTyping');
 
-            if (userdata.Name in users && room in users[userdata.Name].roomUsers) {
-                users[userdata.Name].roomUsers[room].setUserTyping(room);
+            if (exists(userdata.Name, roomname)) {
+                users[userdata.Name].roomUsers[roomname].setTyping();
             } else {
                 logger.warn('user "' + userdata.Name + '" does not exist, unable to set typing.');
+            }
+        }
+
+        function client_addAdmin(userdata, roomname) {
+            logger.trace('client_addAdmin');
+
+            if (exists(userdata.Name, roomname)) {
+                users[userdata.Name].roomUsers[roomname].setAdmin(true);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to add admin.');
+            }
+        }
+
+        function client_removeAdmin(userdata, roomname) {
+            logger.trace('client_removeAdmin');
+
+            if (exists(userdata.Name, roomname)) {
+                users[userdata.Name].roomUsers[roomname].setAdmin(false);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to remove admin.');
+            }
+        }
+        
+        function client_addOwner(userdata, roomname) {
+            logger.trace('client_addOwner');
+
+            if (exists(userdata.Name, roomname)) {
+                users[userdata.Name].roomUsers[roomname].setOwner(true);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to add owner.');
+            }
+        }
+
+        function client_removeOwner(userdata, roomname) {
+            logger.trace('client_removeOwner');
+
+            if (exists(userdata.Name, roomname)) {
+                users[userdata.Name].roomUsers[roomname].setOwner(false);
+            } else {
+                logger.warn('user "' + userdata.Name + '" does not exist, unable to remove owner.');
             }
         }
 
@@ -179,6 +226,12 @@ define([
                 client.chat.client.markInactive = client_markInactive;
                 client.chat.client.addUser = client_addUser;
                 client.chat.client.setTyping = client_setTyping;
+                
+                client.chat.client.addAdmin = client_addAdmin;
+                client.chat.client.removeAdmin = client_removeAdmin;
+
+                client.chat.client.addOwner = client_addOwner;
+                client.chat.client.removeOwner = client_removeOwner;
             },
 
             remove: remove,

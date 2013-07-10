@@ -197,6 +197,9 @@ define([
 
                 // Bind events
                 client.bind(events.client.loggedOn, clientLoggedOn);
+                
+                client.chat.client.updateUnreadNotifications = setUnreadNotifications;
+                
                 bindNotificationEvents();
             },
 

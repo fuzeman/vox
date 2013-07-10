@@ -27,12 +27,32 @@ define([
         this.$roomUser = null;
     }
 
-    RoomUser.prototype.setOwner = function () {
-        this.$roomUser
-            .attr('data-owner', true)
-            .data('owner', true);
+    RoomUser.prototype.setOwner = function (isOwner) {
+        var $roomUser = this.$roomUser.data('owner', isOwner);
+        
+        if (isOwner) {
+            $roomUser.attr('data-owner', true);
+        } else {
+            $roomUser.removeAttr('data-owner');
+        }
 
-        this.room.updateUserStatus(this.$roomUser);
+        this.room.updateUserStatus($roomUser);
+    };
+
+    RoomUser.prototype.setAdmin = function (isAdmin) {
+        var $roomUser = this.$roomUser.data('admin', isAdmin);
+
+        if (isAdmin) {
+            $roomUser.attr('data-admin', true)
+                     .find('.admin')
+                     .text('(admin)');
+        } else {
+            $roomUser.removeAttr('data-admin')
+                     .find('.admin')
+                     .text('');
+        }
+        
+        this.room.updateUserStatus($roomUser);
     };
 
     RoomUser.prototype.setActive = function () {
@@ -138,7 +158,7 @@ define([
         this.updateNote();
     };
 
-    RoomUser.prototype.setUserTyping = function() {
+    RoomUser.prototype.setTyping = function () {
         var $roomUser = this.$roomUser,
             timeout = null;
 

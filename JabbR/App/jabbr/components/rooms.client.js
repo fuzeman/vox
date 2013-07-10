@@ -44,7 +44,7 @@ define([
                     var user = users.get(this);
 
                     if (user !== undefined && room in user.roomUsers) {
-                        user.roomUsers[room].setOwner();
+                        user.roomUsers[room].setOwner(true);
                     } else {
                         logger.warn('unable to find user "' + this + '"');
                     }
