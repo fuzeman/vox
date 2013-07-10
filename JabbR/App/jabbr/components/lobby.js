@@ -161,6 +161,47 @@ define([
             }
         }
 
+        function updateRoomCount(room, count) {
+            var lobby = getLobby(),
+                $targetList = room.Private === true ? lobby.owners : lobby.users,
+                $room = $targetList.find('[data-room="' + room.Name + '"]'),
+                $count = $room.find('.count'),
+                roomName = room.Name.toString().toUpperCase();
+
+            $room.css('background-color', '#f5f5f5');
+            if (count === 0) {
+                $count.text('Unoccupied');
+            } else if (count === 1) {
+                $count.text('1 occupant');
+            } else {
+                $count.text(count + ' occupants');
+            }
+
+            if (room.Private === true) {
+                $room.addClass('locked');
+            } else {
+                $room.removeClass('locked');
+            }
+
+            if (room.Closed === true) {
+                $room.addClass('closed');
+            } else {
+                $room.removeClass('closed');
+            }
+
+            var nextListElement = ru.getNextRoomListElement($targetList, roomName, count, room.Closed);
+
+            $room.data('count', count);
+            if (nextListElement !== null) {
+                $room.insertBefore(nextListElement);
+            } else {
+                $room.appendTo($targetList);
+            }
+
+            // Do a little animation
+            $room.animate({ backgroundColor: '#ffffff' }, 800);
+        }
+
         //
         // Event Handlers
         //
@@ -179,6 +220,8 @@ define([
 
                 // Bind events
                 rc.bind(events.rooms.client.lobbyOpened, lobbyOpened);
+                
+                client.chat.client.updateRoomCount = updateRoomCount;
 
                 ru.createRoom('Lobby');
             },

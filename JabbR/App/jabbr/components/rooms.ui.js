@@ -519,11 +519,11 @@ define([
             }
 
             if (added) {
-                rc.populateRoom(room.Name).done(function () {
-                    messages.addMessage('You just entered ' + room.Name, 'notification', room.Name);
+                rc.populateRoom(roomdata.Name).done(function () {
+                    messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
 
-                    if (room.Welcome) {
-                        messages.addMessage(room.Welcome, 'welcome', room.Name);
+                    if (roomdata.Welcome) {
+                        messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
                     }
                 });
             }
