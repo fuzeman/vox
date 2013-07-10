@@ -514,6 +514,7 @@ define([
                 };
             },
 
+            appendMessage: appendMessage,
             addChatMessage: addChatMessage,
             addMessage: addMessage,
             addPrivateMessage: addPrivateMessage,

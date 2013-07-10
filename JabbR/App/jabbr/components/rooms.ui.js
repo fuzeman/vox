@@ -487,6 +487,16 @@ define([
             }
         }
 
+        function showGravatarProfile(profile) {
+            var room = getCurrentRoomElements(),
+                nearEnd = isNearTheEnd();
+
+            messages.appendMessage(templates.gravatarprofile.tmpl(profile), room);
+            if (nearEnd) {
+                scrollToBottom();
+            }
+        }
+
         //
         // Event Handlers
         //
@@ -583,6 +593,110 @@ define([
             }
         }
 
+        function chatListAllowedUsers(roomName, isPrivate, allowedUsers) {
+            if (!isPrivate) {
+                messages.addMessage('Anyone is allowed in ' + roomName + ' as it is not private', 'list-header');
+            } else if (allowedUsers.length === 0) {
+                messages.addMessage('No users are allowed in ' + roomName, 'list-header');
+            } else {
+                messages.addMessage('The following users are allowed in ' + roomName, 'list-header');
+                messages.addMessage(allowedUsers.join(', '), 'list-item');
+            }
+        }
+
+        function chatShowUsersRoomList(user, inRooms) {
+            var status = "Currently " + user.Status;
+
+            if (inRooms.length === 0) {
+                messages.addMessage(user.Name + ' (' + status + ') is not in any rooms', 'list-header');
+            } else {
+                messages.addMessage(user.Name + ' (' + status + ') is in the following rooms', 'list-header');
+                messages.addMessage(inRooms.join(', '), 'list-item');
+            }
+        }
+        
+        function chatShowUsersOwnedRoomList(username, ownedRooms) {
+            if (ownedRooms.length === 0) {
+                ui.addMessage(username + ' does not own any rooms', 'list-header');
+            } else {
+                messages.addMessage(username + ' owns the following rooms', 'list-header');
+                messages.addMessage(ownedRooms.join(', '), 'list-item');
+            }
+        }
+
+        function chatListUsers(users) {
+            if (users.length === 0) {
+                messages.addMessage('No users matched your search', 'list-header');
+            } else {
+                messages.addMessage('The following users match your search', 'list-header');
+                messages.addMessage(users.join(', '), 'list-item');
+            }
+        }
+
+        function chatShowUsersInRoom(roomName, usernames) {
+            messages.addMessage('Users in ' + roomName, 'list-header');
+            if (usernames.length === 0) {
+                messages.addMessage('Room is empty', 'list-item');
+            } else {
+                $.each(usernames, function() {
+                    messages.addMessage('- ' + this, 'list-item');
+                });
+            }
+        }
+        
+        function chatShowRooms(rooms) {
+            messages.addMessage('Rooms', 'list-header');
+            if (!rooms.length) {
+                messages.addMessage('No rooms available', 'list-item');
+            }
+            else {
+                // sort rooms by count descending then name
+                var sorted = rooms.sort(function (a, b) {
+                    if (a.Closed && !b.Closed) {
+                        return 1;
+                    } else if (b.Closed && !a.Closed) {
+                        return -1;
+                    }
+
+                    if (a.Count > b.Count) {
+                        return -1;
+                    } else if (b.Count > a.Count) {
+                        return 1;
+                    }
+
+                    return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
+                });
+
+                $.each(sorted, function () {
+                    messages.addMessage(this.Name + ' (' + this.Count + ')', 'list-item');
+                });
+            }
+        };
+
+        function chatShowUserInfo(user) {
+            var lastActivityDate = user.LastActivity.fromJsonDate();
+            var status = "Currently " + user.Status;
+            if (user.IsAfk) {
+                status += user.Status === 'Active' ? ' but ' : ' and ';
+                status += ' is Afk';
+            }
+            messages.addMessage('User information for ' + user.Name +
+                " (" + status + " - last seen " + $.timeago(lastActivityDate) + ")", 'list-header');
+
+            if (user.AfkNote) {
+                messages.addMessage('Afk: ' + user.AfkNote, 'list-item');
+            }
+            else if (user.Note) {
+                messages.addMessage('Note: ' + user.Note, 'list-item');
+            }
+
+            $.getJSON('https://secure.gravatar.com/' + user.Hash + '.json?callback=?', function (profile) {
+                showGravatarProfile(profile.entry[0]);
+            });
+
+            chatShowUsersOwnedRoomList(user.Name, user.OwnedRooms);
+        };
+
         // Global Events
 
         events.bind(events.error, function (event, content, type) {
@@ -654,6 +768,15 @@ define([
                 client.chat.client.lockRoom = chatLockRoom;
                 client.chat.client.roomClosed = chatRoomClosed;
                 client.chat.client.roomUnClosed = chatRoomUnClosed;
+
+                client.chat.client.listUsers = chatListUsers;
+                client.chat.client.listAllowedUsers = chatListAllowedUsers;
+                
+                client.chat.client.showUsersRoomList = chatShowUsersRoomList;
+                client.chat.client.showUsersOwnedRoomList = chatShowUsersOwnedRoomList;
+                client.chat.client.showUsersInRoom = chatShowUsersInRoom;
+                client.chat.client.showRooms = chatShowRooms;
+                client.chat.client.showUserInfo = chatShowUserInfo;
             },
 
             createRoom: createRoom,
