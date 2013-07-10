@@ -163,51 +163,50 @@ define([
         function client_setTyping(userdata, roomname) {
             logger.trace('client_setTyping');
 
-            if (exists(userdata.Name, roomname)) {
-                users[userdata.Name].roomUsers[roomname].setTyping();
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to set typing.');
+            if (!exists(userdata.Name, roomname)) {
+                createRoomUser(userdata, roomname);
             }
+            users[userdata.Name].roomUsers[roomname].setTyping();
         }
 
         function client_addAdmin(userdata, roomname) {
             logger.trace('client_addAdmin');
 
-            if (exists(userdata.Name, roomname)) {
-                users[userdata.Name].roomUsers[roomname].setAdmin(true);
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to add admin.');
+            if (!exists(userdata.Name, roomname)) {
+                createRoomUser(userdata, roomname);
             }
+
+            users[userdata.Name].roomUsers[roomname].setAdmin(true);
         }
 
         function client_removeAdmin(userdata, roomname) {
             logger.trace('client_removeAdmin');
 
-            if (exists(userdata.Name, roomname)) {
-                users[userdata.Name].roomUsers[roomname].setAdmin(false);
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to remove admin.');
+            if (!exists(userdata.Name, roomname)) {
+                createRoomUser(userdata, roomname);
             }
+
+            users[userdata.Name].roomUsers[roomname].setAdmin(false);
         }
         
         function client_addOwner(userdata, roomname) {
             logger.trace('client_addOwner');
 
-            if (exists(userdata.Name, roomname)) {
-                users[userdata.Name].roomUsers[roomname].setOwner(true);
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to add owner.');
+            if (!exists(userdata.Name, roomname)) {
+                createRoomUser(userdata, roomname);
             }
+
+            users[userdata.Name].roomUsers[roomname].setOwner(true);
         }
 
         function client_removeOwner(userdata, roomname) {
             logger.trace('client_removeOwner');
 
-            if (exists(userdata.Name, roomname)) {
-                users[userdata.Name].roomUsers[roomname].setOwner(false);
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to remove owner.');
+            if (!exists(userdata.Name, roomname)) {
+                createRoomUser(userdata, roomname);
             }
+
+            users[userdata.Name].roomUsers[roomname].setOwner(false);
         }
 
         // ReSharper restore InconsistentNaming
