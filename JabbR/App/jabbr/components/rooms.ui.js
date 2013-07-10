@@ -72,11 +72,11 @@ define([
         function hasRoom(roomName) {
             return roomName in rooms;
         }
-        
+
         function validRoom(roomName) {
             return rooms[roomName].exists();
         }
-        
+
         function updateRoom(roomName) {
             var roomId = rc.getRoomId(roomName);
 
@@ -89,7 +89,7 @@ define([
             rooms[roomName].activeUsers = $('#userlist-' + roomId + '-active');
             rooms[roomName].messages = $('#messages-' + roomId);
             rooms[roomName].roomTopic = $('#roomTopic-' + roomId);
-            
+
             if (!validRoom(roomName)) {
                 logger.warn('Failed to update invalid room "' + roomName + '"');
                 return false;
@@ -110,7 +110,7 @@ define([
                     $('#messages-' + roomId),
                     $('#roomTopic-' + roomId)
                 );
-                
+
                 if (validRoom(roomName)) {
                     return rooms[roomName];
                 } else {
@@ -360,7 +360,7 @@ define([
                 room.roomTopic.remove();
                 setAccessKeys();
             }
-            
+
             if (hasRoom(roomName)) {
                 logger.trace('Deleting room "' + roomName + '"');
                 delete rooms[roomName];
@@ -384,7 +384,7 @@ define([
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
             logger.trace("addRoom(" + roomName + ")");
-            
+
             if (hasRoom(roomViewModel.Name)) {
                 if (!validRoom(roomViewModel.Name)) {
                     updateRoom(roomViewModel.Name);
@@ -550,8 +550,8 @@ define([
                 room.setLocked(true);
                 lobby.lockRoom(roomName);
             }
-        };
-        
+        }
+
         function chatRoomClosed(roomName) {
             messages.addMessage('Room \'' + roomName + '\' is now closed', 'notification', state.get().activeRoom);
 
@@ -564,7 +564,7 @@ define([
                     ui.toggleMessageSection(true);
                 }
             }
-        };
+        }
 
         function chatRoomUnClosed(roomName) {
             messages.addMessage('Room \'' + roomName + '\' is now open', 'notification', state.get().activeRoom);
@@ -578,7 +578,7 @@ define([
                     ui.toggleMessageSection(false);
                 }
             }
-        };
+        }
 
         // Global Events
 
@@ -647,7 +647,7 @@ define([
                 client.chat.client.joinRoom = chatJoinRoom;
                 client.chat.client.leave = chatLeave;
                 client.chat.client.changeTopic = updateRoomTopic;
-                
+
                 client.chat.client.lockRoom = chatLockRoom;
                 client.chat.client.roomClosed = chatRoomClosed;
                 client.chat.client.roomUnClosed = chatRoomUnClosed;

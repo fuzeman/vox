@@ -11,6 +11,7 @@ define([
 ], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/client'),
         object = null;
+
     logger.trace('loaded');
 
     var initialize = function () {
@@ -19,9 +20,17 @@ define([
             connection = $.connection,
             chat = connection.chat,
             options = {},
-            initial = true;
+            initial = true,
+            privateRooms = null,
+            logging = $.cookie('jabbr.logging') === '1',
+            transport = $.cookie('jabbr.transport');
 
-        var privateRooms = null;
+        if (transport) {
+            options.transport = transport;
+        }
+
+        connection.hub.logging = logging;
+        connection.hub.qs = "version=" + window.jabbrVersion;
 
         //
         // Private Functions
@@ -38,8 +47,6 @@ define([
 
             $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions]);
         };
-
-        chat.client.logOut = performLogout;
 
         //
         // Core Event Handlers
@@ -71,25 +78,11 @@ define([
                     // Turn the firehose back on
                     chat.server.join(true).fail(function () {
                         // So refresh the page, our auth token is probably gone
-                        //performLogout();
+                        performLogout();
                     });
                 });
             }, 5000);
         }
-
-        function initialize() {
-            var logging = $.cookie('jabbr.logging') === '1',
-                transport = $.cookie('jabbr.transport');
-
-            if (transport) {
-                options.transport = transport;
-            }
-
-            connection.hub.logging = logging;
-            connection.hub.qs = "version=" + window.jabbrVersion;
-        }
-
-        initialize();
 
         function performLogout() {
             var d = $.Deferred();
@@ -101,6 +94,8 @@ define([
 
             return d.promise();
         }
+
+        chat.client.logOut = performLogout;
 
         function focused() {
             events.trigger(events.ui.updateUnread);

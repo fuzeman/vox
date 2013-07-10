@@ -18,8 +18,6 @@ define([], function () {
             return parseEmoji(content);
         };
 
-        this.transformToHtml = transformToHtml;
-
         function parseEmoji(content) {
             for (var key in validAlias) {
                 var regex = new RegExp(key, "g");
@@ -32,6 +30,8 @@ define([], function () {
         function transformToHtml(content) {
             return content.replace(/:([a-z0-9\+\-_]+):/g, emojiReplacer);
         }
+
+        this.transformToHtml = transformToHtml;
 
         function emojiReplacer(str, match) {
             if (validEmoji[match]) {
