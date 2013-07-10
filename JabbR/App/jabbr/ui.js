@@ -29,9 +29,9 @@ define([
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
             $fileUploadButton = $('.upload-button'),
-            $logout = $('#preferences .logout');
-
-        var readOnly = false,
+            $logout = $('#preferences .logout'),
+            $updatePopup = $('#jabbr-update'),
+            readOnly = false,
             focus = true,
             originalTitle = document.title,
             unread = 0,
@@ -39,7 +39,8 @@ define([
             newMessageLines = 1,
             Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 },
             checkingStatus = false,
-            typing = false;
+            typing = false,
+            updateTimeout = 15000;
 
         //
         // Private Functions
@@ -195,6 +196,16 @@ define([
             }, 200);
         }
 
+        function showUpdatePopup() {
+            $updatePopup.modal();
+
+            window.setTimeout(function () {
+                // Reload the page
+                document.location = document.location.pathname;
+            },
+            updateTimeout);
+        }
+
         //
         // Event Handlers
         //
@@ -327,7 +338,7 @@ define([
             }
         });
 
-        $logout.click(function() {
+        $logout.click(function () {
             client.performLogout();
         });
 
@@ -352,6 +363,8 @@ define([
                 client.bind(events.client.loggedOn, clientLoggedOn);
 
                 client.chat.client.nudge = clientNudge;
+                client.chat.client.forceUpdate = showUpdatePopup;
+                client.chat.client.outOfSync = showUpdatePopup;
             },
 
             isFocused: function () {
