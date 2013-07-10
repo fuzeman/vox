@@ -363,6 +363,9 @@ define([
 
             if (hasRoom(roomName)) {
                 logger.trace('Deleting room "' + roomName + '"');
+
+                users.removeRoomUsers(roomName);
+
                 delete rooms[roomName];
             }
         }

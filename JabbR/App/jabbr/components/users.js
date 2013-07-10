@@ -52,6 +52,11 @@ define([
             logger.trace("Creating RoomUser '" + userdata.Name + "' #" + roomName);
 
             var room = ru.getRoomElements(roomName);
+            
+            if (room == null) {
+                logger.warn('Room "' + roomName + '" does not exist, unable to add room user.')
+                return null;
+            }
 
             var roomUser = new RoomUser(ru, user, roomName, room);
             user.roomUsers[roomName] = roomUser;
@@ -118,6 +123,15 @@ define([
                 return username in users && roomname in users[username].roomUsers;
             }
             return username in users;
+        }
+
+        function removeRoomUsers(roomName) {
+            $.each(users, function(username, user) {
+                if (roomName in user.roomUsers) {
+                    delete user.roomUsers[roomName];
+                    logger.trace('removed room user "' + username + '" from #' + roomName);
+                }
+            });
         }
 
         //
@@ -240,7 +254,9 @@ define([
             },
 
             createUser: createUser,
-            createRoomUser: createRoomUser
+            createRoomUser: createRoomUser,
+            
+            removeRoomUsers: removeRoomUsers
         };
     };
 
