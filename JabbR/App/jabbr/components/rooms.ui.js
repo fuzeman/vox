@@ -47,6 +47,7 @@ define([
 
         var $this = $(this),
             roomCache = {},
+            rooms = {},
             scrollTopThreshold = 75,
             lobbyLoaded = false;
 
@@ -56,36 +57,78 @@ define([
 
         // Elements
 
-        function getRoomElements(roomName) {
+        function getRoom(roomName) {
+            if (!hasRoom(roomName)) {
+                return null;
+            }
+            if (!validRoom(roomName)) {
+                if (!updateRoom(roomName)) {
+                    return null;
+                }
+            }
+            return rooms[roomName];
+        }
+
+        function hasRoom(roomName) {
+            return roomName in rooms;
+        }
+        
+        function validRoom(roomName) {
+            return rooms[roomName].exists();
+        }
+        
+        function updateRoom(roomName) {
             var roomId = rc.getRoomId(roomName);
-            var room = new Room($('#tabs-' + roomId),
-                $('#userlist-' + roomId),
-                $('#userlist-' + roomId + '-owners'),
-                $('#userlist-' + roomId + '-active'),
-                $('#messages-' + roomId),
-                $('#roomTopic-' + roomId));
-            return room;
+
+            logger.trace("Updating current room elements");
+
+            // Update the current elements if the room has already been added
+            rooms[roomName].tab = $('#tabs-' + roomId);
+            rooms[roomName].users = $('#userlist-' + roomId);
+            rooms[roomName].owners = $('#userlist-' + roomId + '-owners');
+            rooms[roomName].activeUsers = $('#userlist-' + roomId + '-active');
+            rooms[roomName].messages = $('#messages-' + roomId);
+            rooms[roomName].roomTopic = $('#roomTopic-' + roomId);
+            
+            if (!validRoom(roomName)) {
+                logger.warn('Failed to update invalid room "' + roomName + '"');
+                return false;
+            }
+
+            return true;
+        }
+
+        function createRoom(roomName) {
+            if (!hasRoom(roomName)) {
+                logger.trace("Creating room '" + roomName + "'");
+                var roomId = rc.getRoomId(roomName);
+                rooms[roomName] = new Room(
+                    $('#tabs-' + roomId),
+                    $('#userlist-' + roomId),
+                    $('#userlist-' + roomId + '-owners'),
+                    $('#userlist-' + roomId + '-active'),
+                    $('#messages-' + roomId),
+                    $('#roomTopic-' + roomId)
+                );
+                
+                if (validRoom(roomName)) {
+                    return rooms[roomName];
+                } else {
+                    logger.warn('Failed to create room "' + roomName + '"');
+                    return null;
+                }
+            }
+
+            return getRoom(roomName);
+        }
+
+        // Deprecated - TODO: Remove
+        function getRoomElements(roomName) {
+            return getRoom(roomName);
         }
 
         function getCurrentRoomElements() {
-            var $tab = $tabs.find('li.current');
-            var room;
-            if ($tab.data('name') === 'Lobby') {
-                room = new Room($tab,
-                    $('#userlist-lobby'),
-                    $('#userlist-lobby-owners'),
-                    $('#userlist-lobby-active'),
-                    $('.messages.current'),
-                    $('.roomTopic.current'));
-            } else {
-                room = new Room($tab,
-                    $('.users.current'),
-                    $('.userlist.current .owners'),
-                    $('.userlist.current .active'),
-                    $('.messages.current'),
-                    $('.roomTopic.current'));
-            }
-            return room;
+            return getRoom($tabs.find('li.current').data('name'));
         }
 
         function getAllRoomElements() {
@@ -239,9 +282,8 @@ define([
 
         function activateOrOpenRoom(roomName) {
             logger.trace('activateOrOpenRoom(' + roomName + ')');
-            var room = getRoomElements(roomName);
 
-            if (room.exists()) {
+            if (hasRoom(roomName)) {
                 setActiveRoom(roomName);
             } else {
                 rc.joinRoom(roomName);
@@ -274,8 +316,8 @@ define([
 
             var currentRoom = getCurrentRoomElements();
 
-            if (room.exists()) {
-                if (currentRoom.exists()) {
+            if (room !== null && room.exists()) {
+                if (currentRoom !== null && currentRoom.exists()) {
                     currentRoom.makeInactive();
                     if (currentRoom.isLobby()) {
                         lobby.hideForm();
@@ -304,10 +346,10 @@ define([
         }
 
         function removeRoom(roomName) {
-            var room = getRoomElements(roomName),
+            var room = getRoom(roomName),
                 scrollHandler = null;
 
-            if (room.exists()) {
+            if (room !== null) {
                 // Remove the scroll handler from this room
                 scrollHandler = room.messages.data('scrollHandler');
                 room.messages.unbind('scrollHandler', scrollHandler);
@@ -317,6 +359,11 @@ define([
                 room.users.remove();
                 room.roomTopic.remove();
                 setAccessKeys();
+            }
+            
+            if (hasRoom(roomName)) {
+                logger.trace('Deleting room "' + roomName + '"');
+                delete rooms[roomName];
             }
         }
 
@@ -337,18 +384,21 @@ define([
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
             logger.trace("addRoom(" + roomName + ")");
+            
+            if (hasRoom(roomViewModel.Name)) {
+                if (!validRoom(roomViewModel.Name)) {
+                    updateRoom(roomViewModel.Name);
+                }
+                return false;
+            }
 
-            var room = getRoomElements(roomViewModel.Name),
+            var room = createRoom(roomViewModel.Name),
                 roomId = null,
                 viewModel = null,
                 $messages = null,
                 $roomTopic = null,
                 scrollHandler = null,
                 userContainer = null;
-
-            if (room.exists()) {
-                return false;
-            }
 
             roomId = rc.getRoomId(roomName);
 
@@ -454,17 +504,19 @@ define([
         // Hub
 
         // When the /join command gets raised this is called
-        function chatJoinRoom(room) {
-            var added = addRoom(room);
+        function chatJoinRoom(roomdata) {
+            var added = addRoom(roomdata),
+                roomName = roomdata.Name,
+                room = getRoom(roomName);
 
-            setActiveRoom(room.Name);
+            setActiveRoom(roomName);
 
-            /*if (room.Private) {
-                ui.setRoomLocked(room.Name);
+            if (roomdata.Private) {
+                room.setLocked(true);
             }
-            if (room.Closed) {
-                ui.setRoomClosed(room.Name);
-            }*/
+            if (roomdata.Closed) {
+                room.setClosed(true);
+            }
 
             if (added) {
                 rc.populateRoom(room.Name).done(function () {
@@ -486,6 +538,47 @@ define([
                 messages.addMessage(user.Name + ' left ' + room, 'notification', room);
             }
         }
+
+        function chatLockRoom(user, roomName) {
+            if (!isSelf(user) && state.get().activeRoom === room) {
+                messages.addMessage(user.Name + ' has locked ' + room + '.', 'notification', state.get().activeRoom);
+            }
+
+            var room = getRoom(roomName);
+
+            if (room !== null) {
+                room.setLocked(true);
+                lobby.lockRoom(roomName);
+            }
+        };
+        
+        function chatRoomClosed(roomName) {
+            messages.addMessage('Room \'' + roomName + '\' is now closed', 'notification', state.get().activeRoom);
+
+            var room = getRoom(roomName);
+
+            if (room !== null) {
+                room.setClosed(true);
+
+                if (state.get().activeRoom === roomName) {
+                    ui.toggleMessageSection(true);
+                }
+            }
+        };
+
+        function chatRoomUnClosed(roomName) {
+            messages.addMessage('Room \'' + roomName + '\' is now open', 'notification', state.get().activeRoom);
+
+            var room = getRoom(roomName);
+
+            if (room !== null) {
+                room.setClosed(false);
+
+                if (state.get().activeRoom === roomName) {
+                    ui.toggleMessageSection(false);
+                }
+            }
+        };
 
         // Global Events
 
@@ -554,7 +647,13 @@ define([
                 client.chat.client.joinRoom = chatJoinRoom;
                 client.chat.client.leave = chatLeave;
                 client.chat.client.changeTopic = updateRoomTopic;
+                
+                client.chat.client.lockRoom = chatLockRoom;
+                client.chat.client.roomClosed = chatRoomClosed;
+                client.chat.client.roomUnClosed = chatRoomUnClosed;
             },
+
+            createRoom: createRoom,
 
             getRoomElements: getRoomElements,
             getCurrentRoomElements: getCurrentRoomElements,
@@ -592,15 +691,16 @@ define([
 
             addRoom: addRoom,
             addRooms: function (rooms) {
-                $.each(rooms, function (index, room) {
-                    addRoom(room);
+                $.each(rooms, function (index, roomdata) {
+                    addRoom(roomdata);
+                    var room = getRoom(roomdata.Name);
 
-                    /*if (room.Private) {
-                    ui.setRoomLocked(room.Name);
-                }
-                if (room.Closed) {
-                    ui.setRoomClosed(room.Name);
-                }*/
+                    if (roomdata.Private) {
+                        room.setLocked(true);
+                    }
+                    if (roomdata.Closed) {
+                        room.setClosed(true);
+                    }
                 });
             },
 

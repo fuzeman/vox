@@ -45,6 +45,12 @@ define([
             }
         }
 
+        function lockRoom(roomName) {
+            var $room = getLobby().users.find('li[data-name="' + roomName + '"]');
+
+            $room.addClass('locked').appendTo(getLobby().owners);
+        }
+
         function populateRooms(rooms, privateRooms) {
             var lobby = getLobby(),
                 roomCache = ru.getRoomCache(),
@@ -173,10 +179,13 @@ define([
 
                 // Bind events
                 rc.bind(events.rooms.client.lobbyOpened, lobbyOpened);
+
+                ru.createRoom('Lobby');
             },
 
             addRoom: addRoom,
             updateRooms: updateRooms,
+            lockRoom: lockRoom,
             populateRooms: populateRooms,
 
             hideForm: function () {

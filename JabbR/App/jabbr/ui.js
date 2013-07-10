@@ -159,7 +159,7 @@ define([
             }
         }
 
-        function updateUnread(room, isMentioned) {
+        function updateUnread(event, room, isMentioned) {
             room = typeof room !== 'undefined' ? room : client.chat.state.activeRoom;
             isMentioned = typeof isMentioned !== 'undefined' ? isMentioned : false;
 
@@ -367,6 +367,7 @@ define([
                 client.chat.client.outOfSync = showUpdatePopup;
             },
 
+            toggleMessageSection: toggleMessageSection,
             isFocused: function () {
                 return focus;
             }

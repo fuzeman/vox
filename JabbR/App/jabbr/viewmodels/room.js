@@ -153,16 +153,16 @@ define([
         return this.tab.attr('data-closed') === 'true';
     };
 
-    Room.prototype.close = function () {
-        this.tab.attr('data-closed', true);
-        this.tab.addClass('closed');
-        this.tab.find('.readonly').removeClass('hide');
-    };
-
-    Room.prototype.unClose = function () {
-        this.tab.attr('data-closed', false);
-        this.tab.removeClass('closed');
-        this.tab.find('.readonly').addClass('hide');
+    Room.prototype.setClosed = function (isClosed) {
+        if (isClosed) {
+            this.tab.attr('data-closed', true);
+            this.tab.addClass('closed');
+            this.tab.find('.readonly').removeClass('hide');
+        } else {
+            this.tab.attr('data-closed', false);
+            this.tab.removeClass('closed');
+            this.tab.find('.readonly').addClass('hide');
+        }
     };
 
     Room.prototype.clear = function () {
@@ -232,9 +232,14 @@ define([
             this.messages.find(getUserClassName(userName)));
     };
 
-    Room.prototype.setLocked = function () {
-        this.tab.addClass('locked');
-        this.tab.find('.lock').removeClass('hide');
+    Room.prototype.setLocked = function (isLocked) {
+        if (isLocked) {
+            this.tab.addClass('locked');
+            this.tab.find('.lock').removeClass('hide');
+        } else {
+            this.tab.removeClass('locked');
+            this.tab.find('.lock').addClass('hide');
+        }
     };
 
     Room.prototype.setListState = function (list) {

@@ -1,4 +1,4 @@
-﻿/*global define*/
+﻿/*global define, window, clearTimeout*/
 define([
     'jquery',
     'logger',
@@ -9,7 +9,7 @@ define([
     var logger = new Logger('jabbr/viewmodels/message'),
         ru = null,
         client = null;
-    
+
     events.bind(events.activated, function () {
         client = kernel.get('jabbr/client');
 
@@ -29,7 +29,7 @@ define([
 
     RoomUser.prototype.setOwner = function (isOwner) {
         var $roomUser = this.$roomUser.data('owner', isOwner);
-        
+
         if (isOwner) {
             $roomUser.attr('data-owner', true);
         } else {
@@ -51,7 +51,7 @@ define([
                      .find('.admin')
                      .text('');
         }
-        
+
         this.room.updateUserStatus($roomUser);
     };
 
@@ -181,7 +181,7 @@ define([
             clearTimeout(oldTimeout);
         }
 
-        timeout = window.setTimeout(function() {
+        timeout = window.setTimeout(function () {
             $roomUser.removeClass('typing');
             $(".user-status-container", $roomUser).removeClass('animated pulse');
         },
