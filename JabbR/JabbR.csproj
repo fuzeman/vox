@@ -1380,8 +1380,19 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release (
-  node $(ProjectDir)Scripts\r.js -o $(ProjectDir)App\build.js dir=$(OutDir)_PublishedWebsites\JabbR\Build baseUrl=$(ProjectDir)App
+    <PostBuildEvent>ECHO %25USERNAME%25 | FINDSTR /I "^apphb"
+SET APPHARBOR=%25ERRORLEVEL%25
+
+IF $(ConfigurationName) == Release (
+  ECHO AppHarbor: %25APPHARBOR%25
+
+  IF %25APPHARBOR%25 EQU 0 (
+    echo Optimizing on AppHarbor
+    node $(ProjectDir)Scripts\r.js -o $(ProjectDir)App\build.js dir=$(OutDir)_PublishedWebsites\JabbR\Build baseUrl=$(ProjectDir)App
+  ) ELSE IF DEFINED WEBROOT_PATH (
+    echo Optimizing on Azure
+    node Scripts\r.js -o $(ProjectDir)App\build.js dir=%25WEBROOT_PATH%25\Build baseUrl=$(ProjectDir)App
+  )
 )</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
