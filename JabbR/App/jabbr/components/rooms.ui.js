@@ -44,39 +44,13 @@ define([
             $tabs = $('#tabs'),
             $chatArea = $('#chat-area'),
             $topicBar = $('#topic-bar'),
-            $kickedPopup = $('#jabbr-kicked');
-
-        var $this = $(this),
+            $kickedPopup = $('#jabbr-kicked'),
+            $this = $(this),
             roomCache = {},
-            rooms = {},
             scrollTopThreshold = 75,
             lobbyLoaded = false;
 
-        //
-        // Private Functions
-        //
-
-        // Elements
-
-        function getRoom(roomName) {
-            if (!hasRoom(roomName)) {
-                return null;
-            }
-            if (!validRoom(roomName)) {
-                if (!updateRoom(roomName)) {
-                    return null;
-                }
-            }
-            return rooms[roomName];
-        }
-
-        function hasRoom(roomName) {
-            return roomName in rooms;
-        }
-
-        function validRoom(roomName) {
-            return rooms[roomName].exists();
-        }
+        // #region Room Elements
 
         function updateRoom(roomName) {
             var roomId = rc.getRoomId(roomName);
@@ -84,14 +58,14 @@ define([
             logger.trace("Updating current room elements");
 
             // Update the current elements if the room has already been added
-            rooms[roomName].tab = $('#tabs-' + roomId);
-            rooms[roomName].users = $('#userlist-' + roomId);
-            rooms[roomName].owners = $('#userlist-' + roomId + '-owners');
-            rooms[roomName].activeUsers = $('#userlist-' + roomId + '-active');
-            rooms[roomName].messages = $('#messages-' + roomId);
-            rooms[roomName].roomTopic = $('#roomTopic-' + roomId);
+            rc.rooms[roomName].tab = $('#tabs-' + roomId);
+            rc.rooms[roomName].users = $('#userlist-' + roomId);
+            rc.rooms[roomName].owners = $('#userlist-' + roomId + '-owners');
+            rc.rooms[roomName].activeUsers = $('#userlist-' + roomId + '-active');
+            rc.rooms[roomName].messages = $('#messages-' + roomId);
+            rc.rooms[roomName].roomTopic = $('#roomTopic-' + roomId);
 
-            if (!validRoom(roomName)) {
+            if (!rc.validRoom(roomName)) {
                 logger.warn('Failed to update invalid room "' + roomName + '"');
                 return false;
             }
@@ -100,10 +74,10 @@ define([
         }
 
         function createRoom(roomName) {
-            if (!hasRoom(roomName)) {
+            if (!rc.hasRoom(roomName)) {
                 logger.trace("Creating room '" + roomName + "'");
                 var roomId = rc.getRoomId(roomName);
-                rooms[roomName] = new Room(
+                rc.rooms[roomName] = new Room(
                     $('#tabs-' + roomId),
                     $('#userlist-' + roomId),
                     $('#userlist-' + roomId + '-owners'),
@@ -112,24 +86,24 @@ define([
                     $('#roomTopic-' + roomId)
                 );
 
-                if (validRoom(roomName)) {
-                    return rooms[roomName];
+                if (rc.validRoom(roomName)) {
+                    return rc.rooms[roomName];
                 } else {
                     logger.warn('Failed to create room "' + roomName + '"');
                     return null;
                 }
             }
 
-            return getRoom(roomName);
+            return rc.getRoom(roomName);
         }
 
         // Deprecated - TODO: Remove
         function getRoomElements(roomName) {
-            return getRoom(roomName);
+            return rc.getRoom(roomName);
         }
 
         function getCurrentRoomElements() {
-            return getRoom($tabs.find('li.current').data('name'));
+            return rc.getRoom($tabs.find('li.current').data('name'));
         }
 
         function getAllRoomElements() {
@@ -190,20 +164,6 @@ define([
             return room.isNearTheEnd();
         }
 
-        function isSelf(user) {
-            return client.chat.state.name === user.Name;
-        }
-
-        function setInitialized(roomName) {
-            var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
-            room.setInitialized();
-        }
-
-        function setRoomTrimmable(roomName, canTrimMessages) {
-            var room = getRoomElements(roomName);
-            room.setTrimmable(canTrimMessages);
-        }
-
         function updateRoomTopic(roomdata) {
             var room = getRoomElements(roomdata.Name);
             var topic = roomdata.Topic;
@@ -224,11 +184,11 @@ define([
             }
         }
 
-        // Preferences
+        // #endregion
+
+        // #region Preferences
 
         function loadRoomPreferences(roomName) {
-            //var roomPreferences = state.getRoomPreference(roomName);
-
             // Set defaults
             if (state.getRoomPreference(roomName, 'hasSound') === undefined) {
                 state.setRoomPreference(roomName, 'hasSound', true);
@@ -279,30 +239,9 @@ define([
             }
         }
 
-        // Room Navigation/Loading
+        // #endregion
 
-        function activateOrOpenRoom(roomName) {
-            logger.trace('activateOrOpenRoom(' + roomName + ')');
-
-            if (hasRoom(roomName)) {
-                setActiveRoom(roomName);
-            } else {
-                rc.joinRoom(roomName);
-            }
-        }
-
-        function setActiveRoom(roomName) {
-            logger.trace('setActiveRoom(' + roomName + ')');
-
-            var hash = (document.location.hash || '#').substr(1),
-                hashRoomName = rc.getRoomNameFromHash(hash);
-
-            if (hashRoomName && hashRoomName === roomName) {
-                setActiveRoomCore(roomName);
-            } else {
-                document.location.hash = '#/rooms/' + roomName;
-            }
-        }
+        // #region Room Navigation/Loading
 
         function setActiveRoomCore(roomName) {
             var room = getRoomElements(roomName);
@@ -346,31 +285,6 @@ define([
             return false;
         }
 
-        function removeRoom(roomName) {
-            var room = getRoom(roomName),
-                scrollHandler = null;
-
-            if (room !== null) {
-                // Remove the scroll handler from this room
-                scrollHandler = room.messages.data('scrollHandler');
-                room.messages.unbind('scrollHandler', scrollHandler);
-
-                room.tab.remove();
-                room.messages.remove();
-                room.users.remove();
-                room.roomTopic.remove();
-                setAccessKeys();
-            }
-
-            if (hasRoom(roomName)) {
-                logger.trace('Deleting room "' + roomName + '"');
-
-                users.removeRoomUsers(roomName);
-
-                delete rooms[roomName];
-            }
-        }
-
         function setAccessKeys() {
             $.each($tabs.find('li.room'), function (index, item) {
                 $(item).children('button').attr('accesskey', getRoomAccessKey(index));
@@ -389,8 +303,8 @@ define([
             var roomName = roomViewModel.Name;
             logger.trace("addRoom(" + roomName + ")");
 
-            if (hasRoom(roomViewModel.Name)) {
-                if (!validRoom(roomViewModel.Name)) {
+            if (rc.hasRoom(roomViewModel.Name)) {
+                if (!rc.validRoom(roomViewModel.Name)) {
                     updateRoom(roomViewModel.Name);
                 }
                 return false;
@@ -488,21 +402,7 @@ define([
             }
         }
 
-        function showGravatarProfile(profile) {
-            var room = getCurrentRoomElements(),
-                nearEnd = isNearTheEnd();
-
-            messages.appendMessage(templates.gravatarprofile.tmpl(profile), room);
-            if (nearEnd) {
-                scrollToBottom();
-            }
-        }
-
-        //
-        // Event Handlers
-        //
-
-        // Room Client
+        // #endregion
 
         function rcScrollToBottom(event, roomName) {
             scrollToBottom(roomName);
@@ -514,189 +414,6 @@ define([
             rc.addMessage(viewModel.id);
             messages.addChatMessage(viewModel, room);
         }
-
-        // Hub
-
-        // When the /join command gets raised this is called
-        function chatJoinRoom(roomdata) {
-            var added = addRoom(roomdata),
-                roomName = roomdata.Name,
-                room = getRoom(roomName);
-
-            setActiveRoom(roomName);
-
-            if (roomdata.Private) {
-                room.setLocked(true);
-            }
-            if (roomdata.Closed) {
-                room.setClosed(true);
-            }
-
-            if (added) {
-                rc.populateRoom(roomdata.Name).done(function () {
-                    messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
-
-                    if (roomdata.Welcome) {
-                        messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
-                    }
-                });
-            }
-        }
-
-        function chatLeave(user, room) {
-            if (isSelf(user)) {
-                setActiveRoom('Lobby');
-                removeRoom(room);
-            } else {
-                users.remove(user, room);
-                messages.addMessage(user.Name + ' left ' + room, 'notification', room);
-            }
-        }
-
-        function chatLockRoom(user, roomName) {
-            if (!isSelf(user) && state.get().activeRoom === room) {
-                messages.addMessage(user.Name + ' has locked ' + room + '.', 'notification', state.get().activeRoom);
-            }
-
-            var room = getRoom(roomName);
-
-            if (room !== null) {
-                room.setLocked(true);
-                lobby.lockRoom(roomName);
-            }
-        }
-
-        function chatRoomClosed(roomName) {
-            messages.addMessage('Room \'' + roomName + '\' is now closed', 'notification', state.get().activeRoom);
-
-            var room = getRoom(roomName);
-
-            if (room !== null) {
-                room.setClosed(true);
-
-                if (state.get().activeRoom === roomName) {
-                    ui.toggleMessageSection(true);
-                }
-            }
-        }
-
-        function chatRoomUnClosed(roomName) {
-            messages.addMessage('Room \'' + roomName + '\' is now open', 'notification', state.get().activeRoom);
-
-            var room = getRoom(roomName);
-
-            if (room !== null) {
-                room.setClosed(false);
-
-                if (state.get().activeRoom === roomName) {
-                    ui.toggleMessageSection(false);
-                }
-            }
-        }
-
-        function chatListAllowedUsers(roomName, isPrivate, allowedUsers) {
-            if (!isPrivate) {
-                messages.addMessage('Anyone is allowed in ' + roomName + ' as it is not private', 'list-header');
-            } else if (allowedUsers.length === 0) {
-                messages.addMessage('No users are allowed in ' + roomName, 'list-header');
-            } else {
-                messages.addMessage('The following users are allowed in ' + roomName, 'list-header');
-                messages.addMessage(allowedUsers.join(', '), 'list-item');
-            }
-        }
-
-        function chatShowUsersRoomList(user, inRooms) {
-            var status = "Currently " + user.Status;
-
-            if (inRooms.length === 0) {
-                messages.addMessage(user.Name + ' (' + status + ') is not in any rooms', 'list-header');
-            } else {
-                messages.addMessage(user.Name + ' (' + status + ') is in the following rooms', 'list-header');
-                messages.addMessage(inRooms.join(', '), 'list-item');
-            }
-        }
-
-        function chatShowUsersOwnedRoomList(username, ownedRooms) {
-            if (ownedRooms.length === 0) {
-                ui.addMessage(username + ' does not own any rooms', 'list-header');
-            } else {
-                messages.addMessage(username + ' owns the following rooms', 'list-header');
-                messages.addMessage(ownedRooms.join(', '), 'list-item');
-            }
-        }
-
-        function chatListUsers(users) {
-            if (users.length === 0) {
-                messages.addMessage('No users matched your search', 'list-header');
-            } else {
-                messages.addMessage('The following users match your search', 'list-header');
-                messages.addMessage(users.join(', '), 'list-item');
-            }
-        }
-
-        function chatShowUsersInRoom(roomName, usernames) {
-            messages.addMessage('Users in ' + roomName, 'list-header');
-            if (usernames.length === 0) {
-                messages.addMessage('Room is empty', 'list-item');
-            } else {
-                $.each(usernames, function () {
-                    messages.addMessage('- ' + this, 'list-item');
-                });
-            }
-        }
-
-        function chatShowRooms(rooms) {
-            messages.addMessage('Rooms', 'list-header');
-            if (!rooms.length) {
-                messages.addMessage('No rooms available', 'list-item');
-            }
-            else {
-                // sort rooms by count descending then name
-                var sorted = rooms.sort(function (a, b) {
-                    if (a.Closed && !b.Closed) {
-                        return 1;
-                    } else if (b.Closed && !a.Closed) {
-                        return -1;
-                    }
-
-                    if (a.Count > b.Count) {
-                        return -1;
-                    } else if (b.Count > a.Count) {
-                        return 1;
-                    }
-
-                    return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
-                });
-
-                $.each(sorted, function () {
-                    messages.addMessage(this.Name + ' (' + this.Count + ')', 'list-item');
-                });
-            }
-        };
-
-        function chatShowUserInfo(user) {
-            var lastActivityDate = user.LastActivity.fromJsonDate();
-            var status = "Currently " + user.Status;
-            if (user.IsAfk) {
-                status += user.Status === 'Active' ? ' but ' : ' and ';
-                status += ' is Afk';
-            }
-            messages.addMessage('User information for ' + user.Name +
-                " (" + status + " - last seen " + $.timeago(lastActivityDate) + ")", 'list-header');
-
-            if (user.AfkNote) {
-                messages.addMessage('Afk: ' + user.AfkNote, 'list-item');
-            }
-            else if (user.Note) {
-                messages.addMessage('Note: ' + user.Note, 'list-item');
-            }
-
-            $.getJSON('https://secure.gravatar.com/' + user.Hash + '.json?callback=?', function (profile) {
-                showGravatarProfile(profile.entry[0]);
-            });
-
-            chatShowUsersOwnedRoomList(user.Name, user.OwnedRooms);
-        };
 
         function showKickPopup(roomName, message, imageUrl) {
             if (message !== null) {
@@ -715,12 +432,24 @@ define([
             $kickedPopup.modal();
         }
 
+        function showGravatarProfile(profile) {
+            var room = getCurrentRoomElements(),
+                nearEnd = isNearTheEnd();
+
+            messages.appendMessage(templates.gravatarprofile.tmpl(profile), room);
+            if (nearEnd) {
+                scrollToBottom();
+            }
+        }
+
         // Global Events
 
+        // TODO - Replace with DI object call
         events.bind(events.error, function (event, content, type) {
             messages.addMessage(content, type);
         });
 
+        // TODO - Replace with DI object call
         events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
             logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
             var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
@@ -732,16 +461,16 @@ define([
             room.updateUnread(isMentioned);
         });
 
-        // DOM
+        // #region DOM
 
         $document.on('click', 'li.room .room-row', function () {
             var roomName = $(this).parent().data('name');
-            activateOrOpenRoom(roomName);
+            rc.activateOrOpenRoom(roomName);
         });
 
         $document.on('click', '#tabs li', function () {
             var roomName = $(this).data('name');
-            activateOrOpenRoom(roomName);
+            rc.activateOrOpenRoom(roomName);
         });
 
         $document.on('mousedown', '#tabs li.room', function (ev) {
@@ -760,16 +489,49 @@ define([
             return false;
         });
 
+        // #endregion
+
+        //
+        // Hub Handlers
+        //
+
         var handlers = {
             bind: function () {
+                client.chat.client.joinRoom = this.joinRoom;
+
                 client.chat.client.kick = this.kick;
             },
 
+            joinRoom: function (roomdata) {
+                var added = addRoom(roomdata),
+                    roomName = roomdata.Name,
+                    room = rc.getRoom(roomName);
+
+                rc.setActiveRoom(roomName);
+
+                if (roomdata.Private) {
+                    room.setLocked(true);
+                }
+                if (roomdata.Closed) {
+                    room.setClosed(true);
+                }
+
+                if (added) {
+                    rc.populateRoom(roomdata.Name).done(function () {
+                        messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
+
+                        if (roomdata.Welcome) {
+                            messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
+                        }
+                    });
+                }
+            },
+
             kick: function (userdata, roomName, message, imageUrl) {
-                if (isSelf(userdata)) {
+                if (rc.isSelf(userdata)) {
                     showKickPopup(roomName, message, imageUrl);
-                    setActiveRoom('Lobby');
-                    removeRoom(roomName);
+                    rc.setActiveRoom('Lobby');
+                    rc.removeRoom(roomName);
                     messages.addMessage('You were kicked from ' + roomName, 'notification'); // TODO Where does this message go?
                 } else {
                     users.remove(userdata, roomName);
@@ -807,45 +569,24 @@ define([
                 rc.bind(events.rooms.client.scrollToBottom, rcScrollToBottom);
                 rc.bind(events.rooms.client.createMessage, rcCreateMessage);
 
-                client.chat.client.joinRoom = chatJoinRoom;
-                client.chat.client.leave = chatLeave;
                 client.chat.client.changeTopic = updateRoomTopic;
-
-                client.chat.client.lockRoom = chatLockRoom;
-                client.chat.client.roomClosed = chatRoomClosed;
-                client.chat.client.roomUnClosed = chatRoomUnClosed;
-
-                client.chat.client.listUsers = chatListUsers;
-                client.chat.client.listAllowedUsers = chatListAllowedUsers;
-
-                client.chat.client.showUsersRoomList = chatShowUsersRoomList;
-                client.chat.client.showUsersOwnedRoomList = chatShowUsersOwnedRoomList;
-                client.chat.client.showUsersInRoom = chatShowUsersInRoom;
-                client.chat.client.showRooms = chatShowRooms;
-                client.chat.client.showUserInfo = chatShowUserInfo;
 
                 handlers.bind();
             },
 
+            // #region Room Elements
+
             createRoom: createRoom,
+            updateRoom: updateRoom,
 
             getRoomElements: getRoomElements,
             getCurrentRoomElements: getCurrentRoomElements,
             getAllRoomElements: getAllRoomElements,
             getNextRoomListElement: getNextRoomListElement,
 
-            openRoomFromHash: function () {
-                $.history.init(function (hash) {
-                    var roomName = rc.getRoomNameFromHash(hash);
+            // #endregion
 
-                    if (roomName) {
-                        if (setActiveRoomCore(roomName) === false && roomName !== 'Lobby') {
-                            rc.joinRoom(roomName);
-                        }
-                    }
-                });
-            },
-
+            // TODO - Replace with 'rc.rooms'
             getRoomCache: function () {
                 return roomCache;
             },
@@ -855,19 +596,14 @@ define([
                 return state.getRoomPreference(room.getName(), name);
             },
 
-            isSelf: isSelf,
-            setInitialized: setInitialized,
-            setRoomTrimmable: setRoomTrimmable,
             updateRoomTopic: updateRoomTopic,
 
-            setActiveRoom: setActiveRoom,
-            setActiveRoomCore: setActiveRoomCore,
-
+            // #region Room Navigation/Loading
             addRoom: addRoom,
             addRooms: function (rooms) {
                 $.each(rooms, function (index, roomdata) {
                     addRoom(roomdata);
-                    var room = getRoom(roomdata.Name);
+                    var room = rc.getRoom(roomdata.Name);
 
                     if (roomdata.Private) {
                         room.setLocked(true);
@@ -877,9 +613,10 @@ define([
                     }
                 });
             },
+            setActiveRoomCore: setActiveRoomCore,
+            // #endregion
 
             scrollToBottom: scrollToBottom,
-
             scrollIfNecessary: function (callback, room) {
                 var nearEnd = isNearTheEnd(room);
 
@@ -889,6 +626,8 @@ define([
                     this.scrollToBottom(room);
                 }
             },
+
+            showGravatarProfile: showGravatarProfile,
 
             bind: function (eventType, handler) {
                 $this.bind(eventType, handler);

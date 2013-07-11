@@ -504,7 +504,7 @@ define([
                 };
 
                 client.chat.client.sendPrivateMessage = function (from, to, message) {
-                    if (ru.isSelf({ Name: to })) {
+                    if (rc.isSelf({ Name: to })) {
                         // Force notification for direct messages
                         notifications.notify(true);
                         //TODO: ui.setLastPrivate(from);

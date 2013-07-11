@@ -111,7 +111,7 @@ define([
             };
 
             client.chat.client.sendInvite = function (from, to, room) {
-                if (ru.isSelf({ Name: to })) {
+                if (rc.isSelf({ Name: to })) {
                     notify(true);
                     messages.addPrivateMessage('*' + from + '* has invited you to #' + room + '. Click the room name to join.', 'pm');
                 }
@@ -142,12 +142,12 @@ define([
             client.chat.client.broadcastMessage = function (message, room) {
                 messages.addMessage('ADMIN: ' + message, 'broadcast', room);
             };
-            
+
             // Called when this user locked a room
             client.chat.client.roomLocked = function (room) {
                 messages.addMessage(room + ' is now locked.', 'notification', state.get().activeRoom);
             };
-            
+
             client.chat.client.topicChanged = function (roomName, isCleared, topic, who) {
                 var action = isCleared ? 'cleared' : 'set';
                 var to = topic ? ' to ' + '"' + topic + '"' : '';
@@ -197,9 +197,9 @@ define([
 
                 // Bind events
                 client.bind(events.client.loggedOn, clientLoggedOn);
-                
+
                 client.chat.client.updateUnreadNotifications = setUnreadNotifications;
-                
+
                 bindNotificationEvents();
             },
 

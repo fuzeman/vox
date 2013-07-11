@@ -145,7 +145,7 @@ define([
                 typing = true;
 
                 try {
-                    ru.setRoomTrimmable(client.chat.state.activeRoom, typing);
+                    rc.setRoomTrimmable(client.chat.state.activeRoom, typing);
                     client.chat.server.typing(client.chat.state.activeRoom);
                 }
                 catch (e) {
@@ -232,10 +232,10 @@ define([
             ru.addRooms(currentRooms);
 
             // Process any urls that may contain room names
-            ru.openRoomFromHash();
+            rc.openRoomFromHash();
 
             // Otherwise set the active room
-            ru.setActiveRoom(state.get().activeRoom || 'Lobby');
+            rc.setActiveRoom(state.get().activeRoom || 'Lobby');
 
             var loadRooms = function () {
                 $.each(currentRooms, function (index, loadRoom) {

@@ -129,7 +129,7 @@ define([
         }
 
         //
-        // Hub Callbacks
+        // Hub Handlers
         //
 
         var handlers = {
@@ -166,7 +166,7 @@ define([
                     users[userdata.Name] = users[oldName];
                     delete users[oldName];
 
-                    if (!ru.isSelf(userdata)) {
+                    if (!rc.isSelf(userdata)) {
                         messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
                             'notification', roomName);
                     }
@@ -182,7 +182,7 @@ define([
 
                     users[userdata.Name].changeGravatar(userdata);
 
-                    if (!ru.isSelf(userdata)) {
+                    if (!rc.isSelf(userdata)) {
                         messages.addMessage(userdata.Name + "'s gravatar changed.",
                             'notification', roomName);
                     }
@@ -196,7 +196,7 @@ define([
 
                     users[userdata.Name].changeNote(userdata);
 
-                    if (!isSelf(user)) {
+                    if (!rc.isSelf(userdata)) {
                         var message;
 
                         if (userdata.IsAfk === true) {
@@ -218,7 +218,7 @@ define([
                     var user = users[userdata.Name];
                     user.changeFlag(userdata);
 
-                    if (!ru.isSelf(userdata)) {
+                    if (!rc.isSelf(userdata)) {
                         var action = userdata.Flag ? 'set' : 'cleared',
                             country = user.country ? ' to ' + user.country : '',
                             message = userdata.Name + ' has ' + action + ' their flag' + country;
@@ -264,7 +264,7 @@ define([
                     createRoomUser(userdata, room, isOwner);
 
                     if (added) {
-                        if (!ru.isSelf(userdata)) {
+                        if (!rc.isSelf(userdata)) {
                             messages.addMessage(userdata.Name + ' just entered ' + room, 'notification', room);
                         }
                     }
