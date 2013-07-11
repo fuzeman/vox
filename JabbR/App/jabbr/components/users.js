@@ -228,7 +228,9 @@ define([
         var callbacks = {
             bind: function() {
                 client.chat.client.changeUserName = this.changeUserName;
+                client.chat.client.userNameChanged = this.userNameChanged;
             },
+            
             changeUserName: function (oldName, userdata, roomName) {
                 if (!(oldName in users)) {
                     logger.warn('unable to find old username "' + oldName + '" to update');
@@ -239,12 +241,19 @@ define([
                 users[userdata.Name] = users[oldName];
                 delete users[oldName];
 
-                if (!ru.isSelf(user)) {
+                if (!ru.isSelf(userdata)) {
                     messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
                         'notification', state.get().activeRoom);
                 }
 
                 logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
+            },
+            
+            userNameChanged: function(userdata) {
+                // Update the client state
+                client.chat.state.name = userdata.Name;
+                // TODO ui.setUserName(chat.state.name); is this needed?
+                messages.addMessage('Your name is now ' + userdata.Name, 'notification', state.get().activeRoom);
             }
         };
 
