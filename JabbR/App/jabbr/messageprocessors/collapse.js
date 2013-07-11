@@ -38,6 +38,16 @@ define([
         return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
     }
 
+    $(document).on('click', 'h3.collapsible_title', function () {
+        var nearEnd = ru.isNearTheEnd();
+
+        $(this).next().toggle(0, function () {
+            if (nearEnd) {
+                ru.scrollToBottom();
+            }
+        });
+    });
+
     return {
         initialize: function () {
             processor = kernel.get('jabbr/messageprocessors/processor');

@@ -633,6 +633,7 @@ define([
             setActiveRoomCore: setActiveRoomCore,
             // #endregion
 
+            isNearTheEnd: isNearTheEnd,
             scrollToBottom: scrollToBottom,
             scrollIfNecessary: function (callback, room) {
                 var nearEnd = isNearTheEnd(room);
