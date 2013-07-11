@@ -95,7 +95,7 @@ define([
 
             if (focus === false) {
                 focus = true;
-                client.focus();
+                client.focused();
             }
         }
 
@@ -264,6 +264,11 @@ define([
 
         // DOM
 
+        $window.blur(function () {
+            focus = false;
+            updateTitle();
+        });
+
         $window.focus(function () {
             // clear unread count in active room
             var room = ru.getCurrentRoomElements();
@@ -273,6 +278,23 @@ define([
                 triggerFocus();
             }
         });
+
+        $window.resize(function () {
+            var room = getCurrentRoomElements();
+            room.makeActive();
+            room.scrollToBottom();
+        });
+
+        function windowKeyFocus (ev) {
+            if (!$newMessage.is(':focus') &&
+                !ev.ctrlKey &&
+                !ev.altKey) {
+                $newMessage.focus();
+            }
+        }
+
+        $window.keypress(windowKeyFocus);
+        $window.keydown(windowKeyFocus);
 
         $submitButton.click(function (ev) {
             triggerSend();
