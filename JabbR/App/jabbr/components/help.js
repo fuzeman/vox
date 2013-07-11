@@ -20,8 +20,10 @@ define([
             $userCmdHelp = $('#jabbr-help #user'),
             $helpPopup = $('#jabbr-help'),
             $help = $('#preferences .help'),
+            $helpBody = $('#jabbr-help .help-body'),
             currentShortcuts = null,
             currentCommands = null,
+            helpHeight = 0,
             help = {
                 shortcut: 'shortcut',
                 global: 'global',
@@ -73,6 +75,21 @@ define([
         //
 
         $help.click(show);
+        
+        // hack to get Chrome to scroll back to top of help body
+        // when redisplaying it after scrolling down and closing it
+        $helpPopup.on('hide', function() {
+            $helpBody.scrollTop(0);
+        });
+
+        // set the height of the help body when displaying the help dialog
+        // so that the scroll bar does not block the rounded corners
+        $helpPopup.on('show', function() {
+            if (helpHeight === 0) {
+                helpHeight = $helpPopup.height() - $helpBody.position().top - 10;
+            }
+            $helpBody.css('height', helpHeight);
+        });
 
         return {
             activate: function () {

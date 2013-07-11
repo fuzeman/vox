@@ -1,4 +1,4 @@
-﻿/*global define, window, clearTimeout, moment*/
+﻿/*global define, document, window, clearTimeout, moment*/
 define([
     'jquery',
     'logger',
@@ -19,7 +19,8 @@ define([
         object = null;
 
     var initialize = function () {
-        var messageSendingDelay = 1500,
+        var $document = $(document),
+            messageSendingDelay = 1500,
             lastPrivate = null,
             pendingMessages = {};
 
@@ -527,6 +528,21 @@ define([
                 });
             }
         }
+
+        // #endregion
+
+        // #region DOM Events
+        
+        // handle click on notifications
+        $document.on('click', '.notification a.info', function(ev) {
+            var $notification = $(this).closest('.notification');
+
+            if ($(this).hasClass('collapse')) {
+                collapseNotifications($notification);
+            } else {
+                expandNotifications($notification);
+            }
+        });
 
         // #endregion
 
