@@ -5,6 +5,7 @@ define([
     'jabbr/state',
     'jabbr/events'
 ], function ($, kernel, state, events) {
+    
     function processResult($plexrResult, service) {
         var $serviceDetails = $plexrResult.find(service);
 
@@ -20,8 +21,18 @@ define([
 
     return function () {
         var processor = kernel.get('jabbr/messageprocessors/processor'),
-            rc = kernel.get('jabbr/components/rooms.client');
+            rc = kernel.get('jabbr/components/rooms.client'),
+            $musicServiceDropdown = $('#music-service-dropdown');
 
+        // Set default to spotify
+        if (state.getPreference('music_service') === undefined) {
+            state.setPreference('music_service', "spotify");
+        }
+        
+        // Select current item
+        $('li.' + state.getPreference('music_service'), $musicServiceDropdown).addClass('active');
+
+        // Process rich content
         processor.bind(events.processor.beforeProcessRichContent, function (event, handler) {
             var $content = $(handler.get());
             var $plexrResult = $("PlexrContentProviderResult", $content);
@@ -42,6 +53,26 @@ define([
                 }
 
                 handler.set($content[0].outerHTML);
+            }
+        });
+
+        // Handle dropdown changes
+        $('li a', $musicServiceDropdown).click(function (e) {
+            var li = $(this).parent();
+
+            // TODO: This is pretty dirty, Rewrite later.
+            if (li.hasClass('spotify')) {
+                if (state.getPreference('music_service') != 'spotify') {
+                    state.setPreference('music_service', 'spotify');
+                    $('li.rdio', $musicServiceDropdown).removeClass('active');
+                    $('li.spotify', $musicServiceDropdown).addClass('active');
+                }
+            } else if (li.hasClass('rdio')) {
+                if (state.getPreference('music_service') != 'rdio') {
+                    state.setPreference('music_service', 'rdio');
+                    $('li.rdio', $musicServiceDropdown).addClass('active');
+                    $('li.spotify', $musicServiceDropdown).removeClass('active');
+                }
             }
         });
     };
