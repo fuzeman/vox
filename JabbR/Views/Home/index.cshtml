@@ -343,15 +343,6 @@
             </form>
             <div id="message-total" title="Total number of messages processed by the server."></div>
             <ul id="message-ticker"></ul>
-            <form id="upload" action="@Url.Content("~/upload")" method="post" enctype="multipart/form-data" target="upload-frame">
-                <input type="hidden" id="file-connection-id" name="connectionId" />
-                <input type="hidden" id="file-message-id" name="messageId" />
-                <input type="hidden" id="file-room" name="room" />
-                <div class="btn upload-button icon-cloud-upload icon-large">
-                    <input type="file" id="hidden-file" name="data">
-                </div>
-            </form>
-            <iframe id="upload-frame" name="upload-frame" style="position:absolute;top:0;left:0;width:0;height:0;visibility:hidden;"></iframe>
         </div>
         <audio src="Content/sounds/notification.wav" id="notificationSound" hidden="hidden" aria-hidden="true">
         </audio>
