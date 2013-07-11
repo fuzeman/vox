@@ -229,7 +229,7 @@ define([
         //
 
         var callbacks = {
-            bind: function () {
+            bind: function() {
                 client.chat.client.changeUserName = this.changeUserName;
                 client.chat.client.changeGravatar = this.changeGravatar;
                 client.chat.client.changeNote = this.changeNote;
@@ -238,7 +238,7 @@ define([
                 client.chat.client.userNameChanged = this.userNameChanged;
             },
 
-            changeUserName: function (oldName, userdata, roomName) {
+            changeUserName: function(oldName, userdata, roomName) {
                 if (!(oldName in users)) {
                     logger.warn('unable to find old username "' + oldName + '" to update');
                     return;
@@ -256,7 +256,7 @@ define([
                 logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
             },
 
-            changeGravatar: function (userdata, roomName) {
+            changeGravatar: function(userdata, roomName) {
                 if (!(userdata.Name in users)) {
                     logger.warn('unable to find username "' + userdata.Name + '" to update');
                     return;
@@ -270,14 +270,14 @@ define([
                 }
             },
 
-            changeNote: function (userdata, roomName) {
+            changeNote: function(userdata, roomName) {
                 if (!(userdata.Name in users)) {
                     logger.warn('unable to find username "' + userdata.Name + '" to update');
                     return;
                 }
-                
+
                 users[userdata.Name].changeNote(userdata);
-                
+
                 if (!isSelf(user)) {
                     var message;
 
@@ -290,8 +290,8 @@ define([
                     messages.addMessage(message, 'notification', roomName);
                 }
             },
-            
-            changeFlag: function (userdata, roomName) {
+
+            changeFlag: function(userdata, roomName) {
                 if (!(userdata.Name in users)) {
                     logger.warn('unable to find username "' + userdata.Name + '" to update');
                     return;
@@ -299,7 +299,7 @@ define([
 
                 var user = users[userdata.Name];
                 user.changeFlag(userdata);
-                
+
                 if (!ru.isSelf(userdata)) {
                     var action = userdata.Flag ? 'set' : 'cleared',
                         country = user.country ? ' to ' + user.country : '',
@@ -308,7 +308,7 @@ define([
                 }
             },
 
-            userNameChanged: function (userdata) {
+            userNameChanged: function(userdata) {
                 // Update the client state
                 client.chat.state.name = userdata.Name;
                 // TODO ui.setUserName(chat.state.name); is this needed?

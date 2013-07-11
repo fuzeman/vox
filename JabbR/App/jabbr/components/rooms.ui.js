@@ -43,7 +43,8 @@ define([
             $notify = $('#room-actions .notify'),
             $tabs = $('#tabs'),
             $chatArea = $('#chat-area'),
-            $topicBar = $('#topic-bar');
+            $topicBar = $('#topic-bar'),
+            $kickedPopup = $('#jabbr-kicked');
 
         var $this = $(this),
             roomCache = {},
@@ -697,6 +698,23 @@ define([
             chatShowUsersOwnedRoomList(user.Name, user.OwnedRooms);
         };
 
+        function showKickPopup(roomName, message, imageUrl) {
+            if (message !== null) {
+                $('.kick-message', $kickedPopup).text(message);
+            } else {
+                $('.kick-message', $kickedPopup).text('Kicked from #' + roomName);
+            }
+
+            if (imageUrl !== null) {
+                $('.kick-image', $kickedPopup).css('background-image', 'url("' + imageUrl + '")');
+                $('.kick-image', $kickedPopup).show();
+            } else {
+                $('.kick-image', $kickedPopup).css('background-image', '');
+                $('.kick-image', $kickedPopup).hide();
+            }
+            $kickedPopup.modal();
+        }
+
         // Global Events
 
         events.bind(events.error, function (event, content, type) {
@@ -742,6 +760,34 @@ define([
             return false;
         });
 
+        var callbacks = {
+            bind: function() {
+                client.chat.client.kick = this.kick;
+            },
+            
+            kick: function (userdata, roomName, message, imageUrl) {
+                if (isSelf(userdata)) {
+                    showKickPopup(roomName, message, imageUrl);
+                    setActiveRoom('Lobby');
+                    removeRoom(roomName);
+                    messages.addMessage('You were kicked from ' + roomName, 'notification'); // TODO Where does this message go?
+                } else {
+                    users.remove(userdata, roomName);
+                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;
+                    
+                    if (message !== null && imageUrl !== null) {
+                        roomMessage += ' (' + [message, '<a href="' + imageUrl + '">' + imageUrl + '</a>'].join(' - ') + ')';
+                    } else if (message !== null) {
+                        roomMessage += ' (' + message + ')';
+                    } else if (imageUrl !== null) {
+                        roomMessage += ' (<a href="' + imageUrl + '">' + imageUrl + '</a>)';
+                    }
+                    
+                    messages.addMessage({ content: roomMessage, encoded: true }, 'notification', roomName);
+                }
+            }
+        };
+
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
@@ -777,6 +823,8 @@ define([
                 client.chat.client.showUsersInRoom = chatShowUsersInRoom;
                 client.chat.client.showRooms = chatShowRooms;
                 client.chat.client.showUserInfo = chatShowUserInfo;
+
+                callbacks.bind();
             },
 
             createRoom: createRoom,
