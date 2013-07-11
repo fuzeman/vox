@@ -45,6 +45,7 @@ define([
             $chatArea = $('#chat-area'),
             $topicBar = $('#topic-bar'),
             $kickedPopup = $('#jabbr-kicked'),
+            $loadingHistoryIndicator = $('#loadingRoomHistory'),
             $this = $(this),
             roomCache = {},
             scrollTopThreshold = 75,
@@ -298,6 +299,30 @@ define([
             return 0;
         }
 
+        function createScrollHandler(roomName, roomId, $messages) {
+            return function (ev) {
+                var messageId = null;
+
+                // Do nothing if there's nothing else
+                if ($(this).data('full') === true) {
+                    return;
+                }
+
+                // If you're we're near the top, raise the event, but if the scroll
+                // bar is small enough that we're at the bottom edge, ignore it.
+                // We have to use the ui version because the room object above is
+                // not fully initialized, so there are no messages.
+                if ($(this).scrollTop() <= scrollTopThreshold && !isNearTheEnd(roomId)) {
+                    var $child = $messages.children('.message:first');
+                    if ($child.length > 0) {
+                        messageId = $child.attr('id').substr(2); // Remove the "m-"
+                        
+                        rc.scrollRoomTop({ name: roomName, messageId: messageId });
+                    }
+                }
+            }
+        }
+
         function addRoom(roomViewModel) {
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
@@ -360,27 +385,7 @@ define([
                     return $(a).data('name').toString().toUpperCase() > $(b).data('name').toString().toUpperCase() ? 1 : -1;
                 });
 
-            scrollHandler = function () {
-                var messageId = null;
-
-                // Do nothing if there's nothing else
-                if ($(this).data('full') === true) {
-                    return;
-                }
-
-                // If you're we're near the top, raise the event, but if the scroll
-                // bar is small enough that we're at the bottom edge, ignore it.
-                // We have to use the ui version because the room object above is
-                // not fully initialized, so there are no messages.
-                if ($(this).scrollTop() <= scrollTopThreshold && !isNearTheEnd(roomId)) {
-                    var $child = $messages.children('.message:first');
-                    if ($child.length > 0) {
-                        messageId = $child.attr('id')
-                            .substr(2); // Remove the "m-"
-                        //$ui.trigger(ui.events.scrollRoomTop, [{ name: roomName, messageId: messageId }]);
-                    }
-                }
-            };
+            scrollHandler = createScrollHandler(roomName, roomId, $messages);
 
             // Hookup the scroll handler since event delegation doesn't work with scroll events
             $messages.bind('scroll', scrollHandler);
@@ -442,7 +447,17 @@ define([
             }
         }
 
-        // Global Events
+        function setLoadingHistory(loadingHistory) {
+            if (loadingHistory) {
+                var room = getCurrentRoomElements();
+                $loadingHistoryIndicator.appendTo(room.messages);
+                $loadingHistoryIndicator.fadeIn('slow');
+            } else {
+                $loadingHistoryIndicator.hide();
+            }
+        }
+
+        // #region Global Events
 
         // TODO - Replace with DI object call
         events.bind(events.error, function (event, content, type) {
@@ -460,6 +475,8 @@ define([
 
             room.updateUnread(isMentioned);
         });
+
+        // #endregion
 
         // #region DOM
 
@@ -628,6 +645,7 @@ define([
             },
 
             showGravatarProfile: showGravatarProfile,
+            setLoadingHistory: setLoadingHistory,
 
             bind: function (eventType, handler) {
                 $this.bind(eventType, handler);

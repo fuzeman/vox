@@ -4,8 +4,9 @@ define([
     'logger',
     'kernel',
     'jabbr/state',
-    'jabbr/events'
-], function ($, Logger, kernel, state, events) {
+    'jabbr/events',
+    'jabbr/viewmodels/message'
+], function ($, Logger, kernel, state, events, Message) {
     var logger = new Logger('jabbr/components/rooms.client'),
         ru = null,
         client = null,
@@ -23,7 +24,8 @@ define([
             messageHistory = {},
             pendingMessages = {},
             messageIds = [],
-            historyLocation = 0;
+            historyLocation = 0,
+            loadingHistory = false;
 
         //
         // Functions
@@ -207,6 +209,45 @@ define([
                     }
                 }
             });
+        }
+
+        function scrollRoomTop(roomInfo) {
+            // Do nothing if we're loading history already
+            if (loadingHistory === true) {
+                return;
+            }
+
+            loadingHistory = true;
+
+            try {
+                // Show a little animation so the user experience looks fancy
+                ru.setLoadingHistory(true);
+                setRoomTrimmable(roomInfo.name, false);
+                
+                logger.trace('getPreviousMessages(' + roomInfo.name + ')');
+                
+                client.chat.server.getPreviousMessages(roomInfo.messageId)
+                    .done(function (previousMessages) {
+                        logger.trace('getPreviousMessages.done(' + roomInfo.name + ')');
+                        
+                        // Insert message history into the room
+                        messages.prependChatMessages($.map(previousMessages, function (data) {
+                            return new Message(data);
+                        }), roomInfo.name);
+                        
+                        loadingHistory = false;
+                        ru.setLoadingHistory(false);
+                    })
+                    .fail(function (e) {
+                        logger.trace('getPreviousMessages.failed(' + roomInfo.name + ', ' + e + ')');
+                        
+                        loadingHistory = false;
+                        ru.setLoadingHistory(false);
+                    });
+            } catch (e) {
+                logger.trace('getPreviousMessages failed');
+                ru.setLoadingHistory(false);
+            }
         }
 
         //
@@ -438,6 +479,7 @@ define([
                 historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;
             },
             populateRoom: populateRoom,
+            scrollRoomTop: scrollRoomTop,
 
             joinRoom: joinRoom,
             leaveRoom: function (roomName) {

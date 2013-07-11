@@ -21,6 +21,21 @@ define([
     var initialize = function () {
         var messageSendingDelay = 1500;
 
+        function dateHeaderFormat(date) {
+            return moment(date).format('dddd, MMMM Do YYYY')
+        }
+        
+        function processMessage(message, roomName) {
+            message.when = message.date.formatTime(true);
+            message.fulldate = message.date.toLocaleString();
+
+            message.message = collapse.process(message.message, {
+                roomName: roomName
+            });
+        }
+
+        // #region Add Message
+
         function addChatMessage(message, roomName) {
             var room = ru.getRoomElements(roomName),
                 $previousMessage = room.messages.children().last(),
@@ -116,14 +131,14 @@ define([
             // if the room only contains non-chat messages and we're adding a
             // non-chat message.
             var isMessage = $(newMessage).is('.message');
+            
             if (!$(newMessage).is('.date-header') && (isMessage || room.hasMessages())) {
                 var lastMessage = room.messages.find('li[data-timestamp]').last(),
                     lastDate = new Date(lastMessage.data('timestamp')),
                     thisDate = new Date($(newMessage).data('timestamp'));
 
                 if (!lastMessage.length || thisDate.toDate().diffDays(lastDate.toDate())) {
-                    var dateDisplay = moment(thisDate);
-                    addMessage(dateDisplay.format('dddd, MMMM Do YYYY'), 'date-header list-header', room.getName())
+                    addMessage(dateHeaderFormat(thisDate), 'date-header list-header', room.getName())
                         .find('.right').remove(); // remove timestamp on date indicator
                 }
             }
@@ -155,6 +170,13 @@ define([
             return $element;
         }
 
+        function addMessageBeforeTarget(content, type, $target) {
+            var $element = prepareNotificationMessage(content, type);
+            $target.before($element);
+            
+            return $element;
+        }
+
         function addPrivateMessage(content, type) {
             var rooms = ru.getAllRoomElements();
             for (var r in rooms) {
@@ -163,6 +185,80 @@ define([
                 }
             }
         }
+
+        function prependChatMessages(messages, roomName) {
+            var room = rc.getRoom(roomName),
+                $messages = room.messages,
+                $target = $messages.children().first(),
+                $previousMessage = null,
+                previousUser = null,
+                previousTimestamp = new Date().addDays(1); // Tomorrow so we always see a date line
+
+            if (messages.length === 0) {
+                // Mark this list as full
+                $messages.data('full', true);
+                return;
+            }
+
+            // If our top message is a date header, it might be incorrect, so we
+            // check to see if we should remove it so that it can be inserted
+            // again at a more appropriate time.
+            if ($target.is('.list-header.date-header')) {
+                var postedDate = new Date($target.text()).toDate();
+                var lastPrependDate = messages[messages.length - 1].date.toDate();
+
+                if (!lastPrependDate.diffDays(postedDate)) {
+                    $target.remove();
+                    $target = $messages.children().first();
+                }
+            }
+
+            // Populate the old messages
+            $.each(messages, function () {
+                processMessage(this, roomName);
+
+                if ($previousMessage) {
+                    previousUser = $previousMessage.data('name');
+                    previousTimestamp = new Date($previousMessage.data('timestamp') || new Date());
+                }
+
+                if (this.date.toDate().diffDays(previousTimestamp.toDate())) {
+                    addMessageBeforeTarget(dateHeaderFormat(this.date), 'list-header', $target)
+                      .addClass('date-header')
+                      .find('.right').remove(); // remove timestamp on date indicator
+
+                    // Force a user name to show after the header
+                    previousUser = null;
+                }
+
+                // Determine if we need to show the user
+                this.showUser = !previousUser || previousUser !== this.name;
+
+                // Render the new message
+                $target.before(templates.message.tmpl(this));
+
+                if (this.showUser === false) {
+                    $previousMessage.addClass('continue');
+                }
+
+                $previousMessage = $('#m-' + this.id);
+            });
+
+            // If our old top message is a message from the same user as the
+            // last message in our prepended history, we can remove information
+            // and continue
+            if ($target.is('.message') && $target.data('name') === $previousMessage.data('name')) {
+                $target.find('.left').children().not('.state').remove();
+                $previousMessage.addClass('continue');
+            }
+
+            // Scroll to the bottom element so the user sees there's more messages
+            $target[0].scrollIntoView();
+        }
+
+        // #endregion
+
+        // #region Send Message
 
         function sendMessage(msg) {
             events.trigger(events.ui.clearUnread);
@@ -255,6 +351,8 @@ define([
             }
         }
 
+        // #endregion
+
         function historyPush(type, clientMessage) {
             if (type === 'replace') {
                 // Search for message in history and replace it
@@ -280,15 +378,6 @@ define([
         function confirmMessage(id) {
             $('#m-' + id).removeClass('failed')
                 .removeClass('loading');
-        }
-
-        function processMessage(message, roomName) {
-            message.when = message.date.formatTime(true);
-            message.fulldate = message.date.toLocaleString();
-
-            message.message = collapse.process(message.message, {
-                roomName: roomName
-            });
         }
 
         function changeMessageId(oldId, newId) {
@@ -337,7 +426,7 @@ define([
             }
         }
 
-        // notifications
+        // #region Notifications
 
         function prepareNotificationMessage(options, type) {
             if (typeof options === 'string') {
@@ -429,56 +518,84 @@ define([
             }
         }
 
+        // #endregion
+
         //
         // Hub Events
         //
 
-        function chatAddMessage(message, room) {
-            var viewModel = new Message(message),
-                edited = messageExists(viewModel.id);
+        var handlers = {
+            bind: function () {
+                client.chat.client.addMessage = this.addMessage;
+                client.chat.client.addMessageContent = this.addMessageContent;
+                client.chat.client.replaceMessage = this.replaceMessage;
+                client.chat.client.postMessage = addMessage;
+                
+                client.chat.client.sendMeMessage = this.sendMeMessage;
+                client.chat.client.sendPrivateMessage = this.sendPrivateMessage;
+            },
+            
+            addMessage: function(message, room) {
+                var viewModel = new Message(message),
+                    edited = messageExists(viewModel.id);
 
-            ru.scrollIfNecessary(function () {
-                // Update your message when it comes from the server
-                if (edited) {
-                    replaceMessageElement(viewModel);
-                } else {
-                    addChatMessage(viewModel, room);
+                ru.scrollIfNecessary(function () {
+                    // Update your message when it comes from the server
+                    if (edited) {
+                        replaceMessageElement(viewModel);
+                    } else {
+                        addChatMessage(viewModel, room);
+                    }
+                }, room);
+
+                var isMentioned = viewModel.highlight === 'highlight';
+
+                if (!viewModel.isMine && !edited) {
+                    events.trigger(events.ui.updateUnread, [room, isMentioned]);
                 }
-            }, room);
+            },
+            
+            addMessageContent: function(id, content, room) {
+                ru.scrollIfNecessary(function () {
+                    addChatMessageContent(id, content, room);
+                }, room);
 
-            var isMentioned = viewModel.highlight === 'highlight';
+                events.trigger(events.ui.updateUnread, [room, false]); /* isMentioned: this is outside normal messages and user shouldn't be mentioned */
 
-            if (!viewModel.isMine && !edited) {
-                events.trigger(events.ui.updateUnread, [room, isMentioned]);
+                watchMessageScroll([id], room);
+            },
+
+            replaceMessage: function(id, message, room) {
+                confirmMessage(id);
+
+                var viewModel = new Message(message);
+
+                ru.scrollIfNecessary(function () {
+                    // Update your message when it comes from the server
+                    overwriteMessage(id, viewModel);
+                }, room);
+
+                var isMentioned = viewModel.highlight === 'highlight';
+
+                if (!viewModel.isMine) {
+                    events.trigger(events.ui.updateUnread, [room, isMentioned]);
+                }
+            },
+
+            sendMeMessage: function (name, message, room) {
+                addMessage('*' + name + ' ' + message, 'action', room);
+            },
+            
+            sendPrivateMessage: function (from, to, message) {
+                if (rc.isSelf({ Name: to })) {
+                    // Force notification for direct messages
+                    notifications.notify(true);
+                    //TODO: ui.setLastPrivate(from);
+                }
+
+                addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
             }
-        }
-
-        function chatReplaceMessage(id, message, room) {
-            confirmMessage(id);
-
-            var viewModel = new Message(message);
-
-            ru.scrollIfNecessary(function () {
-                // Update your message when it comes from the server
-                overwriteMessage(id, viewModel);
-            }, room);
-
-            var isMentioned = viewModel.highlight === 'highlight';
-
-            if (!viewModel.isMine) {
-                events.trigger(events.ui.updateUnread, [room, isMentioned]);
-            }
-        }
-
-        function chatAddMessageContent(id, content, room) {
-            ru.scrollIfNecessary(function () {
-                addChatMessageContent(id, content, room);
-            }, room);
-
-            events.trigger(events.ui.updateUnread, [room, false]); /* isMentioned: this is outside normal messages and user shouldn't be mentioned */
-
-            watchMessageScroll([id], room);
-        }
+        };
 
         return {
             activate: function () {
@@ -490,28 +607,7 @@ define([
 
                 logger.trace('activated');
 
-                // Bind events
-                client.chat.client.addMessage = chatAddMessage;
-                client.chat.client.replaceMessage = chatReplaceMessage;
-                client.chat.client.addMessageContent = chatAddMessageContent;
-
-                client.chat.client.postMessage = function (msg, type, room) {
-                    addMessage(msg, type, room);
-                };
-
-                client.chat.client.sendMeMessage = function (name, message, room) {
-                    addMessage('*' + name + ' ' + message, 'action', room);
-                };
-
-                client.chat.client.sendPrivateMessage = function (from, to, message) {
-                    if (rc.isSelf({ Name: to })) {
-                        // Force notification for direct messages
-                        notifications.notify(true);
-                        //TODO: ui.setLastPrivate(from);
-                    }
-
-                    addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
-                };
+                handlers.bind();
             },
 
             appendMessage: appendMessage,
@@ -519,6 +615,7 @@ define([
             addMessage: addMessage,
             addPrivateMessage: addPrivateMessage,
             sendMessage: sendMessage,
+            prependChatMessages: prependChatMessages,
 
             watchMessageScroll: watchMessageScroll
         };
