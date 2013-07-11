@@ -262,7 +262,7 @@ define([
         events.bind(events.ui.updateUnread, updateUnread);
         events.bind(events.ui.updateTitle, updateTitle);
 
-        // DOM
+        // #region DOM Events
 
         $window.blur(function () {
             focus = false;
@@ -331,6 +331,8 @@ define([
         $logout.click(function () {
             client.performLogout();
         });
+
+        // #endregion
 
         var handlers = {
             bind: function () {

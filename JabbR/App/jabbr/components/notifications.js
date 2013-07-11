@@ -15,7 +15,8 @@ define([
         object = null;
 
     var initialize = function () {
-        var $unreadNotificationCount = $('#notification-unread-count');
+        var $unreadNotificationCount = $('#notification-unread-count'),
+            $notify = $('#room-actions .notify');
 
         function setUnreadNotifications(unreadCount) {
             if (unreadCount > 0) {
@@ -184,6 +185,32 @@ define([
                 toast.toastMessage(message, roomName);
             }
         }
+
+        $notify.click(function (e) {
+            e.preventDefault();
+
+            var room = ru.getCurrentRoomElements();
+
+            if (room.isLobby()) {
+                return;
+            }
+
+            if ($(this).hasClass("notify-all")) {
+                $(this).removeClass('notify-all');
+                $(this).addClass('notify-mentions');
+                $(".notify-text", this).text('Mentions');
+            } else if ($(this).hasClass("notify-mentions")) {
+                $(this).removeClass('notify-mentions');
+                $(this).addClass('notify-all');
+                $(".notify-text", this).text('All');
+            }
+
+            if ($(this).hasClass("notify-all")) {
+                state.setRoomPreference(room.getName(), 'notify', 'all');
+            } else if ($(this).hasClass("notify-mentions")) {
+                state.setRoomPreference(room.getName(), 'notify', 'mentions');
+            }
+        });
 
         return {
             activate: function () {
