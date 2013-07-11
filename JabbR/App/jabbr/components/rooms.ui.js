@@ -615,7 +615,7 @@ define([
                 messages.addMessage(inRooms.join(', '), 'list-item');
             }
         }
-        
+
         function chatShowUsersOwnedRoomList(username, ownedRooms) {
             if (ownedRooms.length === 0) {
                 ui.addMessage(username + ' does not own any rooms', 'list-header');
@@ -639,12 +639,12 @@ define([
             if (usernames.length === 0) {
                 messages.addMessage('Room is empty', 'list-item');
             } else {
-                $.each(usernames, function() {
+                $.each(usernames, function () {
                     messages.addMessage('- ' + this, 'list-item');
                 });
             }
         }
-        
+
         function chatShowRooms(rooms) {
             messages.addMessage('Rooms', 'list-header');
             if (!rooms.length) {
@@ -761,10 +761,10 @@ define([
         });
 
         var callbacks = {
-            bind: function() {
+            bind: function () {
                 client.chat.client.kick = this.kick;
             },
-            
+
             kick: function (userdata, roomName, message, imageUrl) {
                 if (isSelf(userdata)) {
                     showKickPopup(roomName, message, imageUrl);
@@ -774,7 +774,7 @@ define([
                 } else {
                     users.remove(userdata, roomName);
                     var roomMessage = userdata.Name + ' was kicked from ' + roomName;
-                    
+
                     if (message !== null && imageUrl !== null) {
                         roomMessage += ' (' + [message, '<a href="' + imageUrl + '">' + imageUrl + '</a>'].join(' - ') + ')';
                     } else if (message !== null) {
@@ -782,7 +782,7 @@ define([
                     } else if (imageUrl !== null) {
                         roomMessage += ' (<a href="' + imageUrl + '">' + imageUrl + '</a>)';
                     }
-                    
+
                     messages.addMessage({ content: roomMessage, encoded: true }, 'notification', roomName);
                 }
             }
@@ -817,7 +817,7 @@ define([
 
                 client.chat.client.listUsers = chatListUsers;
                 client.chat.client.listAllowedUsers = chatListAllowedUsers;
-                
+
                 client.chat.client.showUsersRoomList = chatShowUsersRoomList;
                 client.chat.client.showUsersOwnedRoomList = chatShowUsersOwnedRoomList;
                 client.chat.client.showUsersInRoom = chatShowUsersInRoom;
