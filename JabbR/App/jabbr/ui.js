@@ -257,38 +257,6 @@ define([
             }
         }
 
-        function clientNudge(from, to) {
-            function shake(n) {
-                var move = function (x, y) {
-                    parent.moveBy(x, y);
-                };
-                for (var i = n; i > 0; i--) {
-                    for (var j = 1; j > 0; j--) {
-                        move(i, 0);
-                        move(0, -i);
-                        move(-i, 0);
-                        move(0, i);
-                        move(i, 0);
-                        move(0, -i);
-                        move(-i, 0);
-                        move(0, i);
-                        move(i, 0);
-                        move(0, -i);
-                        move(-i, 0);
-                        move(0, i);
-                    }
-                }
-            }
-
-            $("#chat-area").pulse({ opacity: 0 }, { duration: 300, pulses: 3 });
-
-            window.setTimeout(function () {
-                shake(20);
-            }, 300);
-
-            messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
-        }
-
         // Global Events
         events.bind(events.ui.clearUnread, clearUnread);
         events.bind(events.ui.updateUnread, updateUnread);
@@ -342,6 +310,48 @@ define([
             client.performLogout();
         });
 
+        var handlers = {
+            bind: function () {
+                client.chat.client.nudge = this.clientNudge;
+
+                client.chat.client.forceUpdate = showUpdatePopup;
+                client.chat.client.outOfSync = showUpdatePopup;
+            },
+
+            clientNudge: function (from, to) {
+                
+                function shake (n) {
+                    var move = function (x, y) {
+                        parent.moveBy(x, y);
+                    };
+                    for (var i = n; i > 0; i--) {
+                        for (var j = 1; j > 0; j--) {
+                            move(i, 0);
+                            move(0, -i);
+                            move(-i, 0);
+                            move(0, i);
+                            move(i, 0);
+                            move(0, -i);
+                            move(-i, 0);
+                            move(0, i);
+                            move(i, 0);
+                            move(0, -i);
+                            move(-i, 0);
+                            move(0, i);
+                        }
+                    }
+                }
+
+                $("#chat-area").pulse({ opacity: 0 }, { duration: 300, pulses: 3 });
+
+                window.setTimeout(function () {
+                    shake(20);
+                }, 300);
+
+                messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
+            }
+        };
+
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
@@ -362,12 +372,11 @@ define([
                 client.bind(events.client.disconnected, clientDisconnected);
                 client.bind(events.client.loggedOn, clientLoggedOn);
 
-                client.chat.client.nudge = clientNudge;
-                client.chat.client.forceUpdate = showUpdatePopup;
-                client.chat.client.outOfSync = showUpdatePopup;
+                handlers.bind();
             },
 
             toggleMessageSection: toggleMessageSection,
+            
             isFocused: function () {
                 return focus;
             }
