@@ -232,6 +232,8 @@ define([
             bind: function () {
                 client.chat.client.changeUserName = this.changeUserName;
                 client.chat.client.changeGravatar = this.changeGravatar;
+                client.chat.client.changeNote = this.changeNote;
+                client.chat.client.changeFlag = this.changeFlag;
 
                 client.chat.client.userNameChanged = this.userNameChanged;
             },
@@ -256,7 +258,7 @@ define([
 
             changeGravatar: function (userdata, roomName) {
                 if (!(userdata.Name in users)) {
-                    logger.warn('unable to find old username "' + userdata.Name + '" to update');
+                    logger.warn('unable to find username "' + userdata.Name + '" to update');
                     return;
                 }
 
@@ -265,6 +267,44 @@ define([
                 if (!ru.isSelf(userdata)) {
                     messages.addMessage(userdata.Name + "'s gravatar changed.",
                         'notification', roomName);
+                }
+            },
+
+            changeNote: function (userdata, roomName) {
+                if (!(userdata.Name in users)) {
+                    logger.warn('unable to find username "' + userdata.Name + '" to update');
+                    return;
+                }
+                
+                users[userdata.Name].changeNote(userdata);
+                
+                if (!isSelf(user)) {
+                    var message;
+
+                    if (userdata.IsAfk === true) {
+                        message = userdata.Name + ' has gone AFK';
+                    } else {
+                        message = userdata.Name + ' has ' + (userdata.Note ? 'set' : 'cleared') + ' their note';
+                    }
+
+                    messages.addMessage(message, 'notification', roomName);
+                }
+            },
+            
+            changeFlag: function (userdata, roomName) {
+                if (!(userdata.Name in users)) {
+                    logger.warn('unable to find username "' + userdata.Name + '" to update');
+                    return;
+                }
+
+                var user = users[userdata.Name];
+                user.changeFlag(userdata);
+                
+                if (!ru.isSelf(userdata)) {
+                    var action = userdata.Flag ? 'set' : 'cleared',
+                        country = user.country ? ' to ' + user.country : '',
+                        message = userdata.Name + ' has ' + action + ' their flag' + country;
+                    messages.addMessage(message, 'notification', roomName);
                 }
             },
 
