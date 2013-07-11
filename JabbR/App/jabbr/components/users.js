@@ -4,9 +4,10 @@ define([
     'logger',
     'kernel',
     'jabbr/state',
+    'jabbr/templates',
     'jabbr/viewmodels/user',
     'jabbr/viewmodels/room-user'
-], function ($, Logger, kernel, state, User, RoomUser) {
+], function ($, Logger, kernel, state, templates, User, RoomUser) {
     var logger = new Logger('jabbr/components/users'),
         client = null,
         ru = null,
@@ -17,14 +18,6 @@ define([
     logger.trace('loaded');
 
     var initialize = function () {
-        // Templates
-        var templates = {
-            user: $('#new-user-template')
-        };
-
-        // Elements
-
-        // Variables
         var users = {}; // { <username>: <User> }
 
         function createUser(userdata) {
@@ -136,187 +129,197 @@ define([
         }
 
         //
-        // Event Handlers
-        //
-
-        // Hub
-        // ReSharper disable InconsistentNaming
-
-        function client_updateActivity(userdata) {
-            logger.trace('client_updateActivity');
-
-            if (exists(userdata.Name)) {
-                users[userdata.Name].setUserActivity(userdata);
-            } else {
-                logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
-            }
-        }
-
-        function client_markInactive(inactiveUsers) {
-            logger.trace('client_markInactive');
-
-            $.each(inactiveUsers, function () {
-                client_updateActivity(this);
-            });
-        }
-
-        function client_addUser(userdata, room, isOwner) {
-            logger.trace('client_addUser');
-
-            var user = createUser(userdata);
-            var added = !(room in user.roomUsers);
-
-            createRoomUser(userdata, room, isOwner);
-
-            if (added) {
-                if (!ru.isSelf(userdata)) {
-                    messages.addMessage(userdata.Name + ' just entered ' + room, 'notification', room);
-                }
-            }
-        }
-
-        function client_setTyping(userdata, roomname) {
-            logger.trace('client_setTyping');
-
-            if (!exists(userdata.Name, roomname)) {
-                createRoomUser(userdata, roomname);
-            }
-            users[userdata.Name].roomUsers[roomname].setTyping();
-        }
-
-        function client_addAdmin(userdata, roomname) {
-            logger.trace('client_addAdmin');
-
-            if (!exists(userdata.Name, roomname)) {
-                createRoomUser(userdata, roomname);
-            }
-
-            users[userdata.Name].roomUsers[roomname].setAdmin(true);
-        }
-
-        function client_removeAdmin(userdata, roomname) {
-            logger.trace('client_removeAdmin');
-
-            if (!exists(userdata.Name, roomname)) {
-                createRoomUser(userdata, roomname);
-            }
-
-            users[userdata.Name].roomUsers[roomname].setAdmin(false);
-        }
-
-        function client_addOwner(userdata, roomname) {
-            logger.trace('client_addOwner');
-
-            if (!exists(userdata.Name, roomname)) {
-                createRoomUser(userdata, roomname);
-            }
-
-            users[userdata.Name].roomUsers[roomname].setOwner(true);
-        }
-
-        function client_removeOwner(userdata, roomname) {
-            logger.trace('client_removeOwner');
-
-            if (!exists(userdata.Name, roomname)) {
-                createRoomUser(userdata, roomname);
-            }
-
-            users[userdata.Name].roomUsers[roomname].setOwner(false);
-        }
-
-        //
         // Hub Callbacks
         //
 
-        var callbacks = {
-            bind: function() {
-                client.chat.client.changeUserName = this.changeUserName;
-                client.chat.client.changeGravatar = this.changeGravatar;
-                client.chat.client.changeNote = this.changeNote;
-                client.chat.client.changeFlag = this.changeFlag;
+        var handlers = {
+            bind: function () {
+                client.chat.client.changeUserName = this.chat.changeUserName;
+                client.chat.client.changeGravatar = this.chat.changeGravatar;
+                client.chat.client.changeNote = this.chat.changeNote;
+                client.chat.client.changeFlag = this.chat.changeFlag;
 
-                client.chat.client.userNameChanged = this.userNameChanged;
+                client.chat.client.userNameChanged = this.chat.userNameChanged;
+
+                client.chat.client.updateActivity = this.chat.updateActivity;
+                client.chat.client.markInactive = this.chat.markInactive;
+
+                client.chat.client.addUser = this.chat.addUser;
+                client.chat.client.setTyping = this.chat.setTyping;
+
+                client.chat.client.addAdmin = this.chat.addAdmin;
+                client.chat.client.removeAdmin = this.chat.removeAdmin;
+
+                client.chat.client.addOwner = this.chat.addOwner;
+                client.chat.client.removeOwner = this.chat.removeOwner;
+
+                logger.trace('handlers bound');
             },
-
-            changeUserName: function(oldName, userdata, roomName) {
-                if (!(oldName in users)) {
-                    logger.warn('unable to find old username "' + oldName + '" to update');
-                    return;
-                }
-
-                users[oldName].changeUserName(userdata);
-                users[userdata.Name] = users[oldName];
-                delete users[oldName];
-
-                if (!ru.isSelf(userdata)) {
-                    messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
-                        'notification', roomName);
-                }
-
-                logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
-            },
-
-            changeGravatar: function(userdata, roomName) {
-                if (!(userdata.Name in users)) {
-                    logger.warn('unable to find username "' + userdata.Name + '" to update');
-                    return;
-                }
-
-                users[userdata.Name].changeGravatar(userdata);
-
-                if (!ru.isSelf(userdata)) {
-                    messages.addMessage(userdata.Name + "'s gravatar changed.",
-                        'notification', roomName);
-                }
-            },
-
-            changeNote: function(userdata, roomName) {
-                if (!(userdata.Name in users)) {
-                    logger.warn('unable to find username "' + userdata.Name + '" to update');
-                    return;
-                }
-
-                users[userdata.Name].changeNote(userdata);
-
-                if (!isSelf(user)) {
-                    var message;
-
-                    if (userdata.IsAfk === true) {
-                        message = userdata.Name + ' has gone AFK';
-                    } else {
-                        message = userdata.Name + ' has ' + (userdata.Note ? 'set' : 'cleared') + ' their note';
+            chat: {
+                changeUserName: function (oldName, userdata, roomName) {
+                    if (!(oldName in users)) {
+                        logger.warn('unable to find old username "' + oldName + '" to update');
+                        return;
                     }
 
-                    messages.addMessage(message, 'notification', roomName);
+                    users[oldName].changeUserName(userdata);
+                    users[userdata.Name] = users[oldName];
+                    delete users[oldName];
+
+                    if (!ru.isSelf(userdata)) {
+                        messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
+                            'notification', roomName);
+                    }
+
+                    logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
+                },
+
+                changeGravatar: function (userdata, roomName) {
+                    if (!(userdata.Name in users)) {
+                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                        return;
+                    }
+
+                    users[userdata.Name].changeGravatar(userdata);
+
+                    if (!ru.isSelf(userdata)) {
+                        messages.addMessage(userdata.Name + "'s gravatar changed.",
+                            'notification', roomName);
+                    }
+                },
+
+                changeNote: function (userdata, roomName) {
+                    if (!(userdata.Name in users)) {
+                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                        return;
+                    }
+
+                    users[userdata.Name].changeNote(userdata);
+
+                    if (!isSelf(user)) {
+                        var message;
+
+                        if (userdata.IsAfk === true) {
+                            message = userdata.Name + ' has gone AFK';
+                        } else {
+                            message = userdata.Name + ' has ' + (userdata.Note ? 'set' : 'cleared') + ' their note';
+                        }
+
+                        messages.addMessage(message, 'notification', roomName);
+                    }
+                },
+
+                changeFlag: function (userdata, roomName) {
+                    if (!(userdata.Name in users)) {
+                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                        return;
+                    }
+
+                    var user = users[userdata.Name];
+                    user.changeFlag(userdata);
+
+                    if (!ru.isSelf(userdata)) {
+                        var action = userdata.Flag ? 'set' : 'cleared',
+                            country = user.country ? ' to ' + user.country : '',
+                            message = userdata.Name + ' has ' + action + ' their flag' + country;
+                        messages.addMessage(message, 'notification', roomName);
+                    }
+                },
+
+                userNameChanged: function (userdata) {
+                    // Update the client state
+                    client.chat.state.name = userdata.Name;
+                    // TODO ui.setUserName(chat.state.name); is this needed?
+                    messages.addMessage('Your name is now ' + userdata.Name, 'notification', state.get().activeRoom);
+                },
+
+                updateActivity: function (userdata) {
+                    logger.trace('updateActivity');
+
+                    if (exists(userdata.Name)) {
+                        users[userdata.Name].setUserActivity(userdata);
+                    } else {
+                        logger.warn('user "' + userdata.Name + '" does not exist, unable to update activity.');
+                    }
+                },
+
+                markInactive: function (inactiveUsers) {
+                    logger.trace('markInactive');
+
+                    $.each(inactiveUsers, function () {
+                        if (exists(this.Name)) {
+                            users[this.Name].setUserActivity(this);
+                        } else {
+                            logger.warn('user "' + this.Name + '" does not exist, unable to mark inactive.');
+                        }
+                    });
+                },
+
+                addUser: function (userdata, room, isOwner) {
+                    logger.trace('client_addUser');
+
+                    var user = createUser(userdata);
+                    var added = !(room in user.roomUsers);
+
+                    createRoomUser(userdata, room, isOwner);
+
+                    if (added) {
+                        if (!ru.isSelf(userdata)) {
+                            messages.addMessage(userdata.Name + ' just entered ' + room, 'notification', room);
+                        }
+                    }
+                },
+
+                setTyping: function (userdata, roomname) {
+                    logger.trace('client_setTyping');
+
+                    if (!exists(userdata.Name, roomname)) {
+                        createRoomUser(userdata, roomname);
+                    }
+                    users[userdata.Name].roomUsers[roomname].setTyping();
+                },
+
+                addAdmin: function (userdata, roomname) {
+                    logger.trace('client_addAdmin');
+
+                    if (!exists(userdata.Name, roomname)) {
+                        createRoomUser(userdata, roomname);
+                    }
+
+                    users[userdata.Name].roomUsers[roomname].setAdmin(true);
+                },
+
+                removeAdmin: function (userdata, roomname) {
+                    logger.trace('client_removeAdmin');
+
+                    if (!exists(userdata.Name, roomname)) {
+                        createRoomUser(userdata, roomname);
+                    }
+
+                    users[userdata.Name].roomUsers[roomname].setAdmin(false);
+                },
+
+                addOwner: function (userdata, roomname) {
+                    logger.trace('client_addOwner');
+
+                    if (!exists(userdata.Name, roomname)) {
+                        createRoomUser(userdata, roomname);
+                    }
+
+                    users[userdata.Name].roomUsers[roomname].setOwner(true);
+                },
+
+                removeOwner: function (userdata, roomname) {
+                    logger.trace('client_removeOwner');
+
+                    if (!exists(userdata.Name, roomname)) {
+                        createRoomUser(userdata, roomname);
+                    }
+
+                    users[userdata.Name].roomUsers[roomname].setOwner(false);
                 }
-            },
-
-            changeFlag: function(userdata, roomName) {
-                if (!(userdata.Name in users)) {
-                    logger.warn('unable to find username "' + userdata.Name + '" to update');
-                    return;
-                }
-
-                var user = users[userdata.Name];
-                user.changeFlag(userdata);
-
-                if (!ru.isSelf(userdata)) {
-                    var action = userdata.Flag ? 'set' : 'cleared',
-                        country = user.country ? ' to ' + user.country : '',
-                        message = userdata.Name + ' has ' + action + ' their flag' + country;
-                    messages.addMessage(message, 'notification', roomName);
-                }
-            },
-
-            userNameChanged: function(userdata) {
-                // Update the client state
-                client.chat.state.name = userdata.Name;
-                // TODO ui.setUserName(chat.state.name); is this needed?
-                messages.addMessage('Your name is now ' + userdata.Name, 'notification', state.get().activeRoom);
             }
         };
-
-        // ReSharper restore InconsistentNaming
 
         return {
             activate: function () {
@@ -327,19 +330,7 @@ define([
 
                 logger.trace('activated');
 
-                // Bind events
-                client.chat.client.updateActivity = client_updateActivity;
-                client.chat.client.markInactive = client_markInactive;
-                client.chat.client.addUser = client_addUser;
-                client.chat.client.setTyping = client_setTyping;
-
-                client.chat.client.addAdmin = client_addAdmin;
-                client.chat.client.removeAdmin = client_removeAdmin;
-
-                client.chat.client.addOwner = client_addOwner;
-                client.chat.client.removeOwner = client_removeOwner;
-
-                callbacks.bind();
+                handlers.bind();
             },
 
             remove: remove,

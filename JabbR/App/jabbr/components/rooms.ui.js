@@ -760,7 +760,7 @@ define([
             return false;
         });
 
-        var callbacks = {
+        var handlers = {
             bind: function () {
                 client.chat.client.kick = this.kick;
             },
@@ -824,7 +824,7 @@ define([
                 client.chat.client.showRooms = chatShowRooms;
                 client.chat.client.showUserInfo = chatShowUserInfo;
 
-                callbacks.bind();
+                handlers.bind();
             },
 
             createRoom: createRoom,
