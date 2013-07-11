@@ -334,6 +334,10 @@ define([
 
         // #endregion
 
+        // Configure livestamp to only update every 30s since display
+        // granularity is by minute anyway (saves CPU cycles)
+        $.livestamp.interval(30 * 1000);
+
         var handlers = {
             bind: function () {
                 client.chat.client.nudge = this.clientNudge;

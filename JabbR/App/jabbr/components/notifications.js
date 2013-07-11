@@ -19,7 +19,9 @@ define([
         var $unreadNotificationCount = $('#notification-unread-count'),
             $notify = $('#room-actions .notify'),
             $toast = $('#room-preferences .toast'),
-            $sound = $('#room-preferences .sound');
+            $sound = $('#room-preferences .sound'),
+            $downloadIcon = $('#room-preferences .download'),
+            $richness = $('#room-preferences .richness');
 
         function setUnreadNotifications(unreadCount) {
             if (unreadCount > 0) {
@@ -259,6 +261,19 @@ define([
         });
         
         // #endregion
+
+        if (toast.canToast()) {
+            $toast.show();
+        } else {
+            $richness.css({ left: '55px' });
+            $downloadIcon.css({ left: '90px' });
+            // We need to set the toast setting to false
+            state.get().preferences.canToast = false;
+            $toast.hide();
+        }
+        
+        // Make sure we can toast at all
+        toast.ensureToast(preferences);
 
         return {
             activate: function () {

@@ -49,6 +49,7 @@ define([
             $this = $(this),
             roomCache = {},
             scrollTopThreshold = 75,
+            trimRoomHistoryFrequency = 1000 * 60 * 2, // 2 minutes in ms
             lobbyLoaded = false;
 
         // #region Room Elements
@@ -457,6 +458,14 @@ define([
             }
         }
 
+        function trimRoomMessageHistory(roomName) {
+            var rooms = roomName ? [rc.getRoomElements(roomName)] : getAllRoomElements();
+
+            for (var i = 0; i < rooms.length; i++) {
+                rooms[i].trimHistory();
+            }
+        }
+
         // #region Global Events
 
         // TODO - Replace with DI object call
@@ -508,10 +517,11 @@ define([
 
         // #endregion
 
-        //
-        // Hub Handlers
-        //
+        setInterval(function () {
+            trimRoomMessageHistory();
+        }, trimRoomHistoryFrequency);
 
+        // Hub Handlers
         var handlers = {
             bind: function () {
                 client.chat.client.joinRoom = this.joinRoom;
