@@ -238,6 +238,7 @@
     <Content Include="App\jabbr\components\notifications.js" />
     <Content Include="App\jabbr\components\rooms.client.js" />
     <Content Include="App\jabbr\components\rooms.ui.js" />
+    <Content Include="App\jabbr\components\toast.js" />
     <Content Include="App\jabbr\components\users.js" />
     <Content Include="App\jabbr\events.js" />
     <Content Include="App\jabbr\messageprocessors\collapse.js" />

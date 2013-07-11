@@ -4,8 +4,9 @@ define([
     'logger',
     'kernel',
     'jabbr/state',
-    'jabbr/events'
-], function ($, Logger, kernel, state, events) {
+    'jabbr/events',
+    'jabbr/components/toast'
+], function ($, Logger, kernel, state, events, toast) {
     var logger = new Logger('jabbr/components/notifications'),
         client = null,
         ui = null,
@@ -16,7 +17,9 @@ define([
 
     var initialize = function () {
         var $unreadNotificationCount = $('#notification-unread-count'),
-            $notify = $('#room-actions .notify');
+            $notify = $('#room-actions .notify'),
+            $toast = $('#room-preferences .toast'),
+            $sound = $('#room-preferences .sound');
 
         function setUnreadNotifications(unreadCount) {
             if (unreadCount > 0) {
@@ -174,17 +177,34 @@ define([
             }
         }
 
-        function notify(force) {
+        function notifyMention(force) {
             if (ru.getActiveRoomPreference('hasSound') === true || force) {
                 $('#notificationSound')[0].play();
             }
         }
 
-        function toast(message, force, roomName) {
+        function toastMention(message, force, roomName) {
             if (ru.getActiveRoomPreference('canToast') === true || force) {
                 toast.toastMessage(message, roomName);
             }
         }
+
+        // #region DOM Events
+
+        $sound.click(function () {
+            var room = ru.getCurrentRoomElements();
+
+            if (room.isLobby()) {
+                return;
+            }
+
+            $(this).toggleClass('off');
+
+            var enabled = !$(this).hasClass('off');
+
+            // Store the preference
+            state.setRoomPreference(room.getName(), 'hasSound', enabled);
+        });
 
         $notify.click(function (e) {
             e.preventDefault();
@@ -212,6 +232,34 @@ define([
             }
         });
 
+        $toast.click(function () {
+            var $this = $(this),
+                enabled = !$this.hasClass('off'),
+                room = ru.getCurrentRoomElements();
+
+            if (room.isLobby()) {
+                return;
+            }
+
+            if (enabled) {
+                // If it's enabled toggle the preference
+                state.setRoomPreference(room.getName(), 'canToast', !enabled);
+                $this.toggleClass('off');
+            } else {
+                toast.enableToast()
+                    .done(function () {
+                        state.setRoomPreference(room.getName(), 'canToast', true);
+                        $this.removeClass('off');
+                    })
+                    .fail(function () {
+                        state.setRoomPreference(room.getName(), 'canToast', false);
+                        $this.addClass('off');
+                    });
+            }
+        });
+        
+        // #endregion
+
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
@@ -229,8 +277,14 @@ define([
 
                 bindNotificationEvents();
             },
+            
+            notifyRoom: notifyRoom,
+            toastRoom: toastRoom,
 
-            notify: notify,
+            notifyMention: notifyMention,
+            toastMention: toastMention,
+            
+            
             messageNotification: function (message, room) {
                 var roomName = room.getName(),
                     isMention = message.highlight,
@@ -245,11 +299,11 @@ define([
                     if (isMention) {
                         // Mention Sound
                         if (roomFocus === false && hasSound === true) {
-                            notify(true);
+                            notifyMention(true);
                         }
                         // Mention Popup
                         if (roomFocus === false && canToast === true) {
-                            toast(message, true, roomName);
+                            toastMention(message, true, roomName);
                         }
                     } else if (notifyType === 'all') {
                         // All Sound

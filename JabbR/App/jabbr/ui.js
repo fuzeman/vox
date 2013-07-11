@@ -280,7 +280,7 @@ define([
         });
 
         $window.resize(function () {
-            var room = getCurrentRoomElements();
+            var room = ru.getCurrentRoomElements();
             room.makeActive();
             room.scrollToBottom();
         });

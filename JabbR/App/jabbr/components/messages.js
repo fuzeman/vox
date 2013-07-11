@@ -640,7 +640,10 @@ define([
             addChatMessage: addChatMessage,
             addMessage: addMessage,
             addPrivateMessage: addPrivateMessage,
+            
             sendMessage: sendMessage,
+            failPendingMessages: failPendingMessages,
+
             prependChatMessages: prependChatMessages,
 
             watchMessageScroll: watchMessageScroll
