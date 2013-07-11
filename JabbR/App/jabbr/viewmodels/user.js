@@ -99,5 +99,13 @@ define([
         });
     };
 
+    User.prototype.changeUserName = function(userdata) {
+        update(this, userdata);
+
+        $.each(this.roomUsers, function(roomName, roomUser) {
+            roomUser.updateUserName();
+        });
+    }
+
     return User;
 });

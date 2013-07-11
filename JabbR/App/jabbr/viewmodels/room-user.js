@@ -190,5 +190,18 @@ define([
         $roomUser.data('typing', timeout);
     };
 
+    RoomUser.prototype.updateUserName = function () {
+        var user = this.user;
+        
+        this.$roomUser.find('.name').fadeOut('normal', function () {
+            $(this).html(user.name);
+            $(this).fadeIn('normal');
+        });
+        
+        this.$roomUser.data('name', user.name);
+        this.$roomUser.attr('data-name', user.name);
+        this.room.sortLists(this.$roomUser);
+    }
+
     return RoomUser;
 });

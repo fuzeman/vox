@@ -3,9 +3,10 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/state',
     'jabbr/viewmodels/user',
     'jabbr/viewmodels/room-user'
-], function ($, Logger, kernel, User, RoomUser) {
+], function ($, Logger, kernel, state, User, RoomUser) {
     var logger = new Logger('jabbr/components/users'),
         client = null,
         ru = null,
@@ -223,6 +224,30 @@ define([
             users[userdata.Name].roomUsers[roomname].setOwner(false);
         }
 
+        // Hub Callbacks
+        var callbacks = {
+            bind: function() {
+                client.chat.client.changeUserName = this.changeUserName;
+            },
+            changeUserName: function (oldName, userdata, roomName) {
+                if (!(oldName in users)) {
+                    logger.warn('unable to find old username "' + oldName + '" to update');
+                    return;
+                }
+
+                users[oldName].changeUserName(userdata);
+                users[userdata.Name] = users[oldName];
+                delete users[oldName];
+
+                if (!ru.isSelf(user)) {
+                    messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
+                        'notification', state.get().activeRoom);
+                }
+
+                logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
+            }
+        };
+
         // ReSharper restore InconsistentNaming
 
         return {
@@ -245,6 +270,8 @@ define([
 
                 client.chat.client.addOwner = client_addOwner;
                 client.chat.client.removeOwner = client_removeOwner;
+
+                callbacks.bind();
             },
 
             remove: remove,
