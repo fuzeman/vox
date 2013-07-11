@@ -53,7 +53,7 @@ define([
             logger.trace("Creating RoomUser '" + userdata.Name + "' #" + roomName);
 
             var room = ru.getRoomElements(roomName);
-            
+
             if (room == null) {
                 logger.warn('Room "' + roomName + '" does not exist, unable to add room user.')
                 return null;
@@ -127,7 +127,7 @@ define([
         }
 
         function removeRoomUsers(roomName) {
-            $.each(users, function(username, user) {
+            $.each(users, function (username, user) {
                 if (roomName in user.roomUsers) {
                     delete user.roomUsers[roomName];
                     logger.trace('removed room user "' + username + '" from #' + roomName);
@@ -203,7 +203,7 @@ define([
 
             users[userdata.Name].roomUsers[roomname].setAdmin(false);
         }
-        
+
         function client_addOwner(userdata, roomname) {
             logger.trace('client_addOwner');
 
@@ -224,13 +224,18 @@ define([
             users[userdata.Name].roomUsers[roomname].setOwner(false);
         }
 
+        //
         // Hub Callbacks
+        //
+
         var callbacks = {
-            bind: function() {
+            bind: function () {
                 client.chat.client.changeUserName = this.changeUserName;
+                client.chat.client.changeGravatar = this.changeGravatar;
+
                 client.chat.client.userNameChanged = this.userNameChanged;
             },
-            
+
             changeUserName: function (oldName, userdata, roomName) {
                 if (!(oldName in users)) {
                     logger.warn('unable to find old username "' + oldName + '" to update');
@@ -243,13 +248,27 @@ define([
 
                 if (!ru.isSelf(userdata)) {
                     messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
-                        'notification', state.get().activeRoom);
+                        'notification', roomName);
                 }
 
                 logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
             },
-            
-            userNameChanged: function(userdata) {
+
+            changeGravatar: function (userdata, roomName) {
+                if (!(userdata.Name in users)) {
+                    logger.warn('unable to find old username "' + userdata.Name + '" to update');
+                    return;
+                }
+
+                users[userdata.Name].changeGravatar(userdata);
+
+                if (!ru.isSelf(userdata)) {
+                    messages.addMessage(userdata.Name + "'s gravatar changed.",
+                        'notification', roomName);
+                }
+            },
+
+            userNameChanged: function (userdata) {
                 // Update the client state
                 client.chat.state.name = userdata.Name;
                 // TODO ui.setUserName(chat.state.name); is this needed?
@@ -273,7 +292,7 @@ define([
                 client.chat.client.markInactive = client_markInactive;
                 client.chat.client.addUser = client_addUser;
                 client.chat.client.setTyping = client_setTyping;
-                
+
                 client.chat.client.addAdmin = client_addAdmin;
                 client.chat.client.removeAdmin = client_removeAdmin;
 
@@ -291,7 +310,7 @@ define([
 
             createUser: createUser,
             createRoomUser: createRoomUser,
-            
+
             removeRoomUsers: removeRoomUsers
         };
     };

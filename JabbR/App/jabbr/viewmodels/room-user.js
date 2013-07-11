@@ -190,18 +190,24 @@ define([
         $roomUser.data('typing', timeout);
     };
 
-    RoomUser.prototype.updateUserName = function () {
+    RoomUser.prototype.updateUserName = function() {
         var user = this.user;
-        
-        this.$roomUser.find('.name').fadeOut('normal', function () {
+
+        this.$roomUser.find('.name').fadeOut('normal', function() {
             $(this).html(user.name);
             $(this).fadeIn('normal');
         });
-        
+
         this.$roomUser.data('name', user.name);
         this.$roomUser.attr('data-name', user.name);
         this.room.sortLists(this.$roomUser);
-    }
+    };
+
+    RoomUser.prototype.updateGravatar = function() {
+        var src = 'https://secure.gravatar.com/avatar/' + this.user.hash + '?s=16&d=mm';
+
+        this.$roomUser.find('.gravatar').attr('src', src);
+    };
 
     return RoomUser;
 });

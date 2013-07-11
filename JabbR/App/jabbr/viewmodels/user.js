@@ -99,12 +99,30 @@ define([
         });
     };
 
-    User.prototype.changeUserName = function(userdata) {
+    User.prototype.changeUserName = function (userdata) {
+        var oldName = this.name;
+
         update(this, userdata);
 
-        $.each(this.roomUsers, function(roomName, roomUser) {
-            roomUser.updateUserName();
-        });
+        // Only update if it has actually changed
+        if (oldName != this.name) {
+            $.each(this.roomUsers, function (roomName, roomUser) {
+                roomUser.updateUserName();
+            });
+        }
+    }
+
+    User.prototype.changeGravatar = function (userdata) {
+        var oldHash = this.hash;
+
+        update(this, userdata);
+
+        // Only update if it has actually changed
+        if (oldHash != this.hash) {
+            $.each(this.roomUsers, function (roomName, roomUser) {
+                roomUser.updateGravatar();
+            });
+        }
     }
 
     return User;
