@@ -19,12 +19,14 @@ define([
         object = null;
 
     var initialize = function () {
-        var messageSendingDelay = 1500;
+        var messageSendingDelay = 1500,
+            lastPrivate = null,
+            pendingMessages = {};
 
         function dateHeaderFormat(date) {
             return moment(date).format('dddd, MMMM Do YYYY')
         }
-        
+
         function processMessage(message, roomName) {
             message.when = message.date.formatTime(true);
             message.fulldate = message.date.toLocaleString();
@@ -131,7 +133,7 @@ define([
             // if the room only contains non-chat messages and we're adding a
             // non-chat message.
             var isMessage = $(newMessage).is('.message');
-            
+
             if (!$(newMessage).is('.date-header') && (isMessage || room.hasMessages())) {
                 var lastMessage = room.messages.find('li[data-timestamp]').last(),
                     lastDate = new Date(lastMessage.data('timestamp')),
@@ -173,7 +175,7 @@ define([
         function addMessageBeforeTarget(content, type, $target) {
             var $element = prepareNotificationMessage(content, type);
             $target.before($element);
-            
+
             return $element;
         }
 
@@ -319,7 +321,7 @@ define([
                 },
                     messageSendingDelay);
 
-                rc.pendingMessages[id] = messageCompleteTimeout;
+                pendingMessages[id] = messageCompleteTimeout;
             }
 
             rc.historyLocation = 0;
@@ -334,7 +336,7 @@ define([
                     .done(function () {
                         if (messageCompleteTimeout) {
                             clearTimeout(messageCompleteTimeout);
-                            delete rc.pendingMessages[clientMessage.id];
+                            delete pendingMessages[clientMessage.id];
                         }
 
                         confirmMessage(clientMessage.id);
@@ -346,8 +348,16 @@ define([
             } catch (e) {
                 client.connection.hub.log('Failed to send via websockets');
 
-                clearTimeout(rc.pendingMessages[clientMessage.id]);
+                clearTimeout(pendingMessages[clientMessage.id]);
                 failMessage(clientMessage.id);
+            }
+        }
+
+        function failPendingMessages() {
+            for (var id in pendingMessages) {
+                clearTimeout(pendingMessages[id]);
+                failMessage(id);
+                delete pendingMessages[id];
             }
         }
 
@@ -530,12 +540,12 @@ define([
                 client.chat.client.addMessageContent = this.addMessageContent;
                 client.chat.client.replaceMessage = this.replaceMessage;
                 client.chat.client.postMessage = addMessage;
-                
+
                 client.chat.client.sendMeMessage = this.sendMeMessage;
                 client.chat.client.sendPrivateMessage = this.sendPrivateMessage;
             },
-            
-            addMessage: function(message, room) {
+
+            addMessage: function (message, room) {
                 var viewModel = new Message(message),
                     edited = messageExists(viewModel.id);
 
@@ -554,8 +564,8 @@ define([
                     events.trigger(events.ui.updateUnread, [room, isMentioned]);
                 }
             },
-            
-            addMessageContent: function(id, content, room) {
+
+            addMessageContent: function (id, content, room) {
                 ru.scrollIfNecessary(function () {
                     addChatMessageContent(id, content, room);
                 }, room);
@@ -565,7 +575,7 @@ define([
                 watchMessageScroll([id], room);
             },
 
-            replaceMessage: function(id, message, room) {
+            replaceMessage: function (id, message, room) {
                 confirmMessage(id);
 
                 var viewModel = new Message(message);
@@ -585,12 +595,12 @@ define([
             sendMeMessage: function (name, message, room) {
                 addMessage('*' + name + ' ' + message, 'action', room);
             },
-            
+
             sendPrivateMessage: function (from, to, message) {
                 if (rc.isSelf({ Name: to })) {
                     // Force notification for direct messages
                     notifications.notify(true);
-                    //TODO: ui.setLastPrivate(from);
+                    lastPrivate = from;
                 }
 
                 addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');

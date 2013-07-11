@@ -22,7 +22,6 @@ define([
         var $this = $(this),
             rooms = {},
             messageHistory = {},
-            pendingMessages = {},
             messageIds = [],
             historyLocation = 0,
             loadingHistory = false;
@@ -107,6 +106,11 @@ define([
             room.setTrimmable(canTrimMessages);
         }
 
+        function setRoomListStatuses(roomName) {
+            var room = roomName ? getRoom(roomName) : ru.getCurrentRoomElements();
+            room.setListState(room.owners);
+        }
+
         // #region Join, Set, Populate Room Functions
 
         function joinRoom(roomName) {
@@ -181,7 +185,7 @@ define([
                 // that are added after initial population
                 setInitialized(room);
                 ru.scrollToBottom(room);
-                //TODO: ui.setRoomListStatuses(room);
+                setRoomListStatuses(room);
 
                 d.resolveWith(client.chat);
 
@@ -223,24 +227,24 @@ define([
                 // Show a little animation so the user experience looks fancy
                 ru.setLoadingHistory(true);
                 setRoomTrimmable(roomInfo.name, false);
-                
+
                 logger.trace('getPreviousMessages(' + roomInfo.name + ')');
-                
+
                 client.chat.server.getPreviousMessages(roomInfo.messageId)
                     .done(function (previousMessages) {
                         logger.trace('getPreviousMessages.done(' + roomInfo.name + ')');
-                        
+
                         // Insert message history into the room
                         messages.prependChatMessages($.map(previousMessages, function (data) {
                             return new Message(data);
                         }), roomInfo.name);
-                        
+
                         loadingHistory = false;
                         ru.setLoadingHistory(false);
                     })
                     .fail(function (e) {
                         logger.trace('getPreviousMessages.failed(' + roomInfo.name + ', ' + e + ')');
-                        
+
                         loadingHistory = false;
                         ru.setLoadingHistory(false);
                     });
@@ -441,7 +445,6 @@ define([
             },
 
             messageHistory: messageHistory,
-            pendingMessages: pendingMessages,
 
             rooms: rooms,
             getRoom: getRoom,

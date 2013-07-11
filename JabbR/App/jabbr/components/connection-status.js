@@ -9,6 +9,7 @@ define([
 ], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/components/connection-status'),
         client = null,
+        messages = null,
         object = null;
 
     logger.trace('loaded');
@@ -116,7 +117,7 @@ define([
         function clientReconnecting() {
             logger.info('reconnecting');
 
-            //failPendingMessages();
+            messages.failPendingMessages();
             showStatus(1, '');
         }
 
@@ -131,14 +132,14 @@ define([
         }
 
         function clientDisconnected() {
-            //failPendingMessages();
-
+            messages.failPendingMessages();
             showStatus(2, '');
         }
 
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
+                messages = kernel.get('jabbr/components/messages');
 
                 logger.trace('activated');
 

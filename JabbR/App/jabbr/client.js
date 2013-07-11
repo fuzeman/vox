@@ -151,7 +151,7 @@ define([
 
                 connection.hub.error(function () {
                     // Make all pending messages failed if there's an error
-                    //failPendingMessages();
+                    // TODO messages.failPendingMessages();
                 });
             },
 
