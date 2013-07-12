@@ -266,12 +266,7 @@
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Chat.documentOnWrite.js" />
-    <Content Include="Chat.js" />
-    <Content Include="Chat.toast.js" />
     <Content Include="Chat.twitter.js" />
-    <Content Include="Chat.ui.js" />
-    <Content Include="Chat.ui.room.js" />
-    <Content Include="Chat.utility.js" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -889,7 +884,6 @@
     <EmbeddedResource Include="Migrations\201305211454564_UpstreamDbSettings_MoreClientProperties.resx">
       <DependentUpon>201305211454564_UpstreamDbSettings_MoreClientProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <Content Include="Chat.messageTicker.js" />
     <EmbeddedResource Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.resx">
       <DependentUpon>201307031047292_UpstreamExtendChatUserFlagLength.cs</DependentUpon>
     </EmbeddedResource>
@@ -1352,9 +1346,6 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Chat.emoji.js" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
