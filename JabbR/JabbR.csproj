@@ -260,6 +260,9 @@
     <Content Include="App\jabbr\state.js" />
     <Content Include="App\jabbr\ui.js" />
     <Content Include="App\plugins\noext.js" />
+    <Content Include="App\require.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\animate.min.css" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
@@ -936,9 +939,6 @@
     <Content Include="Scripts\qunit.js" />
     <Content Include="Content\themes\default\Chat.dictionary.css" />
     <Content Include="Scripts\r.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\require.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\stacktrace-min-0.4.js" />

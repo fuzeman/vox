@@ -475,7 +475,7 @@
     {
         // Load un-optimized require.js modules
         WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
-            .Add("~/Scripts/require.js")
+            .Add("~/App/require.js")
             .Add("~/App/main.js")
             .Render("~/Scripts/JabbR2_#.js"));
     }

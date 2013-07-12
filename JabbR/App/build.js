@@ -6,7 +6,7 @@
         {
             name: 'main',
             include: [
-                '../Scripts/require',
+                'require',
                 'jabbr/messageprocessors/fancybox',
                 'jabbr/messageprocessors/plexr',
                 'jabbr/messageprocessors/italics'
