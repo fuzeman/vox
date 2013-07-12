@@ -39,6 +39,7 @@ define([
             $sendMessage = $('#send-message'),
             $roomFilterInput = $('#room-filter'),
             $tabs = $('#tabs'),
+            $messageTotal = $('#message-total'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -49,7 +50,10 @@ define([
             typing = false,
             lastCycledMessage = null,
             historyLocation = 0,
-            updateTimeout = 15000;
+            updateTimeout = 15000,
+            currentMessageCount = null,
+            nextMessageCountUpdateAt = null,
+            messagesReceivedSince = 0;
 
         //
         // Private Functions
@@ -364,6 +368,36 @@ define([
 
         // #endregion
 
+        // #region Message Count Display
+
+        function incrementMessageCount() {
+            updateMessageCount(1);
+        }
+        
+        function setMessageCount (count) {
+            $messageTotal.text(utility.formatNumber(count));
+        }
+
+        function updateMessageCount(delta) {
+            delta = typeof delta !== 'undefined' ? delta : 0;
+
+            if (currentMessageCount === null || messagesReceivedSince > nextMessageCountUpdateAt) {
+                client.chat.server.getMessageCount()
+                    .done(function (count) {
+                        currentMessageCount = count;
+                        messagesReceivedSince = delta;
+                        nextMessageCountUpdateAt = Math.floor((Math.random() * 300) + 100);
+
+                        setMessageCount(currentMessageCount + messagesReceivedSince);
+                    });
+            } else {
+                messagesReceivedSince += delta;
+                setMessageCount(currentMessageCount + messagesReceivedSince);
+            }
+        }
+        
+        // #endregion
+
         //
         // Event Handlers
         //
@@ -413,6 +447,9 @@ define([
                 // There's no active room so we don't care
                 loadRooms();
             }
+
+            // Update server message count display
+            updateMessageCount();
         }
 
         // Global Events
@@ -704,6 +741,7 @@ define([
             },
 
             toggleMessageSection: toggleMessageSection,
+            incrementMessageCount: incrementMessageCount,
 
             isFocused: function () {
                 return focus;

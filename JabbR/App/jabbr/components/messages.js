@@ -12,6 +12,7 @@ define([
 ) {
     var logger = new Logger('jabbr/components/messages'),
         client = null,
+        ui = null,
         rc = null,
         ru = null,
         notifications = null,
@@ -318,6 +319,7 @@ define([
 
                 if (type === 'append') {
                     addChatMessage(viewModel, clientMessage.room);
+                    ui.incrementMessageCount();
                 } else {
                     replaceMessageElement(viewModel);
                 }
@@ -583,6 +585,7 @@ define([
                         replaceMessageElement(viewModel);
                     } else {
                         addChatMessage(viewModel, room);
+                        ui.incrementMessageCount();
                     }
                 }, room);
 
@@ -638,6 +641,7 @@ define([
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');
+                ui = kernel.get('jabbr/ui');
                 rc = kernel.get('jabbr/components/rooms.client');
                 ru = kernel.get('jabbr/components/rooms.ui');
                 notifications = kernel.get('jabbr/components/notifications');

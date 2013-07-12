@@ -24,6 +24,10 @@ define([
         return s;
     }
 
+    function formatNumber(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     function guidGenerator() {
         var S4 = function () {
             return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -195,7 +199,8 @@ define([
         decodeHtml: decodeHtml,
         encodeHtml: encodeHtml,
         newId: guidGenerator,
-        processContent: processContent
+        processContent: processContent,
+        formatNumber: formatNumber
     };
 
     return utility;
