@@ -373,8 +373,8 @@ define([
         function incrementMessageCount() {
             updateMessageCount(1);
         }
-        
-        function setMessageCount (count) {
+
+        function setMessageCount(count) {
             $messageTotal.text(utility.formatNumber(count));
         }
 
@@ -395,7 +395,7 @@ define([
                 setMessageCount(currentMessageCount + messagesReceivedSince);
             }
         }
-        
+
         // #endregion
 
         //

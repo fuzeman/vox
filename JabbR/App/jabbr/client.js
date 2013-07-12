@@ -34,14 +34,14 @@ define([
         connection.hub.logging = logging;
         connection.hub.qs = "version=" + window.jabbrVersion;
 
-        function generateCustomMentionRegex (strings) {
+        function generateCustomMentionRegex(strings) {
             var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
             result = result.replace("{0}", strings.join("|"));
 
             return new RegExp(result, "i");
         }
 
-        function updateMentions (mentions) {
+        function updateMentions(mentions) {
             mentionStrings = mentions;
             customMentionRegex = generateCustomMentionRegex(mentions);
         }

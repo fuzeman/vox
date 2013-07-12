@@ -235,6 +235,7 @@
     <Content Include="App\jabbr\components\help.js" />
     <Content Include="App\jabbr\components\lobby.js" />
     <Content Include="App\jabbr\components\messages.js" />
+    <Content Include="App\jabbr\components\message-ticker.js" />
     <Content Include="App\jabbr\components\notifications.js" />
     <Content Include="App\jabbr\components\rooms.client.js" />
     <Content Include="App\jabbr\components\rooms.ui.js" />

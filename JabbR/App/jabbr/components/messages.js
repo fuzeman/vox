@@ -7,8 +7,11 @@ define([
     'jabbr/events',
     'jabbr/utility',
     'jabbr/viewmodels/message',
+    'jabbr/components/message-ticker',
     'jabbr/messageprocessors/collapse'
-], function ($, Logger, kernel, templates, events, utility, Message, collapse
+], function (
+    $, Logger, kernel, templates,
+    events, utility, Message, MessageTicker, collapse
 ) {
     var logger = new Logger('jabbr/components/messages'),
         client = null,
@@ -88,6 +91,8 @@ define([
                 room.addSeparator();
             }
 
+            var currentRoomName = ru.getCurrentRoomElements().getName();
+
             if (isNotification === true) {
                 var model = {
                     id: message.id,
@@ -101,10 +106,9 @@ define([
             } else {
                 appendMessage(templates.message.tmpl(message), room);
 
-                // TODO: Add message to ticker
-                /*if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
-                    messageTicker.appendMessage(message, roomName);
-                }*/
+                if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
+                    MessageTicker.appendMessage(message, roomName);
+                }
             }
 
             if (message.htmlContent) {
