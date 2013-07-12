@@ -13,7 +13,7 @@
     @{
         WriteLiteral(Bundle.JavaScript().ForceRelease()
             .Add("~/Scripts/jquery-1.9.1.min.js")
-            .Add("~/Scripts/jquery-migrate-1.0.0.min.js")
+            .Add("~/Scripts/jquery-migrate-1.2.1.min.js")
             .Add("~/Scripts/json2.min.js")
             .Add("~/Scripts/jquery.signalR-2.0.0-rc1-130629-b89.min.js")
             .Render("~/Scripts/JabbR3_#.js"));
@@ -23,14 +23,14 @@
         $(function () {
             function encodeHtml(html) {
                 // html still emits double quotes so we need to replace these entities to use them in attributes.
-                return $("<div/>").text(html).html().replace(/\"/g, "&quot;");
+                return $("<div />").text(html).html().replace(/\"/g, "&quot;");
             }
 
             var monitor = $.connection.monitor;
             $.connection.hub.logging = true;
 
             monitor.client.logMessage = function (value) {
-                $('#logs').prepend('<li class="message">' + encodeHtml(value).replace('\n', '<br/>') + '</li>');
+                $('#logs').prepend('<li class="message">' + encodeHtml(value).replace('\n', '<br />') + '</li>');
             };
 
             monitor.client.logError = function (value) {

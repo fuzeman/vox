@@ -263,6 +263,8 @@
     <Content Include="App\require.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Chat.emoji.js" />
+    <Content Include="Chat.utility.js" />
     <Content Include="Content\animate.min.css" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
