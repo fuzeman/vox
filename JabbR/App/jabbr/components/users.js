@@ -136,6 +136,7 @@ define([
             bind: function () {
                 client.chat.client.changeUserName = this.chat.changeUserName;
                 client.chat.client.changeGravatar = this.chat.changeGravatar;
+                client.chat.client.changeMentions = this.chat.changeMentions;
                 client.chat.client.changeNote = this.chat.changeNote;
                 client.chat.client.changeFlag = this.chat.changeFlag;
 
@@ -186,6 +187,15 @@ define([
                         messages.addMessage(userdata.Name + "'s gravatar changed.",
                             'notification', roomName);
                     }
+                },
+
+                changeMentions: function (userdata, roomName) {
+                    if (!(userdata.Name in users)) {
+                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                        return;
+                    }
+                    
+                    users[userdata.Name].changeMentions(userdata);
                 },
 
                 changeNote: function (userdata, roomName) {

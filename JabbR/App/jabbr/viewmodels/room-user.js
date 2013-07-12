@@ -209,5 +209,10 @@ define([
         this.$roomUser.find('.gravatar').attr('src', src);
     };
 
+    RoomUser.prototype.updateMentions = function () {
+        this.$roomUser.data('mention', this.user.mention);
+        this.$roomUser.attr('data-mention', this.user.mention);
+    };
+
     return RoomUser;
 });

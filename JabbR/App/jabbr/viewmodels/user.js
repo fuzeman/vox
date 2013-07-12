@@ -125,6 +125,19 @@ define([
         }
     };
 
+    User.prototype.changeMentions = function (userdata) {
+        var oldMention = this.mention;
+
+        update(this, userdata);
+
+        // Only update if gravatar has actually changed
+        if (oldMention != this.mention) {
+            $.each(this.roomUsers, function(roomName, roomUser) {
+                roomUser.updateMentions();
+            });
+        }
+    };
+
     User.prototype.changeNote = function(userdata) {
         var oldNote = this.note;
 

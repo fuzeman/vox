@@ -25,12 +25,15 @@ define([
 
     var initialize = function () {
         var $window = $(window),
+            $document = $(document),
             $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
             $fileUploadButton = $('.upload-button'),
             $logout = $('#preferences .logout'),
             $updatePopup = $('#jabbr-update'),
+            $lobbyWrapper = $('#lobby-wrapper'),
+            $sendMessage = $('#send-message'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -40,6 +43,7 @@ define([
             Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 },
             checkingStatus = false,
             typing = false,
+            lastCycledMessage = null,
             updateTimeout = 15000;
 
         //
@@ -206,6 +210,82 @@ define([
             updateTimeout);
         }
 
+        function updateNewMessageSize () {
+            $sendMessage.height(20 + (20 * newMessageLines));
+            $newMessage.height(20 * newMessageLines);
+
+            // Update Lobby
+            $lobbyWrapper.css('bottom', 30 + (20 * newMessageLines));
+
+            // Update Current Room
+            var room = ru.getCurrentRoomElements();
+            room.messages.css('bottom', 20 + (20 * newMessageLines));
+            room.users.css('bottom', 30 + (20 * newMessageLines));
+        }
+
+        function setMessage(clientMessage) {
+            $newMessage.val(clientMessage.content);
+
+            newMessageLines = clientMessage.content.split('\n').length;
+            updateNewMessageSize();
+
+            $('.my-message').removeClass('editing');
+
+            if (clientMessage.id !== undefined) {
+                $newMessage.attr('message-id', clientMessage.id);
+
+                $newMessage.addClass('editing');
+
+                $('#m-' + clientMessage.id).addClass('editing');
+                $('#m-' + clientMessage.id)[0].scrollIntoView();
+
+                lastCycledMessage = clientMessage.id;
+            }
+
+            if (clientMessage.content) {
+                $newMessage.selectionEnd = clientMessage.content.length;
+            }
+        }
+
+        // handle click on names in chat / room list
+        function prepareMessage(ev) {
+            if (readOnly) {
+                return false;
+            }
+
+            var message = $newMessage.val().trim();
+
+            // If it was a message to another person, replace that
+            if (message.indexOf('/msg') === 0) {
+                message = message.replace(/^\/msg \S+/, '');
+            }
+
+            // Re-focus because we lost it on the click
+            $newMessage.focus();
+
+            // Do not convert this to a message if it is a command
+            if (message[0] === '/') {
+                return false;
+            }
+
+            var mention = '@' + $(this).text().trim();
+
+            var $li = $(this).closest('li');
+            if ($li.data('mention') === undefined) {
+                $li = $('.users li.user[data-name="' + $li.data('name') + '"]');
+            }
+            if ($li.data('mention') !== undefined && $li.data('mention') !== '') {
+                mention = $li.data('mention').replace(/\b[a-z]/g, function (letter) {
+                    return letter.toUpperCase();
+                }) + ',';
+            }
+
+            // Prepend our target username
+            message = mention + ' ' + message;
+            setMessage({ content: message });
+            return false;
+        }
+
         //
         // Event Handlers
         //
@@ -332,6 +412,9 @@ define([
             client.performLogout();
         });
 
+        $document.on('click', '.users li.user .name', prepareMessage);
+        $document.on('click', '.message .left .name', prepareMessage);
+
         // #endregion
 
         // Configure livestamp to only update every 30s since display
@@ -341,13 +424,14 @@ define([
         var handlers = {
             bind: function () {
                 client.chat.client.nudge = this.clientNudge;
+                client.chat.client.mentionsChanged = this.mentionsChanged;
 
                 client.chat.client.forceUpdate = showUpdatePopup;
                 client.chat.client.outOfSync = showUpdatePopup;
             },
 
             clientNudge: function (from, to) {
-                
+
                 function shake (n) {
                     var move = function (x, y) {
                         parent.moveBy(x, y);
@@ -377,6 +461,21 @@ define([
                 }, 300);
 
                 messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
+            },
+            
+            mentionsChanged: function (mentions) {
+                client.updateMentions(mentions);
+
+                var message = null;
+                
+                if (mentions.length == 0) {
+                    message = 'cleared';
+                } else {
+                    message = 'set to ' + mentions.join(", ");
+                }
+
+                messages.addMessage('Your mention strings have been ' + message,
+                    'notification', state.get().activeRoom);
             }
         };
 

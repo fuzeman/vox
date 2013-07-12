@@ -21,6 +21,8 @@ define([
             chat = connection.chat,
             options = {},
             initial = true,
+            mentionStrings = null,
+            customMentionRegex = null,
             privateRooms = null,
             logging = $.cookie('jabbr.logging') === '1',
             transport = $.cookie('jabbr.transport');
@@ -32,9 +34,17 @@ define([
         connection.hub.logging = logging;
         connection.hub.qs = "version=" + window.jabbrVersion;
 
-        //
-        // Private Functions
-        //
+        function generateCustomMentionRegex (strings) {
+            var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
+            result = result.replace("{0}", strings.join("|"));
+            
+            return new RegExp(result, "i");
+        }
+
+        function updateMentions (mentions) {
+            mentionStrings = mentions;
+            customMentionRegex = generateCustomMentionRegex(mentions);
+        }
 
         //
         // Chat Event Handlers
@@ -43,6 +53,7 @@ define([
         chat.client.logOn = function (rooms, myRooms, mentions) {
             logger.trace('logOn');
 
+            updateMentions(mentions);
             privateRooms = myRooms;
 
             $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions]);
@@ -136,6 +147,16 @@ define([
             getPrivateRooms: function () {
                 return privateRooms;
             },
+            
+            getMentionStrings: function () {
+                return mentionStrings;
+            },
+            
+            getCustomMentionRegex: function () {
+                return customMentionRegex;
+            },
+            
+            updateMentions: updateMentions,
 
             start: function () {
                 connection.hub.start(options).done(function () {
