@@ -202,6 +202,17 @@ define([
             $room.animate({ backgroundColor: '#ffffff' }, 800);
         }
 
+        function getRoomNames() {
+            var lobby = getLobby();
+
+            return lobby.users.find('li')
+                .map(function () {
+                    var room = $(this).data('name');
+                    rc.roomCache[rc.cleanRoomName(room)] = true;
+                    return room + ' ';
+                });
+        }
+
         //
         // Event Handlers
         //
@@ -281,6 +292,7 @@ define([
             updateRooms: updateRooms,
             lockRoom: lockRoom,
             populateRooms: populateRooms,
+            getRoomNames: getRoomNames,
 
             hideForm: function () {
                 $lobbyRoomFilterForm.hide();

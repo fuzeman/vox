@@ -21,8 +21,8 @@ define([
             $helpPopup = $('#jabbr-help'),
             $help = $('#preferences .help'),
             $helpBody = $('#jabbr-help .help-body'),
-            currentShortcuts = null,
-            currentCommands = null,
+            shortcuts = null,
+            commands = null,
             helpHeight = 0,
             help = {
                 shortcut: 'shortcut',
@@ -32,13 +32,13 @@ define([
             };
 
         function clientLoggedOn() {
-            client.chat.server.getCommands().done(function (commands) {
-                currentCommands = commands;
+            client.chat.server.getCommands().done(function (currentCommands) {
+                commands = currentCommands;
                 logger.trace("loaded " + commands.length + " commands");
             });
 
-            client.chat.server.getShortcuts().done(function (shortcuts) {
-                currentShortcuts = shortcuts;
+            client.chat.server.getShortcuts().done(function (currentShortcuts) {
+                shortcuts = currentShortcuts;
                 logger.trace("loaded " + shortcuts.length + " shortcuts");
             });
         }
@@ -48,7 +48,7 @@ define([
             $globalCmdHelp.empty();
             $roomCmdHelp.empty();
             $userCmdHelp.empty();
-            $.each(currentCommands, function () {
+            $.each(commands, function () {
                 switch (this.Group) {
                     case help.shortcut:
                         $shortCutHelp.append(templates.commandhelp.tmpl(this));
@@ -64,7 +64,7 @@ define([
                         break;
                 }
             });
-            $.each(currentShortcuts, function () {
+            $.each(shortcuts, function () {
                 $shortCutHelp.append(templates.commandhelp.tmpl(this));
             });
             $helpPopup.modal();
@@ -78,13 +78,13 @@ define([
 
         // hack to get Chrome to scroll back to top of help body
         // when redisplaying it after scrolling down and closing it
-        $helpPopup.on('hide', function() {
+        $helpPopup.on('hide', function () {
             $helpBody.scrollTop(0);
         });
 
         // set the height of the help body when displaying the help dialog
         // so that the scroll bar does not block the rounded corners
-        $helpPopup.on('show', function() {
+        $helpPopup.on('show', function () {
             if (helpHeight === 0) {
                 helpHeight = $helpPopup.height() - $helpBody.position().top - 10;
             }
@@ -101,6 +101,13 @@ define([
                 client.bind(events.client.loggedOn, clientLoggedOn);
 
                 client.chat.client.showCommands = show;
+            },
+
+            getCommands: function () {
+                return commands;
+            },
+            getShortcuts: function () {
+                return shortcuts;
             },
 
             show: show

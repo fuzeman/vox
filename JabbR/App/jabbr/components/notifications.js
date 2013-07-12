@@ -1,4 +1,4 @@
-﻿/*global define*/
+﻿/*global define, window*/
 define([
     'jquery',
     'logger',
@@ -260,6 +260,13 @@ define([
                         $this.addClass('off');
                     });
             }
+        });
+
+        $(toast).bind('toast.focus', function (ev, room) {
+            window.focus();
+
+            // focus on the room
+            rc.activateOrOpenRoom(room);
         });
 
         // #endregion

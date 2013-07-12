@@ -9,11 +9,13 @@ define([
     'jabbr/components/connection-status',
     'jabbr/components/rooms.ui',
     'jabbr/components/help',
+    'jabbr/components/emoji',
     'jabbr/utility',
-    'jquery.pulse'
+    'jquery.pulse',
+    'jquery.autotabcomplete'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,
-    ru, help, utility
+    ru, help, emoji, utility
 ) {
     var logger = new Logger('jabbr/ui'),
         client = null,
@@ -36,6 +38,7 @@ define([
             $lobbyWrapper = $('#lobby-wrapper'),
             $sendMessage = $('#send-message'),
             $roomFilterInput = $('#room-filter'),
+            $tabs = $('#tabs'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -535,6 +538,84 @@ define([
 
         $document.on('click', '.users li.user .name', prepareMessage);
         $document.on('click', '.message .left .name', prepareMessage);
+
+        // handle tab cycling - we skip the lobby when cycling
+        // handle shift+/ - display help command
+        $document.on('keydown', function (ev) {
+            // ctrl + tab event is sent to the page in firefox when the user probably means to change browser tabs
+            if (ev.keyCode === Keys.Tab && $newMessage.val() === "" && !ev.ctrlKey) {
+                var current = ru.getCurrentRoomElements(),
+                    index = current.tab.index(),
+                    tabCount = $tabs.children().length - 1;
+
+                if (!ev.shiftKey) {
+                    // Next tab
+                    index = index % tabCount + 1;
+                } else {
+                    // Prev tab
+                    index = (index - 1) || tabCount;
+                }
+
+                rc.setActiveRoom($tabs.children().eq(index).data('name'));
+                if (!readOnly) {
+                    $newMessage.focus();
+                }
+
+                ev.preventDefault();
+            }
+
+            if (!$newMessage.is(':focus') && ev.shiftKey && ev.keyCode === Keys.Question) {
+                help.show();
+                // Prevent the ? be recorded in the message box
+                ev.preventDefault();
+            }
+        });
+
+        $newMessage.bind('paste', function () {
+            setTimeout(function () {
+                newMessageLines = $newMessage.val().split('\n').length;
+                updateNewMessageSize();
+            }, 100);
+        });
+
+        // Auto-complete for user names
+        $newMessage.autoTabComplete({
+            prefixMatch: '[a-z@#/:]',
+
+            get: function (prefix) {
+                var room = ru.getCurrentRoomElements();
+
+                switch (prefix) {
+                    case '@':
+                        // exclude current username from autocomplete
+                        return room.users.find('li[data-name != "' + client.chat.state.name + '"]')
+                            .not('.room')
+                            .map(function () {
+                                return ($(this).data('name') + ' ' || "").toString();
+                            });
+                    case '#':
+                        return lobby.getRoomNames();
+                    case '/':
+                        return help.getCommands()
+                            .map(function (cmd) {
+                                return cmd.Name + ' ';
+                            });
+                    case ':':
+                        return emoji.getIcons();
+                    default:
+                        // exclude current username from autocomplete
+                        return $.grep(room.users.find('li[data-name != "' + client.chat.state.name + '"]')
+                            .not('.room')
+                            .map(function () {
+                                if ($(this).data('mention') !== undefined &&
+                                    $(this).data('mention')[0] == prefix.toLowerCase()) {
+                                    return ($(this).data('mention').substr(1) + ' ' || "").toString();
+                                }
+                                return "";
+                            }), function (s) { return s.length !== 0; });
+                }
+            }
+        });
 
         // #endregion
 

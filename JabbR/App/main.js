@@ -17,6 +17,7 @@ require.config({
         'jquery.timeago': '../Scripts/jquery.timeago.0.10',
         'jquery.fancybox': '../Scripts/jquery.fancybox',
         'jquery.pulse': '../Scripts/jquery.pulse',
+        'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',
@@ -39,6 +40,7 @@ require.config({
         'jquery.sortElements': ['jquery'],
         'jquery.timeago': ['jquery'],
         'jquery.pulse': ['jquery'],
+        'jquery.autotabcomplete': ['jquery'],
 
         'markdown': {
             exports: 'Markdown'
