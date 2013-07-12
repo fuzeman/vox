@@ -11,7 +11,8 @@ define([
 
     var processor = null,
         ru = null,
-        rc = null;
+        rc = null,
+        $richness = $('#room-preferences .richness');
 
     function process(content, roomName) {
         if (shouldCollapseContent(content, roomName)) {
@@ -45,6 +46,38 @@ define([
         $(this).next().toggle(0, function () {
             if (nearEnd) {
                 ru.scrollToBottom();
+            }
+        });
+    });
+
+    $richness.click(function () {
+        var room = ru.getCurrentRoomElements(),
+            $richContentMessages = room.messages.find('h3.collapsible_title');
+
+        if (room.isLobby()) {
+            return;
+        }
+
+        $(this).toggleClass('off');
+
+        var enabled = !$(this).hasClass('off');
+
+        // Store the preference
+        state.setRoomPreference(room.getName(), 'blockRichness', !enabled);
+
+        // toggle all rich-content for current room
+        $richContentMessages.each(function (index) {
+            var $this = $(this),
+                isCurrentlyVisible = $this.next().is(":visible");
+
+            if (enabled) {
+                $this.attr('title', 'Content collapsed because you have Rich-Content disabled');
+            } else {
+                $this.removeAttr('title');
+            }
+
+            if (isCurrentlyVisible ^ enabled) {
+                $this.trigger('click');
             }
         });
     });
