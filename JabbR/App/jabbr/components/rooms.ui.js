@@ -168,6 +168,12 @@ define([
 
         function updateRoomTopic(roomdata) {
             var room = getRoomElements(roomdata.Name);
+
+            if (room === null) {
+                logger.warn('Room does not exist yet');
+                return;
+            }
+
             var topic = roomdata.Topic;
             var topicHtml = topic === '' ?
                 'You\'re chatting in ' + roomdata.Name :
@@ -325,7 +331,7 @@ define([
                         rc.scrollRoomTop({ name: roomName, messageId: messageId });
                     }
                 }
-            }
+            };
         }
 
         function addRoom(roomViewModel) {

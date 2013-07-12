@@ -1,4 +1,4 @@
-﻿/*global define*/
+﻿/*global define, document*/
 define([
     'jquery',
     'logger',
@@ -17,15 +17,15 @@ define([
     logger.trace('loaded');
 
     var initialize = function () {
-        var $roomFilterInput = $('#room-filter'),
+        var $document = $(document),
+            $roomFilterInput = $('#room-filter'),
             $closedRoomFilter = $('#room-filter-closed'),
             $lobbyRoomFilterForm = $('#room-filter-form'),
             //$lobbyWrapper = $('#lobby-wrapper'),
             $lobbyPrivateRooms = $('#lobby-private'),
             $lobbyOtherRooms = $('#lobby-other'),
-            $loadMoreRooms = $('#load-more-rooms-item');
-
-        var sortedRoomList = null,
+            $loadMoreRooms = $('#load-more-rooms-item'),
+            sortedRoomList = null,
             maxRoomsToLoad = 100,
             lastLoadedRoomIndex = 0;
 
@@ -39,7 +39,7 @@ define([
                 client.chat.server.getRooms()
                     .done(function (rooms) {
                         populateRooms(rooms, client.getPrivateRooms());
-                        //ui.setInitialized('Lobby');
+                        rc.setInitialized('Lobby');
                     });
             } catch (e) {
                 client.connection.hub.log('getRooms failed');
@@ -213,6 +213,17 @@ define([
                 });
         }
 
+        function loadMoreLobbyRooms() {
+            var lobby = getLobby(),
+                moreRooms = sortedRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
+
+            populateRoomList(moreRooms, templates.lobbyroom, lobby.users);
+            lastLoadedRoomIndex = lastLoadedRoomIndex + maxRoomsToLoad;
+
+            // re-filter lists
+            $lobbyRoomFilterForm.submit();
+        }
+
         //
         // Event Handlers
         //
@@ -267,6 +278,26 @@ define([
                         rc.activateOrOpenRoom(roomName);
                         return;
                     }
+            }
+        });
+
+        $document.on('click', '#load-more-rooms-item', function () {
+            var spinner = $loadMoreRooms.find('i');
+            spinner.addClass('icon-spin');
+            spinner.show();
+            var loader = $loadMoreRooms.find('.load-more-rooms a');
+            loader.html(' Loading more rooms...');
+
+            loadMoreLobbyRooms();
+
+            spinner.hide();
+            spinner.removeClass('icon-spin');
+            loader.html('Load More...');
+
+            if (lastLoadedRoomIndex < sortedRoomList.length) {
+                $loadMoreRooms.show();
+            } else {
+                $loadMoreRooms.hide();
             }
         });
 

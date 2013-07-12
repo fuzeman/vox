@@ -669,7 +669,7 @@ define([
 
                 var message = null;
 
-                if (mentions.length == 0) {
+                if (mentions.length === 0) {
                     message = 'cleared';
                 } else {
                     message = 'set to ' + mentions.join(", ");

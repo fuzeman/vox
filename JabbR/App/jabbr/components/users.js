@@ -47,8 +47,8 @@ define([
 
             var room = ru.getRoomElements(roomName);
 
-            if (room == null) {
-                logger.warn('Room "' + roomName + '" does not exist, unable to add room user.')
+            if (room === null) {
+                logger.warn('Room "' + roomName + '" does not exist, unable to add room user.');
                 return null;
             }
 

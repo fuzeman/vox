@@ -25,7 +25,7 @@ define([
             pendingMessages = {};
 
         function dateHeaderFormat(date) {
-            return moment(date).format('dddd, MMMM Do YYYY')
+            return moment(date).format('dddd, MMMM Do YYYY');
         }
 
         function processMessage(message, roomName) {
@@ -40,8 +40,14 @@ define([
         // #region Add Message
 
         function addChatMessage(message, roomName) {
-            var room = ru.getRoomElements(roomName),
-                $previousMessage = room.messages.children().last(),
+            var room = ru.getRoomElements(roomName);
+
+            if (room === null) {
+                logger.warn('Room does not exist yet');
+                return;
+            }
+
+            var $previousMessage = room.messages.children().last(),
                 previousUser = null,
                 previousTimestamp = new Date().addDays(1), // Tomorrow so we always see a date line
                 showUserName = true,
@@ -154,8 +160,14 @@ define([
         }
 
         function addMessage(content, type, roomName) {
-            var room = roomName ? ru.getRoomElements(roomName) : ru.getCurrentRoomElements(),
-                nearEnd = room.isNearTheEnd(),
+            var room = roomName ? ru.getRoomElements(roomName) : ru.getCurrentRoomElements();
+
+            if (room === null) {
+                logger.warn('Room does not exist yet');
+                return null;
+            }
+
+            var nearEnd = room.isNearTheEnd(),
                 $element = null;
 
             $element = prepareNotificationMessage(content, type);
