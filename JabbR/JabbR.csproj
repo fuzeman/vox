@@ -1386,6 +1386,9 @@ IF $(ConfigurationName) == Release (
   ) ELSE IF DEFINED WEBROOT_PATH (
     echo Optimizing on Azure
     node Scripts\r.js -o $(ProjectDir)App\build.js dir=%25WEBROOT_PATH%25\Build baseUrl=$(ProjectDir)App
+  ) ELSE (
+    echo Local Optimization
+    node Scripts\r.js -o $(ProjectDir)App\build.js dir=$(ProjectDir)Build baseUrl=$(ProjectDir)App
   )
 )</PostBuildEvent>
   </PropertyGroup>
