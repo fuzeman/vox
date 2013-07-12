@@ -210,6 +210,43 @@ define([
             updateRooms();
         }
 
+        // #region DOM Event Handlers
+
+        $roomFilterInput
+            .bind('input', function () {
+                $lobbyRoomFilterForm.submit();
+            })
+            .keyup(function () {
+                $lobbyRoomFilterForm.submit();
+            });
+
+        $closedRoomFilter.click(function () {
+             $lobbyRoomFilterForm.submit();
+        });
+
+        $lobbyRoomFilterForm.submit(function () {
+            var room = ru.getCurrentRoomElements(),
+                $lobbyRoomsLists = $lobbyPrivateRooms.add($lobbyOtherRooms);
+
+            // bounce on any room other than lobby
+            if (!room.isLobby()) {
+                return false;
+            }
+
+            // hide all elements except those that match the input / closed filters
+            $lobbyRoomsLists
+                .find('li:not(.empty)')
+                .each(function () { filterIndividualRoom($(this)); });
+
+            $lobbyRoomsLists.find('ul').each(function () {
+                room.setListState($(this));
+            });
+            
+            return false;
+        });
+
+        // #endregion
+
         return {
             activate: function () {
                 client = kernel.get('jabbr/client');

@@ -34,6 +34,7 @@ define([
             $updatePopup = $('#jabbr-update'),
             $lobbyWrapper = $('#lobby-wrapper'),
             $sendMessage = $('#send-message'),
+            $roomFilterInput = $('#room-filter'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -367,6 +368,7 @@ define([
 
         function windowKeyFocus (ev) {
             if (!$newMessage.is(':focus') &&
+                !$roomFilterInput.is(':focus') &&
                 !ev.ctrlKey &&
                 !ev.altKey) {
                 $newMessage.focus();
