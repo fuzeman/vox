@@ -1,7 +1,9 @@
-﻿@using SquishIt.Framework;
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationSettings>
+
+@using SquishIt.Framework;
 @using JabbR
+@using JabbR.ViewModels
 @using JabbR.Services
-@model ApplicationSettings
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -107,7 +109,7 @@
             </form>
         </div>
     </section>
-    <script src="@Url.Content("~/Scripts/jquery-1.9.0.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
     <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
     <script type="text/javascript">
         (function ($) {

@@ -1,4 +1,7 @@
-﻿(function ($, window, chat) {
+﻿/*global define*/
+define([
+    'jquery'
+], function ($) {
     var trimRoomHistoryMaxMessages = 200;
 
     function glowTab($tab, n) {
@@ -23,8 +26,7 @@
                     // Glow the tab again
                     glowTab($tab, n);
                 });
-            }
-            else {
+            } else {
                 // Leave the tab highlighted
                 $tab.animate({ backgroundColor: '#A4E9FC', color: '#575757' }, 1600);
             }
@@ -46,7 +48,6 @@
         this.templates = {
             separator: $('#message-separator-template')
         };
-
     }
 
     Room.prototype.isLocked = function () {
@@ -152,16 +153,16 @@
         return this.tab.attr('data-closed') === 'true';
     };
 
-    Room.prototype.close = function () {
-        this.tab.attr('data-closed', true);
-        this.tab.addClass('closed');
-        this.tab.find('.readonly').removeClass('hide');
-    };
-
-    Room.prototype.unClose = function () {
-        this.tab.attr('data-closed', false);
-        this.tab.removeClass('closed');
-        this.tab.find('.readonly').addClass('hide');
+    Room.prototype.setClosed = function (isClosed) {
+        if (isClosed) {
+            this.tab.attr('data-closed', true);
+            this.tab.addClass('closed');
+            this.tab.find('.readonly').removeClass('hide');
+        } else {
+            this.tab.attr('data-closed', false);
+            this.tab.removeClass('closed');
+            this.tab.find('.readonly').addClass('hide');
+        }
     };
 
     Room.prototype.clear = function () {
@@ -174,13 +175,13 @@
         this.tab.removeClass('current');
 
         this.messages.removeClass('current')
-                     .hide();
+            .hide();
 
         this.users.removeClass('current')
-                  .hide();
+            .hide();
 
         this.roomTopic.removeClass('current')
-                  .hide();
+            .hide();
     };
 
     Room.prototype.makeActive = function () {
@@ -188,23 +189,23 @@
             lastUnread = this.messages.find('.message-separator').data('unread') || 0;
 
         this.tab.addClass('current')
-                .removeClass('unread')
-                .stop(true, true)
-                .css('backgroundColor', '')
-                .css('color', '')
-                .data('unread', 0)
-                .data('hasMentions', false)
-                .find('.content')
-                .text(this.getName());
+            .removeClass('unread')
+            .stop(true, true)
+            .css('backgroundColor', '')
+            .css('color', '')
+            .data('unread', 0)
+            .data('hasMentions', false)
+            .find('.content')
+            .text(this.getName());
 
         this.messages.addClass('current')
-                     .show();
+            .show();
 
         this.users.addClass('current')
-                  .show();
+            .show();
 
         this.roomTopic.addClass('current')
-                  .show();
+            .show();
 
         // if no unread since last separator
         // remove previous separator
@@ -228,18 +229,23 @@
 
     Room.prototype.getUserReferences = function (userName) {
         return $.merge(this.getUser(userName),
-                       this.messages.find(getUserClassName(userName)));
+            this.messages.find(getUserClassName(userName)));
     };
 
-    Room.prototype.setLocked = function () {
-        this.tab.addClass('locked');
-        this.tab.find('.lock').removeClass('hide');
+    Room.prototype.setLocked = function (isLocked) {
+        if (isLocked) {
+            this.tab.addClass('locked');
+            this.tab.find('.lock').removeClass('hide');
+        } else {
+            this.tab.removeClass('locked');
+            this.tab.find('.lock').addClass('hide');
+        }
     };
 
     Room.prototype.setListState = function (list) {
         var emptyStatus = list.children('li.empty'),
-            visibleItems = list.children('li:not(.empty)').filter(function() { return $(this).css('display') !== 'none'; });
-        
+            visibleItems = list.children('li:not(.empty)').filter(function () { return $(this).css('display') !== 'none'; });
+
         if (visibleItems.length > 0) {
             emptyStatus.remove();
         } else if (emptyStatus.length === 0) {
@@ -247,14 +253,13 @@
         }
     };
 
-    Room.prototype.addUser = function (userViewModel, $user) {
-        if (userViewModel.owner) {
-            this.addUserToList($user, this.owners);
+    Room.prototype.addUser = function (user) {
+        if (user.owner) {
+            this.addUserToList(user.$roomUser, this.owners);
         } else {
-            this.changeIdle($user, userViewModel.active);
+            this.changeIdle(user.$roomUser, user.active);
 
-            this.addUserToList($user, this.activeUsers);
-
+            this.addUserToList(user.$roomUser, this.activeUsers);
         }
     };
 
@@ -368,5 +373,5 @@
         $messagesToRemove.remove();
     };
 
-    chat.Room = Room;
-}(jQuery, window, window.chat));
+    return Room;
+});

@@ -1,6 +1,7 @@
-﻿@using JabbR.ViewModels;
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<LoginViewModel>
+
+@using JabbR.ViewModels;
 @using System.Linq;
-@model LoginViewModel
 @{
     Layout = "_layout.cshtml"; 
     var hasSocialProviders = Model.SocialDetails.ConfiguredProviders.Any();

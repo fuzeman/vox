@@ -26,6 +26,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <JSLintSkip>\Chat.documentOnWrite.js|\Chat.emoji.js|\Chat.githubissues.js|\Chat.js|\Chat.messageTicker.js|\Chat.pinnedWindows.js|\Chat.toast.js|\Chat.twitter.js|\Chat.ui.js|\Chat.ui.room.js|\Chat.utility.js|\Scripts\|\notifications.unreadcounter.js|\notifications.js</JSLintSkip>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -228,16 +229,44 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
+    <Content Include="App\jabbr\client.js" />
+    <Content Include="App\jabbr\components\connection-status.js" />
+    <Content Include="App\jabbr\components\emoji.js" />
+    <Content Include="App\jabbr\components\help.js" />
+    <Content Include="App\jabbr\components\lobby.js" />
+    <Content Include="App\jabbr\components\messages.js" />
+    <Content Include="App\jabbr\components\message-ticker.js" />
+    <Content Include="App\jabbr\components\notifications.js" />
+    <Content Include="App\jabbr\components\rooms.client.js" />
+    <Content Include="App\jabbr\components\rooms.ui.js" />
+    <Content Include="App\jabbr\components\toast.js" />
+    <Content Include="App\jabbr\components\users.js" />
+    <Content Include="App\jabbr\events.js" />
+    <Content Include="App\jabbr\messageprocessors\collapse.js" />
+    <Content Include="App\jabbr\messageprocessors\fancybox.js" />
+    <Content Include="App\jabbr\messageprocessors\italics.js" />
+    <Content Include="App\jabbr\messageprocessors\plexr.js" />
+    <Content Include="App\jabbr\messageprocessors\processor.js" />
+    <Content Include="App\jabbr\templates.js" />
+    <Content Include="App\jabbr\viewmodels\message.js" />
+    <Content Include="App\jabbr\viewmodels\room-user.js" />
+    <Content Include="App\jabbr\viewmodels\user.js" />
+    <Content Include="App\jabbr\viewmodels\room.js" />
+    <Content Include="App\jabbr\utility.js" />
+    <Content Include="App\kernel.js" />
+    <Content Include="App\keys.js" />
+    <Content Include="App\logger.js" />
+    <Content Include="App\main.js" />
+    <Content Include="App\jabbr\state.js" />
+    <Content Include="App\jabbr\ui.js" />
+    <Content Include="App\plugins\noext.js" />
     <Content Include="Content\animate.min.css" />
+    <Content Include="Content\images\glyphicons-halflings-white.png" />
+    <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Chat.documentOnWrite.js" />
-    <Content Include="Chat.js" />
-    <Content Include="Chat.toast.js" />
     <Content Include="Chat.twitter.js" />
-    <Content Include="Chat.ui.js" />
-    <Content Include="Chat.ui.room.js" />
-    <Content Include="Chat.utility.js" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -760,8 +789,6 @@
     <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebook_white.png" />
     <Content Include="Content\images\flags.png" />
-    <Content Include="Content\images\glyphicons-halflings-white.png" />
-    <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\google_white.png" />
     <Content Include="Content\images\link.png" />
     <Content Include="Content\images\loading.gif" />
@@ -857,17 +884,17 @@
     <EmbeddedResource Include="Migrations\201305211454564_UpstreamDbSettings_MoreClientProperties.resx">
       <DependentUpon>201305211454564_UpstreamDbSettings_MoreClientProperties.cs</DependentUpon>
     </EmbeddedResource>
-    <Content Include="Chat.messageTicker.js" />
     <EmbeddedResource Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.resx">
       <DependentUpon>201307031047292_UpstreamExtendChatUserFlagLength.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\ba-linkify.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\jquery-1.9.0.js" />
-    <Content Include="Scripts\jquery-1.9.0.min.js" />
-    <Content Include="Scripts\jquery-migrate-1.0.0.min.js" />
+    <Content Include="App\build.js" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-migrate-1.2.1.min.js" />
     <Content Include="Scripts\jquery.easing.1.3.js" />
     <Content Include="Scripts\jquery.fancybox-buttons.js" />
     <Content Include="Scripts\jquery.fancybox-media.js" />
@@ -908,6 +935,13 @@
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
     <Content Include="Content\themes\default\Chat.dictionary.css" />
+    <Content Include="Scripts\r.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\require.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\stacktrace-min-0.4.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -918,7 +952,6 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Scripts\jquery-1.9.0.min.map" />
     <Content Include="Views\Account\_username.cshtml" />
     <Content Include="Views\Account\register.cshtml" />
     <Content Include="Views\Home\index.cshtml" />
@@ -932,6 +965,7 @@
     <Content Include="Views\Notifications\index.cshtml" />
     <Content Include="Views\Home\monitor.cshtml" />
     <Content Include="Views\Administration\index.cshtml" />
+    <Content Include="Scripts\jquery-1.9.1.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\AuthenticationManagerExtensions.cs" />
@@ -1313,9 +1347,6 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Chat.emoji.js" />
-  </ItemGroup>
   <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1343,8 +1374,23 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>ECHO %25USERNAME%25 | FINDSTR /I "^apphb"
+SET APPHARBOR=%25ERRORLEVEL%25
+
+IF $(ConfigurationName) == Release (
+  ECHO AppHarbor: %25APPHARBOR%25
+
+  IF %25APPHARBOR%25 EQU 0 (
+    echo Optimizing on AppHarbor
+    node $(ProjectDir)Scripts\r.js -o $(ProjectDir)App\build.js dir=$(OutDir)_PublishedWebsites\JabbR\Build baseUrl=$(ProjectDir)App
+  ) ELSE IF DEFINED WEBROOT_PATH (
+    echo Optimizing on Azure
+    node Scripts\r.js -o $(ProjectDir)App\build.js dir=%25WEBROOT_PATH%25\Build baseUrl=$(ProjectDir)App
+  ) ELSE (
+    echo Local Optimization
+    node Scripts\r.js -o $(ProjectDir)App\build.js dir=$(ProjectDir)Build baseUrl=$(ProjectDir)App
+  )
+)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

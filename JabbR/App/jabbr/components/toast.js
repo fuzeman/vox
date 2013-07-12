@@ -1,11 +1,15 @@
-﻿/// <reference path="Scripts/jquery-1.9.0.js" />
-(function($, window, utility) {
-    "use strict";
-
+﻿/*global define, window, setTimeout*/
+define(['jquery', 'jabbr/utility'], function ($, utility) {
     var ToastStatus = { Allowed: 0, NotConfigured: 1, Blocked: 2 },
         toastTimeOut = 10000,
         chromeToast = null,
         toastRoom = null;
+
+    function hideToast() {
+        if (chromeToast && chromeToast.cancel) {
+            chromeToast.cancel();
+        }
+    }
 
     var toast = {
         canToast: function () {
@@ -18,7 +22,7 @@
                 preferences.canToast = false;
             }
         },
-        toastMessage: function(message, roomName) {
+        toastMessage: function (message, roomName) {
             if (!window.webkitNotifications ||
                 window.webkitNotifications.checkPermission() !== ToastStatus.Allowed) {
                 return;
@@ -33,7 +37,7 @@
             toastRoom = roomName;
 
             // Hide any previously displayed toast
-            toast.hideToast();
+            hideToast();
 
             chromeToast = window.webkitNotifications.createNotification(
                 'Content/images/logo32.png',
@@ -47,20 +51,16 @@
             };
 
             chromeToast.onclick = function () {
-                toast.hideToast();
-                                
+                hideToast();
+
                 // Trigger the focus events - focus the window and open the source room
                 $(toast).trigger('toast.focus', [toastRoom]);
             };
 
             chromeToast.show();
         },
-        hideToast: function() {
-            if (chromeToast && chromeToast.cancel) {
-                chromeToast.cancel();
-            }
-        },
-        enableToast: function(callback) {
+        hideToast: hideToast,
+        enableToast: function (callback) {
             var deferred = $.Deferred();
             if (window.webkitNotifications) {
                 // If not configured, request permission
@@ -68,17 +68,14 @@
                     window.webkitNotifications.requestPermission(function () {
                         if (window.webkitNotifications.checkPermission()) {
                             deferred.reject();
-                        }
-                        else {
+                        } else {
                             deferred.resolve();
                         }
                     });
-                }
-                else if (window.webkitNotifications.checkPermission() === ToastStatus.Allowed) {
+                } else if (window.webkitNotifications.checkPermission() === ToastStatus.Allowed) {
                     // If we're allowed then just resolve here
                     deferred.resolve();
-                }
-                else {
+                } else {
                     // We don't have permission
                     deferred.reject();
                 }
@@ -87,9 +84,6 @@
             return deferred;
         }
     };
-    
-    if (!window.chat) {
-        window.chat = {};
-    }
-    window.chat.toast = toast;
-})(jQuery, window, window.chat.utility);
+
+    return toast;
+});

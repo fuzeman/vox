@@ -1,8 +1,9 @@
-﻿@using SquishIt.Framework;
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<NotificationsViewModel>
+
+@using SquishIt.Framework;
 @using JabbR
 @using JabbR.ViewModels
 @using PagedList
-@model NotificationsViewModel
 @{
     var notificationsViewModel = Model as NotificationsViewModel;
 }
@@ -89,7 +90,7 @@
     </script>
     @{
         WriteLiteral(Bundle.JavaScript()
-            .Add("~/Scripts/jquery-1.9.0.min.js")
+            .Add("~/Scripts/jquery-1.9.1.min.js")
             .Add("~/Scripts/json2.min.js")
             .Add("~/Scripts/bootstrap.js")
             .Add("~/Scripts/jQuery.tmpl.min.js")

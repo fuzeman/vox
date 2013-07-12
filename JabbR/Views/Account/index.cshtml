@@ -1,6 +1,9 @@
-﻿@using JabbR
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ProfilePageViewModel>
+
+@using System
+@using System.Linq
+@using JabbR
 @using JabbR.ViewModels
-@model ProfilePageViewModel
 
 @{
     var userModel = Model;
@@ -126,7 +129,7 @@
             </div>
         </div>
     </section>
-    <script src="@Url.Content("~/Scripts/jquery-1.9.0.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
     <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
     <script type="text/javascript">
         (function ($) {
