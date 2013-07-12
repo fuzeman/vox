@@ -259,7 +259,7 @@ define([
                     });
             }
         });
-        
+
         // #endregion
 
         if (toast.canToast()) {
@@ -271,7 +271,7 @@ define([
             state.get().preferences.canToast = false;
             $toast.hide();
         }
-        
+
         // Make sure we can toast at all
         toast.ensureToast(preferences);
 
@@ -292,14 +292,13 @@ define([
 
                 bindNotificationEvents();
             },
-            
+
             notifyRoom: notifyRoom,
             toastRoom: toastRoom,
 
             notifyMention: notifyMention,
             toastMention: toastMention,
-            
-            
+
             messageNotification: function (message, room) {
                 var roomName = room.getName(),
                     isMention = message.highlight,

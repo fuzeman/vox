@@ -142,7 +142,7 @@ define([
         var oldNote = this.note;
 
         update(this, userdata);
-        
+
         // Only update if note has actually changed
         if (oldNote != this.note) {
             $.each(this.roomUsers, function (roomName, roomUser) {
@@ -150,7 +150,7 @@ define([
             });
         }
     };
-    
+
     User.prototype.changeFlag = function (userdata) {
         var oldFlag = this.flag;
 
@@ -163,7 +163,6 @@ define([
             });
         }
     };
-    
 
     return User;
 });

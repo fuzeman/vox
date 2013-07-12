@@ -8,6 +8,7 @@ define([
     'jabbr/templates'
 ], function ($, Logger, kernel, events, utility, templates) {
     var logger = new Logger('jabbr/messageprocessors/processor'),
+        rc = null,
         ru = null,
         object = null;
 
@@ -45,7 +46,6 @@ define([
         //
 
         function processPlainContent(content, data) {
-
             // Pre-encode content
             content = utility.encodeHtml(content);
 
@@ -55,7 +55,7 @@ define([
                 content, data
             );
 
-            content = utility.processContent(content, templates, ru.roomCache, true);
+            content = utility.processContent(content, templates, rc.roomCache, true);
 
             // afterProcessPlainContent
             content = getEventHandlerResult(
@@ -103,6 +103,7 @@ define([
 
         return {
             activate: function () {
+                rc = kernel.get('jabbr/components/rooms.client');
                 ru = kernel.get('jabbr/components/rooms.ui');
                 var processor = this;
 

@@ -5,7 +5,6 @@ define([
     'jabbr/state',
     'jabbr/events'
 ], function ($, kernel, state, events) {
-    
     function processResult($plexrResult, service) {
         var $serviceDetails = $plexrResult.find(service);
 
@@ -28,7 +27,7 @@ define([
         if (state.getPreference('music_service') === undefined) {
             state.setPreference('music_service', "spotify");
         }
-        
+
         // Select current item
         $('li.' + state.getPreference('music_service'), $musicServiceDropdown).addClass('active');
 

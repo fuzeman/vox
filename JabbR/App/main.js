@@ -28,7 +28,7 @@ require.config({
 
     shim: {
         'jabbr/client': ['jquery.signalr'],
-        
+
         'bootstrap': ['jquery'],
 
         'jquery-migrate': ['jquery'],
@@ -73,11 +73,11 @@ window.onload = function () {
 
         var logger = new Logger('main');
         logger.trace('loading');
-        
+
         // Initialize sub-modules
         client = client();
         ui = ui();
-        
+
         // Activate all the modules
         ui.activate();
         client.activate();

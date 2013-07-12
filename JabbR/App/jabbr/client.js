@@ -37,7 +37,7 @@ define([
         function generateCustomMentionRegex (strings) {
             var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
             result = result.replace("{0}", strings.join("|"));
-            
+
             return new RegExp(result, "i");
         }
 
@@ -147,15 +147,15 @@ define([
             getPrivateRooms: function () {
                 return privateRooms;
             },
-            
+
             getMentionStrings: function () {
                 return mentionStrings;
             },
-            
+
             getCustomMentionRegex: function () {
                 return customMentionRegex;
             },
-            
+
             updateMentions: updateMentions,
 
             start: function () {

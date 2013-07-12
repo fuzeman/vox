@@ -532,7 +532,7 @@ define([
         // #endregion
 
         // #region DOM Events
-        
+
         // handle click on notifications
         $document.on('click', '.notification a.info', function(ev) {
             var $notification = $(this).closest('.notification');
@@ -640,7 +640,7 @@ define([
             addChatMessage: addChatMessage,
             addMessage: addMessage,
             addPrivateMessage: addPrivateMessage,
-            
+
             sendMessage: sendMessage,
             failPendingMessages: failPendingMessages,
 

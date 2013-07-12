@@ -8,7 +8,7 @@ define([
 
         processor.bind(events.processor.beforeProcessPlainContent, function (event, handler) {
             var type = (handler.data || {})['type'] || '';
-            
+
             if (type == 'pm') {
                 return;
             }

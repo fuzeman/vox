@@ -20,7 +20,8 @@ define([
 
     var initialize = function () {
         var $this = $(this),
-            rooms = {},
+            rooms = {},  // Joined Rooms
+            roomCache = {},  // Available Rooms
             messageHistory = {},
             messageIds = [],
             historyLocation = 0,
@@ -32,6 +33,13 @@ define([
 
         //#region Core Room Functions (get, has, validate)
 
+        function cleanRoomName(roomName) {
+            if (roomName === null) {
+                return "";
+            }
+            return roomName.toString().toUpperCase();
+        }
+
         function getRoom(roomName) {
             if (!hasRoom(roomName)) {
                 return null;
@@ -41,15 +49,15 @@ define([
                     return null;
                 }
             }
-            return rooms[roomName];
+            return rooms[cleanRoomName(roomName)];
         }
 
         function hasRoom(roomName) {
-            return roomName in rooms;
+            return cleanRoomName(roomName) in rooms;
         }
 
         function validRoom(roomName) {
-            return rooms[roomName].exists();
+            return rooms[cleanRoomName(roomName)].exists();
         }
 
         function removeRoom(roomName) {
@@ -73,7 +81,7 @@ define([
 
                 users.removeRoomUsers(roomName);
 
-                delete rooms[roomName];
+                delete rooms[cleanRoomName(roomName)];
             }
         }
 
@@ -447,6 +455,13 @@ define([
             messageHistory: messageHistory,
 
             rooms: rooms,
+            roomCache: roomCache,
+
+            inRoomCache: function (roomName) {
+                return cleanRoomName(roomName) in roomCache;
+            },
+
+            cleanRoomName: cleanRoomName,
             getRoom: getRoom,
             hasRoom: hasRoom,
             validRoom: validRoom,

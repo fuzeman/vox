@@ -3,10 +3,11 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'keys',
     'jabbr/events',
     'jabbr/state',
     'jabbr/templates'
-], function ($, Logger, kernel, events, state, templates) {
+], function ($, Logger, kernel, Keys, events, state, templates) {
     var logger = new Logger('jabbr/components/lobby'),
         client = null,
         ru = null,
@@ -53,16 +54,15 @@ define([
 
         function populateRooms(rooms, privateRooms) {
             var lobby = getLobby(),
-                roomCache = ru.getRoomCache(),
                 i;
             if (!lobby.isInitialized()) {
                 // Populate the room cache
                 for (i = 0; i < rooms.length; ++i) {
-                    roomCache[rooms[i].Name.toString().toUpperCase()] = true;
+                    rc.roomCache[rc.cleanRoomName(rooms[i].Name)] = true;
                 }
 
                 for (i = 0; i < privateRooms.length; ++i) {
-                    roomCache[privateRooms[i].Name.toString().toUpperCase()] = true;
+                    rc.roomCache[rc.cleanRoomName(privateRooms[i].Name)] = true;
                 }
 
                 // sort private lobby rooms
@@ -221,7 +221,7 @@ define([
             });
 
         $closedRoomFilter.click(function () {
-             $lobbyRoomFilterForm.submit();
+            $lobbyRoomFilterForm.submit();
         });
 
         $lobbyRoomFilterForm.submit(function () {
@@ -241,8 +241,22 @@ define([
             $lobbyRoomsLists.find('ul').each(function () {
                 room.setListState($(this));
             });
-            
+
             return false;
+        });
+
+        $roomFilterInput.keypress(function (ev) {
+            var key = ev.keyCode || ev.which,
+                roomName = $(this).val();
+
+            switch (key) {
+                case Keys.Enter:
+                    // only if it's an exact match
+                    if (rc.inRoomCache(roomName)) {
+                        rc.activateOrOpenRoom(roomName);
+                        return;
+                    }
+            }
         });
 
         // #endregion
@@ -257,7 +271,7 @@ define([
 
                 // Bind events
                 rc.bind(events.rooms.client.lobbyOpened, lobbyOpened);
-                
+
                 client.chat.client.updateRoomCount = updateRoomCount;
 
                 ru.createRoom('Lobby');

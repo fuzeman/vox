@@ -8,7 +8,7 @@ define([
 ], function ($, kernel, events) {
     return function () {
         var processor = kernel.get('jabbr/messageprocessors/processor');
-        
+
         processor.bind(events.processor.afterRichElementAttached, function (event, $middle) {
             $('a.imageContent', $middle).fancybox({
                 openEffect: 'elastic',

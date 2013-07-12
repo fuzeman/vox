@@ -75,7 +75,7 @@ define([
         //
 
         $help.click(show);
-        
+
         // hack to get Chrome to scroll back to top of help body
         // when redisplaying it after scrolling down and closing it
         $helpPopup.on('hide', function() {

@@ -194,7 +194,7 @@ define([
                         logger.warn('unable to find username "' + userdata.Name + '" to update');
                         return;
                     }
-                    
+
                     users[userdata.Name].changeMentions(userdata);
                 },
 

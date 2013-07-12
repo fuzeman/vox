@@ -3,6 +3,7 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'keys',
     'jabbr/state',
     'jabbr/events',
     'jabbr/components/connection-status',
@@ -10,9 +11,9 @@ define([
     'jabbr/components/help',
     'jabbr/utility',
     'jquery.pulse'
-], function ($, Logger, kernel, state, events,
-    connectionStatus, ru, help,
-    utility
+], function ($, Logger, kernel, Keys,
+    state, events, connectionStatus,
+    ru, help, utility
 ) {
     var logger = new Logger('jabbr/ui'),
         client = null,
@@ -41,7 +42,6 @@ define([
             unread = 0,
             isUnreadMessageForUser = false,
             newMessageLines = 1,
-            Keys = { Up: 38, Down: 40, Esc: 27, Enter: 13, Backspace: 8, Slash: 47, Space: 32, Tab: 9, Question: 191 },
             checkingStatus = false,
             typing = false,
             lastCycledMessage = null,
@@ -211,7 +211,7 @@ define([
             updateTimeout);
         }
 
-        function updateNewMessageSize () {
+        function updateNewMessageSize() {
             $sendMessage.height(20 + (20 * newMessageLines));
             $newMessage.height(20 * newMessageLines);
 
@@ -366,7 +366,7 @@ define([
             room.scrollToBottom();
         });
 
-        function windowKeyFocus (ev) {
+        function windowKeyFocus(ev) {
             if (!$newMessage.is(':focus') &&
                 !$roomFilterInput.is(':focus') &&
                 !ev.ctrlKey &&
@@ -433,8 +433,7 @@ define([
             },
 
             clientNudge: function (from, to) {
-
-                function shake (n) {
+                function shake(n) {
                     var move = function (x, y) {
                         parent.moveBy(x, y);
                     };
@@ -464,12 +463,12 @@ define([
 
                 messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
             },
-            
+
             mentionsChanged: function (mentions) {
                 client.updateMentions(mentions);
 
                 var message = null;
-                
+
                 if (mentions.length == 0) {
                     message = 'cleared';
                 } else {
@@ -505,7 +504,7 @@ define([
             },
 
             toggleMessageSection: toggleMessageSection,
-            
+
             isFocused: function () {
                 return focus;
             }

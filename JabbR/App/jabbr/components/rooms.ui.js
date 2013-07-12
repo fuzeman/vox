@@ -47,7 +47,6 @@ define([
             $kickedPopup = $('#jabbr-kicked'),
             $loadingHistoryIndicator = $('#loadingRoomHistory'),
             $this = $(this),
-            roomCache = {},
             scrollTopThreshold = 75,
             trimRoomHistoryFrequency = 1000 * 60 * 2, // 2 minutes in ms
             lobbyLoaded = false;
@@ -55,17 +54,18 @@ define([
         // #region Room Elements
 
         function updateRoom(roomName) {
-            var roomId = rc.getRoomId(roomName);
+            var roomId = rc.getRoomId(roomName),
+                room = rc.rooms[rc.cleanRoomName(roomName)];
 
             logger.trace("Updating current room elements");
 
             // Update the current elements if the room has already been added
-            rc.rooms[roomName].tab = $('#tabs-' + roomId);
-            rc.rooms[roomName].users = $('#userlist-' + roomId);
-            rc.rooms[roomName].owners = $('#userlist-' + roomId + '-owners');
-            rc.rooms[roomName].activeUsers = $('#userlist-' + roomId + '-active');
-            rc.rooms[roomName].messages = $('#messages-' + roomId);
-            rc.rooms[roomName].roomTopic = $('#roomTopic-' + roomId);
+            room.tab = $('#tabs-' + roomId);
+            room.users = $('#userlist-' + roomId);
+            room.owners = $('#userlist-' + roomId + '-owners');
+            room.activeUsers = $('#userlist-' + roomId + '-active');
+            room.messages = $('#messages-' + roomId);
+            room.roomTopic = $('#roomTopic-' + roomId);
 
             if (!rc.validRoom(roomName)) {
                 logger.warn('Failed to update invalid room "' + roomName + '"');
@@ -79,7 +79,7 @@ define([
             if (!rc.hasRoom(roomName)) {
                 logger.trace("Creating room '" + roomName + "'");
                 var roomId = rc.getRoomId(roomName);
-                rc.rooms[roomName] = new Room(
+                rc.rooms[rc.cleanRoomName(roomName)] = new Room(
                     $('#tabs-' + roomId),
                     $('#userlist-' + roomId),
                     $('#userlist-' + roomId + '-owners'),
@@ -89,7 +89,7 @@ define([
                 );
 
                 if (rc.validRoom(roomName)) {
-                    return rc.rooms[roomName];
+                    return rc.rooms[rc.cleanRoomName(roomName)];
                 } else {
                     logger.warn('Failed to create room "' + roomName + '"');
                     return null;
@@ -250,6 +250,10 @@ define([
 
             loadRoomPreferences(roomName);
 
+            if (room === null) {
+                return false;
+            }
+
             if (room.isActive()) {
                 // Still trigger the event (just do less overall work)
                 rc.activeRoomChanged(roomName);
@@ -317,7 +321,7 @@ define([
                     var $child = $messages.children('.message:first');
                     if ($child.length > 0) {
                         messageId = $child.attr('id').substr(2); // Remove the "m-"
-                        
+
                         rc.scrollRoomTop({ name: roomName, messageId: messageId });
                     }
                 }
@@ -353,11 +357,11 @@ define([
                 closed: roomViewModel.Closed
             };
 
-            if (!roomCache[roomName.toString().toUpperCase()]) {
+            if (!rc.inRoomCache(roomName)) {
                 lobby.addRoom(roomViewModel);
             }
 
-            roomCache[roomName.toString().toUpperCase()] = true;
+            rc.roomCache[rc.cleanRoomName(roomName)] = true;
 
             templates.tab.tmpl(viewModel).data('name', roomName).appendTo($tabs);
 
@@ -613,11 +617,6 @@ define([
 
             // #endregion
 
-            // TODO - Replace with 'rc.rooms'
-            getRoomCache: function () {
-                return roomCache;
-            },
-
             getActiveRoomPreference: function (name) {
                 var room = getCurrentRoomElements();
                 return state.getRoomPreference(room.getName(), name);
@@ -654,6 +653,8 @@ define([
                     this.scrollToBottom(room);
                 }
             },
+
+            setAccessKeys: setAccessKeys,
 
             showGravatarProfile: showGravatarProfile,
             setLoadingHistory: setLoadingHistory,

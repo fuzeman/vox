@@ -66,7 +66,7 @@ define([
 
         return replicate(len - text.length, ch) + text;
     }
-    
+
     function findCallerTrace(trace, writeTrace, endTrace) {
         var foundLoggerTrace = false;
         var callerTrace = null;
@@ -86,7 +86,7 @@ define([
 
         return callerTrace;
     }
-    
+
     function parseMozillaTrace(trace) {
         var callerTrace = findCallerTrace(trace, 'Logger.prototype.write@', 'Logger.prototype');
 
@@ -114,21 +114,21 @@ define([
 
         return null;
     }
-    
+
     function parseWebkitTrace(trace) {
         var callerTrace = findCallerTrace(trace, 'at Logger.write (', 'at Logger.');
-        
+
         if (callerTrace !== null) {
             callerTrace = callerTrace.replace('at', '').trim();
             var split = callerTrace.split(':');
-            
+
             if (split.length < 3) {
                 return null;
             }
 
             var path = split[split.length - 3];
             path = path.slice(path.indexOf('/'));
-            
+
             var filename = path.slice(path.lastIndexOf('/') + 1);
             var line = split[split.length - 2];
 
@@ -146,11 +146,11 @@ define([
 
     function getCaller() {
         var trace = printStackTrace();
-        
+
         if ($.browser.mozilla === true) {
             return parseMozillaTrace(trace);
         }
-        
+
         if ($.browser.webkit === true) {
             return parseWebkitTrace(trace);
         }

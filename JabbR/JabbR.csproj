@@ -253,6 +253,7 @@
     <Content Include="App\jabbr\viewmodels\room.js" />
     <Content Include="App\jabbr\utility.js" />
     <Content Include="App\kernel.js" />
+    <Content Include="App\keys.js" />
     <Content Include="App\logger.js" />
     <Content Include="App\main.js" />
     <Content Include="App\jabbr\state.js" />
