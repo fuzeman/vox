@@ -1,10 +1,11 @@
-﻿/*global define*/
+﻿/*global define, document*/
 define([
+    'jquery',
     'logger',
     'kernel',
     'jabbr/state',
     'jabbr/events'
-], function (Logger, kernel, state, events) {
+], function ($, Logger, kernel, state, events) {
     var logger = new Logger('jabbr/messageprocessors/collapse');
     logger.trace('loaded');
 

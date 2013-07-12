@@ -1,4 +1,5 @@
-﻿define([], function () {
+﻿/*global define*/
+define([], function () {
     return {
         Up: 38,
         Down: 40,

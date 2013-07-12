@@ -37,6 +37,32 @@ define([
             setUnreadNotifications(client.chat.state.unreadNotifications);
         }
 
+        // TODO - Change name
+        function notifyRoom(roomName) {
+            if (state.getRoomPreference(roomName, 'hasSound') === true) {
+                $('#notificationSound')[0].play();
+            }
+        }
+
+        function toastRoom(roomName, message) {
+            if (state.getRoomPreference(roomName, 'canToast') === true) {
+                toast.toastMessage(message, roomName);
+            }
+        }
+
+        // TODO - Change name
+        function notifyMention(force) {
+            if (ru.getActiveRoomPreference('hasSound') === true || force) {
+                $('#notificationSound')[0].play();
+            }
+        }
+
+        function toastMention(message, force, roomName) {
+            if (ru.getActiveRoomPreference('canToast') === true || force) {
+                toast.toastMessage(message, roomName);
+            }
+        }
+
         function bindNotificationEvents() {
             client.chat.client.allowUser = function (room) {
                 messages.addMessage('You were granted access to ' + room, 'notification', state.get().activeRoom);
@@ -118,7 +144,7 @@ define([
 
             client.chat.client.sendInvite = function (from, to, room) {
                 if (rc.isSelf({ Name: to })) {
-                    notify(true);
+                    notifyMention(true);
                     messages.addPrivateMessage('*' + from + '* has invited you to #' + room + '. Click the room name to join.', 'pm');
                 }
                 else {
@@ -165,30 +191,6 @@ define([
                 }
                 messages.addMessage(message, 'notification', roomName);
             };
-        }
-
-        function notifyRoom(roomName) {
-            if (state.getRoomPreference(roomName, 'hasSound') === true) {
-                $('#notificationSound')[0].play();
-            }
-        }
-
-        function toastRoom(roomName, message) {
-            if (state.getRoomPreference(roomName, 'canToast') === true) {
-                toast.toastMessage(message, roomName);
-            }
-        }
-
-        function notifyMention(force) {
-            if (ru.getActiveRoomPreference('hasSound') === true || force) {
-                $('#notificationSound')[0].play();
-            }
-        }
-
-        function toastMention(message, force, roomName) {
-            if (ru.getActiveRoomPreference('canToast') === true || force) {
-                toast.toastMessage(message, roomName);
-            }
         }
 
         // #region DOM Events
@@ -273,7 +275,7 @@ define([
         }
 
         // Make sure we can toast at all
-        toast.ensureToast(preferences);
+        toast.ensureToast(state.get().preferences);
 
         return {
             activate: function () {

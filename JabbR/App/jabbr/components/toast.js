@@ -1,10 +1,11 @@
-﻿define(['jquery', 'jabbr/utility'], function ($, utility) {
+﻿/*global define, window, setTimeout*/
+define(['jquery', 'jabbr/utility'], function ($, utility) {
     var ToastStatus = { Allowed: 0, NotConfigured: 1, Blocked: 2 },
         toastTimeOut = 10000,
         chromeToast = null,
         toastRoom = null;
 
-    function hideToast () {
+    function hideToast() {
         if (chromeToast && chromeToast.cancel) {
             chromeToast.cancel();
         }

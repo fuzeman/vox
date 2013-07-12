@@ -1,4 +1,4 @@
-﻿/*global define, window, document, setTimeout*/
+﻿/*global define, window, document, setTimeout, setInterval, clearInterval*/
 define([
     'jquery',
     'logger',
@@ -45,6 +45,7 @@ define([
             checkingStatus = false,
             typing = false,
             lastCycledMessage = null,
+            historyLocation = 0,
             updateTimeout = 15000;
 
         //
@@ -287,6 +288,79 @@ define([
             return false;
         }
 
+        // #region Cycle Message
+
+        function selectMessage(message) {
+            if (!message.replaced) {
+                var retries = 0;
+                var awaitMessageId = setInterval(function () {
+                    if (message.replaced) {
+                        setMessage(message);
+                        clearInterval(awaitMessageId);
+                    }
+                    if (retries > 25) {
+                        clearInterval(awaitMessageId);
+                    }
+                    retries += 1;
+                }, 100);
+            } else {
+                setMessage(message);
+            }
+        }
+
+        function prevMessage() {
+            historyLocation -= 1;
+
+            // Skip Command Messages
+            while (historyLocation >= 0 &&
+                rc.messageHistory[client.chat.state.activeRoom][historyLocation].content[0] === '/') {
+                historyLocation -= 1;
+            }
+
+            // Ensure location is valid
+            if (historyLocation < 0) {
+                historyLocation = (rc.messageHistory[client.chat.state.activeRoom] || []).length - 1;
+            }
+
+            if (historyLocation >= 0) {
+                selectMessage(rc.messageHistory[client.chat.state.activeRoom][historyLocation]);
+            }
+        }
+
+        function nextMessage() {
+            historyLocation += 1;
+
+            // Skip commands
+            while (historyLocation < (rc.messageHistory[client.chat.state.activeRoom] || []).length &&
+                rc.messageHistory[client.chat.state.activeRoom][historyLocation].content[0] === '/') {
+                historyLocation += 1;
+            }
+
+            // Ensure location is valid
+            historyLocation = (historyLocation) % (rc.messageHistory[client.chat.state.activeRoom] || []).length;
+
+            if (historyLocation >= 0) {
+                selectMessage(rc.messageHistory[client.chat.state.activeRoom][historyLocation]);
+            }
+        }
+
+        function cycleMessage(direction) {
+            var currentMessage = $newMessage.attr('message-id');
+
+            if (currentMessage === undefined || lastCycledMessage === currentMessage) {
+                if (direction == 'prev') {
+                    prevMessage();
+                } else if (direction == 'next') {
+                    nextMessage();
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        // #endregion
+
         //
         // Event Handlers
         //
@@ -406,6 +480,51 @@ define([
                         return;
                     }
                     triggerTyping();
+                    break;
+            }
+        });
+
+        $newMessage.keydown(function (ev) {
+            var key = ev.keyCode || ev.which;
+
+            switch (key) {
+                case Keys.Up:
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
+                        cycleMessage('prev')) {
+                        ev.preventDefault();
+                    }
+                    break;
+
+                case Keys.Down:
+                    if (($newMessage.val() === '' || $newMessage.hasClass('editing')) &&
+                        cycleMessage('next')) {
+                        ev.preventDefault();
+                    }
+                    break;
+
+                case Keys.Esc:
+                    $(this).val('');
+                    newMessageLines = 1;
+                    updateNewMessageSize();
+                    if ($(this).attr('message-id') !== undefined) {
+                        $('#m-' + $(this).attr('message-id')).removeClass('editing');
+                        $(this).removeAttr('message-id');
+                    }
+                    $(this).removeClass('editing');
+                    break;
+
+                case Keys.Backspace:
+                    setTimeout(function () {
+                        newMessageLines = $newMessage.val().split('\n').length;
+                        updateNewMessageSize();
+                    }, 100);
+                    break;
+
+                case Keys.Space:
+                    // Check for "/r " to reply to last private message
+                    if ($(this).val() === "/r" && messages.getLastPrivate()) {
+                        setMessage("/msg " + messages.getLastPrivate());
+                    }
                     break;
             }
         });

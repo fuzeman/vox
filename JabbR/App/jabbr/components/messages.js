@@ -534,7 +534,7 @@ define([
         // #region DOM Events
 
         // handle click on notifications
-        $document.on('click', '.notification a.info', function(ev) {
+        $document.on('click', '.notification a.info', function (ev) {
             var $notification = $(this).closest('.notification');
 
             if ($(this).hasClass('collapse')) {
@@ -643,6 +643,9 @@ define([
 
             sendMessage: sendMessage,
             failPendingMessages: failPendingMessages,
+            getLastPrivate: function () {
+                return lastPrivate;
+            },
 
             prependChatMessages: prependChatMessages,
 
