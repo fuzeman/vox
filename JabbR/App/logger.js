@@ -8,7 +8,9 @@ define([
         this.tag = tag;
     }
 
-    Logger.prototype.traceEnabled = false;
+    if (window.debug === undefined) {
+        window.debug = false;
+    }
 
     var levels = {
         TRACE: 0,
@@ -140,8 +142,6 @@ define([
         }
 
         return null;
-
-        //at http://localhost:16207/App/main.js:66:16
     }
 
     function getCaller() {
@@ -159,7 +159,7 @@ define([
     }
 
     Logger.prototype.write = function (level, message) {
-        if (this.traceEnabled) {
+        if (window.debug) {
             var caller = getCaller();
 
             if (caller !== null) {
@@ -170,11 +170,12 @@ define([
                 );
                 return;
             }
+        } else if (level != levels.TRACE) {
+            console.log(
+                "[" + padRight(this.tag, 32) + "]  " +
+                "(" + padRight(toLevelString(level), 5) + ")    " + message
+            );
         }
-        console.log(
-            "[" + padRight(this.tag, 32) + "]  " +
-            "(" + padRight(toLevelString(level), 5) + ")    " + message
-        );
     };
 
     Logger.prototype.trace = function (message) {

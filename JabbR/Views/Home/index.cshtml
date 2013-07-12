@@ -462,6 +462,14 @@
     <div id="paste" contenteditable="true" style="height: 1px; width: 1px;"></div>
     <script type="text/javascript">
         window.jabbrVersion = '@Model.Version';
+        @if (Model.DebugMode)
+        {
+            @: window.debug = true;
+        }
+        else
+        {
+            @: window.debug = false;
+        }
     </script>
     @if (Model.DebugMode)
     {

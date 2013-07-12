@@ -71,8 +71,6 @@ window.onload = function () {
             'jabbr/ui',
             'jabbr/events'],
     function ($, signalr, Logger, client, ui, events) {
-        Logger.prototype.traceEnabled = true;
-
         var logger = new Logger('main');
         logger.trace('loading');
 
