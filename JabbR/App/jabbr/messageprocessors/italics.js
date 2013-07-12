@@ -13,7 +13,7 @@ define([
                 return;
             }
 
-            var re = /(?:\*|_)([^\*_]*)(?:\*|_)/g,
+            var re = /(?:^|\s)(?:\*|_)([^\*_]*)(?:\*|_)(?:$|\s)/g,
                 match = null,
                 result = handler.get();
 
@@ -22,7 +22,7 @@ define([
                 if (match[1].length > 0) {
                     var head = result.substring(0, match.index);
                     var tail = result.substring(match.index + match[0].length, result.length);
-                    result = head + "<i>" + match[1] + "</i>" + tail;
+                    result = head + " <i>" + match[1] + "</i> " + tail;
                 }
             }
 
