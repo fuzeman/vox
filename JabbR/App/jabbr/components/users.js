@@ -39,7 +39,8 @@ define([
             var user = createUser(userdata);
 
             if (roomName in user.roomUsers) {
-                logger.trace("RoomUser '" + userdata.Name + "' #" + roomName + " already exists, returning existing one.");
+                logger.trace("RoomUser '" + userdata.Name + "' #" + roomName +
+                    " already exists, returning existing one.");
                 return user.roomUsers[roomName];
             }
 

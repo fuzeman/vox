@@ -77,7 +77,8 @@ define([
             };
 
             client.chat.client.userUnallowed = function (user, room) {
-                messages.addMessage('You have revoked ' + user + '\'s access to ' + room, 'notification', state.get().activeRoom);
+                messages.addMessage('You have revoked ' + user + '\'s access to ' + room, 'notification',
+                    state.get().activeRoom);
             };
 
             // Called when you make someone an owner
@@ -145,7 +146,8 @@ define([
             client.chat.client.sendInvite = function (from, to, room) {
                 if (rc.isSelf({ Name: to })) {
                     notifyMention(true);
-                    messages.addPrivateMessage('*' + from + '* has invited you to #' + room + '. Click the room name to join.', 'pm');
+                    messages.addPrivateMessage('*' + from + '* has invited you to #' + room +
+                        '. Click the room name to join.', 'pm');
                 }
                 else {
                     messages.addPrivateMessage('Invitation to *' + to + '* to join #' + room + ' has been sent.', 'pm');

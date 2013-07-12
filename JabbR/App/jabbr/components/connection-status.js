@@ -87,7 +87,8 @@ define([
                     case 1:
                         // Reconnecting
                         $connectionStatus.removeClass('disconnected').addClass('reconnecting');
-                        $connectionStatus.popover(getStateChangedPopoverOptions('The connection to JabbR has been temporarily lost, trying to reconnect.'));
+                        $connectionStatus.popover(getStateChangedPopoverOptions(
+                            'The connection to JabbR has been temporarily lost, trying to reconnect.'));
                         $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-question-sign');
                         $connectionStatus.popover('show');
                         popoverTimer = setTimeout(function () {
@@ -98,7 +99,8 @@ define([
                     case 2:
                         // Disconnected
                         $connectionStatus.removeClass('reconnecting').addClass('disconnected');
-                        $connectionStatus.popover(getStateChangedPopoverOptions('The connection to JabbR has been lost, trying to reconnect.'));
+                        $connectionStatus.popover(getStateChangedPopoverOptions(
+                            'The connection to JabbR has been lost, trying to reconnect.'));
                         $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-exclamation-sign');
                         $connectionStatus.popover('show');
                         popoverTimer = setTimeout(function () {

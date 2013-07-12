@@ -1,4 +1,4 @@
-﻿/*global define, printStackTrace, console*/
+﻿/*global define, window, printStackTrace, console*/
 define([
     'jquery',
     'stacktrace',

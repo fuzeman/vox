@@ -154,7 +154,8 @@ define([
             var filter = $roomFilterInput.val().toUpperCase(),
                 showClosedRooms = $closedRoomFilter.is(':checked');
 
-            if ($room.data('room').toString().toUpperCase().score(filter) > 0.0 && (showClosedRooms || !$room.is('.closed'))) {
+            if ($room.data('room').toString().toUpperCase().score(filter) > 0.0 &&
+                (showClosedRooms || !$room.is('.closed'))) {
                 $room.show();
             } else {
                 $room.hide();
@@ -271,13 +272,12 @@ define([
             var key = ev.keyCode || ev.which,
                 roomName = $(this).val();
 
-            switch (key) {
-                case Keys.Enter:
-                    // only if it's an exact match
-                    if (rc.inRoomCache(roomName)) {
-                        rc.activateOrOpenRoom(roomName);
-                        return;
-                    }
+            if (key == Keys.Enter) {
+                // only if it's an exact match
+                if (rc.inRoomCache(roomName)) {
+                    rc.activateOrOpenRoom(roomName);
+                    return;
+                }
             }
         });
 

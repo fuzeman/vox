@@ -110,7 +110,8 @@ define([
         var $tab = this.tab.addClass('unread'),
             $content = $tab.find('.content'),
             unread = ($tab.data('unread') || 0) + 1,
-            hasMentions = $tab.data('hasMentions') || isMentioned; // Whether or not the user already has unread messages to him/her
+            // hasMentions - Whether or not the user already has unread messages to him/her
+            hasMentions = $tab.data('hasMentions') || isMentioned;
 
         $content.text((hasMentions ? '*' : '') + '(' + unread + ') ' + this.getName());
 
@@ -244,7 +245,9 @@ define([
 
     Room.prototype.setListState = function (list) {
         var emptyStatus = list.children('li.empty'),
-            visibleItems = list.children('li:not(.empty)').filter(function () { return $(this).css('display') !== 'none'; });
+            visibleItems = list.children('li:not(.empty)').filter(function () {
+                return $(this).css('display') !== 'none';
+            });
 
         if (visibleItems.length > 0) {
             emptyStatus.remove();

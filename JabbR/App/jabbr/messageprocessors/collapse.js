@@ -37,7 +37,8 @@ define([
 
     function collapseRichContent(content) {
         content = content.replace(/class="collapsible_box/g, 'style="display: none;" class="collapsible_box');
-        return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" title="Content collapsed because you have Rich-Content disabled"');
+        return content.replace(/class="collapsible_title"/g, 'class="collapsible_title" ' +
+            'title="Content collapsed because you have Rich-Content disabled"');
     }
 
     $(document).on('click', 'h3.collapsible_title', function () {

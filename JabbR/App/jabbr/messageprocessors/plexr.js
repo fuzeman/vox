@@ -9,10 +9,12 @@ define([
         var $serviceDetails = $plexrResult.find(service);
 
         if (service === 'spotify') {
-            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() + "\" width=\"300\" height=\"380\" " +
+            return "<iframe src=\"https://embed.spotify.com/?uri=" + $serviceDetails.text() +
+                    "\" width=\"300\" height=\"380\" " +
                     "frameborder=\"0\" allowtransparency=\"true\"></iframe>";
         } else if (service === 'rdio') {
-            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() + "//?source=oembed\" " +
+            return "<iframe width=\"500\" height=\"250\" src=\"https://rd.io/i/" + $serviceDetails.text() +
+                    "//?source=oembed\" " +
                     "frameborder=\"0\"></iframe>";
         }
         return null;
@@ -48,7 +50,8 @@ define([
                             ' (Plexr) (click to show/hide)'
                     );
                 } else {
-                    $("PlexrContentProviderResult", $content).replaceWith("An error occured while trying to process the content.");
+                    $("PlexrContentProviderResult", $content).replaceWith(
+                        "An error occured while trying to process the content.");
                 }
 
                 handler.set($content[0].outerHTML);

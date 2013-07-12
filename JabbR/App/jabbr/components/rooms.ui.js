@@ -393,7 +393,7 @@ define([
             $tabs.find('li')
                 .not('.lobby')
                 .sortElements(function (a, b) {
-                    return $(a).data('name').toString().toUpperCase() > $(b).data('name').toString().toUpperCase() ? 1 : -1;
+                    return rc.cleanRoomName($(a).data('name')) > rc.cleanRoomName($(b).data('name')) ? 1 : -1;
                 });
 
             scrollHandler = createScrollHandler(roomName, roomId, $messages);
@@ -569,13 +569,15 @@ define([
                     showKickPopup(roomName, message, imageUrl);
                     rc.setActiveRoom('Lobby');
                     rc.removeRoom(roomName);
-                    messages.addMessage('You were kicked from ' + roomName, 'notification'); // TODO Where does this message go?
+                    // TODO Where does this message go?
+                    messages.addMessage('You were kicked from ' + roomName, 'notification');
                 } else {
                     users.remove(userdata, roomName);
                     var roomMessage = userdata.Name + ' was kicked from ' + roomName;
 
                     if (message !== null && imageUrl !== null) {
-                        roomMessage += ' (' + [message, '<a href="' + imageUrl + '">' + imageUrl + '</a>'].join(' - ') + ')';
+                        roomMessage += ' (' + [message, '<a href="' + imageUrl +
+                            '">' + imageUrl + '</a>'].join(' - ') + ')';
                     } else if (message !== null) {
                         roomMessage += ' (' + message + ')';
                     } else if (imageUrl !== null) {

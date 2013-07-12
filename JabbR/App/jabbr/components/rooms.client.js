@@ -314,7 +314,8 @@ define([
 
             lockRoom: function (userdata, roomName) {
                 if (!isSelf(userdata) && state.get().activeRoom === roomName) {
-                    messages.addMessage(userdata.Name + ' has locked ' + roomName + '.', 'notification', state.get().activeRoom);
+                    messages.addMessage(userdata.Name + ' has locked ' + roomName + '.',
+                        'notification', state.get().activeRoom);
                 }
 
                 var room = getRoom(roomName);
