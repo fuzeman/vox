@@ -127,12 +127,21 @@ define([
     };
 
     Room.prototype.scrollToBottom = function () {
+        var messages = this.messages;
+
         // IE will repaint if we do the Chrome bugfix and look jumpy
         if ($.browser.webkit) {
             // Chrome fix for hiding and showing scroll areas
-            this.messages.scrollTop(this.messages.scrollTop() - 1);
+            messages.scrollTop(messages.scrollTop() - 1);
         }
-        this.messages.scrollTop(this.messages[0].scrollHeight);
+        
+        messages.scrollTop(messages[0].scrollHeight);
+
+        // Ensure we are actually at the bottom after 500ms
+        // TODO Instead of this use watchMessageScroll on page load to ensure we at the bottom
+        setTimeout(function () {
+            messages.scrollTop(messages[0].scrollHeight);
+        }, 500);
     };
 
     Room.prototype.isNearTheEnd = function () {
