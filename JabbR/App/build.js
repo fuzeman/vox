@@ -4,7 +4,7 @@
     dir: "../Build",
     modules: [
         {
-            name: 'main',
+            name: 'chat',
             include: [
                 'jabbr/messageprocessors/fancybox',
                 'jabbr/messageprocessors/plexr',

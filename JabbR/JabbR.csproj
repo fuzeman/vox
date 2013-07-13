@@ -256,7 +256,7 @@
     <Content Include="App\kernel.js" />
     <Content Include="App\keys.js" />
     <Content Include="App\logger.js" />
-    <Content Include="App\main.js" />
+    <Content Include="App\chat.js" />
     <Content Include="App\jabbr\state.js" />
     <Content Include="App\jabbr\ui.js" />
     <Content Include="App\plugins\noext.js" />

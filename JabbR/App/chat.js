@@ -33,7 +33,7 @@ require.config({
 
         'bootstrap': ['jquery'],
 
-        'jquery' : {
+        'jquery': {
             exports: ['$', 'jQuery']
         },
         'jquery-migrate': ['jquery'],
@@ -76,7 +76,7 @@ window.onload = function () {
             'jabbr/ui',
             'jabbr/events'],
     function ($, signalr, Logger, client, ui, events) {
-        var logger = new Logger('main');
+        var logger = new Logger('chat');
         logger.trace('loading');
 
         // Initialize sub-modules
