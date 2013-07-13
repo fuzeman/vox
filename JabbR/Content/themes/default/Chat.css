@@ -536,7 +536,7 @@ form#send-message {
 .user-status-container {
     float: left;
     line-height: 12px;
-    margin-right: 3px;
+    margin-right: 5px;
 }
 
 .user-status {

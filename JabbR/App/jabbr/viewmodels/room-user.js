@@ -162,11 +162,6 @@ define([
         var $roomUser = this.$roomUser,
             timeout = null;
 
-        // if the user is somehow missing from room, add them
-        if ($roomUser.length === 0) {
-            //TODO ui.addUser(userViewModel, roomName);
-        }
-
         // Do not show typing indicator for current user
         if (this.user.name === client.chat.state.name) {
             return;
