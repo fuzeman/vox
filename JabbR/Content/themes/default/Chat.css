@@ -939,6 +939,17 @@ li.error {
     margin: 0 0 10px 0;
 }
 
+#notifications-title-row {
+    padding-top: 75px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.js-mark-all-as-read-span {
+    width: 220px;
+}
+
 .js-mark-all-as-read,
 #notifications-pager .pager a {
     display: inline-block;

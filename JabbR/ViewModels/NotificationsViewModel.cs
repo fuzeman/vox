@@ -1,6 +1,6 @@
-﻿using System;
+﻿using PagedList;
+using System;
 using System.Globalization;
-using PagedList;
 
 namespace JabbR.ViewModels
 {
@@ -10,6 +10,7 @@ namespace JabbR.ViewModels
         public int UnreadCount { get; set; }
         public int TotalCount { get; set; }
         public IPagedList<NotificationViewModel> Notifications { get; set; }
+        public bool DebugMode { get; set; }
     }
 
     public class NotificationViewModel

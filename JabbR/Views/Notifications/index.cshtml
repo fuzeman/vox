@@ -14,7 +14,7 @@
     <meta charset="UTF-8">
     <title>iceJabbR - notifications</title>
     <link href='https://fonts.googleapis.com/css?family=Lato:100italic,300italic,700italic,100,300,700' rel='stylesheet' type='text/css'>
-    @{ 
+    @{
         WriteLiteral(Bundle.Css()
             .Add("~/Content/bootstrap.min.css")
             .Add("~/Content/bootstrap-responsive.min.css")
@@ -32,13 +32,13 @@
             </div>
         </header>
         <div class="container">
-            <div class="row" style="padding-top: 75px;">
+            <div id="notifications-title-row" class="row">
                 @Html.AlertMessages()
                 <div class="row">
                     <div class="span2">
                         <span class="notifications-title pull-left">Notifications</span>
                     </div>
-                    <div class="span2 offset8 pull-right">
+                    <div class="js-mark-all-as-read-span span3 offset7 pull-right">
                         <a href="#" class="btn btn-mini pull-right js-mark-all-as-read @(notificationsViewModel.UnreadCount == 0 ? "disabled" : "")" data-action-url="@Url.Content("~/notifications/markallasread")">Mark All as Read</a>
                     </div>
                 </div>
@@ -88,25 +88,17 @@
     <script id="multiline-content-template" type="text/x-jquery-tmpl">
         <pre class="multiline">${content}</pre>
     </script>
-    @{
-        WriteLiteral(Bundle.JavaScript()
-            .Add("~/Scripts/jquery-1.9.1.min.js")
-            .Add("~/Scripts/json2.min.js")
-            .Add("~/Scripts/bootstrap.js")
-            .Add("~/Scripts/jQuery.tmpl.min.js")
-            .Render("~/Scripts/JabbR1_#.js"));
+    @if (Model.DebugMode)
+    {
+        // Load un-optimized require.js module
+        @: <script type="text/javascript" src="/App/require.js"></script>
+        @: <script type="text/javascript" src="/App/notifications-main.js"></script>
     }
-    @{
-        WriteLiteral(Bundle.JavaScript()
-            .Add("~/Scripts/moment.min.js")
-            .Add("~/Scripts/ba-linkify.min.js")
-            .Add("~/Scripts/Markdown.Converter.js")
-            .Add("~/Scripts/jquery.pubsub.js")
-            .Add("~/Chat.emoji.js")
-            .Add("~/Chat.utility.js")
-            .Add("~/notifications.unreadcounter.js")
-            .Add("~/notifications.js")
-            .Render("~/Scripts/JabbR2_#.js"));
+    else
+    {
+        // Load optimized require.js module
+        @: <script type="text/javascript" src="/App/require.js"></script>
+        @: <script type="text/javascript" src="/Build/notifications-main.js"></script>
     }
 </body>
 </html>

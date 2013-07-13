@@ -4,12 +4,15 @@
     dir: "../Build",
     modules: [
         {
-            name: 'chat',
+            name: 'chat-main',
             include: [
                 'jabbr/messageprocessors/fancybox',
                 'jabbr/messageprocessors/plexr',
                 'jabbr/messageprocessors/italics'
             ]
+        },
+        {
+            name: 'notifications-main'
         }
     ],
     paths: {
@@ -29,6 +32,7 @@
         'jquery.pulse': '../Scripts/jquery.pulse',
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
         'jquery.color': '../Scripts/jquery.color-2.1.2',
+        'jquery.pubsub': '../Scripts/jquery.pubsub',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',

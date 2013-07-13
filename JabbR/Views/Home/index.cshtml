@@ -473,17 +473,15 @@
     </script>
     @if (Model.DebugMode)
     {
-        // Load un-optimized require.js modules
-        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
-            .Add("~/App/require.js")
-            .Add("~/App/chat.js")
-            .Render("~/Scripts/JabbR2_#.js"));
+        // Load un-optimized require.js module
+        @: <script type="text/javascript" src="/App/require.js"></script>
+        @: <script type="text/javascript" src="/App/chat-main.js"></script>
     }
     else
     {
         // Load optimized require.js module
         @: <script type="text/javascript" src="/App/require.js"></script>
-        @: <script type="text/javascript" src="/Build/chat.js"></script>
+        @: <script type="text/javascript" src="/Build/chat-main.js"></script>
     }
 </body>
 </html>

@@ -1,4 +1,9 @@
-﻿(function ($, utility) {
+﻿define([
+    'jquery', 
+    'jabbr/utility', 
+    'notifications/counter', 
+    'jquery.pubsub'
+], function ($, utility, counter) {
     var notificationsMode = null,
         templates = {
             multiline: $('#multiline-content-template')
@@ -116,4 +121,4 @@
     $.subscribe('notifications.empty', function (ev) {
         $('.js-mark-all-as-read').addClass('disabled');
     });
-}(jQuery, window.chat.utility));
+});
