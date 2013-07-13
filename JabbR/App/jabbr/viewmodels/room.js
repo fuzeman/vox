@@ -1,6 +1,7 @@
 ﻿/*global define*/
 define([
-    'jquery'
+    'jquery',
+    'jquery.color'
 ], function ($) {
     var trimRoomHistoryMaxMessages = 200;
 
@@ -11,7 +12,7 @@ define([
         }
 
         // Go light
-        $tab.animate({ backgroundColor: '#e5e5e5', color: '#575757' }, 1600, function () {
+        $tab.animate({ backgroundColor: '#ffffff', color: '#00103f' }, 1600, function () {
             // Stop if we're not unread anymore
             if (!$tab.hasClass('unread')) {
                 return;
@@ -22,13 +23,13 @@ define([
             // Check if we're on our last glow
             if (n !== 0) {
                 // Go dark
-                $tab.animate({ backgroundColor: '#219FC2', color: '#ffffff' }, 1600, function () {
+                $tab.animate({ backgroundColor: '#C4EDF5', color: '#00103f' }, 1600, function () {
                     // Glow the tab again
                     glowTab($tab, n);
                 });
             } else {
                 // Leave the tab highlighted
-                $tab.animate({ backgroundColor: '#A4E9FC', color: '#575757' }, 1600);
+                $tab.animate({ backgroundColor: '#C4EDF5', color: '#00103f' }, 1600);
             }
         });
     }

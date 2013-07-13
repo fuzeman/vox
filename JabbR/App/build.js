@@ -28,6 +28,7 @@
         'jquery.fancybox': '../Scripts/jquery.fancybox',
         'jquery.pulse': '../Scripts/jquery.pulse',
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
+        'jquery.color': '../Scripts/jquery.color-2.1.2',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',

@@ -18,6 +18,7 @@ require.config({
         'jquery.fancybox': '../Scripts/jquery.fancybox',
         'jquery.pulse': '../Scripts/jquery.pulse',
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
+        'jquery.color': '../Scripts/jquery.color-2.1.2',
 
         'quicksilver': '../Scripts/quicksilver',
         'markdown': '../Scripts/Markdown.Converter',
@@ -32,6 +33,9 @@ require.config({
 
         'bootstrap': ['jquery'],
 
+        'jquery' : {
+            exports: ['$', 'jQuery']
+        },
         'jquery-migrate': ['jquery'],
         'jquery.cookie': ['jquery'],
         'jquery.signalr': ['jquery'],
@@ -41,6 +45,7 @@ require.config({
         'jquery.timeago': ['jquery'],
         'jquery.pulse': ['jquery'],
         'jquery.autotabcomplete': ['jquery'],
+        'jquery.color': ['jquery'],
 
         'markdown': {
             exports: 'Markdown'
