@@ -49,7 +49,6 @@ define([
             checkingStatus = false,
             typing = false,
             lastCycledMessage = null,
-            historyLocation = 0,
             updateTimeout = 15000,
             currentMessageCount = null,
             nextMessageCountUpdateAt = null,
@@ -133,13 +132,8 @@ define([
                     }
                 }
             }
-
-            $newMessage.val('');
-            newMessageLines = 1;
             //TODO: updateNewMessageSize();
-            $newMessage.removeAttr('message-id');
-            $newMessage.removeClass('editing');
-            $('#m-' + id).removeClass('editing');
+            resetSelection(id);
             $newMessage.focus();
 
             // always scroll to bottom after new message sent
@@ -233,27 +227,42 @@ define([
         }
 
         function setMessage(clientMessage) {
-            $newMessage.val(clientMessage.content);
+            if (clientMessage !== undefined && clientMessage.content !== undefined) {
+                $newMessage.val(clientMessage.content);
 
-            newMessageLines = clientMessage.content.split('\n').length;
-            updateNewMessageSize();
+                newMessageLines = clientMessage.content.split('\n').length;
+                updateNewMessageSize();
+                
+            $('.my-message').removeClass('editing');            
+                
 
-            $('.my-message').removeClass('editing');
+                if (clientMessage.id !== undefined) {
+                    $newMessage.attr('message-id', clientMessage.id);
 
-            if (clientMessage.id !== undefined) {
-                $newMessage.attr('message-id', clientMessage.id);
+                    $newMessage.addClass('editing');
 
-                $newMessage.addClass('editing');
+                    $('#m-' + clientMessage.id).addClass('editing');
+                    $('#m-' + clientMessage.id)[0].scrollIntoView();
 
-                $('#m-' + clientMessage.id).addClass('editing');
-                $('#m-' + clientMessage.id)[0].scrollIntoView();
+                    lastCycledMessage = clientMessage.id;
+                }
 
-                lastCycledMessage = clientMessage.id;
-            }
-
-            if (clientMessage.content) {
                 $newMessage.selectionEnd = clientMessage.content.length;
             }
+        }
+        
+        function resetSelection(id) {
+            if (id !== undefined) {
+                $('#m-' + id).removeClass('editing');
+            } else {
+                $('.my-message').removeClass('editing');
+            }
+
+            $newMessage.val('');
+            newMessageLines = 1;
+            
+            $newMessage.removeAttr('message-id');
+            $newMessage.removeClass('editing');
         }
 
         // handle click on names in chat / room list
@@ -316,38 +325,38 @@ define([
         }
 
         function prevMessage() {
-            historyLocation -= 1;
+            rc.historyLocation -= 1;
 
             // Skip Command Messages
-            while (historyLocation >= 0 &&
-                rc.messageHistory[client.chat.state.activeRoom][historyLocation].content[0] === '/') {
-                historyLocation -= 1;
+            while (rc.historyLocation >= 0 &&
+                rc.messageHistory[client.chat.state.activeRoom][rc.historyLocation].content[0] === '/') {
+                rc.historyLocation -= 1;
             }
 
             // Ensure location is valid
-            if (historyLocation < 0) {
-                historyLocation = (rc.messageHistory[client.chat.state.activeRoom] || []).length - 1;
+            if (rc.historyLocation < 0) {
+                rc.historyLocation = (rc.messageHistory[client.chat.state.activeRoom] || []).length - 1;
             }
 
-            if (historyLocation >= 0) {
-                selectMessage(rc.messageHistory[client.chat.state.activeRoom][historyLocation]);
+            if (rc.historyLocation >= 0) {
+                selectMessage(rc.messageHistory[client.chat.state.activeRoom][rc.historyLocation]);
             }
         }
 
         function nextMessage() {
-            historyLocation += 1;
+            rc.historyLocation += 1;
 
             // Skip commands
-            while (historyLocation < (rc.messageHistory[client.chat.state.activeRoom] || []).length &&
-                rc.messageHistory[client.chat.state.activeRoom][historyLocation].content[0] === '/') {
-                historyLocation += 1;
+            while (rc.historyLocation < (rc.messageHistory[client.chat.state.activeRoom] || []).length &&
+                rc.messageHistory[client.chat.state.activeRoom][rc.historyLocation].content[0] === '/') {
+                rc.historyLocation += 1;
             }
 
             // Ensure location is valid
-            historyLocation = (historyLocation) % (rc.messageHistory[client.chat.state.activeRoom] || []).length;
+            rc.historyLocation = (rc.historyLocation) % (rc.messageHistory[client.chat.state.activeRoom] || []).length;
 
-            if (historyLocation >= 0) {
-                selectMessage(rc.messageHistory[client.chat.state.activeRoom][historyLocation]);
+            if (rc.historyLocation >= 0) {
+                selectMessage(rc.messageHistory[client.chat.state.activeRoom][rc.historyLocation]);
             }
         }
 
@@ -742,6 +751,8 @@ define([
 
             toggleMessageSection: toggleMessageSection,
             incrementMessageCount: incrementMessageCount,
+            setMessage: setMessage,
+            resetSelection: resetSelection,
 
             isFocused: function () {
                 return focus;

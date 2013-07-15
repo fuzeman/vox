@@ -454,6 +454,7 @@ define([
             },
 
             messageHistory: messageHistory,
+            historyLocation: historyLocation,
 
             rooms: rooms,
             roomCache: roomCache,
@@ -495,7 +496,8 @@ define([
                 $this.trigger(events.rooms.client.scrollToBottom, room);
                 state.save(client.chat.state.activeRoom);
 
-                historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length - 1;
+                this.historyLocation = (messageHistory[client.chat.state.activeRoom] || []).length;
+                ui.resetSelection(); // Clear last message selection.
             },
             populateRoom: populateRoom,
             scrollRoomTop: scrollRoomTop,
