@@ -2320,6 +2320,7 @@ li.clearfix {
         margin-top: 6px;
         position: absolute;
         right: 0;
+        z-index: 1;
     }
 
     #jabbr-client-settings .tabbable {
@@ -2354,6 +2355,7 @@ li.clearfix {
         }
 
     #jabbr-client-settings .tab-content {
+        position: relative;
         background: white;
         padding-top: 0;
     }
@@ -2388,6 +2390,10 @@ li.clearfix {
                         bottom: 0;
                         margin-bottom: 0;
                     }
+
+                        #jabbr-client-settings span.error {
+                            margin-left: 5px;
+                        }
 
 @media (max-width: 767px) {
     #jabbr-client-settings {

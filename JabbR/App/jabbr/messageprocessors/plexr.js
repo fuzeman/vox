@@ -23,6 +23,7 @@ define([
     return function () {
         var processor = kernel.get('jabbr/messageprocessors/processor'),
             rc = kernel.get('jabbr/components/rooms.client'),
+            cs = kernel.get('jabbr/components/client-settings'),
             $musicServiceDropdown = $('#music-service-dropdown');
 
         // Set default to spotify
