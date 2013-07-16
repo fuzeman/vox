@@ -430,8 +430,66 @@
                         <li class="active"><a href="#external-status" data-toggle="tab">External Status</a></li>
                         <li><a href="#misc" data-toggle="tab">Misc</a></li>
                     </ul>
-                    <div class="tab-pane" id="external-status">
-                        <p>External Status</p>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="external-status">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend><span>External Status</span></legend>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="lastfm_username">Last.fm</label>
+                                        <div class="controls">
+                                            <input type="text" id="lastfm_username" placeholder="Username"/>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="trakt_username">trakt</label>
+                                        <div class="controls">
+                                            <input type="text" id="trakt_username" placeholder="Username" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="steam_steamid">Steam</label>
+                                        <div class="controls">
+                                            <input type="text" id="steam_steamid" placeholder="SteamID" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="evolve_username">Evolve</label>
+                                        <div class="controls">
+                                            <input type="text" id="evolve_username" placeholder="Username" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                        <button type="button" class="btn">Cancel</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="misc">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend><span>Misc</span></legend>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="music_service">Music Service</label>
+                                        <div class="controls">
+                                            <select id="music_service" class="span2">
+                                                <option>Spotify</option>
+                                                <option>Rdio</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                        <button type="button" class="btn">Cancel</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
