@@ -48,8 +48,12 @@ define([
         }
         
         function save () {
-            data = {};
-            
+            localStorage.cs = JSON.stringify(data);
+        }
+
+        function store (triggerChanged) {
+            triggerChanged = typeof triggerChanged !== 'undefined' ? triggerChanged : true;
+
             findElements().each(function () {
                 if ($(this).attr('id') !== undefined) {
                     data[$(this).attr('id')] = $(this).val();
@@ -59,9 +63,11 @@ define([
                 }
             });
 
-            localStorage.cs = JSON.stringify(data);
+            save();
 
-            trigger(events.changed);
+            if (triggerChanged) {
+                trigger(events.changed);
+            }
         }
         
         function reset () {
@@ -94,7 +100,7 @@ define([
         $popupButton.click(show);
         
         $saveButton.click(function () {
-            save();
+            store();
             hide();
         });
         
@@ -106,6 +112,7 @@ define([
         $popup.on('show', function () {
             $('.tab-pane', $popup).first().addClass('active');
             $('.nav-tabs li', $popup).first().addClass('active');
+            reset();
         });
 
         $popup.on('hidden', function () {
@@ -122,9 +129,17 @@ define([
             isOpen: function () {
                 return open;
             },
+            reset: reset,
+            save: save,
+            
             get: function (key) {
                 return data[key];
             },
+            set: function (key, value) {
+                data[key] = value;
+                save();
+            },
+            
             bind: function (eventType, handler) {
                 $this.bind(eventType, handler);
             }
