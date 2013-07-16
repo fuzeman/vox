@@ -451,15 +451,29 @@ form#send-message {
     margin-top: 0px;
 }
 
+.user .details {
+    margin-left: 42px;
+    margin-top: 1px;
+}
+
 .user .details .name-container {
     overflow: hidden;
     margin-left: 2px;
     height: 20px;
 }
 
+.user .extended {
+    font-weight: normal;
+    color: #ccc;
+    font-size: 10px;
+    margin-top: -4px;
+    margin-left: 42px;
+}
+
 .user .gravatar {
-    width: 16px;
-    height: 16px;
+    width: 32px;
+    height: 32px;
+    margin: 3px 0;
     float: left;
     background-color: #C5C5C5;
 }
@@ -487,7 +501,7 @@ form#send-message {
 
 .users li {
     margin-left: 0;
-    padding: 8px 6px;
+    padding: 4px 6px;
     list-style: none;
 }
 
@@ -536,14 +550,14 @@ form#send-message {
 .user-status-container {
     float: left;
     line-height: 12px;
-    margin-right: 5px;
+    margin: 3px 4px 3px 0;
 }
 
 .user-status {
     background-color: #0ACF00;
     display: inline-block;
     width: 3px;
-    height: 16px;
+    height: 32px;
 }
 
 .users .typing .user-status {
@@ -2292,6 +2306,92 @@ li.clearfix {
         padding: 0;
         overflow: hidden;
     }
+
+#jabbr-client-settings {
+    background: transparent;
+    border: none;
+
+    width: 700px;
+    margin-left: -350px;
+}
+
+    #jabbr-client-settings .close {
+        margin-right: 6px;
+    }
+
+    #jabbr-client-settings .tabbable {
+        background: transparent;
+    }
+
+    #jabbr-client-settings .nav-tabs {
+        margin-right: 0;
+        margin-left: -115px;
+        width: 115px;
+    }
+
+        #jabbr-client-settings .nav-tabs li:first-child {
+            margin-top: 30px;
+        }
+
+        #jabbr-client-settings .nav-tabs li {
+            background: #999;
+        }
+
+        #jabbr-client-settings .nav-tabs li a {
+            color: white;
+            margin-bottom: 0;
+        }
+
+        #jabbr-client-settings .nav-tabs li.active a {
+            color: #555;
+        }
+
+        #jabbr-client-settings .nav-tabs li a:hover {
+            color: #555;
+        }
+
+    #jabbr-client-settings .tab-pane {
+        background: white;
+        min-height: 200px;
+        padding: 0;
+    }
+
+@media (max-width: 767px) {
+    #jabbr-client-settings {
+        width: 100%;
+        margin-left: 0;
+    }
+
+        #jabbr-client-settings .close {
+            margin-right: 46px;
+        }
+
+        #jabbr-client-settings .tabbable {
+            margin-right: 40px;
+        }
+
+        #jabbr-client-settings .nav-tabs {
+            margin-left: 0;
+        }
+
+        #jabbr-client-settings .tab-pane {
+            margin-left: 115px;
+        }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    #jabbr-client-settings {
+        width: 500px;
+        margin-left: -250px;
+    }
+}
+
+@media (min-width: 1200px) {
+    #jabbr-client-settings {
+        width: 900px;
+        margin-left: -450px;
+    }
+}
 
 #jabbr-kicked .kick-message {
     font-size: 24px;

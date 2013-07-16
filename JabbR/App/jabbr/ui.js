@@ -9,13 +9,14 @@ define([
     'jabbr/components/connection-status',
     'jabbr/components/rooms.ui',
     'jabbr/components/help',
+    'jabbr/components/client-settings',
     'jabbr/components/emoji',
     'jabbr/utility',
     'jquery.pulse',
     'jquery.autotabcomplete'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,
-    ru, help, emoji, utility
+    ru, help, clientSettings, emoji, utility
 ) {
     var logger = new Logger('jabbr/ui'),
         client = null,
@@ -736,6 +737,7 @@ define([
                 connectionStatus.activate();
                 ru.activate();
                 help.activate();
+                clientSettings.activate();
 
                 logger.trace('activated');
 
@@ -766,6 +768,7 @@ define([
             connectionStatus = connectionStatus();
             ru = ru();
             help = help();
+            clientSettings = clientSettings();
 
             object = initialize();
             kernel.bind('jabbr/ui', object);

@@ -229,6 +229,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
+    <Content Include="App\jabbr\components\client-settings.js" />
+    <Content Include="App\jabbr\components\external-status.js" />
     <Content Include="App\notifications-main.js" />
     <Content Include="App\jabbr\client.js" />
     <Content Include="App\jabbr\components\connection-status.js" />
