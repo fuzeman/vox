@@ -153,6 +153,7 @@ define([
         } else {
             $extendedTitle.attr('title', '');
             $('span', $extendedTitle).text('');
+            $('i', $extendedTitle).attr('class', '');
         }
     };
 

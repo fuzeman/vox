@@ -59,12 +59,12 @@
 
                 if (nowplaying) {
                     publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, lastfm.interval);
-                    this.lastNothingPlaying = false;
+                    lastfm.lastNothingPlaying = false;
                 } else {
-                    if (this.lastNothingPlaying) {
+                    if (lastfm.lastNothingPlaying) {
                         publish(null, null, 0, lastfm.interval);
                     } else {
-                        this.lastNothingPlaying = true;
+                        lastfm.lastNothingPlaying = true;
                     }
                 }
             },
