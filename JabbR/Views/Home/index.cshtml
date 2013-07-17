@@ -115,7 +115,7 @@
             <div class="user-status-container">
                 <i class="user-status"></i>
             </div>
-            <img class="gravatar" src="https://secure.gravatar.com/avatar/${hash}?s=16&d=mm" />
+            <img class="gravatar" src="https://secure.gravatar.com/avatar/${hash}?s=32&d=mm" />
             <div class="details {{if admin}}admin{{/if}}">
                 <div class="flag-container">
                     <div class="flag{{if flagClass}} ${flagClass}{{/if}}" {{if flag}}title="${country}"{{/if}}></div>
@@ -126,6 +126,9 @@
                     <div class="admin">{{if admin}}(admin){{/if}}</div>
                 </div>
                 <div style="clear:both"></div>
+            </div>
+            <div class="extended">
+              <div class="title"></div>
             </div>
             <div style="clear:both"></div>
         </li>
@@ -278,15 +281,13 @@
                 <div id="preferences" class="navbar account pull-right">
                     <div class="navbar-inner">
                         <ul class="nav">
-							<li>
-								<a class="music-service" data-toggle="dropdown" title="change preferred music service"><i class="icon-music"></i></a>
-					            <ul id="music-service-dropdown" class="dropdown-menu">
-					                <li class="spotify"><a>Spotify</a></li>
-					                <li class="rdio"><a>Rdio</a></li>
-					            </ul>
-							</li>
-                            <li><a id="notifications" class="" title="notifications" href="@Url.Content("~/notifications")" target="_blank"><i class="icon-comments"></i><span id="notification-unread-count" class="badge badge-info"></span></a></li>
-                            <li><a class="" title="account settings" href="@Url.Content("~/account")" target="_blank"><i class="icon-user"></i></a></li>
+                            <li><a class="client-settings" aria-haspopup="true" title="client settings"><i class="icon-adjust"></i></a></li>
+                            <li><a id="notifications" class="" title="notifications" href="@Url.Content("~/notifications")" target="_blank">
+                                <i class="icon-comments"></i><span id="notification-unread-count" class="badge badge-info"></span>
+                            </a></li>
+                            <li><a class="" title="account settings" href="@Url.Content("~/account")" target="_blank">
+                                <i class="icon-user"></i>
+                            </a></li>
                             @if (Model.IsAdmin)
                             {
                                 <li><a class="" title="jabbr settings" href="@Url.Content("~/administration")" target="_blank"><i class="icon-cog"></i></a></li>
@@ -412,6 +413,92 @@
                         <dl id="room" class="command-list"></dl>
                         <h3>User commands</h3>
                         <dl id="user" class="command-list"></dl>
+                    </div>
+                </div>
+            </div>
+            <div id="jabbr-client-settings" class="modal hide fade">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#external-status" data-toggle="tab"><i class="icon-share-alt"></i></a></li>
+                        <li><a href="#misc" data-toggle="tab"><i class="icon-cogs"></i></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="external-status">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend><span>External Status</span></legend>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="lastfm_username">Last.fm</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="lastfm_enabled" class="state" />
+
+                                            <input type="text" id="lastfm_username" placeholder="Username"/>
+
+                                            <span class="update-every">update every</span>
+                                            <div class="input-append">
+                                                <input type="text" style="width: 17px;" id="lastfm_interval" maxlength="2" value="1" />
+                                                <span class="add-on">m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="trakt_username">trakt</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="trakt_enabled" class="state" disabled/>
+
+                                            <input type="text" id="trakt_username" placeholder="Username" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="steam_steamid">Steam</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="steam_enabled" class="state" disabled/>
+
+                                            <input type="text" id="steam_steamid" placeholder="SteamID" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="evolve_username">Evolve</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="evolve_enabled" class="state" disabled/>
+
+                                            <input type="text" id="evolve_username" placeholder="Username" disabled/><span class="help-inline">Not Implemented</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary save-button">Save changes</button>
+                                        <button type="button" class="btn cancel-button">Cancel</button>
+                                        <span class="error label label-important"></span>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="misc">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend><span>Misc</span></legend>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="music_service">Music Service</label>
+                                        <div class="controls">
+                                            <select id="music_service" class="span2">
+                                                <option value='spotify'>Spotify</option>
+                                                <option value='rdio'>Rdio</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary save-button">Save changes</button>
+                                        <button type="button" class="btn cancel-button">Cancel</button>
+                                        <span class="error label label-important"></span>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

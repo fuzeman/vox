@@ -2,9 +2,8 @@
 define([
     'jquery',
     'kernel',
-    'jabbr/state',
     'jabbr/events'
-], function ($, kernel, state, events) {
+], function ($, kernel, events) {
     function processResult($plexrResult, service) {
         var $serviceDetails = $plexrResult.find(service);
 
@@ -23,15 +22,12 @@ define([
     return function () {
         var processor = kernel.get('jabbr/messageprocessors/processor'),
             rc = kernel.get('jabbr/components/rooms.client'),
-            $musicServiceDropdown = $('#music-service-dropdown');
+            cs = kernel.get('jabbr/components/client-settings');
 
         // Set default to spotify
-        if (state.getPreference('music_service') === undefined) {
-            state.setPreference('music_service', "spotify");
+        if (cs.get('music_service') === undefined) {
+            cs.set('music_service', 'spotify');
         }
-
-        // Select current item
-        $('li.' + state.getPreference('music_service'), $musicServiceDropdown).addClass('active');
 
         // Process rich content
         processor.bind(events.processor.beforeProcessRichContent, function (event, handler) {
@@ -39,7 +35,7 @@ define([
             var $plexrResult = $("PlexrContentProviderResult", $content);
 
             if ($plexrResult.length === 1) {
-                var service = state.getPreference('music_service') || 'spotify';
+                var service = cs.get('music_service') || 'spotify';
                 var result = processResult($plexrResult, service);
 
                 if (result !== null) {
@@ -55,26 +51,6 @@ define([
                 }
 
                 handler.set($content[0].outerHTML);
-            }
-        });
-
-        // Handle dropdown changes
-        $('li a', $musicServiceDropdown).click(function (e) {
-            var li = $(this).parent();
-
-            // TODO: This is pretty dirty, Rewrite later.
-            if (li.hasClass('spotify')) {
-                if (state.getPreference('music_service') != 'spotify') {
-                    state.setPreference('music_service', 'spotify');
-                    $('li.rdio', $musicServiceDropdown).removeClass('active');
-                    $('li.spotify', $musicServiceDropdown).addClass('active');
-                }
-            } else if (li.hasClass('rdio')) {
-                if (state.getPreference('music_service') != 'rdio') {
-                    state.setPreference('music_service', 'rdio');
-                    $('li.rdio', $musicServiceDropdown).addClass('active');
-                    $('li.spotify', $musicServiceDropdown).removeClass('active');
-                }
             }
         });
     };

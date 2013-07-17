@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using JabbR.Commands;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
@@ -10,7 +5,14 @@ using JabbR.Models;
 using JabbR.Services;
 using JabbR.ViewModels;
 using Microsoft.AspNet.SignalR;
+using Microsoft.Data.Edm.Validation;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JabbR
 {
@@ -197,7 +199,6 @@ namespace JabbR
             {
                 throw new InvalidOperationException(String.Format("You cannot edit a message you do not own."));
             }
-
 
             var messageViewModel = new MessageViewModel(chatMessage);
 
@@ -389,7 +390,6 @@ namespace JabbR
                                     orderby m.When descending
                                     select m).Take(100);
 
-
             return previousMessages.AsEnumerable()
                                    .Reverse()
                                    .Select(m => new MessageViewModel(m));
@@ -522,6 +522,18 @@ namespace JabbR
             CheckStatus();
         }
 
+        public void PublishExternalStatus(string type, string text, long timestamp, int interval)
+        {
+            var userId = Context.User.GetUserId();
+            var user = _repository.GetUserById(userId);
+
+            // TODO Stop message duplication here
+            foreach (var room in user.Rooms)
+            {
+                Clients.Group(room.Name).changeExternalStatus(user.Name, type, text, timestamp, interval);
+            }
+        }
+
         private void LogOn(ChatUser user, string clientId, bool reconnecting)
         {
             if (!reconnecting)
@@ -559,7 +571,6 @@ namespace JabbR
                     });
                 }
             }
-
 
             if (!reconnecting)
             {

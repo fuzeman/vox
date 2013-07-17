@@ -140,6 +140,7 @@ define([
                 client.chat.client.changeMentions = this.chat.changeMentions;
                 client.chat.client.changeNote = this.chat.changeNote;
                 client.chat.client.changeFlag = this.chat.changeFlag;
+                client.chat.client.changeExternalStatus = this.chat.changeExternalStatus;
 
                 client.chat.client.userNameChanged = this.chat.userNameChanged;
 
@@ -235,6 +236,17 @@ define([
                             message = userdata.Name + ' has ' + action + ' their flag' + country;
                         messages.addMessage(message, 'notification', roomName);
                     }
+                },
+
+                changeExternalStatus: function (username, type, text, timestamp, interval) {
+                    logger.trace('externalStatusChanged ' + username + ' ' + type + ' ' + text);
+
+                    if (!(username in users)) {
+                        logger.warn('unable to find username "' + username + '" to update');
+                        return;
+                    }
+
+                    users[username].changeExternalStatus(type, text, timestamp, interval);
                 },
 
                 userNameChanged: function (userdata) {

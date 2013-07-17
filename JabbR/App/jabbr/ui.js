@@ -9,13 +9,16 @@ define([
     'jabbr/components/connection-status',
     'jabbr/components/rooms.ui',
     'jabbr/components/help',
+    'jabbr/components/client-settings',
+    'jabbr/components/external-status',
     'jabbr/components/emoji',
     'jabbr/utility',
     'jquery.pulse',
     'jquery.autotabcomplete'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,
-    ru, help, emoji, utility
+    ru, help, cs, externalStatus,
+    emoji, utility
 ) {
     var logger = new Logger('jabbr/ui'),
         client = null,
@@ -492,6 +495,7 @@ define([
         function windowKeyFocus(ev) {
             if (!$newMessage.is(':focus') &&
                 !$roomFilterInput.is(':focus') &&
+                !cs.isOpen() &&
                 !ev.ctrlKey &&
                 !ev.altKey) {
                 $newMessage.focus();
@@ -736,6 +740,8 @@ define([
                 connectionStatus.activate();
                 ru.activate();
                 help.activate();
+                cs.activate();
+                externalStatus.activate();
 
                 logger.trace('activated');
 
@@ -766,6 +772,8 @@ define([
             connectionStatus = connectionStatus();
             ru = ru();
             help = help();
+            cs = cs();
+            externalStatus = externalStatus();
 
             object = initialize();
             kernel.bind('jabbr/ui', object);
