@@ -138,24 +138,21 @@ define([
     };
 
     RoomUser.prototype.updateExternalStatus = function () {
-        var $extendedTitle = this.$roomUser.find('.extended .title'),
-            $extendedIcon = this.$roomUser.find('.extended i');
+        var $extendedTitle = this.$roomUser.find('.extended .title');
 
         if (this.user.status_type !== null &&
             this.user.status_text !== null) {
+            // Set status text
+            $extendedTitle.attr('title', this.user.status_text);
+            $('span', $extendedTitle).text(this.user.status_text);
+            
+            // Set status icon
             if (this.user.status_type == 'music') {
-                $extendedTitle.attr('title', this.user.status_text);
-                $extendedTitle.text(this.user.status_text);
-                $extendedIcon.attr('class', 'icon-music');
-            } else {
-                $extendedTitle.attr('title', this.user.status_text);
-                $extendedTitle.text(this.user.status_text);
-                $extendedIcon.attr('class', '');
+                $('i', $extendedTitle).attr('class', 'icon-music');
             }
         } else {
             $extendedTitle.attr('title', '');
-            $extendedTitle.text('');
-            $extendedIcon.attr('class', '');
+            $('span', $extendedTitle).text('');
         }
     };
 
