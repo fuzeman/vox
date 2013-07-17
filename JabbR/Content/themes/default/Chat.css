@@ -463,8 +463,8 @@ form#send-message {
 }
 
 .user .extended {
-    font-weight: normal;
-    color: #ccc;
+    font-weight: bold;
+    color: #999;
     font-size: 10px;
     margin-top: -4px;
     margin-left: 42px;
