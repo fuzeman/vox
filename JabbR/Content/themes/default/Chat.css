@@ -470,6 +470,12 @@ form#send-message {
     margin-left: 42px;
 }
 
+.user .extended .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .user .gravatar {
     width: 32px;
     height: 32px;

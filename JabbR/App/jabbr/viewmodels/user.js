@@ -60,6 +60,12 @@ define([
         this.owner = isOwner;
         update(this, userdata);
 
+        this.status_type = null;
+        this.status_text = null;
+        this.status_timestamp = null;
+        this.status_interval = null;
+        this.status_clear_timeout = null;
+
         this.roomUsers = {};  // { <roomName>: <RoomUser> }
     }
 
@@ -71,10 +77,10 @@ define([
         $.each(this.roomUsers, callback);
     };
 
-    User.prototype.setUserActivity = function(userdata) {
+    User.prototype.setUserActivity = function (userdata) {
         this.update(userdata);
 
-        this.each(function(roomName, roomUser) {
+        this.each(function (roomName, roomUser) {
             logger.trace('setUserActivity  (' + roomUser.user.name + ') #' + roomName);
 
             var $roomUser = roomUser.$roomUser,
@@ -99,27 +105,27 @@ define([
         });
     };
 
-    User.prototype.changeUserName = function(userdata) {
+    User.prototype.changeUserName = function (userdata) {
         var oldName = this.name;
 
         update(this, userdata);
 
         // Only update if name has actually changed
         if (oldName != this.name) {
-            $.each(this.roomUsers, function(roomName, roomUser) {
+            $.each(this.roomUsers, function (roomName, roomUser) {
                 roomUser.updateUserName();
             });
         }
     };
 
-    User.prototype.changeGravatar = function(userdata) {
+    User.prototype.changeGravatar = function (userdata) {
         var oldHash = this.hash;
 
         update(this, userdata);
 
         // Only update if gravatar has actually changed
         if (oldHash != this.hash) {
-            $.each(this.roomUsers, function(roomName, roomUser) {
+            $.each(this.roomUsers, function (roomName, roomUser) {
                 roomUser.updateGravatar();
             });
         }
@@ -132,13 +138,13 @@ define([
 
         // Only update if gravatar has actually changed
         if (oldMention != this.mention) {
-            $.each(this.roomUsers, function(roomName, roomUser) {
+            $.each(this.roomUsers, function (roomName, roomUser) {
                 roomUser.updateMentions();
             });
         }
     };
 
-    User.prototype.changeNote = function(userdata) {
+    User.prototype.changeNote = function (userdata) {
         var oldNote = this.note;
 
         update(this, userdata);
@@ -161,6 +167,44 @@ define([
             $.each(this.roomUsers, function (roomName, roomUser) {
                 roomUser.updateFlag();
             });
+        }
+    };
+
+    User.prototype.changeExternalStatus = function (type, text, timestamp, interval) {
+        if (this.status_clear_timeout !== null) {
+            clearTimeout(this.status_clear_timeout);
+        }
+
+        // Only update if external status has actually changed
+        if (type != this.status_type || text != this.status_text) {
+            this.status_type = type;
+            this.status_text = text;
+            this.status_timestamp = timestamp;
+            this.status_interval = interval;
+
+            $.each(this.roomUsers, function (roomName, roomUser) {
+                roomUser.updateExternalStatus();
+            });
+
+            // clear the status in at least 25 minutes or (5 * interval)
+            var user = this,
+                clearMinutes = interval * 5; // in minutes
+            if (clearMinutes > 25) {
+                clearMinutes = 25;
+            }
+            this.status_clear_timeout = setTimeout(function () {
+                clearTimeout(user.status_clear_timeout);
+
+                // Reset old data
+                user.status_type = null;
+                user.status_text = null;
+                user.status_timestamp = null;
+                user.status_interval = null;
+
+                $.each(user.roomUsers, function (roomName, roomUser) {
+                    roomUser.updateExternalStatus();
+                });
+            }, clearMinutes * 60 * 1000);
         }
     };
 

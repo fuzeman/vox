@@ -495,7 +495,7 @@ define([
         function windowKeyFocus(ev) {
             if (!$newMessage.is(':focus') &&
                 !$roomFilterInput.is(':focus') &&
-                !clientSettings.isOpen() &&
+                !cs.isOpen() &&
                 !ev.ctrlKey &&
                 !ev.altKey) {
                 $newMessage.focus();

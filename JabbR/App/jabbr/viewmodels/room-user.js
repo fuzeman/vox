@@ -137,6 +137,21 @@ define([
         }
     };
 
+    RoomUser.prototype.updateExternalStatus = function () {
+        var $extendedTitle = this.$roomUser.find('.extended .title');
+
+        if (this.user.status_type != null &&
+            this.user.status_text != null) {
+            if (this.user.status_type == 'music') {
+                $extendedTitle.html('<i class="icon-music"></i> ' + this.user.status_text);
+            } else {
+                $extendedTitle.html(this.user.status_text);
+            }
+        } else {
+            $extendedTitle.html('');
+        }
+    };
+
     RoomUser.prototype.updateActivity = function () {
         var $idleSince = this.$roomUser.find('.idle-since');
 
@@ -185,10 +200,10 @@ define([
         $roomUser.data('typing', timeout);
     };
 
-    RoomUser.prototype.updateUserName = function() {
+    RoomUser.prototype.updateUserName = function () {
         var user = this.user;
 
-        this.$roomUser.find('.name').fadeOut('normal', function() {
+        this.$roomUser.find('.name').fadeOut('normal', function () {
             $(this).html(user.name);
             $(this).fadeIn('normal');
         });
@@ -198,7 +213,7 @@ define([
         this.room.sortLists(this.$roomUser);
     };
 
-    RoomUser.prototype.updateGravatar = function() {
+    RoomUser.prototype.updateGravatar = function () {
         var src = 'https://secure.gravatar.com/avatar/' + this.user.hash + '?s=16&d=mm';
 
         this.$roomUser.find('.gravatar').attr('src', src);
