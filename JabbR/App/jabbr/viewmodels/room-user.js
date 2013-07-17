@@ -142,13 +142,17 @@ define([
 
         if (this.user.status_type !== null &&
             this.user.status_text !== null) {
+            // Set status text
+            $extendedTitle.attr('title', this.user.status_text);
+            $('span', $extendedTitle).text(this.user.status_text);
+            
+            // Set status icon
             if (this.user.status_type == 'music') {
-                $extendedTitle.html('<i class="icon-music"></i> ' + this.user.status_text);
-            } else {
-                $extendedTitle.html(this.user.status_text);
+                $('i', $extendedTitle).attr('class', 'icon-music');
             }
         } else {
-            $extendedTitle.html('');
+            $extendedTitle.attr('title', '');
+            $('span', $extendedTitle).text('');
         }
     };
 

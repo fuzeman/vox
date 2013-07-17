@@ -35,6 +35,7 @@
             api_key: '4bf73213fd748d82b28b97c5b41e978c',
             base_url: 'https://ws.audioscrobbler.com/2.0/?format=json',
             loaded: false,
+            lastNothingPlaying: false,  // Was the last poll result "nothing playing"
 
             enabled: false,
             username: null,
@@ -58,8 +59,13 @@
 
                 if (nowplaying) {
                     publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, lastfm.interval);
+                    this.lastNothingPlaying = false;
                 } else {
-                    publish(null, null, 0, lastfm.interval);
+                    if (this.lastNothingPlaying) {
+                        publish(null, null, 0, lastfm.interval);
+                    } else {
+                        this.lastNothingPlaying = true;
+                    }
                 }
             },
             set: function (enabled, username, interval) {
