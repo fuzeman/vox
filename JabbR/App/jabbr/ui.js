@@ -173,11 +173,8 @@ define([
             room = typeof room !== 'undefined' ? room : client.chat.state.activeRoom;
             isMentioned = typeof isMentioned !== 'undefined' ? isMentioned : false;
 
-            clearUnread();
-
             if (focus === false) {
                 isUnreadMessageForUser = (isUnreadMessageForUser || isMentioned);
-
                 unread = unread + 1;
             } else {
                 //we're currently focused so remove
@@ -193,6 +190,8 @@ define([
         function clearUnread() {
             isUnreadMessageForUser = false;
             unread = 0;
+            
+            updateTitle();
         }
 
         function updateTitle() {

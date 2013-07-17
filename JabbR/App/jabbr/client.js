@@ -109,7 +109,7 @@ define([
         chat.client.logOut = performLogout;
 
         function focused() {
-            events.trigger(events.ui.updateUnread);
+            events.trigger(events.ui.clearUnread);
 
             try {
                 chat.server.updateActivity();
