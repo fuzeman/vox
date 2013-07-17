@@ -34,6 +34,7 @@
         var lastfm = {
             api_key: '4bf73213fd748d82b28b97c5b41e978c',
             base_url: 'http://ws.audioscrobbler.com/2.0/?format=json',
+            loaded: false,
 
             enabled: false,
             username: null,
@@ -78,8 +79,12 @@
                     logger.info('lastfm enabled or username/interval has changed');
                     this.set(enabled, username, interval);
                     this.clear();
-
-                    this.timeout = setTimeout(this.poll, 1000 * 60); // Initial poll in 30 seconds
+                    if (this.loaded) {
+                        this.timeout = setTimeout(this.poll, 1000 * 1);
+                    } else {
+                        this.timeout = setTimeout(this.poll, 1000 * 5); // Initial poll in 5 seconds
+                        this.loaded = true;
+                    }
                 }
             },
             clear: function () {
