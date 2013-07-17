@@ -39,6 +39,7 @@
         'moment': '../Scripts/moment.min',
         'livestamp': '../Scripts/livestamp.min',
         'linkify': '../Scripts/ba-linkify.min',
-        'stacktrace': '../Scripts/stacktrace-min-0.4'
+        'stacktrace': '../Scripts/stacktrace-min-0.4',
+        'json2': '../Scripts/json2'
     }
 })
