@@ -1,8 +1,9 @@
 ﻿define([
     'jquery',
     'logger',
-    'kernel'
-], function ($, Logger, kernel) {
+    'kernel',
+    'jabbr/components/external-status.lastfm'
+], function ($, Logger, kernel, lastfm) {
     var logger = new Logger('jabbr/components/external-status'),
         cs = null,
         client = null,
@@ -19,6 +20,19 @@
 
         function publish(type, text, timestamp, interval) {
             if (last.type != type || last.text != text) {
+                // If we are changing from one type to another
+                if (last.type !== null && type !== null && last.type != type) {
+                    logger.trace('changing status type from ' + last.type + ' to ' + type);
+                    // Games trump everything
+                    if (last.type == 'game') {
+                        return;
+                    }
+                    //  Video trumps music
+                    if (last.type == 'video' && type == 'music') {
+                        return;
+                    }
+                }
+
                 logger.trace('publishing: "' + text + '" (' + type + ')');
 
                 client.chat.server.publishExternalStatus(type, text, timestamp, interval);
@@ -30,75 +44,6 @@
                 };
             }
         }
-
-        var lastfm = {
-            api_key: '4bf73213fd748d82b28b97c5b41e978c',
-            base_url: 'https://ws.audioscrobbler.com/2.0/?format=json',
-            loaded: false,
-            lastNothingPlaying: false,  // Was the last poll result "nothing playing"
-
-            enabled: false,
-            username: null,
-            interval: null,
-            timeout: null,
-
-            poll: function () {
-                logger.trace('lastfm poll');
-                lastfm.clear();
-
-                $.ajax({
-                    url: lastfm.base_url + '&method=user.getrecenttracks&user=' +
-                         lastfm.username + '&api_key=' + lastfm.api_key
-                }).done(lastfm.success);
-
-                lastfm.timeout = setTimeout(lastfm.poll, lastfm.interval * 60 * 1000);
-            },
-            success: function (data) {
-                var lastTrack = data.recenttracks.track[0],
-                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
-
-                if (nowplaying) {
-                    publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, lastfm.interval);
-                    lastfm.lastNothingPlaying = false;
-                } else {
-                    if (lastfm.lastNothingPlaying) {
-                        publish(null, null, 0, lastfm.interval);
-                    } else {
-                        lastfm.lastNothingPlaying = true;
-                    }
-                }
-            },
-            set: function (enabled, username, interval) {
-                this.enabled = enabled;
-                this.username = username;
-                this.interval = interval;
-            },
-            update: function (enabled, username, interval) {
-                if (this.enabled != enabled && !enabled) {
-                    logger.info('lastfm disabled');
-                    this.set(enabled, username, interval);
-                    this.clear();
-                    return;
-                }
-                if (enabled && (this.enabled != enabled || this.username != username || this.interval != interval)) {
-                    // Still enabled but username or interval has changed
-                    logger.info('lastfm enabled or username/interval has changed');
-                    this.set(enabled, username, interval);
-                    this.clear();
-                    if (this.loaded) {
-                        this.timeout = setTimeout(this.poll, 1000 * 1);
-                    } else {
-                        this.timeout = setTimeout(this.poll, 1000 * 5); // Initial poll in 5 seconds
-                        this.loaded = true;
-                    }
-                }
-            },
-            clear: function () {
-                if (this.timeout !== null) {
-                    clearTimeout(this.timeout);
-                }
-            }
-        };
 
         function clientSettingsChanged() {
             logger.trace('cs.events.changed');
@@ -115,16 +60,22 @@
                 cs = kernel.get('jabbr/components/client-settings');
                 client = kernel.get('jabbr/client');
 
+                lastfm.activate();
+
                 logger.trace('activated');
 
                 cs.bind(cs.events.changed, clientSettingsChanged);
                 clientSettingsChanged();
-            }
+            },
+
+            publish: publish
         };
     };
 
     return function () {
         if (object === null) {
+            lastfm = lastfm();
+
             object = initialize();
             kernel.bind('jabbr/components/external-status', object);
         }
