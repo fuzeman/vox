@@ -140,8 +140,8 @@ define([
     RoomUser.prototype.updateExternalStatus = function () {
         var $extendedTitle = this.$roomUser.find('.extended .title');
 
-        if (this.user.status_type != null &&
-            this.user.status_text != null) {
+        if (this.user.status_type !== null &&
+            this.user.status_text !== null) {
             if (this.user.status_type == 'music') {
                 $extendedTitle.html('<i class="icon-music"></i> ' + this.user.status_text);
             } else {

@@ -1,7 +1,7 @@
 ﻿define([
     'jquery',
     'logger',
-    'kernel',
+    'kernel'
 ], function ($, Logger, kernel) {
     var logger = new Logger('jabbr/components/external-status'),
         cs = null,
@@ -45,17 +45,18 @@
                 lastfm.clear();
 
                 $.ajax({
-                    url: lastfm.base_url + '&method=user.getrecenttracks&user=' + lastfm.username + '&api_key=' + lastfm.api_key
+                    url: lastfm.base_url + '&method=user.getrecenttracks&user=' +
+                         lastfm.username + '&api_key=' + lastfm.api_key
                 }).done(lastfm.success);
 
                 lastfm.timeout = setTimeout(lastfm.poll, lastfm.interval * 60 * 1000);
             },
             success: function (data) {
                 var lastTrack = data.recenttracks.track[0],
-                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr']['nowplaying'] == 'true';
+                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
                 if (nowplaying) {
-                    publish('music', lastTrack['name'] + ' - ' + lastTrack['artist']['#text'], 0, lastfm.interval);
+                    publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, lastfm.interval);
                 } else {
                     publish(null, null, 0, lastfm.interval);
                 }
@@ -94,7 +95,7 @@
             lastfm.update(
                 cs.get('lastfm_enabled'),
                 cs.get('lastfm_username'),
-                parseInt(cs.get('lastfm_interval'))
+                parseInt(cs.get('lastfm_interval'), 10)
             );
         }
 
@@ -107,8 +108,8 @@
 
                 cs.bind(cs.events.changed, clientSettingsChanged);
                 clientSettingsChanged();
-            },
-        }
+            }
+        };
     };
 
     return function () {
