@@ -10,6 +10,19 @@
     logger.trace('loaded');
 
     var initialize = function () {
+        var lastfm = {            
+            username: null,
+            interval: null,
+            enabled: false,
+            
+            update: function () {
+                
+            },
+            clear: function () {
+                
+            }
+        };
+
         function clientSettingsChanged () {
             logger.trace('cs.events.changed');
             logger.trace('lastfm_username = ' + cs.get('lastfm_username'));

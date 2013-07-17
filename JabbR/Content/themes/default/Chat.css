@@ -2329,8 +2329,8 @@ li.clearfix {
 
     #jabbr-client-settings .nav-tabs {
         margin-right: 0;
-        margin-left: -115px;
-        width: 115px;
+        margin-left: -40px;
+        width: 40px;
         border-right: none;
     }
 
@@ -2342,6 +2342,7 @@ li.clearfix {
             color: white;
             margin-bottom: 0;
             background: #999;
+            min-width: 0;
         }
 
         #jabbr-client-settings .nav-tabs li a:hover {
@@ -2383,6 +2384,15 @@ li.clearfix {
 
                     #jabbr-client-settings legend+.control-group {
                         margin-top: 0;
+                    }
+
+                    #jabbr-client-settings .control-group span.update-every {
+                        padding: 0 5px;
+                    }
+
+                    #jabbr-client-settings .control-group input[type="checkbox"].state {
+                        margin-right: 5px;
+                        margin-top: -1px;
                     }
 
                     #jabbr-client-settings .form-actions {

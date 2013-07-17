@@ -420,8 +420,8 @@
                 <a class="close" data-dismiss="modal">&times;</a>
                 <div class="tabbable tabs-left">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#external-status" data-toggle="tab">External Status</a></li>
-                        <li><a href="#misc" data-toggle="tab">Misc</a></li>
+                        <li class="active"><a href="#external-status" data-toggle="tab"><i class="icon-share-alt"></i></a></li>
+                        <li><a href="#misc" data-toggle="tab"><i class="icon-cogs"></i></a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="external-status">
@@ -432,7 +432,15 @@
                                     <div class="control-group">
                                         <label class="control-label" for="lastfm_username">Last.fm</label>
                                         <div class="controls">
+                                            <input type="checkbox" id="lastfm_enabled" class="state" />
+
                                             <input type="text" id="lastfm_username" placeholder="Username"/>
+
+                                            <span class="update-every">update every</span>
+                                            <div class="input-append">
+                                                <input type="text" style="width: 17px;" id="lastfm_interval" maxlength="2" value="1" />
+                                                <span class="add-on">m</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="control-group">

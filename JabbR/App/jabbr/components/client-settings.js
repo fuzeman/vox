@@ -19,6 +19,7 @@ define([
             $popupButton = $('#preferences .client-settings'),
             $saveButton = $('.save-button', $popup),
             $cancelButton = $('.cancel-button', $popup),
+            $stateCheckboxes = $('.control-group input[type="checkbox"].state', $popup),
             open = false,
             data = {};
 
@@ -40,6 +41,16 @@ define([
             return $('input,select', $popup);
         }
         
+        function toggleGroupState () {
+            var $inputElements = $('input:not(.state)', $(this).closest('.control-group'));
+            
+            if ($(this).is(':checked')) {
+                $inputElements.removeAttr('disabled');
+            } else {
+                $inputElements.attr('disabled', '');
+            }
+        }
+
         function disableAll (error) {
             $saveButton.attr('disabled', '');
             $cancelButton.attr('disabled', '');
@@ -56,8 +67,19 @@ define([
 
             findElements().each(function () {
                 if ($(this).attr('id') !== undefined) {
-                    data[$(this).attr('id')] = $(this).val();
-                    logger.trace("stored ['" + $(this).attr('id') + "'] = '" + $(this).val() + "'");
+                    var id = $(this).attr('id'),
+                        value = null;
+                    
+                    // Get element value
+                    if ($(this).attr('type') == 'checkbox') {
+                        value = $(this).is(':checked');
+                    } else {
+                        value = $(this).val();
+                    }
+                    
+                    // Update value
+                    data[id] = value;
+                    logger.trace("stored ['" + id + "'] = '" + value + "'");
                 } else {
                     logger.warn("'" + $(this).html() + "' has no id specified");
                 }
@@ -80,7 +102,17 @@ define([
             findElements().each(function () {
                 if ($(this).attr('id') !== undefined) {
                     if (data[$(this).attr('id')] !== undefined) {
-                        $(this).val(data[$(this).attr('id')]);
+                        var value = data[$(this).attr('id')];
+
+                        if ($(this).attr('type') == 'checkbox') {
+                            if (value === true) {
+                                $(this).attr('checked', '');
+                            } else {
+                                $(this).removeAttr('checked');
+                            }
+                        } else {
+                            $(this).val(value);
+                        }
                     } else {
                         logger.warn("No previous setting stored for '" + $(this).attr('id') + "'");
                     }
@@ -88,6 +120,8 @@ define([
                     logger.warn("'" + $(this).html() + "' has no id specified");
                 }
             });
+            
+            $stateCheckboxes.each(toggleGroupState);
         }
         
         // If Local Storage isn't available, disable all the controls
@@ -119,6 +153,8 @@ define([
             $('.tab-pane', $popup).removeClass('active');
             $('.nav-tabs li', $popup).removeClass('active');
         });
+
+        $stateCheckboxes.change(toggleGroupState);
 
         return {
             events: events,
