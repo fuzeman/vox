@@ -23,19 +23,19 @@
             },
             timeout = null;
 
-        function clear () {
+        function clear() {
             if (timeout !== null) {
                 clearTimeout(timeout);
             }
         }
 
-        function set (enabled, username, interval) {
+        function set(enabled, username, interval) {
             state.enabled = enabled;
             state.username = username;
             state.interval = interval;
         }
 
-        function success (data) {
+        function success(data) {
             var lastTrack = data.recenttracks.track[0],
                 nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
@@ -51,7 +51,7 @@
             }
         }
 
-        function poll () {
+        function poll() {
             logger.trace('lastfm poll');
             clear();
 
@@ -63,17 +63,19 @@
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }
 
-        function update (enabled, username, interval) {
+        function update(enabled, username, interval) {
+            // just been disabled
             if (state.enabled != enabled && !enabled) {
                 logger.info('lastfm disabled');
                 set(enabled, username, interval);
                 clear();
                 return;
             }
+
+            // just enabled or username/interval has changed
             if (enabled && (state.enabled != enabled ||
                 state.username != username ||
                 state.interval != interval)) {
-                // Still enabled but username or interval has changed
                 logger.info('lastfm enabled or username/interval has changed');
                 set(enabled, username, interval);
                 clear();
@@ -86,7 +88,7 @@
             }
         }
 
-        function settingsChanged () {
+        function settingsChanged() {
             update(
                 cs.get('lastfm_enabled'),
                 cs.get('lastfm_username'),
