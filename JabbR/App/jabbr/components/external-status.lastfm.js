@@ -4,6 +4,7 @@
     'kernel'
 ], function ($, Logger, kernel) {
     var logger = new Logger('jabbr/components/external-status.lastfm'),
+        cs = null,
         es = null,
         object = null;
 
@@ -18,23 +19,23 @@
             state = {
                 enabled: false,
                 username: null,
-                interval: null,
+                interval: null
             },
             timeout = null;
 
-        function clear() {
+        function clear () {
             if (timeout !== null) {
                 clearTimeout(timeout);
             }
         }
 
-        function set(enabled, username, interval) {
+        function set (enabled, username, interval) {
             state.enabled = enabled;
             state.username = username;
             state.interval = interval;
         }
 
-        function success(data) {
+        function success (data) {
             var lastTrack = data.recenttracks.track[0],
                 nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
@@ -50,7 +51,7 @@
             }
         }
 
-        function poll() {
+        function poll () {
             logger.trace('lastfm poll');
             clear();
 
@@ -62,7 +63,7 @@
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }
 
-        function update(enabled, username, interval) {
+        function update (enabled, username, interval) {
             if (state.enabled != enabled && !enabled) {
                 logger.info('lastfm disabled');
                 set(enabled, username, interval);
@@ -70,9 +71,8 @@
                 return;
             }
             if (enabled && (state.enabled != enabled ||
-                            state.username != username ||
-                            state.interval != interval)
-            ) {
+                state.username != username ||
+                state.interval != interval)) {
                 // Still enabled but username or interval has changed
                 logger.info('lastfm enabled or username/interval has changed');
                 set(enabled, username, interval);
@@ -86,11 +86,23 @@
             }
         }
 
+        function settingsChanged () {
+            update(
+                cs.get('lastfm_enabled'),
+                cs.get('lastfm_username'),
+                parseInt(cs.get('lastfm_interval'), 10)
+            );
+        }
+
         return {
             activate: function () {
+                cs = kernel.get('jabbr/components/client-settings');
                 es = kernel.get('jabbr/components/external-status');
 
                 logger.trace('activated');
+
+                cs.bind(cs.events.changed, settingsChanged);
+                settingsChanged();
             },
 
             update: update
@@ -105,4 +117,4 @@
 
         return object;
     };
-})
+});

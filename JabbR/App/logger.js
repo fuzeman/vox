@@ -164,7 +164,7 @@ define([
 
             if (caller !== null) {
                 console.log(
-                    "[" + padRight(this.tag, 32) + "]  " +
+                    "[" + padLeft(this.tag, 32) + "]  " +
                     "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
                     "(" + padRight(toLevelString(level), 5) + ")    " + message
                 );
@@ -172,7 +172,7 @@ define([
             }
         } else if (level != levels.TRACE) {
             console.log(
-                "[" + padRight(this.tag, 32) + "]  " +
+                "[" + padLeft(this.tag, 32) + "]  " +
                 "(" + padRight(toLevelString(level), 5) + ")    " + message
             );
         }

@@ -2,10 +2,10 @@
     'jquery',
     'logger',
     'kernel',
-    'jabbr/components/external-status.lastfm'
-], function ($, Logger, kernel, lastfm) {
+    'jabbr/components/external-status.lastfm',
+    'jabbr/components/external-status.trakt'
+], function ($, Logger, kernel, lastfm, trakt) {
     var logger = new Logger('jabbr/components/external-status'),
-        cs = null,
         client = null,
         object = null;
 
@@ -45,27 +45,14 @@
             }
         }
 
-        function clientSettingsChanged() {
-            logger.trace('cs.events.changed');
-
-            lastfm.update(
-                cs.get('lastfm_enabled'),
-                cs.get('lastfm_username'),
-                parseInt(cs.get('lastfm_interval'), 10)
-            );
-        }
-
         return {
             activate: function () {
-                cs = kernel.get('jabbr/components/client-settings');
                 client = kernel.get('jabbr/client');
 
                 lastfm.activate();
+                trakt.activate();
 
                 logger.trace('activated');
-
-                cs.bind(cs.events.changed, clientSettingsChanged);
-                clientSettingsChanged();
             },
 
             publish: publish
@@ -75,6 +62,7 @@
     return function () {
         if (object === null) {
             lastfm = lastfm();
+            trakt = trakt();
 
             object = initialize();
             kernel.bind('jabbr/components/external-status', object);
