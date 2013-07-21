@@ -22,6 +22,11 @@
             if (last.type != type || last.text != text) {
                 // If we are changing from one type to another
                 if (last.type !== null && type !== null && last.type != type) {
+                    // Ignore 'nothing' publish
+                    if (last.text !== null && text === null) {
+                        return;
+                    }
+                    
                     logger.trace('changing status type from ' + last.type + ' to ' + type);
                     // Games trump everything
                     if (last.type == 'game') {
