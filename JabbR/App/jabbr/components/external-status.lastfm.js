@@ -36,18 +36,25 @@
         }
 
         function success(data) {
-            var lastTrack = data.recenttracks.track[0],
-                nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
+            if (data.recenttracks !== undefined &&
+                data.recenttracks.track !== undefined &&
+                data.recenttracks.track.length != 0) {
+                
+                var lastTrack = data.recenttracks.track[0],
+                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
-            if (nowplaying) {
-                es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
-                lastNothingPlaying = false;
-            } else {
-                if (lastNothingPlaying) {
-                    es.publish('music', null, 0, state.interval);
-                } else {
-                    lastNothingPlaying = true;
+                if (nowplaying) {
+                    es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
+                    lastNothingPlaying = false;
+                    return;
                 }
+            }
+
+            // Nothing currently playing
+            if (lastNothingPlaying) {
+                es.publish('music', null, 0, state.interval);
+            } else {
+                lastNothingPlaying = true;
             }
         }
 

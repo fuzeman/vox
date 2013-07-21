@@ -133,12 +133,14 @@ define([
 
         $popupButton.click(show);
 
-        $saveButton.click(function () {
+        $saveButton.click(function (ev) {
+            ev.preventDefault();
             store();
             hide();
         });
 
-        $cancelButton.click(function () {
+        $cancelButton.click(function (ev) {
+            ev.preventDefault();
             reset();
             hide();
         });

@@ -34,6 +34,10 @@
                 }
 
                 logger.trace('publishing: "' + text + '" (' + type + ')');
+                
+                if (text === null) {
+                    type = null;
+                }
 
                 client.chat.server.publishExternalStatus(type, text, timestamp, interval);
 
