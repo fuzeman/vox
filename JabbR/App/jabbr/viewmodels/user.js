@@ -194,6 +194,7 @@ define([
             }
             this.status_clear_timeout = setTimeout(function () {
                 clearTimeout(user.status_clear_timeout);
+                logger.info('clearing external status for "' + user.name + '"');
 
                 // Reset old data
                 user.status_type = null;
