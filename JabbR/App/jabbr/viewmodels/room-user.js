@@ -149,6 +149,8 @@ define([
             // Set status icon
             if (this.user.status_type == 'music') {
                 $('i', $extendedTitle).attr('class', 'icon-music');
+            } else if (this.user.status_type == 'video') {
+                $('i', $extendedTitle).attr('class', 'icon-film');
             }
         } else {
             $extendedTitle.attr('title', '');

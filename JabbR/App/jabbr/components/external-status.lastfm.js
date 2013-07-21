@@ -4,6 +4,7 @@
     'kernel'
 ], function ($, Logger, kernel) {
     var logger = new Logger('jabbr/components/external-status.lastfm'),
+        cs = null,
         es = null,
         object = null;
 
@@ -18,7 +19,7 @@
             state = {
                 enabled: false,
                 username: null,
-                interval: null,
+                interval: null
             },
             timeout = null;
 
@@ -35,18 +36,25 @@
         }
 
         function success(data) {
-            var lastTrack = data.recenttracks.track[0],
-                nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
+            if (data.recenttracks !== undefined &&
+                data.recenttracks.track !== undefined &&
+                data.recenttracks.track.length != 0) {
+                
+                var lastTrack = data.recenttracks.track[0],
+                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
-            if (nowplaying) {
-                es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
-                lastNothingPlaying = false;
-            } else {
-                if (lastNothingPlaying) {
-                    es.publish('music', null, 0, state.interval);
-                } else {
-                    lastNothingPlaying = true;
+                if (nowplaying) {
+                    es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
+                    lastNothingPlaying = false;
+                    return;
                 }
+            }
+
+            // Nothing currently playing
+            if (lastNothingPlaying) {
+                es.publish('music', null, 0, state.interval);
+            } else {
+                lastNothingPlaying = true;
             }
         }
 
@@ -63,17 +71,18 @@
         }
 
         function update(enabled, username, interval) {
+            // just been disabled
             if (state.enabled != enabled && !enabled) {
                 logger.info('lastfm disabled');
                 set(enabled, username, interval);
                 clear();
                 return;
             }
+
+            // just enabled or username/interval has changed
             if (enabled && (state.enabled != enabled ||
-                            state.username != username ||
-                            state.interval != interval)
-            ) {
-                // Still enabled but username or interval has changed
+                state.username != username ||
+                state.interval != interval)) {
                 logger.info('lastfm enabled or username/interval has changed');
                 set(enabled, username, interval);
                 clear();
@@ -86,11 +95,23 @@
             }
         }
 
+        function settingsChanged() {
+            update(
+                cs.get('lastfm_enabled'),
+                cs.get('lastfm_username'),
+                parseInt(cs.get('lastfm_interval'), 10)
+            );
+        }
+
         return {
             activate: function () {
+                cs = kernel.get('jabbr/components/client-settings');
                 es = kernel.get('jabbr/components/external-status');
 
                 logger.trace('activated');
+
+                cs.bind(cs.events.changed, settingsChanged);
+                settingsChanged();
             },
 
             update: update
@@ -105,4 +126,4 @@
 
         return object;
     };
-})
+});
