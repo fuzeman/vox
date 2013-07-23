@@ -460,9 +460,15 @@
                                     <div class="control-group">
                                         <label class="control-label" for="steam_steamid">Steam</label>
                                         <div class="controls">
-                                            <input type="checkbox" id="steam_enabled" class="state" disabled/>
+                                            <input type="checkbox" id="steam_enabled" class="state"/>
 
-                                            <input type="text" id="steam_steamid" placeholder="SteamID" disabled/><span class="help-inline">Not Implemented</span>
+                                            <input type="text" id="steam_id" placeholder="Profile ID or Custom URL"/>
+
+                                            <span class="update-every">update every</span>
+                                            <div class="input-append">
+                                                <input type="text" style="width: 17px;" id="steam_interval" maxlength="2" value="5" />
+                                                <span class="add-on">m</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="control-group">

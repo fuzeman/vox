@@ -4,8 +4,9 @@
     'kernel',
     'jabbr/components/external-status.evolve',
     'jabbr/components/external-status.lastfm',
+    'jabbr/components/external-status.steam',
     'jabbr/components/external-status.trakt'
-], function ($, Logger, kernel, evolve, lastfm, trakt) {
+], function ($, Logger, kernel, evolve, lastfm, steam, trakt) {
     var logger = new Logger('jabbr/components/external-status'),
         client = null,
         object = null;
@@ -61,6 +62,7 @@
 
                 evolve.activate();
                 lastfm.activate();
+                steam.activate();
                 trakt.activate();
 
                 logger.trace('activated');
@@ -74,6 +76,7 @@
         if (object === null) {
             evolve = evolve();
             lastfm = lastfm();
+            steam = steam();
             trakt = trakt();
 
             object = initialize();
