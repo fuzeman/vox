@@ -474,6 +474,7 @@ form#send-message {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        padding-left: 2px;
     }
 
         .user .extended .icon-film {
