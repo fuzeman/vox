@@ -470,11 +470,19 @@ form#send-message {
     margin-left: 42px;
 }
 
-.user .extended .title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .user .extended .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+        .user .extended .icon-film {
+            font-size: 11px;
+        }
+
+        .user .extended .icon-game {
+            font-size: 12px;
+        }
 
 .user .gravatar {
     width: 32px;
