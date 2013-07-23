@@ -36,27 +36,31 @@
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('game', data.result.title, 0, state.interval);
+                es.publish('steam', 'game', data.result.title, 0, state.interval);
             } else {
-                es.publish('game', null, 0, state.interval);
+                es.publish('steam', 'game', null, 0, state.interval);
             }
         }
 
         function poll() {
-            logger.trace('steam poll');
             clear();
 
-            var requestUrl = null;
+            if (es.shouldPoll('game')) {
+                logger.trace('steam poll');
+                var requestUrl = null;
 
-            if (state.id.indexOf('7656119') == 0) {
-                requestUrl = baseUrl + 'profiles/' + state.id;
+                if (state.id.indexOf('7656119') == 0) {
+                    requestUrl = baseUrl + 'profiles/' + state.id;
+                } else {
+                    requestUrl = baseUrl + 'id/' + state.id;
+                }
+
+                $.ajax({
+                    url: requestUrl
+                }).done(success);
             } else {
-                requestUrl = baseUrl + 'id/' + state.id;
+                logger.trace('ignoring steam poll (shouldPoll)');
             }
-
-            $.ajax({
-                url: requestUrl
-            }).done(success);
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }

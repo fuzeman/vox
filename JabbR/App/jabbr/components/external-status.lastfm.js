@@ -44,7 +44,7 @@
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
                 if (nowplaying) {
-                    es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
+                    es.publish('lastfm', 'music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
                     lastNothingPlaying = false;
                     return;
                 }
@@ -52,20 +52,24 @@
 
             // Nothing currently playing
             if (lastNothingPlaying) {
-                es.publish('music', null, 0, state.interval);
+                es.publish('lastfm', 'music', null, 0, state.interval);
             } else {
                 lastNothingPlaying = true;
             }
         }
 
         function poll() {
-            logger.trace('lastfm poll');
             clear();
 
-            $.ajax({
-                url: baseUrl + '&method=user.getrecenttracks&user=' +
-                    state.username + '&api_key=' + apiKey
-            }).done(success);
+            if (es.shouldPoll('music')) {
+                logger.trace('lastfm poll');
+                $.ajax({
+                    url: baseUrl + '&method=user.getrecenttracks&user=' +
+                        state.username + '&api_key=' + apiKey
+                }).done(success);
+            } else {
+                logger.trace('ignoring lastfm poll (shouldPoll)');
+            }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }

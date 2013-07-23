@@ -39,7 +39,7 @@
             if (data.action !== undefined) {
                 if (data.action == 'watching') {
                     if (data.type == 'episode') {
-                        es.publish('video', 
+                        es.publish('trakt', 'video', 
                             data.episode.season + 
                             'x' + utility.padLeft(data.episode.number, 2) + 
                             ' - ' + data.show.title, 0, state.interval);
@@ -48,17 +48,21 @@
                     logger.warn('Did not expect "' + data.action + '" action data');
                 }
             } else {
-                es.publish('video', null, 0, state.interval);
+                es.publish('trakt', 'video', null, 0, state.interval);
             }
         }
 
         function poll() {
-            logger.trace('trakt poll');
             clear();
 
-            $.ajax({
-                url: baseUrl + 'user/watching.json/' + apiKey + '/' + state.username
-            }).done(success);
+            if (es.shouldPoll('video')) {
+                logger.trace('trakt poll');
+                $.ajax({
+                    url: baseUrl + 'user/watching.json/' + apiKey + '/' + state.username
+                }).done(success);
+            } else {
+                logger.trace('ignoring trakt poll (shouldPoll)');
+            }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }

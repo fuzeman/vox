@@ -36,19 +36,23 @@
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('game', data.result.title, 0, state.interval);
+                es.publish('evolve', 'game', data.result.title, 0, state.interval);
             } else {
-                es.publish('game', null, 0, state.interval);
+                es.publish('evolve', 'game', null, 0, state.interval);
             }
         }
 
         function poll() {
-            logger.trace('evolve poll');
             clear();
 
-            $.ajax({
-                url: baseUrl + state.username
-            }).done(success);
+            if (es.shouldPoll('game')) {
+                logger.trace('evolve poll');
+                $.ajax({
+                    url: baseUrl + state.username
+                }).done(success);
+            } else {
+                logger.trace('ignoring evolve poll (shouldPoll)');
+            }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
         }
