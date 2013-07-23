@@ -3063,7 +3063,7 @@ h3.userlist-header {
         .navbar .nav > li > a {
             text-shadow: none;
             color: #404040;
-            padding: 8px 10px 8px;
+            padding: 8px 12px;
         }
 
 .navbar .nav > li > a:hover {
