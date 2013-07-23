@@ -38,7 +38,7 @@
         function success(data) {
             if (data.recenttracks !== undefined &&
                 data.recenttracks.track !== undefined &&
-                data.recenttracks.track.length != 0) {
+                data.recenttracks.track.length !== 0) {
                 
                 var lastTrack = data.recenttracks.track[0],
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
