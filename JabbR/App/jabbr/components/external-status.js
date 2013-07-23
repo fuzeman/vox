@@ -43,7 +43,7 @@
                     logger.info('changing status type from ' + last.type + ' (' + last.source + ') to ' + type + ' (' + source + ')');
                 }
 
-                logger.trace('publishing: "' + text + '" (' + type + ')');
+                logger.info('publishing: "' + text + '" (' + type + ') (' + source + ')');
 
                 if (text === null) {
                     type = null;

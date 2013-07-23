@@ -59,7 +59,7 @@
                     url: requestUrl
                 }).done(success);
             } else {
-                logger.trace('ignoring steam poll (shouldPoll)');
+                logger.info('ignoring steam poll (shouldPoll)');
             }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);

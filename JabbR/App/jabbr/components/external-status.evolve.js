@@ -51,7 +51,7 @@
                     url: baseUrl + state.username
                 }).done(success);
             } else {
-                logger.trace('ignoring evolve poll (shouldPoll)');
+                logger.info('ignoring evolve poll (shouldPoll)');
             }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);

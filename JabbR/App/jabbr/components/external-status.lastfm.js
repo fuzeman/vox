@@ -68,7 +68,7 @@
                         state.username + '&api_key=' + apiKey
                 }).done(success);
             } else {
-                logger.trace('ignoring lastfm poll (shouldPoll)');
+                logger.info('ignoring lastfm poll (shouldPoll)');
             }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);

@@ -61,7 +61,7 @@
                     url: baseUrl + 'user/watching.json/' + apiKey + '/' + state.username
                 }).done(success);
             } else {
-                logger.trace('ignoring trakt poll (shouldPoll)');
+                logger.info('ignoring trakt poll (shouldPoll)');
             }
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
