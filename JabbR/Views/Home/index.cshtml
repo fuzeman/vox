@@ -468,9 +468,15 @@
                                     <div class="control-group">
                                         <label class="control-label" for="evolve_username">Evolve</label>
                                         <div class="controls">
-                                            <input type="checkbox" id="evolve_enabled" class="state" disabled/>
+                                            <input type="checkbox" id="evolve_enabled" class="state"/>
 
-                                            <input type="text" id="evolve_username" placeholder="Username" disabled/><span class="help-inline">Not Implemented</span>
+                                            <input type="text" id="evolve_username" placeholder="Username"/>
+
+                                            <span class="update-every">update every</span>
+                                            <div class="input-append">
+                                                <input type="text" style="width: 17px;" id="evolve_interval" maxlength="2" value="5" />
+                                                <span class="add-on">m</span>
+                                            </div>
                                         </div>
                                     </div>
 

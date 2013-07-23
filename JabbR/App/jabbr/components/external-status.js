@@ -2,9 +2,10 @@
     'jquery',
     'logger',
     'kernel',
+    'jabbr/components/external-status.evolve',
     'jabbr/components/external-status.lastfm',
     'jabbr/components/external-status.trakt'
-], function ($, Logger, kernel, lastfm, trakt) {
+], function ($, Logger, kernel, evolve, lastfm, trakt) {
     var logger = new Logger('jabbr/components/external-status'),
         client = null,
         object = null;
@@ -26,7 +27,7 @@
                     if (last.text !== null && text === null) {
                         return;
                     }
-                    
+
                     logger.trace('changing status type from ' + last.type + ' to ' + type);
                     // Games trump everything
                     if (last.type == 'game') {
@@ -39,7 +40,7 @@
                 }
 
                 logger.trace('publishing: "' + text + '" (' + type + ')');
-                
+
                 if (text === null) {
                     type = null;
                 }
@@ -58,6 +59,7 @@
             activate: function () {
                 client = kernel.get('jabbr/client');
 
+                evolve.activate();
                 lastfm.activate();
                 trakt.activate();
 
@@ -70,6 +72,7 @@
 
     return function () {
         if (object === null) {
+            evolve = evolve();
             lastfm = lastfm();
             trakt = trakt();
 

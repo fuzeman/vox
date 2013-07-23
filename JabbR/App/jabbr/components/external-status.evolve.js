@@ -1,9 +1,10 @@
 ﻿define([
     'jquery',
     'logger',
-    'kernel'
-], function ($, Logger, kernel) {
-    var logger = new Logger('jabbr/components/external-status.lastfm'),
+    'kernel',
+    'jabbr/utility'
+], function ($, Logger, kernel, utility) {
+    var logger = new Logger('jabbr/components/external-status.evolve'),
         cs = null,
         es = null,
         object = null;
@@ -11,10 +12,8 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var apiKey = '4bf73213fd748d82b28b97c5b41e978c',
-            baseUrl = 'https://ws.audioscrobbler.com/2.0/?format=json',
+        var baseUrl = 'https://icejabbr-origin.herokuapp.com/evolve/',
             loaded = false,
-            lastNothingPlaying = false, // Was the last poll result "nothing playing"
 
             state = {
                 enabled: false,
@@ -36,35 +35,19 @@
         }
 
         function success(data) {
-            if (data.recenttracks !== undefined &&
-                data.recenttracks.track !== undefined &&
-                data.recenttracks.track.length !== 0) {
-                
-                var lastTrack = data.recenttracks.track[0],
-                    nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
-
-                if (nowplaying) {
-                    es.publish('music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
-                    lastNothingPlaying = false;
-                    return;
-                }
-            }
-
-            // Nothing currently playing
-            if (lastNothingPlaying) {
-                es.publish('music', null, 0, state.interval);
+            if (data.result !== null) {
+                es.publish('game', data.result.title, 0, state.interval);
             } else {
-                lastNothingPlaying = true;
+                es.publish('game', null, 0, state.interval);
             }
         }
 
         function poll() {
-            logger.trace('lastfm poll');
+            logger.trace('evolve poll');
             clear();
 
             $.ajax({
-                url: baseUrl + '&method=user.getrecenttracks&user=' +
-                    state.username + '&api_key=' + apiKey
+                url: baseUrl + state.username
             }).done(success);
 
             timeout = setTimeout(poll, state.interval * 60 * 1000);
@@ -73,7 +56,8 @@
         function update(enabled, username, interval) {
             // just been disabled
             if (state.enabled != enabled && !enabled) {
-                logger.info('lastfm disabled');
+                logger.info('evolve disabled');
+
                 set(enabled, username, interval);
                 clear();
                 return;
@@ -83,7 +67,8 @@
             if (enabled && (state.enabled != enabled ||
                 state.username != username ||
                 state.interval != interval)) {
-                logger.info('lastfm enabled or username/interval has changed');
+                logger.info('evolve enabled or username/interval has changed');
+
                 set(enabled, username, interval);
                 clear();
                 if (loaded) {
@@ -97,9 +82,9 @@
 
         function settingsChanged() {
             update(
-                cs.get('lastfm_enabled'),
-                cs.get('lastfm_username'),
-                parseInt(cs.get('lastfm_interval'), 10)
+                cs.get('evolve_enabled'),
+                cs.get('evolve_username'),
+                parseInt(cs.get('evolve_interval'), 10)
             );
         }
 
@@ -121,7 +106,7 @@
     return function () {
         if (object === null) {
             object = initialize();
-            kernel.bind('jabbr/components/external-status.lastfm', object);
+            kernel.bind('jabbr/components/external-status.evolve', object);
         }
 
         return object;

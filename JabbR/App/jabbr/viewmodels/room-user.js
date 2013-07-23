@@ -151,6 +151,8 @@ define([
                 $('i', $extendedTitle).attr('class', 'icon-music');
             } else if (this.user.status_type == 'video') {
                 $('i', $extendedTitle).attr('class', 'icon-film');
+            } else if (this.user.status_type == 'game') {
+                $('i', $extendedTitle).attr('class', 'icon-gamepad');
             }
         } else {
             $extendedTitle.attr('title', '');
