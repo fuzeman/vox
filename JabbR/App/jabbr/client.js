@@ -110,6 +110,7 @@ define([
 
         function focused() {
             events.trigger(events.ui.clearUnread);
+            $this.trigger(events.client.activityUpdated);
 
             try {
                 chat.server.updateActivity();

@@ -25,7 +25,8 @@ define(['jquery'], function ($) {
             disconnected: 'jabbr.client.disconnected',
             reconnecting: 'jabbr.client.reconnecting',
 
-            loggedOn: 'jabbr.client.loggedOn'
+            loggedOn: 'jabbr.client.loggedOn',
+            activityUpdated: 'jabbr.client.activityUpdated'
         },
 
         ui: {

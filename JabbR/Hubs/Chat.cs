@@ -522,6 +522,17 @@ namespace JabbR
             CheckStatus();
         }
 
+        public void ClaimPublisher()
+        {
+            var userId = Context.User.GetUserId();
+            var user = _repository.GetUserById(userId);
+
+            foreach (var client in user.ConnectedClients)
+            {
+                Clients.Client(client.Id).publisherChanged(Context.ConnectionId);
+            }
+        }
+
         public void PublishExternalStatus(string type, string text, long timestamp, int interval)
         {
             var userId = Context.User.GetUserId();
@@ -601,7 +612,6 @@ namespace JabbR
         private void UpdateActivity(ChatUser user)
         {
             _service.UpdateActivity(user, Context.ConnectionId, UserAgent);
-
             _repository.CommitChanges();
         }
 
