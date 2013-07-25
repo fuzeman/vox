@@ -49,7 +49,7 @@
                 logger.trace('steam poll');
                 var requestUrl = null;
 
-                if (state.id.indexOf('7656119') == 0) {
+                if (state.id.indexOf('7656119') === 0) {
                     requestUrl = baseUrl + 'profiles/' + state.id;
                 } else {
                     requestUrl = baseUrl + 'id/' + state.id;

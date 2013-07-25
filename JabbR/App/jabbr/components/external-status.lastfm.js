@@ -39,12 +39,13 @@
             if (data.recenttracks !== undefined &&
                 data.recenttracks.track !== undefined &&
                 data.recenttracks.track.length !== 0) {
-                
                 var lastTrack = data.recenttracks.track[0],
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
                 if (nowplaying) {
-                    es.publish('lastfm', 'music', lastTrack.name + ' - ' + lastTrack.artist['#text'], 0, state.interval);
+                    es.publish('lastfm', 'music',
+                        lastTrack.name + ' - ' + lastTrack.artist['#text'],
+                        0, state.interval);
                     lastNothingPlaying = false;
                     return;
                 }
