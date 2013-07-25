@@ -900,6 +900,9 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="App\build.js" />
     <Content Include="App\jabbr\components\external-status.lastfm.js" />
+    <EmbeddedResource Include="Migrations\201307251218442_AddChatRoomUserData.resx">
+      <DependentUpon>201307251218442_AddChatRoomUserData.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Scripts\jquery-1.9.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.9.1.js" />
     <Content Include="Scripts\jquery-1.9.1.min.js" />
@@ -974,6 +977,8 @@
     <Content Include="Scripts\jquery-1.9.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\MuteCommand.cs" />
+    <Compile Include="Commands\UnMuteCommand.cs" />
     <Compile Include="Infrastructure\AuthenticationManagerExtensions.cs" />
     <Compile Include="Middleware\FixCookieHandler.cs" />
     <Compile Include="App_Start\Startup.DependencyInjection.cs" />
@@ -1032,6 +1037,11 @@
     <Compile Include="Migrations\201307031047292_UpstreamExtendChatUserFlagLength.Designer.cs">
       <DependentUpon>201307031047292_UpstreamExtendChatUserFlagLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201307251218442_AddChatRoomUserData.cs" />
+    <Compile Include="Migrations\201307251218442_AddChatRoomUserData.Designer.cs">
+      <DependentUpon>201307251218442_AddChatRoomUserData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\ClientNotification.cs" />

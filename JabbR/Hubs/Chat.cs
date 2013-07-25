@@ -160,8 +160,9 @@ namespace JabbR
 
             var userId = Context.User.GetUserId();
 
-            ChatUser user = _repository.VerifyUserId(userId);
-            ChatRoom room = _repository.VerifyUserRoom(_cache, user, clientMessage.Room);
+            var user = _repository.VerifyUserId(userId);
+            var room = _repository.VerifyUserRoom(_cache, user, clientMessage.Room);
+            var roomUserData = _repository.GetRoomUserData(user, room);
 
             if (room == null || (room.Private && !user.AllowedRooms.Contains(room)))
             {
@@ -172,6 +173,11 @@ namespace JabbR
             if (room.Closed)
             {
                 throw new InvalidOperationException(String.Format("You cannot post messages to '{0}'. The room is closed.", clientMessage.Room));
+            }
+
+            if (roomUserData.IsMuted)
+            {
+                throw new InvalidOperationException(String.Format("You cannot post messages to '{0}'. You have been muted.", clientMessage.Room));
             }
 
             // Update activity *after* ensuring the user, this forces them to be active
@@ -785,6 +791,18 @@ namespace JabbR
 
             // Tell the calling client the granting permission into the room was successful
             Clients.Caller.userUnallowed(targetUser.Name, targetRoom.Name);
+        }
+
+        void INotificationService.MuteUser(ChatUser targetUser, ChatRoom targetRoom)
+        {
+            // Tell the room that the user has been muted
+            Clients.Group(targetRoom.Name).userMuted(targetUser.Name, targetRoom.Name);
+        }
+
+        void INotificationService.UnMuteUser(ChatUser targetUser, ChatRoom targetRoom)
+        {
+            // Tell the room that the user has been un-muted
+            Clients.Group(targetRoom.Name).userUnMuted(targetUser.Name, targetRoom.Name);
         }
 
         void INotificationService.AddOwner(ChatUser targetUser, ChatRoom targetRoom)

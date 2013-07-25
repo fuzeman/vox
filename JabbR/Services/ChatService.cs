@@ -713,6 +713,41 @@ namespace JabbR.Services
             _repository.CommitChanges();
         }
 
+        public void MuteUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom)
+        {
+            EnsureOwnerOrAdmin(user, targetRoom);
+
+            if (targetUser == user)
+            {
+                throw new InvalidOperationException("Why would you want to mute yourself?");
+            }
+
+            if (!user.IsAdmin && targetUser.IsAdmin)
+            {
+                throw new InvalidOperationException("You cannot mute an admin. Only an admin can mute admin.");
+            }
+
+            if (targetRoom.Creator != user && targetRoom.Owners.Contains(targetUser) && !user.IsAdmin)
+            {
+                throw new InvalidOperationException("Owners cannot mute other owners. Only the room creator can mute an owner.");
+            }
+
+            var roomUserData = _repository.GetRoomUserData(targetUser, targetRoom);
+            roomUserData.IsMuted = true;
+
+            _repository.CommitChanges();
+        }
+
+        public void UnMuteUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom)
+        {
+            EnsureOwnerOrAdmin(user, targetRoom);
+
+            var roomUserData = _repository.GetRoomUserData(targetUser, targetRoom);
+            roomUserData.IsMuted = false;
+
+            _repository.CommitChanges();
+        }
+
         public void LockRoom(ChatUser user, ChatRoom targetRoom)
         {
             EnsureOwnerOrAdmin(user, targetRoom);

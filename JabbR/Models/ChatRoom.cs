@@ -1,7 +1,7 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JabbR.Infrastructure;
 
 namespace JabbR.Models
 {
@@ -30,7 +30,8 @@ namespace JabbR.Models
         public int? CreatorKey { get; set; }
 
         // Creator and owners
-        public virtual ICollection<ChatUser> Owners { get; set; } 
+        public virtual ICollection<ChatUser> Owners { get; set; }
+        public virtual ICollection<ChatRoomUserData> UserData { get; set; }
 
         public virtual ICollection<ChatMessage> Messages { get; set; }
         public virtual ICollection<ChatUser> Users { get; set; }
@@ -42,6 +43,7 @@ namespace JabbR.Models
             Owners = new SafeCollection<ChatUser>();
             Messages = new SafeCollection<ChatMessage>();
             Users = new SafeCollection<ChatUser>();
+            UserData = new SafeCollection<ChatRoomUserData>();
             AllowedUsers = new SafeCollection<ChatUser>();
             Attachments = new SafeCollection<Attachment>();
         }

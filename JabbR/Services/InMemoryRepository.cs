@@ -1,8 +1,8 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using JabbR.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using JabbR.Infrastructure;
-using JabbR.Models;
 
 namespace JabbR.Services
 {
@@ -12,6 +12,7 @@ namespace JabbR.Services
         private readonly ICollection<ChatUserIdentity> _identities;
         private readonly ICollection<ChatUserMention> _mentions;
         private readonly ICollection<ChatRoom> _rooms;
+        private readonly ICollection<ChatRoomUserData> _roomUserData;
         private readonly ICollection<Attachment> _attachments;
         private readonly ICollection<Notification> _notifications;
 
@@ -19,6 +20,7 @@ namespace JabbR.Services
         {
             _users = new SafeCollection<ChatUser>();
             _rooms = new SafeCollection<ChatRoom>();
+            _roomUserData = new SafeCollection<ChatRoomUserData>();
             _identities = new SafeCollection<ChatUserIdentity>();
             _mentions = new SafeCollection<ChatUserMention>();
             _attachments = new SafeCollection<Attachment>();
@@ -33,12 +35,17 @@ namespace JabbR.Services
 
         public void Add(Attachment attachment)
         {
-            _attachments.Add(attachment);   
+            _attachments.Add(attachment);
         }
 
         public void Add(ChatRoom room)
         {
             _rooms.Add(room);
+        }
+
+        public void Add(ChatRoomUserData roomUserData)
+        {
+            _roomUserData.Add(roomUserData);
         }
 
         public void Add(ChatUser user)
@@ -91,6 +98,11 @@ namespace JabbR.Services
         public void Remove(ChatRoom room)
         {
             _rooms.Remove(room);
+        }
+
+        public void Remove(ChatRoomUserData roomUserData)
+        {
+            _roomUserData.Remove(roomUserData);
         }
 
         public void Remove(ChatUser user)
@@ -223,6 +235,26 @@ namespace JabbR.Services
                 return identity.User;
             }
             return null;
+        }
+
+        public ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room)
+        {
+            var roomUserData = _roomUserData.FirstOrDefault(d => d.UserKey == user.Key && d.RoomKey == room.Key);
+
+            if (roomUserData == null)
+            {
+                roomUserData = new ChatRoomUserData
+                {
+                    User = user,
+                    Room = room,
+
+                    IsMuted = false
+                };
+
+                Add(roomUserData);
+            }
+
+            return roomUserData;
         }
 
         public Notification GetNotificationById(int notificationId)

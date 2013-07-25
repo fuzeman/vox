@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JabbR.Models;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
 using System.Linq;
-using JabbR.Models;
 
 namespace JabbR.Services
 {
@@ -45,6 +45,12 @@ namespace JabbR.Services
             _db.SaveChanges();
         }
 
+        public void Add(ChatRoomUserData roomUserData)
+        {
+            _db.RoomUserData.Add(roomUserData);
+            _db.SaveChanges();
+        }
+
         public void Add(ChatUser user)
         {
             _db.Users.Add(user);
@@ -82,6 +88,12 @@ namespace JabbR.Services
         public void Remove(ChatRoom room)
         {
             _db.Rooms.Remove(room);
+            _db.SaveChanges();
+        }
+
+        public void Remove(ChatRoomUserData roomUserData)
+        {
+            _db.RoomUserData.Remove(roomUserData);
             _db.SaveChanges();
         }
 
@@ -291,6 +303,26 @@ namespace JabbR.Services
             return null;
         }
 
+        public ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room)
+        {
+            var roomUserData = _db.RoomUserData.FirstOrDefault(d => d.UserKey == user.Key && d.RoomKey == room.Key);
+
+            if (roomUserData == null)
+            {
+                roomUserData = new ChatRoomUserData
+                {
+                    User = user,
+                    Room = room,
+
+                    IsMuted = false
+                };
+
+                Add(roomUserData);
+            }
+
+            return roomUserData;
+        }
+
         public Notification GetNotificationById(int notificationId)
         {
             return _db.Notifications.SingleOrDefault(n => n.Key == notificationId);
@@ -321,10 +353,9 @@ namespace JabbR.Services
                       .FirstOrDefault() != null;
         }
 
-
         public void Reload(object entity)
         {
             _db.Entry(entity).Reload();
-        }        
+        }
     }
 }

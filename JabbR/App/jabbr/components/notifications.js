@@ -173,6 +173,22 @@ define([
                 messages.addMessage('You are no longer an admin', 'notification', state.get().activeRoom);
             };
 
+            client.chat.client.userMuted = function (user, room) {
+                if (rc.isSelf({ Name: user })) {
+                    messages.addMessage('You have been muted', 'notification', room);
+                } else {
+                    messages.addMessage(user + ' has been muted', 'notification', room);
+                }
+            };
+
+            client.chat.client.userUnMuted = function (user, room) {
+                if (rc.isSelf({ Name: user })) {
+                    messages.addMessage('You have been un-muted', 'notification', room);
+                } else {
+                    messages.addMessage(user + ' has been un-muted', 'notification', room);
+                }
+            };
+
             client.chat.client.broadcastMessage = function (message, room) {
                 messages.addMessage('ADMIN: ' + message, 'broadcast', room);
             };

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JabbR.Infrastructure;
 
 namespace JabbR.Models
 {
@@ -46,6 +46,7 @@ namespace JabbR.Models
         public virtual ICollection<ChatClient> ConnectedClients { get; set; }
         public virtual ICollection<ChatRoom> OwnedRooms { get; set; }
         public virtual ICollection<ChatRoom> Rooms { get; set; }
+        public virtual ICollection<ChatRoomUserData> RoomUserData { get; set; }
 
         public virtual ICollection<Attachment> Attachments { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
@@ -60,6 +61,7 @@ namespace JabbR.Models
             ConnectedClients = new SafeCollection<ChatClient>();
             OwnedRooms = new SafeCollection<ChatRoom>();
             Rooms = new SafeCollection<ChatRoom>();
+            RoomUserData = new SafeCollection<ChatRoomUserData>();
             AllowedRooms = new SafeCollection<ChatRoom>();
             Attachments = new SafeCollection<Attachment>();
             Notifications = new SafeCollection<Notification>();

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using JabbR.Models.Mapping;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using JabbR.Models.Mapping;
 
 namespace JabbR.Models
 {
@@ -13,7 +13,7 @@ namespace JabbR.Models
             ((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectContext_ObjectMaterialized;
         }
 
-        void ObjectContext_ObjectMaterialized(object sender, System.Data.Objects.ObjectMaterializedEventArgs e)
+        private void ObjectContext_ObjectMaterialized(object sender, System.Data.Objects.ObjectMaterializedEventArgs e)
         {
             var entityChatUser = e.Entity as ChatUser;
             if (entityChatUser != null)
@@ -42,6 +42,7 @@ namespace JabbR.Models
         public DbSet<ChatClient> Clients { get; set; }
         public DbSet<ChatMessage> Messages { get; set; }
         public DbSet<ChatRoom> Rooms { get; set; }
+        public DbSet<ChatRoomUserData> RoomUserData { get; set; }
         public DbSet<ChatUser> Users { get; set; }
         public DbSet<ChatUserIdentity> Identities { get; set; }
         public DbSet<ChatUserMention> Mentions { get; set; }

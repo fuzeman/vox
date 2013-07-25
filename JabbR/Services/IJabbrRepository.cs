@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using JabbR.Models;
 using System;
-using JabbR.Models;
+using System.Linq;
 
 namespace JabbR.Services
 {
@@ -28,6 +28,7 @@ namespace JabbR.Services
         ChatUser GetUserByClientId(string clientId);
         ChatUser GetUserByLegacyIdentity(string userIdentity);
         ChatUser GetUserByIdentity(string providerName, string userIdentity);
+        ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room);
         Notification GetNotificationById(int notificationId);
 
         IQueryable<ChatUserMention> GetMentions();
@@ -41,6 +42,7 @@ namespace JabbR.Services
         void Add(ChatClient client);
         void Add(ChatMessage message);
         void Add(ChatRoom room);
+        void Add(ChatRoomUserData roomUserData);
         void Add(ChatUser user);
         void Add(ChatUserIdentity identity);
         void Add(ChatUserMention mention);
@@ -48,6 +50,7 @@ namespace JabbR.Services
 
         void Remove(ChatClient client);
         void Remove(ChatRoom room);
+        void Remove(ChatRoomUserData roomUserData);
         void Remove(ChatUser user);
         void Remove(ChatUserIdentity identity);
         void Remove(ChatUserMention mention);
