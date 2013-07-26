@@ -43,8 +43,17 @@
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
                 if (nowplaying) {
+                    var artistUrl = lastTrack.url.substring(0, lastTrack.url.lastIndexOf('/'));
+                    artistUrl = artistUrl.substring(0, artistUrl.lastIndexOf('/'));
+                    
                     es.publish('lastfm', 'music',
-                        lastTrack.name + ' - ' + lastTrack.artist['#text'],
+                        {
+                            title: lastTrack.artist['#text'],
+                            url: artistUrl,
+                            
+                            sub: lastTrack.name,
+                            sub_url: lastTrack.url
+                        },
                         0, state.interval);
                     lastNothingPlaying = false;
                     return;

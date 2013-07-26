@@ -61,7 +61,7 @@ define([
         update(this, userdata);
 
         this.status_type = null;
-        this.status_text = null;
+        this.status_result = null;
         this.status_timestamp = null;
         this.status_interval = null;
         this.status_clear_timeout = null;
@@ -170,15 +170,15 @@ define([
         }
     };
 
-    User.prototype.changeExternalStatus = function (type, text, timestamp, interval) {
+    User.prototype.changeExternalStatus = function (type, result, timestamp, interval) {
         if (this.status_clear_timeout !== null) {
             clearTimeout(this.status_clear_timeout);
         }
 
         // Only update if external status has actually changed
-        if (type != this.status_type || text != this.status_text) {
+        if (type != this.status_type || result != this.status_result) {
             this.status_type = type;
-            this.status_text = text;
+            this.status_result = result;
             this.status_timestamp = timestamp;
             this.status_interval = interval;
 
@@ -198,7 +198,7 @@ define([
 
                 // Reset old data
                 user.status_type = null;
-                user.status_text = null;
+                user.status_result = null;
                 user.status_timestamp = null;
                 user.status_interval = null;
 

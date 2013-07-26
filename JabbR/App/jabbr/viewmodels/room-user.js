@@ -141,10 +141,50 @@ define([
         var $extendedTitle = this.$roomUser.find('.extended .title');
 
         if (this.user.status_type !== null &&
-            this.user.status_text !== null) {
-            // Set status text
-            $extendedTitle.attr('title', this.user.status_text);
-            $('span', $extendedTitle).text(this.user.status_text);
+            this.user.status_result !== null) {
+            var result = this.user.status_result;
+
+            var $titleSpan = $('span', $extendedTitle),
+                tooltip = "";
+            
+            // Set basic result
+            if (result.title !== undefined) {
+                tooltip = result.title;
+
+                if (result.url !== undefined) {
+                    $titleSpan.html('<a class="main"/>');
+                    $('a.main', $titleSpan).attr('href', result.url);
+                    $('a.main', $titleSpan).attr('target', '_blank');
+                    $('a.main', $titleSpan).text(result.title);
+                } else {
+                    $titleSpan.html('<span class="main"/>');
+                    $('span.main', $titleSpan).text(result.title);
+                }
+
+                // Append sub result if it exists
+                if (result.sub !== undefined) {
+                    // Add sub title to tooltip
+                    if (result.sub_title !== undefined) {
+                        tooltip = result.sub + ' ' + result.sub_title + ' - ' + tooltip;
+                    } else {
+                        tooltip = result.sub + ' - ' + tooltip;
+                    }
+
+                    // Add sub to element
+                    if (result.sub_url !== undefined) {
+                        $titleSpan.prepend('<a class="sub"/> - ');
+                        $('a.sub', $titleSpan).attr('href', result.sub_url);
+                        $('a.sub', $titleSpan).attr('target', '_blank');
+                        $('a.sub', $titleSpan).text(result.sub);
+                    } else {
+                        $titleSpan.prepend('<span class="sub"/> - ');
+                        $('span.sub', $titleSpan).text(result.sub);
+                    }
+                }
+            }
+
+            // Update DOM
+            $extendedTitle.attr('title', tooltip);
             
             // Set status icon
             if (this.user.status_type == 'music') {

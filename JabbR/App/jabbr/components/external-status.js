@@ -19,7 +19,7 @@
             last = {
                 source: null,
                 type: null,
-                text: null,
+                result: null,
                 timestamp: null
             };
 
@@ -27,17 +27,18 @@
             return currentPublisher == client.connection.hub.id;
         }
 
-        function publish(source, type, text, timestamp, interval) {
+        function publish(source, type, result, timestamp, interval) {
             if (!shouldPublish()) {
                 logger.info('Not publishing, we are not the active publisher');
                 return;
             }
-            if (last.type != type || last.text != text) {
+            
+            if (last.type != type || last.result != result) {
                 // If we are changing from one type or source to another
                 if (last.type !== null && type !== null &&
                     (last.type != type || last.source != source)) {
                     // Ignore 'nothing' publish
-                    if (last.text !== null && text === null) {
+                    if (last.result !== null && result === null) {
                         return;
                     }
 
@@ -54,18 +55,18 @@
                         ' (' + last.source + ') to ' + type + ' (' + source + ')');
                 }
 
-                logger.info('publishing: "' + text + '" (' + type + ') (' + source + ')');
+                logger.info('publishing: ' + result + ' (' + type + ') (' + source + ')');
 
-                if (text === null) {
+                if (result === null) {
                     type = null;
                 }
 
-                client.chat.server.publishExternalStatus(type, text, timestamp, interval);
+                client.chat.server.publishExternalStatus(type, result, timestamp, interval);
 
                 last = {
                     source: source,
                     type: type,
-                    text: text,
+                    result: result,
                     timestamp: timestamp
                 };
             }

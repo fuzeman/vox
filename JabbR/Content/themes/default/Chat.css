@@ -477,6 +477,16 @@ form#send-message {
         padding-left: 2px;
     }
 
+        .user .extended a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        .user .extended a:hover {
+            color: #005580;
+            text-decoration: underline;
+        }
+
         .user .extended .icon-film {
             font-size: 11px;
         }

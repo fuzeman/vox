@@ -539,7 +539,7 @@ namespace JabbR
             }
         }
 
-        public void PublishExternalStatus(string type, string text, long timestamp, int interval)
+        public void PublishExternalStatus(string type, Dictionary<string, object> result, long timestamp, int interval)
         {
             var userId = Context.User.GetUserId();
             var user = _repository.GetUserById(userId);
@@ -547,7 +547,7 @@ namespace JabbR
             // TODO Stop message duplication here
             foreach (var room in user.Rooms)
             {
-                Clients.Group(room.Name).changeExternalStatus(user.Name, type, text, timestamp, interval);
+                Clients.Group(room.Name).changeExternalStatus(user.Name, type, result, timestamp, interval);
             }
         }
 

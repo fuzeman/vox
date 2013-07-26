@@ -12,8 +12,7 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var apiKey = 'd6d681f0f165c6a61161366c80a56c44',
-            baseUrl = 'https://icejabbr-origin.herokuapp.com/trakt/',
+        var baseUrl = 'https://icejabbr-origin.herokuapp.com/trakt/',
             loaded = false,
 
             state = {
@@ -37,7 +36,7 @@
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('trakt', 'video', data.result.title, 0, state.interval);
+                es.publish('trakt', 'video', data.result, 0, state.interval);
             } else {
                 es.publish('trakt', 'video', null, 0, state.interval);
             }

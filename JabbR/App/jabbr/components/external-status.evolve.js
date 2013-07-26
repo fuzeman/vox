@@ -36,7 +36,7 @@
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('evolve', 'game', data.result.title, 0, state.interval);
+                es.publish('evolve', 'game', data.result, 0, state.interval);
             } else {
                 es.publish('evolve', 'game', null, 0, state.interval);
             }
