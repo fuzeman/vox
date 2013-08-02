@@ -17,6 +17,11 @@ define([
                 match = null,
                 result = handler.get();
 
+            // Ignore multi-line paste messages
+            if(result.indexOf('\n') != -1) {
+                return;
+            }
+
             //Replaces *test* occurrences in message with <i>test</i> so you can use italics
             while ((match = re.exec(result)) !== null) {
                 if (match[1].length > 0) {
