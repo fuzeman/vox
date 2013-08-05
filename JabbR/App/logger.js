@@ -7,9 +7,9 @@ define([
     function Logger(tag) {
         this.tag = tag;
     }
-
-    if (window.debug === undefined) {
-        window.debug = false;
+    
+    if (window.jabbr === undefined) {
+        window.jabbr = { debug: false };
     }
 
     var levels = {
@@ -159,7 +159,7 @@ define([
     }
 
     Logger.prototype.write = function (level, message) {
-        if (window.debug) {
+        if (window.jabbr.debug) {
             var caller = getCaller();
 
             if (caller !== null) {
@@ -170,7 +170,7 @@ define([
                 );
                 return;
             }
-        } else if (level != levels.TRACE) {
+        } else if (level != levels.TRACE && level != levels.DEBUG) {
             console.log(
                 "[" + padLeft(this.tag, 32) + "]  " +
                 "(" + padRight(toLevelString(level), 5) + ")    " + message

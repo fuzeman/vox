@@ -569,11 +569,7 @@
         window.jabbrVersion = '@Model.Version';
         @if (Model.DebugMode)
         {
-            @: window.debug = true;
-        }
-        else
-        {
-            @: window.debug = false;
+            @: window.jabbr = { debug: true };
         }
     </script>
     @if (Model.DebugMode)
