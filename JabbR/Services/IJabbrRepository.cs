@@ -30,6 +30,7 @@ namespace JabbR.Services
         ChatUser GetUserByIdentity(string providerName, string userIdentity);
         ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room);
         Notification GetNotificationById(int notificationId);
+        Notification GetNotificationByMessage(ChatMessage message, ChatUser user);
 
         IQueryable<ChatUserMention> GetMentions();
         IQueryable<ChatUserMention> GetMentionsByUser(ChatUser callingUser);

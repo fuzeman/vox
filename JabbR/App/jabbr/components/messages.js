@@ -562,6 +562,15 @@ define([
             }
         });
 
+        function messageReadClick() {
+            var message = $(this).closest('.message'),
+                mid = message.attr('id').substring(2);
+
+            if (mid !== undefined) {
+                client.chat.server.setMessageReadState(mid, true);
+            }
+        }
+
         // #endregion
 
         //
@@ -577,6 +586,8 @@ define([
 
                 client.chat.client.sendMeMessage = this.sendMeMessage;
                 client.chat.client.sendPrivateMessage = this.sendPrivateMessage;
+
+                client.chat.client.messageReadStateChanged = this.messageReadStateChanged;
             },
 
             addMessage: function (message, room) {
@@ -640,6 +651,23 @@ define([
                 }
 
                 addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
+            },
+
+            messageReadStateChanged: function (mid, read) {
+                logger.debug('messageReadStateChanged ' + mid + ' ' + read);
+
+                var cur = $('#m-' + mid + ' .left .state a.read');
+
+                if (read) {
+                    cur.remove();
+                } else {
+                    if (cur.length == 0) {
+                        var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
+                        $readButton.click(messageReadClick);
+
+                        $('#m-' + mid + ' .left .state').append($readButton);
+                    }
+                }
             }
         };
 

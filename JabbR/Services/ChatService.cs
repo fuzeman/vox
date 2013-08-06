@@ -451,7 +451,7 @@ namespace JabbR.Services
             return message;
         }
 
-        public void AddNotification(ChatUser mentionedUser, ChatMessage message, ChatRoom room, bool markAsRead)
+        public Notification AddNotification(ChatUser mentionedUser, ChatMessage message, ChatRoom room, bool markAsRead)
         {
             // We need to use the key here since messages might be a new entity
             var notification = new Notification
@@ -463,6 +463,8 @@ namespace JabbR.Services
             };
 
             _repository.Add(notification);
+
+            return notification;
         }
 
         public void AppendMessage(string id, string content)

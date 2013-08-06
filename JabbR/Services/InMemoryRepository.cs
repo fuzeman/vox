@@ -262,6 +262,11 @@ namespace JabbR.Services
             return _notifications.SingleOrDefault(n => n.Key == notificationId);
         }
 
+        public Notification GetNotificationByMessage(ChatMessage message, ChatUser user)
+        {
+            return _notifications.SingleOrDefault(n => n.MessageKey == message.Key && n.UserKey == user.Key);
+        }
+
         public ChatClient GetClientById(string clientId, bool includeUser = false)
         {
             return _users.SelectMany(u => u.ConnectedClients).FirstOrDefault(c => c.Id == clientId);

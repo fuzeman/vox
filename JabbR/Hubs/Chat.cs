@@ -5,6 +5,7 @@ using JabbR.Models;
 using JabbR.Services;
 using JabbR.ViewModels;
 using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Messaging;
 using Microsoft.Data.Edm.Validation;
 using Newtonsoft.Json;
 using System;
@@ -240,6 +241,7 @@ namespace JabbR
         private void AddMentions(ChatMessage message)
         {
             var mentionedUsers = new List<ChatUser>();
+
             foreach (var userName in MentionExtractor.ExtractMentions(message.Content,
                 _repository.GetMentions()))
             {
@@ -266,7 +268,12 @@ namespace JabbR
                                   && (DateTimeOffset.UtcNow - mentionedUser.LastActivity) < TimeSpan.FromMinutes(10)
                                   && _repository.IsUserInRoom(_cache, mentionedUser, message.Room);
 
-                _service.AddNotification(mentionedUser, message, message.Room, markAsRead);
+                var notification = _service.AddNotification(mentionedUser, message, message.Room, markAsRead);
+
+                if (!markAsRead)
+                {
+                    MessageReadStateChanged(mentionedUser, message, notification);
+                }
 
                 mentionedUsers.Add(mentionedUser);
             }
@@ -279,6 +286,35 @@ namespace JabbR
             foreach (var user in mentionedUsers)
             {
                 UpdateUnreadMentions(user);
+            }
+        }
+
+        public void SetMessageReadState(string id, bool read)
+        {
+            var userId = Context.User.GetUserId();
+            var user = _repository.VerifyUserId(userId);
+
+            var message = _repository.GetMessageById(id);
+            if (message == null)
+                return;
+
+            var notification = _repository.GetNotificationByMessage(message, user);
+            if (notification == null)
+                return;
+
+            notification.Read = read;
+
+            _repository.CommitChanges();
+
+            MessageReadStateChanged(user, message, notification);
+            UpdateUnreadMentions(user);
+        }
+
+        private void MessageReadStateChanged(ChatUser mentionedUser, ChatMessage message, Notification notification)
+        {
+            foreach (var client in mentionedUser.ConnectedClients)
+            {
+                Clients.Client(client.Id).messageReadStateChanged(message.Id, notification.Read);
             }
         }
 

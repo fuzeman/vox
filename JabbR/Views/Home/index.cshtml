@@ -54,7 +54,9 @@
                 <img src="https://secure.gravatar.com/avatar/${hash}?s=16&d=mm" class="gravatar" />
                 <div class="name">${name}</div>
                 {{/if}}
-                <span class="state"></span>
+                <div class="state">
+                    <span class="indicator"></span>
+                </div>
             </div>
             <div class="middle{{if showUser}} first{{/if}}">
                 {{html message}}
