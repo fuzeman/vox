@@ -598,11 +598,10 @@ namespace JabbR
                 Clients.Caller.unreadNotifications = user.Notifications.Count(n => !n.Read);
             }
 
-            var rooms = new List<RoomViewModel>();
-            var privateRooms = new List<LobbyRoomViewModel>();
-            var userViewModel = new UserViewModel(user);
             var ownedRooms = user.OwnedRooms.Select(r => r.Key);
 
+            var userViewModel = new UserViewModel(user);
+            var rooms = new List<RoomViewModel>();
             foreach (var room in user.Rooms)
             {
                 var isOwner = ownedRooms.Contains(room.Key);
@@ -627,20 +626,29 @@ namespace JabbR
 
             if (!reconnecting)
             {
-                foreach (var r in user.AllowedRooms)
+                var privateRooms = user.AllowedRooms.Select(r => new LobbyRoomViewModel
                 {
-                    privateRooms.Add(new LobbyRoomViewModel
+                    Name = r.Name,
+                    Count = _repository.GetOnlineUsers(r).Count(),
+                    Private = r.Private,
+                    Closed = r.Closed,
+                    Topic = r.Topic
+                });
+
+                var unreadNotifications = user.Notifications
+                    .Where(n => !n.Read)
+                    .Select(n => new
                     {
-                        Name = r.Name,
-                        Count = _repository.GetOnlineUsers(r).Count(),
-                        Private = r.Private,
-                        Closed = r.Closed,
-                        Topic = r.Topic
+                        n.Key,
+                        MessageId = n.Message.Id
                     });
-                }
 
                 // Initialize the chat with the rooms the user is in
-                Clients.Caller.logOn(rooms, privateRooms, user.Mentions.Select(m => m.String));
+                Clients.Caller.logOn(
+                    rooms, privateRooms,
+                    user.Mentions.Select(m => m.String),
+                    unreadNotifications
+                );
             }
         }
 

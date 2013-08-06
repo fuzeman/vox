@@ -116,7 +116,7 @@ namespace JabbR.Nancy
         private static IPagedList<NotificationViewModel> GetNotifications(IJabbrRepository repository, ChatUser user, bool all = false,
                                                                           int page = 1, int take = 20, string roomName = null)
         {
-            IQueryable<Notification> notificationsQuery = repository.GetNotificationsByUser(user);
+            IQueryable<Notification> notificationsQuery = repository.GetNotificationsByUser(user, true);
 
             if (!all)
             {

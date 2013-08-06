@@ -180,7 +180,7 @@ namespace JabbR.Services
                 .AsQueryable();
         }
 
-        public IQueryable<Notification> GetNotificationsByUser(ChatUser user)
+        public IQueryable<Notification> GetNotificationsByUser(ChatUser user, bool extended = false)
         {
             return _notifications.Where(n => n.UserKey == user.Key).AsQueryable();
         }

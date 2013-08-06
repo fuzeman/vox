@@ -561,6 +561,21 @@ define([
                 expandNotifications($notification);
             }
         });
+        
+        function setMessageReadState(mid, read) {
+            var cur = $('#m-' + mid + ' .left .state a.read');
+
+            if (read) {
+                cur.remove();
+            } else {
+                if (cur.length == 0) {
+                    var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
+                    $readButton.click(messageReadClick);
+
+                    $('#m-' + mid + ' .left .state').append($readButton);
+                }
+            }
+        }
 
         function messageReadClick() {
             var message = $(this).closest('.message'),
@@ -655,19 +670,7 @@ define([
 
             messageReadStateChanged: function (mid, read) {
                 logger.debug('messageReadStateChanged ' + mid + ' ' + read);
-
-                var cur = $('#m-' + mid + ' .left .state a.read');
-
-                if (read) {
-                    cur.remove();
-                } else {
-                    if (cur.length == 0) {
-                        var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
-                        $readButton.click(messageReadClick);
-
-                        $('#m-' + mid + ' .left .state').append($readButton);
-                    }
-                }
+                setMessageReadState(mid, read);
             }
         };
 
@@ -697,6 +700,7 @@ define([
             },
 
             prependChatMessages: prependChatMessages,
+            setMessageReadState: setMessageReadState,
 
             watchMessageScroll: watchMessageScroll
         };

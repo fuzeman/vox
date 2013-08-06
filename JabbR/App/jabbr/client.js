@@ -50,13 +50,13 @@ define([
         // Chat Event Handlers
         //
 
-        chat.client.logOn = function (rooms, myRooms, mentions) {
+        chat.client.logOn = function (rooms, myRooms, mentions, notifications) {
             logger.trace('logOn');
 
             updateMentions(mentions);
             privateRooms = myRooms;
 
-            $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions]);
+            $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions, notifications]);
         };
 
         //

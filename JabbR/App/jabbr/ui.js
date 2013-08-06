@@ -431,7 +431,7 @@ define([
             setReadOnly(true);
         }
 
-        function clientLoggedOn(event, currentRooms) {
+        function clientLoggedOn(event, currentRooms, ownedRooms, mentions, unreadNotifications) {
             ru.addRooms(currentRooms);
 
             // Process any urls that may contain room names
@@ -445,6 +445,11 @@ define([
                     if (client.chat.state.activeRoom !== loadRoom.Name) {
                         rc.populateRoom(loadRoom.Name);
                     }
+                });
+                
+                // Set current unread messages
+                $.each(unreadNotifications, function (index, notification) {
+                    messages.setMessageReadState(notification['MessageId'], false);
                 });
             };
 

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using JabbR.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using JabbR.Services;
-using JabbR.Infrastructure;
 
 namespace JabbR.Models
 {
@@ -83,7 +83,7 @@ namespace JabbR.Models
 
             if (user == null)
             {
-                // The user isn't logged in 
+                // The user isn't logged in
                 throw new InvalidOperationException("You're not logged in.");
             }
 
