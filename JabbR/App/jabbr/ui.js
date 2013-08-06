@@ -449,7 +449,7 @@ define([
                 
                 // Set current unread messages
                 $.each(unreadNotifications, function (index, notification) {
-                    messages.setMessageReadState(notification['MessageId'], false);
+                    messages.setMessageReadState(notification.MessageId, false);
                 });
             };
 

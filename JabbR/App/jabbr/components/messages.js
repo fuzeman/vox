@@ -568,7 +568,7 @@ define([
             if (read) {
                 cur.remove();
             } else {
-                if (cur.length == 0) {
+                if (cur.length === 0) {
                     var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
                     $readButton.click(messageReadClick);
 
