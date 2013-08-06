@@ -1061,6 +1061,10 @@ li.error {
         float: right;
     }
 
+    .message.first .left .state {
+        margin-right: 8px;
+    }
+
         .message .left .indicator {
             float: right;
             display: none;
