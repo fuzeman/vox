@@ -1,15 +1,15 @@
-﻿using System;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Threading.Tasks;
-using JabbR.ContentProviders.Core;
+﻿using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
 using JabbR.Services;
 using JabbR.UploadHandlers;
 using Microsoft.Security.Application;
-using Ninject;
-using System.Net;
 using Newtonsoft.Json.Linq;
+using Ninject;
+using System;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace JabbR.ContentProviders
 {
@@ -26,7 +26,7 @@ namespace JabbR.ContentProviders
 
         protected override async Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request)
         {
-            if(_logger == null)
+            if (_logger == null)
                 _logger = _kernel.Get<ILogger>();
 
             var imageUrl = request.RequestUri.ToString();
@@ -57,7 +57,9 @@ namespace JabbR.ContentProviders
 
         public override bool IsValidContent(Uri uri)
         {
-            return IsValidImagePath(uri);
+            return IsValidImagePath(uri) &&
+                !uri.Host.EndsWith("imgur.com") &&
+                !uri.Host.EndsWith("minus.com");
         }
 
         public static bool IsValidImagePath(Uri uri)
@@ -79,10 +81,13 @@ namespace JabbR.ContentProviders
             {
                 case ".png":
                     return "image/png";
+
                 case ".bmp":
                     return "image/bmp";
+
                 case ".gif":
                     return "image/gif";
+
                 case ".jpg":
                 case ".jpeg":
                     return "image/jpeg";
@@ -95,7 +100,7 @@ namespace JabbR.ContentProviders
         {
             try
             {
-                var request = (HttpWebRequest) WebRequest.Create(
+                var request = (HttpWebRequest)WebRequest.Create(
                     String.Format(ImgurUploadUrl, Uri.EscapeDataString(url)));
 
                 request.Method = "POST";
@@ -117,7 +122,7 @@ namespace JabbR.ContentProviders
                 content.Position = 0;
                 dynamic json = JObject.Parse(ReadStream(content));
 
-                return ((string) json.data.link).Replace("http://", "https://");
+                return ((string)json.data.link).Replace("http://", "https://");
             }
             catch (WebException ex)
             {
@@ -125,7 +130,7 @@ namespace JabbR.ContentProviders
             }
             catch (AggregateException aex)
             {
-                if(aex.InnerException is WebException)
+                if (aex.InnerException is WebException)
                     PrintWebException(aex.InnerException as WebException);
                 else
                     _logger.LogError(aex.InnerException.Message);
