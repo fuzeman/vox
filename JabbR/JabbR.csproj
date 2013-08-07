@@ -979,6 +979,7 @@
   <ItemGroup>
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
+    <Compile Include="ContentProviders\MinusContentProvider.cs" />
     <Compile Include="Infrastructure\AuthenticationManagerExtensions.cs" />
     <Compile Include="Middleware\FixCookieHandler.cs" />
     <Compile Include="App_Start\Startup.DependencyInjection.cs" />
