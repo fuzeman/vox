@@ -276,9 +276,6 @@
     <Content Include="Chat.documentOnWrite.js" />
     <Content Include="Chat.twitter.js" />
     <Content Include="Chat.ui.fileUpload.js" />
-    <Content Include="Chat.ui.js" />
-    <Content Include="Chat.ui.room.js" />
-    <Content Include="Chat.utility.js" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -1408,9 +1405,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="Chat.emoji.js" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
