@@ -6,14 +6,13 @@ using System.Collections.Generic;
 
 namespace JabbR.Commands
 {
-    [Command("kick", "Kick a user from the room. Note, this is only valid for owners of the room.",
-        "user [message...] [imageUrl]", "user")]
+    [Command("kick", "Kick_CommandInfo", "user [message...] [imageUrl]", "user")]
     public class KickCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
         {
             if (args.Length == 0)
-                throw new InvalidOperationException("Who do you want to to kick?");
+                throw new InvalidOperationException(LanguageResources.Kick_UserRequired);
 
             var targetUser = context.Repository.VerifyUser(args[0]);
 
@@ -22,7 +21,6 @@ namespace JabbR.Commands
 
             context.Service.KickUser(callingUser, targetUser, room, parsedArguments.Item2, parsedArguments.Item1);
             context.NotificationService.KickUser(targetUser, room, parsedArguments.Item2, parsedArguments.Item1);
-
             context.Repository.CommitChanges();
         }
 

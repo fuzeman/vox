@@ -23,7 +23,7 @@
         'jquery': '../Scripts/jquery-1.9.1',
         'jquery-migrate': '../Scripts/jquery-migrate-1.2.1.min',
         'jquery.cookie': '../Scripts/jquery.cookie',
-        'jquery.signalr': '../Scripts/jquery.signalR-2.0.0-rc1-130629-b89',
+        'jquery.signalr': '../Scripts/jquery.signalR-2.0.0-rc1-130727-b125',
         'jquery.history': '../Scripts/jquery.history',
         'jquery.tmpl': '../Scripts/jQuery.tmpl',
         'jquery.sortElements': '../Scripts/jquery.sortElements',

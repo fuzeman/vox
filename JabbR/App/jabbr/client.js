@@ -50,7 +50,7 @@ define([
         // Chat Event Handlers
         //
 
-        chat.client.logOn = function (rooms, myRooms, mentions, notifications) {
+        chat.client.logOn = function (rooms, myRooms, preferences, mentions, notifications) {
             logger.trace('logOn');
 
             updateMentions(mentions);

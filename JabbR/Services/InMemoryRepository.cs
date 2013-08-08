@@ -222,6 +222,13 @@ namespace JabbR.Services
             return _users.FirstOrDefault(u => u.ConnectedClients.Any(c => c.Id == clientId));
         }
 
+        public ChatUser GetUserByRequestResetPasswordId(string userName, string requestResetPasswordId)
+        {
+            return _users.FirstOrDefault(u => u.RequestPasswordResetId != null &&
+                                              u.RequestPasswordResetId.Equals(requestResetPasswordId, StringComparison.OrdinalIgnoreCase) &&
+                                              u.RequestPasswordResetValidThrough > DateTimeOffset.UtcNow);
+        }
+
         public ChatUser GetUserByLegacyIdentity(string userIdentity)
         {
             return _users.FirstOrDefault(u => u.Identity == userIdentity);
