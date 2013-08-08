@@ -56,7 +56,7 @@ define([
     };
 
     RoomUser.prototype.setActive = function () {
-        var $idleSince = this.$roomUser.find('.idle-since');
+        var $inactiveSince = this.$roomUser.find('.inactive-since');
 
         if (this.$roomUser.data('active') === true) {
             return false;
@@ -64,23 +64,29 @@ define([
 
         this.$roomUser.attr('data-active', true);
         this.$roomUser.data('active', true);
-        this.$roomUser.removeClass('idle');
+        this.$roomUser.removeClass('inactive');
 
-        if ($idleSince.livestamp('isLiveStamp')) {
-            $idleSince.livestamp('destroy');
+        if ($inactiveSince.livestamp('isLiveStamp')) {
+            $inactiveSince.livestamp('destroy');
         }
 
         return true;
     };
 
     RoomUser.prototype.setInActive = function () {
+        var $inactiveSince = this.$roomUser.find('.inactive-since');
+
         if (this.$roomUser.data('active') === false) {
             return false;
         }
 
         this.$roomUser.attr('data-active', false);
         this.$roomUser.data('active', false);
-        this.$roomUser.addClass('idle');
+        this.$roomUser.addClass('inactive');
+        
+        if (!$inactiveSince.html()) {
+            $inactiveSince.livestamp(new Date());
+        } 
 
         return true;
     };
@@ -202,20 +208,20 @@ define([
     };
 
     RoomUser.prototype.updateActivity = function () {
-        var $idleSince = this.$roomUser.find('.idle-since');
+        var $inactiveSince = this.$roomUser.find('.inactive-since');
 
         if (this.user.active === true) {
-            if (this.$roomUser.hasClass('idle')) {
-                this.$roomUser.removeClass('idle');
-                $idleSince.livestamp('destroy');
+            if (this.$roomUser.hasClass('inactive')) {
+                this.$roomUser.removeClass('inactive');
+                $inactiveSince.livestamp('destroy');
             }
         } else {
-            if (!this.$roomUser.hasClass('idle')) {
-                this.$roomUser.addClass('idle');
+            if (!this.$roomUser.hasClass('inactive')) {
+                this.$roomUser.addClass('inactive');
             }
 
-            if (!$idleSince.html()) {
-                $idleSince.livestamp(this.user.lastActive);
+            if (!$inactiveSince.html()) {
+                $inactiveSince.livestamp(this.user.lastActive);
             }
         }
 
