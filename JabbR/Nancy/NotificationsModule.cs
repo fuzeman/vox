@@ -69,6 +69,7 @@ namespace JabbR.Nancy
                 notification.Read = true;
                 repository.CommitChanges();
 
+                notificationService.MessageReadStateChanged(user, notification.Message, notification);
                 UpdateUnreadCountInChat(repository, notificationService, user);
 
                 var response = Response.AsJson(new { success = true });
@@ -94,6 +95,7 @@ namespace JabbR.Nancy
                 foreach (var notification in unReadNotifications)
                 {
                     notification.Read = true;
+                    notificationService.MessageReadStateChanged(user, notification.Message, notification);
                 }
 
                 repository.CommitChanges();
