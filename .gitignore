@@ -19,3 +19,4 @@ lib/iOS/Microsoft.AspNet.SignalR.Client.iOS.dll.mdb
 .DS_Store
 *.pfx
 JabbR/Build
+JabbR/App_Data

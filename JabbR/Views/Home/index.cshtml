@@ -1,4 +1,4 @@
-﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<SettingsViewModel>
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<SettingsViewModel>
 
 @using System
 @using JabbR
@@ -53,9 +53,6 @@
             <div class="left">
                 {{if showUser}}
                 <div class="user ${status} ${presence}">
-                    <div class="user-status-container">
-                        <i class="user-status"></i>
-                    </div>
                     <img src="https://secure.gravatar.com/avatar/${hash}?s=16&d=mm" class="gravatar" />
                     <div class="name">${name}</div>
                 </div>
@@ -331,7 +328,7 @@
                 </label>
             </form>
             <div id="room-actions" class="btn-group pull-right">
-            	<button class="btn btn-small notify notify-all"><i class="icon-bullhorn"></i> <span class="notify-text">All</span></button>
+                <button class="btn btn-small notify notify-all"><i class="icon-bullhorn"></i> <span class="notify-text">All</span></button>
                 <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">@LanguageResources.Client_RoomSettings <span class="caret"></span></button>
                 <ul id="room-preferences" class="dropdown-menu">
                     <li><a class="sound" title="audible notifications"><i class="icon-sound"></i> @LanguageResources.Client_AudibleNotifications</a></li>
@@ -584,9 +581,9 @@
     <div id="paste" contenteditable="true" style="height: 1px; width: 1px;"></div>
     <script type="text/javascript">
         window.jabbrVersion = '@Model.Version';
-		window.languageResources = {
-	       @Html.Raw(Model.ClientLanguageResources)
-	    };
+        window.languageResources = {
+           @Html.Raw(Model.ClientLanguageResources)
+        };
         @if (Model.DebugMode)
         {
             @: window.jabbr = { debug: true };
