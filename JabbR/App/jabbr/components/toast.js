@@ -171,6 +171,8 @@ define(['jquery', 'jabbr/utility'], function ($, utility) {
             }
         };
     } else {
-        return {};
+        return {
+            canToast: function () { return false; }
+        };
     }
 });
