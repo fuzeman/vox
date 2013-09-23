@@ -172,7 +172,11 @@ define(['jquery', 'jabbr/utility'], function ($, utility) {
         };
     } else {
         return {
-            canToast: function () { return false; }
+            canToast: function () { return false; },
+            
+            ensureToast: function (preferences) {
+                preferences.canToast = false;
+            }
         };
     }
 });
