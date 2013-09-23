@@ -5,7 +5,7 @@ define(['jquery', 'jabbr/utility'], function ($, utility) {
         toastRoom = null,
         wkNotifications = window.webkitNotifications,
         wkToast = null,
-        w3Notifications = Notification,
+        w3Notifications = typeof Notification !== 'undefined' ? Notification : null,
         w3Toast = null;
     
     function createTitle (message, roomName) {
