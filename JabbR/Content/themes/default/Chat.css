@@ -2976,11 +2976,13 @@ h3.userlist-header {
 }
 
 .icon-sound {
+    display: inline-block !important;
     background-image: url('../../images/sound-on.png');
     background-position: 0 0;
     background-size: 14px 14px;
     height: 14px;
     width: 14px;
+    margin-right: 6px;
     background-repeat: no-repeat;
 }
 
@@ -3006,11 +3008,13 @@ h3.userlist-header {
 }
 
 .icon-toast {
+    display: inline-block !important;
     background-image: url('../../images/toast-on.png');
     background-position: 0 0;
     background-size: 10px 14px;
     height: 14px;
     width: 10px;
+    margin-left: 2px;
     margin-right: 8px;
     background-repeat: no-repeat;
 }
@@ -3031,11 +3035,13 @@ h3.userlist-header {
 }
 
 .icon-richness {
+    display: inline-block !important;
     background-image: url('../../images/richness-on.png');
     background-position: 0 0;
     background-size: 14px 14px;
     height: 14px;
     width: 14px;
+    margin-right: 6px;
     background-repeat: no-repeat;
 }
 
@@ -3059,7 +3065,8 @@ h3.userlist-header {
     background-size: 10px 14px;
     height: 14px;
     width: 10px;
-    margin-right: 8px;
+    margin-left: 2px;
+    margin-right: 6px;
     background-repeat: no-repeat;
 }
 
