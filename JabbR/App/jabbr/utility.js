@@ -176,6 +176,23 @@ define([
         }
     }
 
+    //
+    // Language
+    //
+
+    function format(formatString) {
+        var formatArgs = arguments;
+        return formatString.replace(/{(?:[0-9]+)}/g, function (match) {
+            return formatArgs[parseInt(match.substr(1, match.length - 2), 10) + 1];
+        });
+    }
+    
+    function getLanguageResource(languageResourceKey) {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args[0] = languageResources[languageResourceKey];
+        return format.apply(null, args);
+    }
+
     utility = {
         padLeft: padLeft,
         trim: function (value, length) {
@@ -204,11 +221,17 @@ define([
             var transformToHtml = new emoji.Parser().transformToHtml;
             return (transformToHtml(content));
         },
+
+        formatNumber: formatNumber,
+
+        newId: guidGenerator,
+
         decodeHtml: decodeHtml,
         encodeHtml: encodeHtml,
-        newId: guidGenerator,
+        
         processContent: processContent,
-        formatNumber: formatNumber
+        
+        getLanguageResource: getLanguageResource
     };
 
     return utility;

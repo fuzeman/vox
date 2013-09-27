@@ -31,42 +31,47 @@ define([
                 user: 'user'
             };
 
-        function clientLoggedOn() {
+        function load() {
             client.chat.server.getCommands().done(function (currentCommands) {
                 commands = currentCommands;
+                
+                $globalCmdHelp.empty();
+                $roomCmdHelp.empty();
+                $userCmdHelp.empty();
+
+                $.each(commands, function () {
+                    switch (this.Group) {
+                        case help.shortcut:
+                            $shortCutHelp.append(templates.commandhelp.tmpl(this));
+                            break;
+                        case help.global:
+                            $globalCmdHelp.append(templates.commandhelp.tmpl(this));
+                            break;
+                        case help.room:
+                            $roomCmdHelp.append(templates.commandhelp.tmpl(this));
+                            break;
+                        case help.user:
+                            $userCmdHelp.append(templates.commandhelp.tmpl(this));
+                            break;
+                    }
+                });
+
                 logger.trace("loaded " + commands.length + " commands");
             });
 
             client.chat.server.getShortcuts().done(function (currentShortcuts) {
                 shortcuts = currentShortcuts;
+                $shortCutHelp.empty();
+
+                $.each(shortcuts, function () {
+                    $shortCutHelp.append(templates.commandhelp.tmpl(this));
+                });
+
                 logger.trace("loaded " + shortcuts.length + " shortcuts");
             });
         }
 
         function show() {
-            $shortCutHelp.empty();
-            $globalCmdHelp.empty();
-            $roomCmdHelp.empty();
-            $userCmdHelp.empty();
-            $.each(commands, function () {
-                switch (this.Group) {
-                    case help.shortcut:
-                        $shortCutHelp.append(templates.commandhelp.tmpl(this));
-                        break;
-                    case help.global:
-                        $globalCmdHelp.append(templates.commandhelp.tmpl(this));
-                        break;
-                    case help.room:
-                        $roomCmdHelp.append(templates.commandhelp.tmpl(this));
-                        break;
-                    case help.user:
-                        $userCmdHelp.append(templates.commandhelp.tmpl(this));
-                        break;
-                }
-            });
-            $.each(shortcuts, function () {
-                $shortCutHelp.append(templates.commandhelp.tmpl(this));
-            });
             $helpPopup.modal();
         }
 
@@ -98,8 +103,6 @@ define([
 
                 logger.trace('activated');
 
-                client.bind(events.client.loggedOn, clientLoggedOn);
-
                 client.chat.client.showCommands = show;
             },
 
@@ -110,7 +113,8 @@ define([
                 return shortcuts;
             },
 
-            show: show
+            show: show,
+            load: load
         };
     };
 

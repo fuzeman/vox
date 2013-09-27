@@ -5,8 +5,10 @@ define([
     'kernel',
     'jabbr/state',
     'jabbr/events',
-    'jabbr/components/toast'
-], function ($, Logger, kernel, state, events, toast) {
+    'jabbr/components/toast',
+    'jabbr/components/lobby',
+    'jabbr/utility'
+], function ($, Logger, kernel, state, events, toast, lobby, utility) {
     var logger = new Logger('jabbr/components/notifications'),
         client = null,
         ui = null,
@@ -73,7 +75,9 @@ define([
             };
 
             client.chat.client.unallowUser = function (user, room) {
-                messages.addMessage('You access to ' + room + ' was revoked.', 'notification', state.get().activeRoom);
+                messages.addMessage('Your access to ' + room + ' was revoked.', 'notification', state.get().activeRoom);
+
+                lobby.removeRoom(room);
             };
 
             client.chat.client.userUnallowed = function (user, room) {
@@ -198,16 +202,27 @@ define([
                 messages.addMessage(room + ' is now locked.', 'notification', state.get().activeRoom);
             };
 
-            client.chat.client.topicChanged = function (roomName, isCleared, topic, who) {
-                var action = isCleared ? 'cleared' : 'set';
-                var to = topic ? ' to ' + '"' + topic + '"' : '';
-                var message = action + ' the room topic' + to;
+            client.chat.client.topicChanged = function (roomName, topic, who) {
+                var message,
+                    isCleared = (topic === '');
+
                 if (who === client.chat.state.name) {
-                    message = 'You have ' + message;
+                    if (!isCleared) {
+                        message = utility.getLanguageResource('Chat_YouSetRoomTopic', topic);
+                    } else {
+                        message = utility.getLanguageResource('Chat_YouClearedRoomTopic');
+                    }
                 } else {
-                    message = who + ' has ' + message;
+                    if (!isCleared) {
+                        message = utility.getLanguageResource('Chat_UserSetRoomTopic', who, topic);
+                    } else {
+                        message = utility.getLanguageResource('Chat_UserClearedRoomTopic', who);
+                    }
                 }
+
                 messages.addMessage(message, 'notification', roomName);
+
+                ru.updateRoomTopic(roomName, topic);
             };
         }
 
@@ -265,7 +280,7 @@ define([
 
             if (enabled) {
                 // If it's enabled toggle the preference
-                state.setRoomPreference(room.getName(), 'canToast', !enabled);
+                state.setRoomPreference(room.getName(), 'canToast', false);
                 $this.toggleClass('off');
             } else {
                 toast.enableToast()

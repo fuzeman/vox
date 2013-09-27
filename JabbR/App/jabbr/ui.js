@@ -268,7 +268,7 @@ define([
         }
 
         // handle click on names in chat / room list
-        function prepareMessage(ev) {
+        function prepareMessage() {
             if (readOnly) {
                 return false;
             }
@@ -419,6 +419,19 @@ define([
             toggleMessageSection(activateRoom.isClosed());
         }
 
+        function populateRooms(rooms) {
+            client.connection.hub.log('loadRooms(' + rooms.join(', ') + ')');
+
+            // Populate the list of users rooms and messages
+            client.chat.server.loadRooms(rooms)
+                .done(function() {
+                    client.connection.hub.log('loadRooms.done(' + rooms.join(', ') + ')'); 
+                })
+                .fail(function (e) {
+                    client.connection.hub.log('loadRooms.failed(' + rooms.join(', ') + ', ' + e + ')'); 
+                });
+        }
+
         // Client
 
         function clientConnected(event, change, initial) {
@@ -441,11 +454,14 @@ define([
             rc.setActiveRoom(state.get().activeRoom || 'Lobby');
 
             var loadRooms = function () {
-                $.each(currentRooms, function (index, loadRoom) {
-                    if (client.chat.state.activeRoom !== loadRoom.Name) {
-                        rc.populateRoom(loadRoom.Name);
+                var filteredRooms = [];
+                $.each(currentRooms, function (index, room) {
+                    if (client.chat.state.activeRoom !== room.Name) {
+                        filteredRooms.push(room.Name);
                     }
                 });
+
+                populateRooms(filteredRooms);
                 
                 // Set current unread messages
                 $.each(unreadNotifications, function (index, notification) {
@@ -453,15 +469,19 @@ define([
                 });
             };
 
-            // Populate lobby rooms for intellisense
-            lobby.updateRooms();
-
             if (state.get().activeRoom) {
                 // Always populate the active room first then load the other rooms so it looks fast :)
-                rc.populateRoom(state.get().activeRoom).done(loadRooms);
+                rc.populateRoom(state.get().activeRoom).done(function() {
+                    help.load();
+                    lobby.updateRooms();
+                    loadRooms();
+                });
             } else {
-                // There's no active room so we don't care
-                loadRooms();
+                // Populate the lobby first then everything else
+                lobby.updateRooms().done(function() {
+                    help.load();
+                    loadRooms();
+                });
             }
 
             // Update server message count display
@@ -645,15 +665,21 @@ define([
                         return room.users.find('li[data-name != "' + client.chat.state.name + '"]')
                             .not('.room')
                             .map(function () {
-                                return ($(this).data('name') + ' ' || "").toString();
+                                if ($(this).data('name')) {
+                                    return $(this).data('name') + ' ';
+                                }
+
+                                return '';
+                            })
+                            .sort(function(a, b) {
+                                return a.toString().toUpperCase().localeCompare(b.toString().toUpperCase());
                             });
                     case '#':
-                        return lobby.getRoomNames();
+                        return lobby.getRooms()
+                            .map(function(room) { return room.Name + ' '; });
                     case '/':
                         return help.getCommands()
-                            .map(function (cmd) {
-                                return cmd.Name + ' ';
-                            });
+                            .map(function (cmd) { return cmd.Name + ' '; });
                     case ':':
                         return emoji.getIcons();
                     default:

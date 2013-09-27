@@ -173,9 +173,7 @@ define([
             }
 
             var nearEnd = room.isNearTheEnd(),
-                $element = null;
-
-            $element = prepareNotificationMessage(content, type);
+                $element = prepareNotificationMessage(content, type);
 
             appendMessage($element, room);
 
@@ -362,7 +360,9 @@ define([
                     })
                     .fail(function (e) {
                         failMessage(clientMessage.id);
-                        addMessage(e, 'error');
+                        if (e.source === 'HubException') {
+                            addMessage(e.message, 'error');
+                        }
                     });
             } catch (e) {
                 client.connection.hub.log('Failed to send via websockets');
@@ -374,9 +374,11 @@ define([
 
         function failPendingMessages() {
             for (var id in pendingMessages) {
-                clearTimeout(pendingMessages[id]);
-                failMessage(id);
-                delete pendingMessages[id];
+                if (pendingMessages.hasOwnProperty(id)) {
+                    clearTimeout(pendingMessages[id]);
+                    failMessage(id);
+                    delete pendingMessages[id];
+                }
             }
         }
 
@@ -426,6 +428,7 @@ define([
             processMessage(message);
 
             $message.find('.middle').html(message.message);
+            $message.find('.right .time').attr('title', message.fulldate).text(message.when);
             $message.attr('id', 'm-' + message.id);
 
             changeMessageId(id, message.id);
@@ -552,7 +555,7 @@ define([
         // #region DOM Events
 
         // handle click on notifications
-        $document.on('click', '.notification a.info', function (ev) {
+        $document.on('click', '.notification a.info', function () {
             var $notification = $(this).closest('.notification');
 
             if ($(this).hasClass('collapse')) {

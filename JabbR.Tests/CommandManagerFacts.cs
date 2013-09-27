@@ -2130,7 +2130,7 @@ namespace JabbR.Test
                                                         cache,
                                                         notificationService.Object);
 
-                bool result = commandManager.TryHandleCommand("/kick dfowler3 you have been kicked from the room room");
+                bool result = commandManager.TryHandleCommand("/kick dfowler3 room you have been kicked from the room");
 
                 Assert.True(result);
                 Assert.False(room.Users.Contains(user3));

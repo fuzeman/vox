@@ -166,20 +166,19 @@ define([
             return room.isNearTheEnd();
         }
 
-        function updateRoomTopic(roomdata) {
-            var room = getRoomElements(roomdata.Name);
+        function updateRoomTopic(roomName, topic) {
+            var room = getRoomElements(roomName);
 
             if (room === null) {
                 logger.warn('Room does not exist yet');
                 return;
             }
 
-            var topic = roomdata.Topic;
             var topicHtml = topic === '' ?
-                'You\'re chatting in ' + roomdata.Name :
+                'You\'re chatting in ' + roomName :
                 processor.processPlainContent(topic);
             var roomTopic = room.roomTopic;
-            var isVisibleRoom = getCurrentRoomElements().getName() === roomdata.Name;
+            var isVisibleRoom = getCurrentRoomElements().getName() === roomName;
 
             if (isVisibleRoom) {
                 roomTopic.hide();
@@ -299,15 +298,12 @@ define([
 
         function setAccessKeys() {
             $.each($tabs.find('li.room'), function (index, item) {
-                $(item).children('button').attr('accesskey', getRoomAccessKey(index));
+                if (index < 10) {
+                    $(item).attr('accesskey', ((index + 1) % 10).toString());
+                } else {
+                    $(item).attr('accesskey', null);
+                }
             });
-        }
-
-        function getRoomAccessKey(index) {
-            if (index < 10) {
-                return index + 1;
-            }
-            return 0;
         }
 
         function createScrollHandler(roomName, roomId, $messages) {
@@ -366,8 +362,6 @@ define([
             if (!rc.inRoomCache(roomName)) {
                 lobby.addRoom(roomViewModel);
             }
-
-            rc.roomCache[rc.cleanRoomName(roomName)] = true;
 
             templates.tab.tmpl(viewModel).data('name', roomName).appendTo($tabs);
 
@@ -479,8 +473,8 @@ define([
         // #region Global Events
 
         // TODO - Replace with DI object call
-        events.bind(events.error, function (event, content, type) {
-            messages.addMessage(content, type);
+        events.bind(events.error, function (event, exception, type) {
+            messages.addMessage(exception.message, type);
         });
 
         // TODO - Replace with DI object call
