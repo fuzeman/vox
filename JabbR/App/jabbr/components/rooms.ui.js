@@ -13,7 +13,7 @@ define([
     'jabbr/components/lobby',
     'jabbr/components/messages',
     'jabbr/components/notifications',
-    'jabbr/components/capture-document-write',
+    'jabbr/contentproviders/core',
     'jabbr/messageprocessors/processor',
     'jquery-migrate',
     'jquery.history',
@@ -26,7 +26,7 @@ define([
     // View Models
     Room, Message,
     // Components
-    rc, users, lobby, messages, notifications, captureDocumentWrite, processor
+    rc, users, lobby, messages, notifications, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/components/rooms.ui'),
         client = null,
@@ -600,7 +600,7 @@ define([
                 lobby.activate();
                 messages.activate();
                 notifications.activate();
-                captureDocumentWrite.activate();
+                contentProviders.activate();
                 processor.activate();
 
                 logger.trace('activated');
@@ -682,7 +682,7 @@ define([
             lobby = lobby();
             messages = messages();
             notifications = notifications();
-            captureDocumentWrite = captureDocumentWrite();
+            contentProviders = contentProviders();
             processor = processor();
 
             object = initialize();

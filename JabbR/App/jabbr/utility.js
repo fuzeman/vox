@@ -1,4 +1,4 @@
-﻿/*global define, window, navigator, moment, linkify, markdown*/
+﻿/*global define, window, navigator, moment, linkify, Markdown*/
 define([
     'jquery',
     'jabbr/components/emoji',
@@ -209,7 +209,7 @@ define([
             return prefix + n;
         },
         markdownToHtml: function (content) {
-            var converter = new markdown.Converter().makeHtml;
+            var converter = new Markdown.Converter().makeHtml;
             return (converter(content));
         },
         isMobile: isMobile,

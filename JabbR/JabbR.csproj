@@ -236,12 +236,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
-    <Content Include="App\jabbr\components\capture-document-write.js" />
+    <Content Include="App\jabbr\contentproviders\capture-document-write.js" />
     <Content Include="App\jabbr\components\client-settings.js" />
     <Content Include="App\jabbr\components\external-status.steam.js" />
     <Content Include="App\jabbr\components\external-status.evolve.js" />
     <Content Include="App\jabbr\components\external-status.js" />
     <Content Include="App\jabbr\components\external-status.trakt.js" />
+    <Content Include="App\jabbr\contentproviders\github-issues.js" />
+    <Content Include="App\jabbr\contentproviders\core.js" />
+    <Content Include="App\jabbr\contentproviders\twitter.js" />
     <Content Include="App\notifications-main.js" />
     <Content Include="App\jabbr\client.js" />
     <Content Include="App\jabbr\components\connection-status.js" />

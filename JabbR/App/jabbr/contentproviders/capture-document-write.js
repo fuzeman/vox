@@ -8,7 +8,7 @@ define([
 
     'jquery.captureDocumentWrite'
 ], function ($, Logger, kernel, collapse, utility) {
-    var logger = new Logger('jabbr/components/capture-document-write'),
+    var logger = new Logger('jabbr/contentproviders/capture-document-write'),
         ru = null,
         object = null;
 
@@ -59,13 +59,13 @@ define([
             },
 
             captureDocumentWrite: captureDocumentWrite
-        }
+        };
     };
 
     return function () {
         if (object === null) {
             object = initialize();
-            kernel.bind('jabbr/components/capture-document-write', object);
+            kernel.bind('jabbr/contentproviders/capture-document-write', object);
         }
 
         return object;
