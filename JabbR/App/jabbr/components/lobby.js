@@ -6,8 +6,9 @@ define([
     'keys',
     'jabbr/events',
     'jabbr/state',
-    'jabbr/templates'
-], function ($, Logger, kernel, Keys, events, state, templates) {
+    'jabbr/templates',
+    'jabbr/utility'
+], function ($, Logger, kernel, Keys, events, state, templates, utility) {
     var logger = new Logger('jabbr/components/lobby'),
         client = null,
         ru = null,
@@ -26,6 +27,7 @@ define([
             $lobbyOtherRooms = $('#lobby-other'),
             $loadMoreRooms = $('#load-more-rooms-item'),
             sortedRoomList = null,
+            publicRoomList = null,
             maxRoomsToLoad = 100,
             lastLoadedRoomIndex = 0;
 
@@ -34,16 +36,22 @@ define([
         }
 
         function updateRooms() {
+            var d = $.Deferred();
+
             try {
                 // Populate the user list with room names
                 client.chat.server.getRooms()
                     .done(function (rooms) {
                         populateRooms(rooms, client.getPrivateRooms());
                         rc.setInitialized('Lobby');
+                        d.resolveWith(client.chat);
                     });
             } catch (e) {
                 client.connection.hub.log('getRooms failed');
+                d.rejectWith(client.chat);
             }
+
+            return d.promise();
         }
 
         function lockRoom(roomName) {
@@ -56,6 +64,15 @@ define([
             var lobby = getLobby(),
                 i;
             if (!lobby.isInitialized()) {
+                // Process the topics
+                for (i = 0; i < rooms.length; ++i) {
+                    rooms[i].processedTopic = utility.processContent(rooms[i].Topic);
+                }
+
+                for (i = 0; i < privateRooms.length; ++i) {
+                    privateRooms[i].processedTopic = utility.processContent(privateRooms[i].Topic);
+                } 
+
                 // Populate the room cache
                 for (i = 0; i < rooms.length; ++i) {
                     rc.roomCache[rc.cleanRoomName(rooms[i].Name)] = true;
@@ -69,10 +86,15 @@ define([
                 var privateSorted = sortRoomList(privateRooms);
 
                 // sort other lobby rooms but filter out private rooms
-                sortedRoomList = sortRoomList(rooms).filter(function (room) {
+                publicRoomList = sortRoomList(rooms).filter(function (room) {
                     return !privateSorted.some(function (allowed) {
                         return allowed.Name === room.Name;
                     });
+                });
+
+
+                sortedRoomList = rooms.sort(function(a, b) {
+                    return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
                 });
 
                 lobby.owners.empty();
@@ -83,10 +105,10 @@ define([
                     populateRoomList(privateSorted, templates.lobbyroom, listOfPrivateRooms);
                     listOfPrivateRooms.children('li').appendTo(lobby.owners);
                     $lobbyPrivateRooms.show();
-                    $lobbyOtherRooms.find('nav-header').html('Other Rooms');
+                    $lobbyOtherRooms.find('.nav-header').html('Other Rooms');
                 } else {
                     $lobbyPrivateRooms.hide();
-                    $lobbyOtherRooms.find('nav-header').html('Rooms');
+                    $lobbyOtherRooms.find('.nav-header').html('Rooms');
                 }
 
                 var listOfRooms = $('<ul/>');
@@ -133,11 +155,18 @@ define([
 
         function addRoom(roomViewModel) {
             var lobby = getLobby(),
-                $room = templates.lobbyroom.tmpl(roomViewModel),
+                room = null,
+                $room = null,
                 roomName = roomViewModel.Name.toString().toUpperCase(),
                 count = roomViewModel.Count,
                 closed = roomViewModel.Closed,
-                $targetList = roomViewModel.Private ? lobby.owners : lobby.users;
+                nonPublic = roomViewModel.Private,
+                $targetList = roomViewModel.Private ? lobby.owners : lobby.users,
+                i = null;
+
+            roomViewModel.processedTopic = utility.processContent(roomViewModel.Topic);
+            $room = templates.lobbyroom.tmpl(roomViewModel);
+            //room = ru.getRoomElements(roomName);
 
             var nextListElement = ru.getNextRoomListElement($targetList, roomName, count, closed);
 
@@ -148,6 +177,73 @@ define([
             }
 
             filterIndividualRoom($room);
+            //room.setListState($targetList);
+
+            rc.roomCache[roomName] = true;
+
+            // don't try to populate the sortedRoomList while we're initially filling up the lobby
+            if (sortedRoomList) {
+                var sortedRoomInsertIndex = sortedRoomList.length;
+                for (i = 0; i < sortedRoomList.length; i++) {
+                    if (sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) > 0) {
+                        sortedRoomInsertIndex = i;
+                        break;
+                    }
+                }
+                sortedRoomList.splice(sortedRoomInsertIndex, 0, roomViewModel);
+            }
+            
+            // handle updates on rooms not currently displayed to clients by removing from the public room list
+            if (publicRoomList) {
+                for (i = 0; i < publicRoomList.length; i++) {
+                    if (publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) === 0) {
+                        publicRoomList.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            
+            // if it's a private room, make sure that we're displaying the private room section
+            if (nonPublic) {
+                $lobbyPrivateRooms.show();
+                $lobbyOtherRooms.find('.nav-header').html(utility.getLanguageResource('Client_OtherRooms'));
+            }
+        }
+
+        function removeRoom(roomName) {
+            var roomNameUppercase = roomName.toString().toUpperCase(),
+                i = null;
+            
+            if (rc.roomCache[roomNameUppercase]) {
+                delete rc.roomCache[roomNameUppercase];
+            }
+            
+            // find the element in the sorted room list and remove it
+            for (i = 0; i < sortedRoomList.length; i++) {
+                if (sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
+                    sortedRoomList.splice(i, 1);
+                    break;
+                }
+            }
+            
+            // find the element in the lobby public room list and remove it
+            for (i = 0; i < publicRoomList.length; i++) {
+                if (publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
+                    publicRoomList.splice(i, 1);
+                    break;
+                }
+            }
+            
+            // remove the items from the lobby screen
+            var lobby = getLobby(),
+                $room = lobby.users.add(lobby.owners).find('[data-room="' + roomName + '"]');
+            $room.remove();
+            
+            // if we have no private rooms, hide the private rooms section and change the text on the rooms header
+            if (lobby.owners.find('li:not(.empty)').length === 0) {
+                $lobbyPrivateRooms.hide();
+                $lobbyOtherRooms.find('.nav-header').html(utility.getLanguageResource('Client_Rooms'));
+            }
         }
 
         function filterIndividualRoom($room) {
@@ -162,20 +258,27 @@ define([
             }
         }
 
-        function updateRoomCount(room, count) {
+        function updateRoom(room) {
             var lobby = getLobby(),
                 $targetList = room.Private === true ? lobby.owners : lobby.users,
                 $room = $targetList.find('[data-room="' + room.Name + '"]'),
                 $count = $room.find('.count'),
-                roomName = room.Name.toString().toUpperCase();
+                $topic = $room.find('.topic'),
+                roomName = room.Name.toString().toUpperCase(),
+                processedTopic = utility.processContent(room.Topic);
 
-            $room.css('background-color', '#f5f5f5');
-            if (count === 0) {
+            // if we don't find the room we need to create it
+            if ($room.length === 0) {
+                addRoom(room);
+                return;
+            }
+
+            if (room.Count === 0) {
                 $count.text('Unoccupied');
-            } else if (count === 1) {
+            } else if (room.Count === 1) {
                 $count.text('1 occupant');
             } else {
-                $count.text(count + ' occupants');
+                $count.text(room.Count + ' occupants');
             }
 
             if (room.Private === true) {
@@ -190,9 +293,11 @@ define([
                 $room.removeClass('closed');
             }
 
-            var nextListElement = ru.getNextRoomListElement($targetList, roomName, count, room.Closed);
+            $topic.html(processedTopic);
 
-            $room.data('count', count);
+            var nextListElement = ru.getNextRoomListElement($targetList, roomName, room.Count, room.Closed);
+
+            $room.data('count', room.Count);
             if (nextListElement !== null) {
                 $room.insertBefore(nextListElement);
             } else {
@@ -200,23 +305,23 @@ define([
             }
 
             // Do a little animation
-            $room.animate({ backgroundColor: '#ffffff' }, 800);
+            $room.css('-webkit-animation-play-state', 'running').css('animation-play-state', 'running'); 
         }
 
-        function getRoomNames() {
-            var lobby = getLobby();
+        function updatePrivateRooms(roomName) {
+            var lobby = getLobby(),
+                $room = lobby.users.find('li[data-name="' + roomName + '"]');
 
-            return lobby.users.find('li')
-                .map(function () {
-                    var room = $(this).data('name');
-                    rc.roomCache[rc.cleanRoomName(room)] = true;
-                    return room + ' ';
-                });
+            $room.addClass('locked').appendTo(lobby.owners);
+        }
+
+        function getRooms() {
+            return sortedRoomList;
         }
 
         function loadMoreLobbyRooms() {
             var lobby = getLobby(),
-                moreRooms = sortedRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
+                moreRooms = publicRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
 
             populateRoomList(moreRooms, templates.lobbyroom, lobby.users);
             lastLoadedRoomIndex = lastLoadedRoomIndex + maxRoomsToLoad;
@@ -228,10 +333,6 @@ define([
         //
         // Event Handlers
         //
-
-        function lobbyOpened() {
-            updateRooms();
-        }
 
         // #region DOM Event Handlers
 
@@ -250,11 +351,6 @@ define([
         $lobbyRoomFilterForm.submit(function () {
             var room = ru.getCurrentRoomElements(),
                 $lobbyRoomsLists = $lobbyPrivateRooms.add($lobbyOtherRooms);
-
-            // bounce on any room other than lobby
-            if (!room.isLobby()) {
-                return false;
-            }
 
             // hide all elements except those that match the input / closed filters
             $lobbyRoomsLists
@@ -294,7 +390,7 @@ define([
             spinner.removeClass('icon-spin');
             loader.html('Load More...');
 
-            if (lastLoadedRoomIndex < sortedRoomList.length) {
+            if (lastLoadedRoomIndex < publicRoomList.length) {
                 $loadMoreRooms.show();
             } else {
                 $loadMoreRooms.hide();
@@ -311,19 +407,21 @@ define([
 
                 logger.trace('activated');
 
-                // Bind events
-                rc.bind(events.rooms.client.lobbyOpened, lobbyOpened);
-
-                client.chat.client.updateRoomCount = updateRoomCount;
+                client.chat.client.updateRoom = updateRoom;
 
                 ru.createRoom('Lobby');
             },
 
             addRoom: addRoom,
+            removeRoom: removeRoom,
+
             updateRooms: updateRooms,
+            updatePrivateRooms: updatePrivateRooms,
+
             lockRoom: lockRoom,
+
             populateRooms: populateRooms,
-            getRoomNames: getRoomNames,
+            getRooms: getRooms,
 
             hideForm: function () {
                 $lobbyRoomFilterForm.hide();

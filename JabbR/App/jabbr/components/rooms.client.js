@@ -127,7 +127,9 @@ define([
                 client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
                     .fail(function (e) {
                         // TODO: setActiveRoom('Lobby');
-                        $this.trigger(events.error, [e, 'error']);
+                        if(e.source === 'HubException') {
+                            $this.trigger(events.error, [e, 'error']);
+                        }
                     });
             } catch (e) {
                 client.connection.hub.log('openRoom failed');
@@ -163,49 +165,57 @@ define([
             client.connection.hub.log('getRoomInfo(' + room + ')');
 
             // Populate the list of users rooms and messages
-            client.chat.server.getRoomInfo(room).done(function (roomInfo) {
-                client.connection.hub.log('getRoomInfo.done(' + room + ')');
+            client.chat.server.getRoomInfo(room)
+                .done(function (roomInfo) {
+                    client.connection.hub.log('getRoomInfo.done(' + room + ')');
 
-                $.each(roomInfo.Users, function () {
-                    users.createRoomUser(this, room);
+                    populateRoomFromInfo(roomInfo);
+
+                    d.resolveWith(client.chat);
+                })
+                .fail(function (e) {
+                    client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
+                    d.rejectWith(client.chat);
                 });
-
-                $.each(roomInfo.Owners, function () {
-                    var user = users.get(this);
-
-                    if (user !== undefined && room in user.roomUsers) {
-                        user.roomUsers[room].setOwner(true);
-                    } else {
-                        logger.warn('unable to find user "' + this + '"');
-                    }
-                });
-
-                logger.info('loading recent messages');
-                $.each(roomInfo.RecentMessages, function () {
-                    this.isHistory = true;
-                    $this.trigger(events.rooms.client.createMessage, [this, room]);
-                });
-                logger.info('finished loading recent messages');
-
-                ru.updateRoomTopic(roomInfo);
-
-                // mark room as initialized to differentiate messages
-                // that are added after initial population
-                setInitialized(room);
-                ru.scrollToBottom(room);
-                setRoomListStatuses(room);
-
-                d.resolveWith(client.chat);
-
-                // Watch the messages after the defer, since room messages
-                // may be appended if we are just joining the room
-                messages.watchMessageScroll(messageIds, room);
-            }).fail(function (e) {
-                client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
-                d.rejectWith(client.chat);
-            });
 
             return d.promise();
+        }
+
+        function populateRoomFromInfo(roomInfo) {
+            var room = roomInfo.Name;
+
+            $.each(roomInfo.Users, function () {
+                users.createRoomUser(this, room);
+            });
+
+            $.each(roomInfo.Owners, function () {
+                var user = users.get(this);
+
+                if (user !== undefined && room in user.roomUsers) {
+                    user.roomUsers[room].setOwner(true);
+                } else {
+                    logger.warn('unable to find user "' + this + '"');
+                }
+            });
+
+            logger.info('loading recent messages');
+            $.each(roomInfo.RecentMessages, function () {
+                this.isHistory = true;
+                $this.trigger(events.rooms.client.createMessage, [this, room]);
+            });
+            logger.info('finished loading recent messages');
+
+            ru.updateRoomTopic(roomInfo.Name, roomInfo.Topic);
+
+            // mark room as initialized to differentiate messages
+            // that are added after initial population
+            setInitialized(room);
+            ru.scrollToBottom(room);
+            setRoomListStatuses(room);
+
+            // Watch the messages after the defer, since room messages
+            // may be appended if we are just joining the room
+            messages.watchMessageScroll(messageIds, room);
         }
 
         // #endregion
@@ -270,6 +280,7 @@ define([
             bind: function () {
                 client.chat.client.roomClosed = this.roomClosed;
                 client.chat.client.roomUnClosed = this.roomUnClosed;
+                client.chat.client.roomLoaded = this.roomLoaded;
                 client.chat.client.lockRoom = this.lockRoom;
 
                 client.chat.client.leave = this.leave;
@@ -312,7 +323,11 @@ define([
                 }
             },
 
-            lockRoom: function (userdata, roomName) {
+            roomLoaded: function(roomInfo) {
+                populateRoomFromInfo(roomInfo);
+            },
+
+            lockRoom: function (userdata, roomName, userHasAccess) {
                 if (!isSelf(userdata) && state.get().activeRoom === roomName) {
                     messages.addMessage(userdata.Name + ' has locked ' + roomName + '.',
                         'notification', state.get().activeRoom);
@@ -321,8 +336,12 @@ define([
                 var room = getRoom(roomName);
 
                 if (room !== null) {
-                    room.setLocked(true);
-                    lobby.lockRoom(roomName);
+                    if (userHasAccess) {
+                        room.setLocked(true);
+                        lobby.lockRoom(roomName);
+                    } else {
+                        lobby.removeRoom(roomName);
+                    }
                 }
             },
 
@@ -347,14 +366,16 @@ define([
                 }
             },
 
-            showUsersRoomList: function (user, inRooms) {
-                var status = "Currently " + user.Status;
+            showUsersRoomList: function (user, rooms) {
+                var message;
 
-                if (inRooms.length === 0) {
-                    messages.addMessage(user.Name + ' (' + status + ') is not in any rooms', 'list-header');
+                if (rooms.length === 0) {
+                    message = utility.getLanguageResource('Chat_UserNotInRooms', user.Name, user.Status);
+                    messages.addMessage(message, 'list-header');
                 } else {
-                    messages.addMessage(user.Name + ' (' + status + ') is in the following rooms', 'list-header');
-                    messages.addMessage(inRooms.join(', '), 'list-item');
+                    message = utility.getLanguageResource('Chat_UserInRooms', user.Name, user.Status);
+                    messages.addMessage(message, 'list-header');
+                    messages.addMessage(rooms.join(', '), 'list-item');
                 }
             },
 
@@ -484,8 +505,6 @@ define([
 
             activeRoomChanged: function (room) {
                 if (room === 'Lobby') {
-                    $this.trigger(events.rooms.client.lobbyOpened);
-
                     // Remove the active room
                     client.chat.state.activeRoom = undefined;
                 } else {
@@ -508,7 +527,9 @@ define([
                 try {
                     client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
                         .fail(function (e) {
-                            $this.trigger(events.error, [e, 'error']);
+                            if(e.source === 'HubException') {
+                                $this.trigger(events.error, [e, 'error']);
+                            }
                         });
                 } catch (e) {
                     // This can fail if the server is offline

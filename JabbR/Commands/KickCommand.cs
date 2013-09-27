@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNet.SignalR;
 using JabbR.Models;
 using JabbR.Services;
 using System.Collections.Generic;
 
 namespace JabbR.Commands
 {
-    [Command("kick", "Kick_CommandInfo", "user [message...] [imageUrl]", "user")]
+    [Command("kick", "Kick_CommandInfo", "user [room] [message...] [imageUrl]", "user")]
     public class KickCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
         {
             if (args.Length == 0)
-                throw new InvalidOperationException(LanguageResources.Kick_UserRequired);
+                throw new HubException(LanguageResources.Kick_UserRequired);
 
             var targetUser = context.Repository.VerifyUser(args[0]);
 
-            var parsedArguments = ParseArguments(context, args.Skip(1).ToList());
-            var room = context.Repository.VerifyRoom(callerContext.RoomName);
+            string targetRoomName = args.Length > 1 ? args[1] : callerContext.RoomName;
+
+            if (String.IsNullOrEmpty(targetRoomName))
+                throw new HubException(LanguageResources.Kick_RoomRequired);
+
+            var parsedArguments = ParseArguments(context, args.Skip(2).ToList());
+            var room = context.Repository.VerifyRoom(targetRoomName);
 
             context.Service.KickUser(callingUser, targetUser, room, parsedArguments.Item2, parsedArguments.Item1);
             context.NotificationService.KickUser(targetUser, room, parsedArguments.Item2, parsedArguments.Item1);

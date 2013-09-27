@@ -125,7 +125,9 @@ define([
             performLogout().done(function () {
                 chat.server.send('/logout', chat.state.activeRoom)
                     .fail(function (e) {
-                        $window.trigger(events.error, [e, 'error', chat.state.activeRoom]);
+                        if (e.source == 'HubException') {
+                            $window.trigger(events.error, [e.message, 'error', chat.state.activeRoom]);
+                        }
                     });
             });
         }

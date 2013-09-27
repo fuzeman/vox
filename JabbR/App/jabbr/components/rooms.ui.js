@@ -13,6 +13,7 @@ define([
     'jabbr/components/lobby',
     'jabbr/components/messages',
     'jabbr/components/notifications',
+    'jabbr/contentproviders/core',
     'jabbr/messageprocessors/processor',
     'jquery-migrate',
     'jquery.history',
@@ -25,7 +26,7 @@ define([
     // View Models
     Room, Message,
     // Components
-    rc, users, lobby, messages, notifications, processor
+    rc, users, lobby, messages, notifications, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/components/rooms.ui'),
         client = null,
@@ -105,7 +106,12 @@ define([
         }
 
         function getCurrentRoomElements() {
-            return rc.getRoom($tabs.find('li.current').data('name'));
+            var currentRoom = $tabs.find('li.current');
+
+            if(currentRoom.length > 0) {
+                return rc.getRoom(currentRoom.data('name'));
+            }
+            return null;
         }
 
         function getAllRoomElements() {
@@ -166,20 +172,19 @@ define([
             return room.isNearTheEnd();
         }
 
-        function updateRoomTopic(roomdata) {
-            var room = getRoomElements(roomdata.Name);
+        function updateRoomTopic(roomName, topic) {
+            var room = getRoomElements(roomName);
 
             if (room === null) {
                 logger.warn('Room does not exist yet');
                 return;
             }
 
-            var topic = roomdata.Topic;
             var topicHtml = topic === '' ?
-                'You\'re chatting in ' + roomdata.Name :
+                'You\'re chatting in ' + roomName :
                 processor.processPlainContent(topic);
             var roomTopic = room.roomTopic;
-            var isVisibleRoom = getCurrentRoomElements().getName() === roomdata.Name;
+            var isVisibleRoom = getCurrentRoomElements().getName() === roomName;
 
             if (isVisibleRoom) {
                 roomTopic.hide();
@@ -268,7 +273,7 @@ define([
 
             var currentRoom = getCurrentRoomElements();
 
-            if (room !== null && room.exists()) {
+            if (room.exists()) {
                 if (currentRoom !== null && currentRoom.exists()) {
                     currentRoom.makeInactive();
                     if (currentRoom.isLobby()) {
@@ -299,15 +304,12 @@ define([
 
         function setAccessKeys() {
             $.each($tabs.find('li.room'), function (index, item) {
-                $(item).children('button').attr('accesskey', getRoomAccessKey(index));
+                if (index < 10) {
+                    $(item).attr('accesskey', ((index + 1) % 10).toString());
+                } else {
+                    $(item).attr('accesskey', null);
+                }
             });
-        }
-
-        function getRoomAccessKey(index) {
-            if (index < 10) {
-                return index + 1;
-            }
-            return 0;
         }
 
         function createScrollHandler(roomName, roomId, $messages) {
@@ -366,8 +368,6 @@ define([
             if (!rc.inRoomCache(roomName)) {
                 lobby.addRoom(roomViewModel);
             }
-
-            rc.roomCache[rc.cleanRoomName(roomName)] = true;
 
             templates.tab.tmpl(viewModel).data('name', roomName).appendTo($tabs);
 
@@ -479,8 +479,8 @@ define([
         // #region Global Events
 
         // TODO - Replace with DI object call
-        events.bind(events.error, function (event, content, type) {
-            messages.addMessage(content, type);
+        events.bind(events.error, function (event, exception, type) {
+            messages.addMessage(exception.message, type);
         });
 
         // TODO - Replace with DI object call
@@ -600,6 +600,7 @@ define([
                 lobby.activate();
                 messages.activate();
                 notifications.activate();
+                contentProviders.activate();
                 processor.activate();
 
                 logger.trace('activated');
@@ -681,6 +682,7 @@ define([
             lobby = lobby();
             messages = messages();
             notifications = notifications();
+            contentProviders = contentProviders();
             processor = processor();
 
             object = initialize();

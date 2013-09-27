@@ -1,7 +1,7 @@
 /* jquery.signalR.core.js */
 /*global window:false */
 /*!
- * ASP.NET SignalR JavaScript Library v2.0.0-rc1
+ * ASP.NET SignalR JavaScript Library v2.1.0-pre
  * http://signalr.net/
  *
  * Copyright (C) Microsoft Corporation. All rights reserved.
@@ -10,13 +10,14 @@
 
 /// <reference path="Scripts/jquery-1.6.4.js" />
 /// <reference path="jquery.signalR.version.js" />
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var resources = {
         nojQuery: "jQuery was not found. Please ensure jQuery is referenced before the SignalR client JavaScript file.",
         noTransportOnInit: "No transport could be initialized successfully. Try specifying a different transport or none at all for auto initialization.",
         errorOnNegotiate: "Error during negotiation request.",
+        stoppedWhileLoading: "The connection was stopped during page load.",
         stoppedWhileNegotiating: "The connection was stopped during the negotiate request.",
         errorParsingNegotiateResponse: "Error parsing negotiate response.",
         protocolIncompatible: "You are using a version of the client that isn't compatible with the server. Client version {0}, server version {1}.",
@@ -24,8 +25,12 @@
         parseFailed: "Failed at parsing response: {0}",
         longPollFailed: "Long polling request failed.",
         eventSourceFailedToConnect: "EventSource failed to connect.",
+        eventSourceError: "Error raised by EventSource",
         webSocketClosed: "WebSocket closed.",
-        invalidPingServerResponse: "Invalid ping response when pinging server: '{0}'.",
+        pingServerFailedInvalidResponse: "Invalid ping response when pinging server: '{0}'.",
+        pingServerFailed: "Failed to ping server.",
+        pingServerFailedStatusCode: "Failed to ping server.  Server responded with status code {0}, stopping the connection.",
+        pingServerFailedParse: "Failed to parse ping server response, stopping the connection.",
         noConnectionTransport: "Connection is in an invalid state, there is no transport active."
     };
 
@@ -169,14 +174,19 @@
             return version;
         })(),
 
-        error: function (message, source) {
+        error: function (message, source, context) {
             var e = new Error(message);
             e.source = source;
+
+            if (typeof context !== "undefined") {
+                e.context = context;
+            }
+
             return e;
         },
 
-        transportError: function (message, transport, source) {
-            var e = this.error(message, source);
+        transportError: function (message, transport, source, context) {
+            var e = this.error(message, source, context);
             e.transport = transport ? transport.name : undefined;
             return e;
         },
@@ -188,6 +198,15 @@
                 s = s.replace("{" + i + "}", arguments[i + 1]);
             }
             return s;
+        },
+
+        firefoxMajorVersion: function (userAgent) {
+            // Firefox user agents: http://useragentstring.com/pages/Firefox/
+            var matches = userAgent.match(/Firefox\/(\d+)/);
+            if (!matches || !matches.length || matches.length < 2) {
+                return 0;
+            }
+            return parseInt(matches[1], 10 /* radix */);
         }
     };
 
@@ -239,7 +258,7 @@
                 requestedTransport = null;
             }
         } else if ($.type(requestedTransport) !== "object" && !signalR.transports[requestedTransport] && requestedTransport !== "auto") {
-            connection.log("Invalid transport: " + requestedTransport.toString());
+            connection.log("Invalid transport: " + requestedTransport.toString() + ".");
             requestedTransport = null;
         } else if (requestedTransport === "auto" && signalR._.ieVersion <= 8) {
             // If we're doing an auto transport and we're IE8 then force longPolling, #1764
@@ -380,8 +399,7 @@
                     pingInterval: 300000,
                     waitForPageLoad: true,
                     transport: "auto",
-                    jsonp: false,
-                    withCredentials: true
+                    jsonp: false
                 },
                 initialize,
                 deferred = connection._deferral || $.Deferred(), // Check to see if there is a pre-existing deferral that's being built on, if so we want to keep using it
@@ -413,14 +431,15 @@
             }
 
             connection._.config = config;
-            connection.withCredentials = config.withCredentials;
 
             // Check to see if start is being called prior to page load
             // If waitForPageLoad is true we then want to re-direct function call to the window load event
             if (!_pageLoaded && config.waitForPageLoad === true) {
-                _pageWindow.load(function () {
+                connection._.deferredStartHandler = function () {
                     connection.start(options, callback);
-                });
+                };
+                _pageWindow.bind("load", connection._.deferredStartHandler);
+
                 return deferred.promise();
             }
 
@@ -471,6 +490,10 @@
                     config.transport = ["webSockets", "longPolling"];
                 }
 
+                if (typeof (config.withCredentials) === "undefined") {
+                    config.withCredentials = true;
+                }
+
                 // Determine if jsonp is the only choice for negotiation, ajaxSend and ajaxAbort.
                 // i.e. if the browser doesn't supports CORS
                 // If it is, ignore any preference to the contrary, and switch to jsonp.
@@ -478,12 +501,14 @@
                     config.jsonp = !$.support.cors;
 
                     if (config.jsonp) {
-                        connection.log("Using jsonp because this browser doesn't support CORS");
+                        connection.log("Using jsonp because this browser doesn't support CORS.");
                     }
                 }
 
                 connection.contentType = signalR._.defaultContentType;
             }
+
+            connection.withCredentials = config.withCredentials;
 
             connection.ajaxDataType = config.jsonp ? "jsonp" : "text";
 
@@ -540,6 +565,10 @@
                     }, connection.transportConnectTimeout);
 
                     transport.start(connection, function () { // success
+                        // Firefox 11+ doesn't allow sync XHR withCredentials: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#withCredentials
+                        var isFirefox11OrGreater = signalR._.firefoxMajorVersion(window.navigator.userAgent) >= 11,
+                            asyncAbort = !!connection.withCredentials && isFirefox11OrGreater;
+
                         // The connection was aborted while initializing transports
                         if (connection.state === signalR.connectionState.disconnected) {
                             return;
@@ -569,20 +598,35 @@
 
                             // wire the stop handler for when the user leaves the page
                             _pageWindow.bind("unload", function () {
-                                connection.stop(false /* async */);
+                                connection.log("Window unloading, stopping the connection.");
+
+                                connection.stop(asyncAbort);
                             });
+
+                            if (isFirefox11OrGreater) {
+                                // Firefox does not fire cross-domain XHRs in the normal unload handler on tab close.
+                                // #2400
+                                _pageWindow.bind("beforeunload", function () {
+                                    // If connection.stop() runs runs in beforeunload and fails, it will also fail
+                                    // in unload unless connection.stop() runs after a timeout.
+                                    window.setTimeout(function () {
+                                        connection.stop(asyncAbort);
+                                    }, 0);
+                                });
+                            }
                         }
                     }, onFailed);
                 }
                 catch (error) {
-                    connection.log("SignalR: " + transport.name + " transport threw '" + error.message + "' when attempting to start.");
+                    connection.log(transport.name + " transport threw '" + error.message + "' when attempting to start.");
                     onFailed();
                 }
             };
 
             var url = connection.url + "/negotiate",
                 onFailed = function (error, connection) {
-                    var err = signalR._.error(resources.errorOnNegotiate, error);
+                    var err = signalR._.error(resources.errorOnNegotiate, error, connection._.negotiateRequest);
+
                     $(connection).triggerHandler(events.onError, err);
                     deferred.reject(err);
                     // Stop the connection if negotiate failed
@@ -616,7 +660,7 @@
                             onFailed(error, connection);
                         } else {
                             // This rejection will noop if the deferred has already been resolved or rejected.
-                            deferred.reject(signalR._.error(resources.stoppedWhileNegotiating));
+                            deferred.reject(signalR._.error(resources.stoppedWhileNegotiating, null /* error */, connection._.negotiateRequest));
                         }
                     },
                     success: function (result) {
@@ -654,7 +698,7 @@
                             // Timeout to designate when to force the connection into reconnecting converted to milliseconds
                             keepAliveData.timeout = res.KeepAliveTimeout * 1000;
 
-                            // Timeout to designate when to warn the developer that the connection may be dead or is hanging.
+                            // Timeout to designate when to warn the developer that the connection may be dead or is not responding.
                             keepAliveData.timeoutWarning = keepAliveData.timeout * connection.keepAliveWarnAt;
 
                             // Instantiate the frequency in which we check the keep alive.  It must be short in order to not miss/pick up any changes
@@ -821,15 +865,32 @@
             /// <param name="async" type="Boolean">Whether or not to asynchronously abort the connection</param>
             /// <param name="notifyServer" type="Boolean">Whether we want to notify the server that we are aborting the connection</param>
             /// <returns type="signalR" />
-            var connection = this;
+            var connection = this,
+                // Save deferral because this is always cleaned up
+                deferral = connection._deferral;
 
-            // Verify that we should wait for page load to call stop.
+            // Verify that we've bound a load event.
+            if (connection._.deferredStartHandler) {
+                // Unbind the event.
+                _pageWindow.unbind("load", connection._.deferredStartHandler);
+            }
+
+            // Always clean up private non-timeout based state.
+            delete connection._deferral;
+            delete connection._.config;
+            delete connection._.deferredStartHandler;
+
+            // This needs to be checked despite the connection state because a connection start can be deferred until page load.
+            // If we've deferred the start due to a page load we need to unbind the "onLoad" -> start event.
             if (!_pageLoaded && (!connection._.config || connection._.config.waitForPageLoad === true)) {
-                // Can only stop connections after the page has loaded
-                _pageWindow.load(function () {
-                    connection.stop(async, notifyServer);
-                });
+                connection.log("Stopping connection prior to negotiate.");
 
+                // If we have a deferral we should reject it
+                if (deferral) {
+                    deferral.reject(signalR._.error(resources.stoppedWhileLoading));
+                }
+
+                // Short-circuit because the start has not been fully started.
                 return;
             }
 
@@ -838,7 +899,7 @@
             }
 
             try {
-                connection.log("SignalR: Stopping connection.");
+                connection.log("Stopping connection.");
 
                 // Clear this no matter what
                 window.clearTimeout(connection._.onFailedTimeoutHandle);
@@ -868,11 +929,7 @@
 
                 delete connection.messageId;
                 delete connection.groupsToken;
-
-                // Remove the ID and the deferral on stop, this is to ensure that if a connection is restarted it takes on a new id/deferral.
                 delete connection.id;
-                delete connection._deferral;
-                delete connection._.config;
                 delete connection._.pingIntervalId;
 
                 // Clear out our message buffer
@@ -914,7 +971,7 @@
 /*global window:false */
 /// <reference path="jquery.signalR.core.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var signalR = $.signalR,
@@ -984,7 +1041,7 @@
             /// <summary>Pings the server</summary>
             /// <param name="connection" type="signalr">Connection associated with the server ping</param>
             /// <returns type="signalR" />
-            var baseUrl, url, deferral = $.Deferred();
+            var baseUrl, url, deferral = $.Deferred(), xhr;
 
             if (connection.transport) {
                 baseUrl = connection.transport.name === "webSockets" ? "" : connection.baseUrl;
@@ -992,7 +1049,7 @@
 
                 url = transportLogic.prepareQueryString(connection, url);
 
-                $.ajax(
+                xhr = $.ajax(
                     $.extend({}, $.signalR.ajaxDefaults, {
                         xhrFields: { withCredentials: connection.withCredentials },
                         url: url,
@@ -1007,7 +1064,14 @@
                                 data = connection._parseResponse(result);
                             }
                             catch (error) {
-                                deferral.reject(error);
+                                deferral.reject(
+                                    signalR._.transportError(
+                                        signalR.resources.pingServerFailedParse,
+                                        connection.transport,
+                                        error,
+                                        xhr
+                                    )
+                                );
                                 connection.stop();
                                 return;
                             }
@@ -1016,18 +1080,50 @@
                                 deferral.resolve();
                             }
                             else {
-                                deferral.reject(signalR._.transportError(signalR._.format(signalR.resources.invalidPingServerResponse, result.responseText), connection.transport));
+                                deferral.reject(
+                                    signalR._.transportError(
+                                        signalR._.format(signalR.resources.pingServerFailedInvalidResponse, result.responseText),
+                                        connection.transport,
+                                        null /* error */,
+                                        xhr
+                                    )
+                                );
                             }
                         },
                         error: function (error) {
-                            deferral.reject(error);
+                            if (error.status === 401 || error.status === 403) {
+                                deferral.reject(
+                                    signalR._.transportError(
+                                        signalR._.format(signalR.resources.pingServerFailedStatusCode, error.status),
+                                        connection.transport,
+                                        error,
+                                        xhr
+                                    )
+                                );
+                                connection.stop();
+                            }
+                            else {
+                                deferral.reject(
+                                    signalR._.transportError(
+                                        signalR.resources.pingServerFailed,
+                                        connection.transport,
+                                        error,
+                                        xhr
+                                    )
+                                );
+                            }
                         }
                     }
                 ));
 
             }
             else {
-                deferral.reject(signalR._.transportError(signalR.resources.noConnectionTransport, connection.transport));
+                deferral.reject(
+                    signalR._.transportError(
+                        signalR.resources.noConnectionTransport,
+                        connection.transport
+                    )
+                );
             }
 
             return deferral.promise();
@@ -1122,13 +1218,14 @@
         ajaxSend: function (connection, data) {
             var payload = transportLogic.stringifySend(connection, data),
                 url = connection.url + "/send" + "?transport=" + connection.transport.name + "&connectionToken=" + window.encodeURIComponent(connection.token),
+                xhr,
                 onFail = function (error, connection) {
-                    $(connection).triggerHandler(events.onError, [signalR._.transportError(signalR.resources.sendFailed, connection.transport, error), data]);
+                    $(connection).triggerHandler(events.onError, [signalR._.transportError(signalR.resources.sendFailed, connection.transport, error, xhr), data]);
                 };
 
             url = transportLogic.prepareQueryString(connection, url);
 
-            return $.ajax(
+            xhr = $.ajax(
                 $.extend({}, $.signalR.ajaxDefaults, {
                     xhrFields: { withCredentials: connection.withCredentials },
                     url: url,
@@ -1166,6 +1263,8 @@
                     }
                 }
             ));
+
+            return xhr;
         },
 
         ajaxAbort: function (connection, async) {
@@ -1192,7 +1291,7 @@
                 }
             ));
 
-            connection.log("Fired ajax abort async = " + async);
+            connection.log("Fired ajax abort async = " + async + ".");
         },
 
         tryInitialize: function (persistentResponse, onInitialized) {
@@ -1215,7 +1314,7 @@
                 data = this.maximizePersistentResponse(minData);
 
                 if (data.Disconnect) {
-                    connection.log("Disconnect command received from server");
+                    connection.log("Disconnect command received from server.");
 
                     // Disconnected by the server
                     connection.stop(false, false);
@@ -1257,11 +1356,11 @@
                 // Update Keep alive on reconnect
                 $(connection).bind(events.onReconnect, connection.keepAliveData.reconnectKeepAliveUpdate);
 
-                connection.log("Now monitoring keep alive with a warning timeout of " + keepAliveData.timeoutWarning + " and a connection lost timeout of " + keepAliveData.timeout);
+                connection.log("Now monitoring keep alive with a warning timeout of " + keepAliveData.timeoutWarning + " and a connection lost timeout of " + keepAliveData.timeout + ".");
                 // Start the monitoring of the keep alive
                 checkIfAlive(connection);
             } else {
-                connection.log("Tried to monitor keep alive but it's already being monitored");
+                connection.log("Tried to monitor keep alive but it's already being monitored.");
             }
         },
 
@@ -1278,7 +1377,7 @@
 
                 // Clear all the keep alive data
                 connection.keepAliveData = {};
-                connection.log("Stopping the monitoring of the keep alive");
+                connection.log("Stopping the monitoring of the keep alive.");
             }
         },
 
@@ -1313,23 +1412,25 @@
                     transport.stop(connection);
 
                     if (that.ensureReconnectingState(connection)) {
-                        connection.log(transportName + " reconnecting");
+                        connection.log(transportName + " reconnecting.");
                         transport.start(connection);
                     }
                 }, connection.reconnectDelay);
             }
         },
 
-        handleParseFailure: function (connection, result, error, onFailed) {
+        handleParseFailure: function (connection, result, error, onFailed, context) {
             // If we're in the initialization phase trigger onFailed, otherwise stop the connection.
             if (connection.state === signalR.connectionState.connecting) {
                 connection.log("Failed to parse server response while attempting to connect.");
                 onFailed();
             } else {
-                $(connection).triggerHandler(events.onError, [signalR._.transportError(
-                    signalR._.format(signalR.resources.parseFailed, result),
-                    connection.transport,
-                    error)]);
+                $(connection).triggerHandler(events.onError, [
+                    signalR._.transportError(
+                        signalR._.format(signalR.resources.parseFailed, result),
+                        connection.transport,
+                        error,
+                        context)]);
                 connection.stop();
             }
         },
@@ -1347,7 +1448,7 @@
 /*global window:false */
 /// <reference path="jquery.signalR.transports.common.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var signalR = $.signalR,
@@ -1386,12 +1487,12 @@
 
                 url += transportLogic.getUrl(connection, this.name, reconnecting);
 
-                connection.log("Connecting to websocket endpoint '" + url + "'");
+                connection.log("Connecting to websocket endpoint '" + url + "'.");
                 connection.socket = new window.WebSocket(url);
 
                 connection.socket.onopen = function () {
                     opened = true;
-                    connection.log("Websocket opened");
+                    connection.log("Websocket opened.");
 
                     transportLogic.clearReconnectTimeout(connection);
 
@@ -1422,9 +1523,9 @@
                                 signalR.resources.webSocketClosed,
                                 connection.transport,
                                 event)]);
-                            connection.log("Unclean disconnect from websocket: " + event.reason || "[no reason given]");
+                            connection.log("Unclean disconnect from websocket: " + event.reason || "[no reason given].");
                         } else {
-                            connection.log("Websocket closed");
+                            connection.log("Websocket closed.");
                         }
 
                         that.reconnect(connection);
@@ -1439,7 +1540,7 @@
                         data = connection._parseResponse(event.data);
                     }
                     catch (error) {
-                        transportLogic.handleParseFailure(connection, event.data, error, onFailed);
+                        transportLogic.handleParseFailure(connection, event.data, error, onFailed, event);
                         return;
                     }
 
@@ -1470,7 +1571,7 @@
             transportLogic.clearReconnectTimeout(connection);
 
             if (connection.socket) {
-                connection.log("Closing the Websocket");
+                connection.log("Closing the Websocket.");
                 connection.socket.close();
                 connection.socket = null;
             }
@@ -1488,7 +1589,7 @@
 /*global window:false */
 /// <reference path="jquery.signalR.transports.common.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var signalR = $.signalR,
@@ -1527,11 +1628,11 @@
             url = transportLogic.getUrl(connection, this.name, reconnecting);
 
             try {
-                connection.log("Attempting to connect to SSE endpoint '" + url + "'");
+                connection.log("Attempting to connect to SSE endpoint '" + url + "'.");
                 connection.eventSource = new window.EventSource(url);
             }
             catch (e) {
-                connection.log("EventSource failed trying to connect with error " + e.Message);
+                connection.log("EventSource failed trying to connect with error " + e.Message + ".");
                 if (onFailed) {
                     // The connection failed, call the failed callback
                     onFailed();
@@ -1560,7 +1661,7 @@
             }
 
             connection.eventSource.addEventListener("open", function (e) {
-                connection.log("EventSource connected");
+                connection.log("EventSource connected.");
 
                 if (reconnectTimeout) {
                     window.clearTimeout(reconnectTimeout);
@@ -1591,7 +1692,7 @@
                     res = connection._parseResponse(e.data);
                 }
                 catch (error) {
-                    transportLogic.handleParseFailure(connection, e.data, error, onFailed);
+                    transportLogic.handleParseFailure(connection, e.data, error, onFailed, e);
                     return;
                 }
 
@@ -1602,29 +1703,31 @@
                 // Only handle an error if the error is from the current Event Source.
                 // Sometimes on disconnect the server will push down an error event
                 // to an expired Event Source.
-                if (this === connection.eventSource) {
-                    if (!opened) {
-                        if (onFailed) {
-                            onFailed();
-                        }
+                if (this !== connection.eventSource) {
+                    return;
+                }
 
-                        return;
+                if (!opened) {
+                    if (onFailed) {
+                        onFailed();
                     }
 
-                    connection.log("EventSource readyState: " + connection.eventSource.readyState);
+                    return;
+                }
 
-                    if (e.eventPhase === window.EventSource.CLOSED) {
-                        // We don't use the EventSource's native reconnect function as it
-                        // doesn't allow us to change the URL when reconnecting. We need
-                        // to change the URL to not include the /connect suffix, and pass
-                        // the last message id we received.
-                        connection.log("EventSource reconnecting due to the server connection ending");
-                        that.reconnect(connection);
-                    } else {
-                        // connection error
-                        connection.log("EventSource error");
-                        $connection.triggerHandler(events.onError);
-                    }
+                connection.log("EventSource readyState: " + connection.eventSource.readyState + ".");
+
+                if (e.eventPhase === window.EventSource.CLOSED) {
+                    // We don't use the EventSource's native reconnect function as it
+                    // doesn't allow us to change the URL when reconnecting. We need
+                    // to change the URL to not include the /connect suffix, and pass
+                    // the last message id we received.
+                    connection.log("EventSource reconnecting due to the server connection ending.");
+                    that.reconnect(connection);
+                } else {
+                    // connection error
+                    connection.log("EventSource error.");
+                    $connection.triggerHandler(events.onError, [signalR._.transportError(signalR.resources.eventSourceError, connection.transport, e)]);
                 }
             }, false);
         },
@@ -1646,7 +1749,7 @@
             transportLogic.clearReconnectTimeout(connection);
 
             if (connection && connection.eventSource) {
-                connection.log("EventSource calling close()");
+                connection.log("EventSource calling close().");
                 connection.eventSource.close();
                 connection.eventSource = null;
                 delete connection.eventSource;
@@ -1665,7 +1768,7 @@
 /*global window:false */
 /// <reference path="jquery.signalR.transports.common.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var signalR = $.signalR,
@@ -1752,7 +1855,7 @@
             connection.log("Binding to iframe's readystatechange event.");
             frame.bind("readystatechange", function () {
                 if ($.inArray(this.readyState, ["loaded", "complete"]) >= 0) {
-                    connection.log("Forever frame iframe readyState changed to " + this.readyState + ", reconnecting");
+                    connection.log("Forever frame iframe readyState changed to " + this.readyState + ", reconnecting.");
 
                     that.reconnect(connection);
                 }
@@ -1763,6 +1866,7 @@
 
             if (onSuccess) {
                 connection.onSuccess = function () {
+                    connection.log("Iframe transport started.");
                     onSuccess();
                     delete connection.onSuccess;
                 };
@@ -1825,7 +1929,7 @@
                         }
                     }
                     catch (e) {
-                        connection.log("SignalR: Error occured when stopping foreverFrame transport. Message = " + e.message);
+                        connection.log("Error occured when stopping foreverFrame transport. Message = " + e.message + ".");
                     }
                 }
                 $(connection.frame).remove();
@@ -1836,7 +1940,7 @@
                 delete connection.frameId;
                 delete connection.onSuccess;
                 delete connection.frameMessageCount;
-                connection.log("Stopping forever frame");
+                connection.log("Stopping forever frame.");
             }
         },
 
@@ -1865,7 +1969,7 @@
 /*global window:false */
 /// <reference path="jquery.signalR.transports.common.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
     var signalR = $.signalR,
@@ -1888,7 +1992,7 @@
                 fireConnect = function () {
                     fireConnect = $.noop;
 
-                    connection.log("LongPolling connected");
+                    connection.log("LongPolling connected.");
                     onSuccess();
                     // Reset onFailed to null because it shouldn't be called again
                     onFailed = null;
@@ -1909,11 +2013,11 @@
                     window.clearTimeout(privateData.reconnectTimeoutId);
                     privateData.reconnectTimeoutId = null;
 
-                    if (changeState(connection,
+                    if (changeState(instance,
                                     signalR.connectionState.reconnecting,
                                     signalR.connectionState.connected) === true) {
                         // Successfully reconnected!
-                        connection.log("Raising the reconnect event");
+                        instance.log("Raising the reconnect event");
                         $(instance).triggerHandler(events.onReconnect);
                     }
                 },
@@ -1942,7 +2046,7 @@
                         return;
                     }
 
-                    connection.log("Attempting to connect to '" + url + "' using longPolling.");
+                    connection.log("Opening long polling request to '" + url + "'.");
                     instance.pollXhr = $.ajax(
                         $.extend({}, $.signalR.ajaxDefaults, {
                             xhrFields: { withCredentials: connection.withCredentials },
@@ -1956,6 +2060,8 @@
                                     data,
                                     shouldReconnect;
 
+                                connection.log("Long poll complete.");
+
                                 // Reset our reconnect errors so if we transition into a reconnecting state again we trigger
                                 // reconnected quickly
                                 reconnectErrors = 0;
@@ -1964,13 +2070,13 @@
                                     minData = connection._parseResponse(result);
                                 }
                                 catch (error) {
-                                    transportLogic.handleParseFailure(instance, result, error, tryFailConnect);
+                                    transportLogic.handleParseFailure(instance, result, error, tryFailConnect, instance.pollXhr);
                                     return;
                                 }
 
                                 // If there's currently a timeout to trigger reconnect, fire it now before processing messages
                                 if (privateData.reconnectTimeoutId !== null) {
-                                    fireReconnected();
+                                    fireReconnected(instance);
                                 }
 
                                 if (minData) {
@@ -1995,7 +2101,11 @@
                                 shouldReconnect = data && data.ShouldReconnect;
                                 if (shouldReconnect) {
                                     // Transition into the reconnecting state
-                                    transportLogic.ensureReconnectingState(instance);
+                                    // If this fails then that means that the user transitioned the connection into a invalid state in processMessages.
+                                    if (!transportLogic.ensureReconnectingState(instance))
+                                    {
+                                        return;
+                                    }
                                 }
 
                                 // We never want to pass a raiseReconnect flag after a successful poll.  This is handled via the error function
@@ -2015,7 +2125,7 @@
                                 privateData.reconnectTimeoutId = null;
 
                                 if (textStatus === "abort") {
-                                    connection.log("Aborted xhr requst.");
+                                    connection.log("Aborted xhr request.");
                                     return;
                                 }
 
@@ -2027,8 +2137,8 @@
                                     reconnectErrors++;
 
                                     if (connection.state !== signalR.connectionState.reconnecting) {
-                                        connection.log("An error occurred using longPolling. Status = " + textStatus + ". " + data.responseText);
-                                        $(instance).triggerHandler(events.onError, [signalR._.transportError(signalR.resources.longPollFailed, connection.transport, data)]);
+                                        connection.log("An error occurred using longPolling. Status = " + textStatus + ".  Response = " + data.responseText + ".");
+                                        $(instance).triggerHandler(events.onError, [signalR._.transportError(signalR.resources.longPollFailed, connection.transport, data, instance.pollXhr)]);
                                     }
 
                                     // Transition into the reconnecting state
@@ -2097,10 +2207,11 @@
 /*global window:false */
 /// <reference path="jquery.signalR.core.js" />
 
-(function ($, window) {
+(function ($, window, undefined) {
     "use strict";
 
-    var eventNamespace = ".hubProxy";
+    var eventNamespace = ".hubProxy",
+        signalR = $.signalR;
 
     function makeEventName(event) {
         return event + eventNamespace;
@@ -2139,7 +2250,9 @@
         var callbacks = connection._.invocationCallbacks,
             callback;
         
-        connection.log("Clearing hub invocation callbacks with error: " + error);
+        if (hasMembers(callbacks)) {
+            connection.log("Clearing hub invocation callbacks with error: " + error + ".");
+        }
         
         // Reset the callback cache now as we have a local var referencing it
         connection._.invocationCallbackId = 0;
@@ -2251,7 +2364,9 @@
                 data = { H: that.hubName, M: methodName, A: argValues, I: connection._.invocationCallbackId },
                 d = $.Deferred(),
                 callback = function (minResult) {
-                    var result = that._maximizeHubResponse(minResult);
+                    var result = that._maximizeHubResponse(minResult),
+                        source,
+                        error;
 
                     // Update the hub state
                     $.extend(that.state, result.State);
@@ -2259,9 +2374,15 @@
                     if (result.Error) {
                         // Server hub method threw an exception, log it & reject the deferred
                         if (result.StackTrace) {
-                            connection.log(result.Error + "\n" + result.StackTrace);
+                            connection.log(result.Error + "\n" + result.StackTrace + ".");
                         }
-                        d.rejectWith(that, [result.Error]);
+
+                        // result.ErrorData is only set if a HubException was thrown
+                        source = result.IsHubException ? "HubException" : "Exception";
+                        error = signalR._.error(result.Error, source);
+                        error.data = result.ErrorData;
+
+                        d.rejectWith(that, [error]);
                     } else {
                         // Server invocation succeeded, resolve the deferred
                         d.resolveWith(that, [result.Result]);
@@ -2285,8 +2406,10 @@
                 State: minHubResponse.S,
                 Result: minHubResponse.R,
                 Id: minHubResponse.I,
+                IsHubException: minHubResponse.H,
                 Error: minHubResponse.E,
-                StackTrace: minHubResponse.T
+                StackTrace: minHubResponse.T,
+                ErrorData: minHubResponse.D
             };
         }
     };
@@ -2444,12 +2567,12 @@
                 $.each(connection.proxies, function (key) {
                     if (this.hasSubscriptions()) {
                         subscribedHubs.push({ name: key });
-                        connection.log("SignalR: Client subscribed to hub '" + key + "'.");
+                        connection.log("Client subscribed to hub '" + key + "'.");
                     }
                 });
 
                 if (subscribedHubs.length === 0) {
-                    connection.log("SignalR: No hubs have been subscribed to.  The client will not receive data from hubs.  To fix, declare at least one client side function prior to connection start for each hub you wish to subscribe to.");
+                    connection.log("No hubs have been subscribed to.  The client will not receive data from hubs.  To fix, declare at least one client side function prior to connection start for each hub you wish to subscribe to.");
                 }
 
                 connection.data = connection.json.stringify(subscribedHubs);
@@ -2490,6 +2613,6 @@
 
 /*global window:false */
 /// <reference path="jquery.signalR.core.js" />
-(function ($) {
-    $.signalR.version = "2.0.0-rc1";
+(function ($, undefined) {
+    $.signalR.version = "2.1.0-pre";
 }(window.jQuery));

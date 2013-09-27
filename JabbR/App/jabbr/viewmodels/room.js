@@ -118,12 +118,6 @@ define([
 
         $tab.data('unread', unread);
         $tab.data('hasMentions', hasMentions);
-
-        if (!this.isActive() && unread === 1) {
-            // If this room isn't active then we're going to glow the tab
-            // to get the user's attention
-            glowTab($tab, 6);
-        }
     };
 
     Room.prototype.scrollToBottom = function () {
@@ -200,14 +194,13 @@ define([
             lastUnread = this.messages.find('.message-separator').data('unread') || 0;
 
         this.tab.addClass('current')
-            .removeClass('unread')
-            .stop(true, true)
-            .css('backgroundColor', '')
-            .css('color', '')
-            .data('unread', 0)
-            .data('hasMentions', false)
-            .find('.content')
-            .text(this.getName());
+                .removeClass('unread')
+                .data('unread', 0)
+                .data('hasMentions', false);
+
+        if (this.tab.is('.room')) {
+            this.tab.find('.content').text(this.getName());
+        }
 
         this.messages.addClass('current')
             .show();

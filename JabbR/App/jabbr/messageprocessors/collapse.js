@@ -67,7 +67,7 @@ define([
         state.setRoomPreference(room.getName(), 'blockRichness', !enabled);
 
         // toggle all rich-content for current room
-        $richContentMessages.each(function (index) {
+        $richContentMessages.each(function () {
             var $this = $(this),
                 isCurrentlyVisible = $this.next().is(":visible");
 
@@ -91,6 +91,7 @@ define([
             logger.trace('initialized');
         },
 
+        shouldCollapseContent: shouldCollapseContent,
         process: process,
 
         bind: function () {

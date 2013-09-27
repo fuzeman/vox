@@ -39,6 +39,16 @@ namespace JabbR.Services
         {
             get { return _db.Clients; }
         }
+        public IQueryable<Settings> Settings
+        {
+            get { return _db.Settings; }
+        }
+
+        public void Add(Settings settings)
+        {
+            _db.Settings.Add(settings);
+            _db.SaveChanges();
+        }
 
         public void Add(ChatRoom room)
         {
@@ -198,7 +208,9 @@ namespace JabbR.Services
 
         public IQueryable<ChatMessage> GetMessagesByRoom(ChatRoom room)
         {
-            return _db.Messages.Include(r => r.User).Where(r => r.RoomKey == room.Key);
+            return _db.Messages.Include(m => m.User)
+                               .Include(m => m.Room)
+                               .Where(m => m.RoomKey == room.Key);
         }
 
         public IQueryable<ChatMessage> GetPreviousMessages(string messageId)

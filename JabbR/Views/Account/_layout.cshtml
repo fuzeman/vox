@@ -1,4 +1,5 @@
 ﻿@using JabbR;
+@using SquishIt.Framework
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -24,10 +25,32 @@
             </div>
         </div>
     </div>
-    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-2.0.3.min.js")"></script>
     <script type="text/javascript">
         (function($) {
             $('input.error').closest('.control-group').addClass('error');
+
+            $('form').each(function () {
+                var $el = $(this),
+                    action = $el.attr('action');
+            
+                if (action.indexOf('#') === -1) {
+                    $el.attr('action', action + document.location.hash);
+                }
+            });
+
+            $('a').each(function() {
+                var $el = $(this),
+                    href = $el.attr('href');
+            
+                if (href.indexOf('#') === -1) {
+                    if ($el.is('.btn-provider')) {
+                        href = href + encodeURIComponent(document.location.hash);
+                    }
+              
+                    $el.attr('href', href + document.location.hash);
+                }
+            });
         }(jQuery));
     </script>
 </body>
