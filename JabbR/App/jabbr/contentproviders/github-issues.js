@@ -67,7 +67,7 @@ define([
         function addGitHubIssuesUser (user) {
             var elements = $("a.github-issue-user-" + user.data.login);
             elements.attr("href", user.data.html_url);
-        };
+        }
 
         window.addGitHubIssue = addGitHubIssue;
         window.addGitHubIssueComment = addGitHubIssueComment;
