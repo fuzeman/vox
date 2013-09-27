@@ -2,7 +2,7 @@
     "use strict";
 
     window.addTweet = function (tweet) {
-        // Keep track of whether we're need the end, so we can auto-scroll once the tweet is added.
+        // Keep track of whether we're near the end, so we can auto-scroll once the tweet is added.
         var nearEnd = ui.isNearTheEnd(),
             elements = null,
             tweetSegment = '/statuses/',
@@ -23,4 +23,4 @@
         }
     };
 
-})(jQuery, window, chat.ui);
+})(window.jQuery, window, chat.ui);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNet.SignalR;
 using JabbR.Models;
 using JabbR.Services;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace JabbR.Commands
         public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
         {
             if (args.Length == 0)
-                throw new InvalidOperationException(LanguageResources.Kick_UserRequired);
+                throw new HubException(LanguageResources.Kick_UserRequired);
 
             var targetUser = context.Repository.VerifyUser(args[0]);
 

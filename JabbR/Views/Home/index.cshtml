@@ -107,7 +107,7 @@
                     <span class="readonly"><i class="icon-ban-circle"></i></span>
                 </div>
                 <div class="span4">
-                    <span class="topic">${Topic}</span>
+                    <span class="topic">{{html processedTopic}}</span>
                 </div>
                 <div class="span2">
                     <span class="count">
@@ -160,8 +160,8 @@
                 <i class="icon-lock lock hide"></i>
                 <i class="icon-ban-circle readonly hide"></i>
                 <span class="content">${name}</span>
+                <button class="close">&times;</button>
             </a>
-            <button class="close">&times;</button>
         </li>
     </script>
     <script id="command-help-template" type="text/x-jquery-tmpl">
@@ -259,7 +259,7 @@
                 <div class="gravatar_${hash} gravatarProfile">
                     <div class="user">
                         <img src="${thumbnailUrl}">
-                        <span class="name">${preferredUsername}</span> (${name.formatted})
+                        <span class="name">${preferredUsername}</span>{{if name.formatted}} (${name.formatted}){{/if}}
                         <p><a href="${profileUrl}" target="_blank">${profileUrl}</a></p>
                     </div>
                 </div>

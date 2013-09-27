@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNet.SignalR;
 
 namespace JabbR.Models
 {
@@ -44,7 +45,7 @@ namespace JabbR.Models
         {
             if (String.IsNullOrEmpty(roomName))
             {
-                throw new InvalidOperationException(LanguageResources.RoomJoinMessage);
+                throw new HubException(LanguageResources.RoomJoinMessage);
             }
 
             roomName = ChatService.NormalizeRoomName(roomName);
@@ -53,12 +54,12 @@ namespace JabbR.Models
 
             if (room == null)
             {
-                throw new InvalidOperationException(String.Format(LanguageResources.RoomMemberButNotExists, roomName));
+                throw new HubException(String.Format(LanguageResources.RoomMemberButNotExists, roomName));
             }
 
             if (!repository.IsUserInRoom(cache, user, room))
             {
-                throw new InvalidOperationException(String.Format(LanguageResources.RoomNotMember, roomName));
+                throw new HubException(String.Format(LanguageResources.RoomNotMember, roomName));
             }
 
             return room;
@@ -84,7 +85,7 @@ namespace JabbR.Models
             if (user == null)
             {
                 // The user isn't logged in
-                throw new InvalidOperationException(LanguageResources.Authentication_NotLoggedIn);
+                throw new HubException(LanguageResources.Authentication_NotLoggedIn);
             }
 
             return user;
@@ -94,7 +95,7 @@ namespace JabbR.Models
         {
             if (String.IsNullOrWhiteSpace(roomName))
             {
-                throw new InvalidOperationException(LanguageResources.RoomNameCannotBeBlank);
+                throw new HubException(LanguageResources.RoomNameCannotBeBlank);
             }
 
             roomName = ChatService.NormalizeRoomName(roomName);
@@ -103,12 +104,12 @@ namespace JabbR.Models
 
             if (room == null)
             {
-                throw new InvalidOperationException(String.Format(LanguageResources.RoomNotFound, roomName));
+                throw new HubException(String.Format(LanguageResources.RoomNotFound, roomName));
             }
 
             if (room.Closed && mustBeOpen)
             {
-                throw new InvalidOperationException(String.Format(LanguageResources.RoomClosed, roomName));
+                throw new HubException(String.Format(LanguageResources.RoomClosed, roomName));
             }
 
             return room;
@@ -122,7 +123,7 @@ namespace JabbR.Models
 
             if (user == null)
             {
-                throw new InvalidOperationException(String.Format(LanguageResources.UserNotFound, userName));
+                throw new HubException(String.Format(LanguageResources.UserNotFound, userName));
             }
 
             return user;
@@ -141,6 +142,12 @@ namespace JabbR.Models
         public static IQueryable<Notification> ByRoom(this IQueryable<Notification> source, string roomName)
         {
             return source.Where(n => n.Room.Name == roomName);
+        }
+
+        public static IList<string> GetAllowedClientIds(this IJabbrRepository repository, ChatRoom room)
+        {
+            int[] allowedUserKeys = room.AllowedUsers.Select(u => u.Key).ToArray();
+            return repository.Clients.Where(c => allowedUserKeys.Contains(c.UserKey)).Select(c => c.Id).ToList();
         }
     }
 }

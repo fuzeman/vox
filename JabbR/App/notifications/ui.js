@@ -4,12 +4,10 @@
     'notifications/counter', 
     'jquery.pubsub'
 ], function ($, utility, counter) {
-    var notificationsMode = null,
+    var notificationsMode = $('#notifications-container').data('mode'),
         templates = {
             multiline: $('#multiline-content-template')
         };
-
-    notificationsMode = $('#notifications-container').data('mode');
 
     $('#notifications-container').on('click', '.js-mark-as-read', function (ev) {
         var $this = $(this),
@@ -63,7 +61,9 @@
         });
 
         readMention.fail(function () {
-            console.log('failed to mark notification as read', 'notification id: ', notificationId);
+            if (window.console && window.console.log) {
+                window.console.log('failed to mark notification as read', 'notification id: ', markAsReadRequest.notificationId);
+            }
         });
     });
 
@@ -95,11 +95,13 @@
         });
 
         readMention.fail(function () {
-            console.log('failed to mark ALL notifications as read');
+            if (window.console && window.console.log) {
+                window.console.log('failed to mark ALL notifications as read');
+            }
         });
     });
 
-    $.subscribe('notifications.readAll', function (ev) {
+    $.subscribe('notifications.readAll', function () {
         var $targetNotifications = $('.notification-unread'),
             $anchor = $targetNotifications.find('.js-mark-as-read');
 
@@ -118,7 +120,7 @@
         }
     });
 
-    $.subscribe('notifications.empty', function (ev) {
+    $.subscribe('notifications.empty', function () {
         $('.js-mark-all-as-read').addClass('disabled');
     });
 });
