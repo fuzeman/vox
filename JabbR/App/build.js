@@ -23,6 +23,7 @@
         'jquery': '../Scripts/jquery-2.0.3',
         'jquery-migrate': '../Scripts/jquery-migrate-1.2.1.min',
         'jquery.cookie': '../Scripts/jquery.cookie',
+        'jquery.captureDocumentWrite': '../Scripts/jquery.captureDocumentWrite',
         'jquery.signalr': '../Scripts/jquery.signalR-2.1.0-pre-130916-b211',
         'jquery.history': '../Scripts/jquery.history',
         'jquery.tmpl': '../Scripts/jQuery.tmpl',

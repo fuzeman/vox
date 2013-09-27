@@ -71,7 +71,7 @@ define(['jquery', 'jabbr/utility'], function ($, utility) {
                 }
             },
 
-            enableToast: function (callback) {
+            enableToast: function () {
                 var deferred = $.Deferred();
 
                 if (wkNotifications) {

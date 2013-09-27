@@ -91,6 +91,7 @@ define([
             logger.trace('initialized');
         },
 
+        shouldCollapseContent: shouldCollapseContent,
         process: process,
 
         bind: function () {
