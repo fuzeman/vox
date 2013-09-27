@@ -1,6 +1,5 @@
 using JabbR.Commands;
 using JabbR.ContentProviders.Core;
-using System.Data.Entity;
 using JabbR.Infrastructure;
 using JabbR.Models;
 using JabbR.Services;
@@ -524,21 +523,6 @@ namespace JabbR
         public void PostNotification(ClientNotification notification)
         {
             PostNotification(notification, executeContentProviders: true);
-        }
-
-        public void TabOrderChanged(string[] tabOrdering)
-        {
-            string userId = Context.User.GetUserId();
-
-            ChatUser user = _repository.GetUserById(userId);
-
-            ChatUserPreferences userPreferences = user.Preferences;
-            userPreferences.TabOrder = tabOrdering.ToList();
-            user.Preferences = userPreferences;
-
-            _repository.CommitChanges();
-
-            Clients.Clients(user.GetConnections()).updateTabOrder(tabOrdering);
         }
 
         public void PostNotification(ClientNotification notification, bool executeContentProviders)
