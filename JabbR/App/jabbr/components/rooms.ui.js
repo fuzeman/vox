@@ -105,7 +105,12 @@ define([
         }
 
         function getCurrentRoomElements() {
-            return rc.getRoom($tabs.find('li.current').data('name'));
+            var currentRoom = $tabs.find('li.current');
+
+            if(currentRoom.length > 0) {
+                return rc.getRoom(currentRoom.data('name'));
+            }
+            return null;
         }
 
         function getAllRoomElements() {
@@ -267,7 +272,7 @@ define([
 
             var currentRoom = getCurrentRoomElements();
 
-            if (room !== null && room.exists()) {
+            if (room.exists()) {
                 if (currentRoom !== null && currentRoom.exists()) {
                     currentRoom.makeInactive();
                     if (currentRoom.isLobby()) {

@@ -512,8 +512,11 @@ define([
 
         $window.resize(function () {
             var room = ru.getCurrentRoomElements();
-            room.makeActive();
-            room.scrollToBottom();
+            
+            if(room !== null) {
+                room.makeActive();
+                room.scrollToBottom();
+            }
         });
 
         function windowKeyFocus(ev) {
