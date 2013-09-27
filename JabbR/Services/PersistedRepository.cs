@@ -176,7 +176,7 @@ namespace JabbR.Services
 
         public int GetMessageCount()
         {
-            return _db.Messages.Count();
+            return (int)_db.Database.SqlQuery<decimal>("SELECT IDENT_CURRENT('[dbo].[ChatMessages]')").FirstOrDefault();
         }
 
         public IQueryable<ChatRoom> GetAllowedRooms(ChatUser user)
