@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JabbR.Models;
+using System;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Infrastructure;
-using System.Data.Objects;
-using System.Data.Objects.DataClasses;
 using System.Linq;
-using JabbR.Models;
 
 namespace JabbR.Services
 {
@@ -18,6 +18,7 @@ namespace JabbR.Services
         private static readonly Func<JabbrContext, string, ChatRoom> getRoomByName = (db, roomName) => db.Rooms.FirstOrDefault(r => r.Name == roomName);
         private static readonly Func<JabbrContext, string, ChatClient> getClientById = (db, clientId) => db.Clients.FirstOrDefault(c => c.Id == clientId);
         private static readonly Func<JabbrContext, string, ChatClient> getClientByIdWithUser = (db, clientId) => db.Clients.Include(c => c.User).FirstOrDefault(u => u.Id == clientId);
+        private static readonly Func<JabbrContext, string, string, DateTimeOffset, ChatUser> getUserByRequestResetPasswordId = (db, userName, requestId, now) => db.Users.FirstOrDefault(u => u.Name == userName && u.RequestPasswordResetId != null && u.RequestPasswordResetId.Equals(requestId, StringComparison.OrdinalIgnoreCase) && u.RequestPasswordResetValidThrough > now);
 
         public PersistedRepository(JabbrContext db)
         {
@@ -38,10 +39,26 @@ namespace JabbR.Services
         {
             get { return _db.Clients; }
         }
+        public IQueryable<Settings> Settings
+        {
+            get { return _db.Settings; }
+        }
+
+        public void Add(Settings settings)
+        {
+            _db.Settings.Add(settings);
+            _db.SaveChanges();
+        }
 
         public void Add(ChatRoom room)
         {
             _db.Rooms.Add(room);
+            _db.SaveChanges();
+        }
+
+        public void Add(ChatRoomUserData roomUserData)
+        {
+            _db.RoomUserData.Add(roomUserData);
             _db.SaveChanges();
         }
 
@@ -82,6 +99,12 @@ namespace JabbR.Services
         public void Remove(ChatRoom room)
         {
             _db.Rooms.Remove(room);
+            _db.SaveChanges();
+        }
+
+        public void Remove(ChatRoomUserData roomUserData)
+        {
+            _db.RoomUserData.Remove(roomUserData);
             _db.SaveChanges();
         }
 
@@ -153,7 +176,7 @@ namespace JabbR.Services
 
         public int GetMessageCount()
         {
-            return _db.Messages.Count();
+            return (int)_db.Database.SqlQuery<decimal>("SELECT IDENT_CURRENT('[dbo].[ChatMessages]')").FirstOrDefault();
         }
 
         public IQueryable<ChatRoom> GetAllowedRooms(ChatUser user)
@@ -165,12 +188,17 @@ namespace JabbR.Services
                        (r.Private && r.AllowedUsers.Any(u => u.Key == user.Key)));
         }
 
-        public IQueryable<Notification> GetNotificationsByUser(ChatUser user)
+        public IQueryable<Notification> GetNotificationsByUser(ChatUser user, bool extended = false)
         {
-            return _db.Notifications.Include(n => n.Room)
-                                    .Include(n => n.Message)
-                                    .Include(n => n.Message.User)
-                                    .Where(n => n.UserKey == user.Key);
+            if (extended)
+            {
+                return _db.Notifications.Include(n => n.Room)
+                          .Include(n => n.Message)
+                          .Include(n => n.Message.User)
+                          .Where(n => n.UserKey == user.Key);
+            }
+
+            return _db.Notifications.Where(n => n.UserKey == user.Key);
         }
 
         private IQueryable<ChatMessage> GetMessagesByRoom(string roomName)
@@ -180,7 +208,9 @@ namespace JabbR.Services
 
         public IQueryable<ChatMessage> GetMessagesByRoom(ChatRoom room)
         {
-            return _db.Messages.Include(r => r.User).Where(r => r.RoomKey == room.Key);
+            return _db.Messages.Include(m => m.User)
+                               .Include(m => m.Room)
+                               .Where(m => m.RoomKey == room.Key);
         }
 
         public IQueryable<ChatMessage> GetPreviousMessages(string messageId)
@@ -291,9 +321,39 @@ namespace JabbR.Services
             return null;
         }
 
+        public ChatUser GetUserByRequestResetPasswordId(string userName, string requestResetPasswordId)
+        {
+            return getUserByRequestResetPasswordId(_db, userName, requestResetPasswordId, DateTimeOffset.UtcNow);
+        }
+
+        public ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room)
+        {
+            var roomUserData = _db.RoomUserData.FirstOrDefault(d => d.UserKey == user.Key && d.RoomKey == room.Key);
+
+            if (roomUserData == null)
+            {
+                roomUserData = new ChatRoomUserData
+                {
+                    User = user,
+                    Room = room,
+
+                    IsMuted = false
+                };
+
+                Add(roomUserData);
+            }
+
+            return roomUserData;
+        }
+
         public Notification GetNotificationById(int notificationId)
         {
             return _db.Notifications.SingleOrDefault(n => n.Key == notificationId);
+        }
+
+        public Notification GetNotificationByMessage(ChatMessage message, ChatUser user)
+        {
+            return _db.Notifications.SingleOrDefault(n => n.MessageKey == message.Key && n.UserKey == user.Key);
         }
 
         public ChatUser GetUserByLegacyIdentity(string userIdentity)
@@ -321,10 +381,9 @@ namespace JabbR.Services
                       .FirstOrDefault() != null;
         }
 
-
         public void Reload(object entity)
         {
             _db.Entry(entity).Reload();
-        }        
+        }
     }
 }

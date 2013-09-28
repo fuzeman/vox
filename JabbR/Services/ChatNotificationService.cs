@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using JabbR.Models;
+﻿using JabbR.Models;
 using JabbR.ViewModels;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Infrastructure;
+using System;
+using System.Linq;
 
 namespace JabbR.Services
 {
@@ -31,6 +31,14 @@ namespace JabbR.Services
             foreach (var room in user.Rooms)
             {
                 HubContext.Clients.Group(room.Name).changeUserName(oldUserName, userViewModel, room.Name);
+            }
+        }
+
+        public void MessageReadStateChanged(ChatUser mentionedUser, ChatMessage message, Notification notification)
+        {
+            foreach (var client in mentionedUser.ConnectedClients)
+            {
+                HubContext.Clients.Client(client.Id).messageReadStateChanged(message.Id, notification.Read);
             }
         }
 

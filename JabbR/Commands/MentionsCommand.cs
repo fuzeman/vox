@@ -12,9 +12,14 @@ namespace JabbR.Commands
     {
         public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
         {
-            List<string> pendingAdd = String.Join(" ", args).Split(',')
-                .Select(p => p.Trim().ToLower()).Distinct().ToList();
-            string[] mentions = pendingAdd.ToArray();
+            var pendingAdd = String.Join(" ", args)
+                                   .Split(',')
+                                   .Where(p => p != String.Empty)
+                                   .Select(p => p.Trim().ToLower())
+                                   .Distinct()
+                                   .ToList();
+
+            var mentions = pendingAdd.ToArray();
 
             if (mentions.Length > 5)
             {
@@ -22,8 +27,8 @@ namespace JabbR.Commands
             }
 
             // Remove mentions
-            List<ChatUserMention> userMentions = context.Repository.GetMentionsByUser(callingUser).ToList();
-            foreach (ChatUserMention m in userMentions)
+            var userMentions = context.Repository.GetMentionsByUser(callingUser).ToList();
+            foreach (var m in userMentions)
             {
                 if (pendingAdd.Contains(m.String))
                     pendingAdd.Remove(m.String);
@@ -32,9 +37,10 @@ namespace JabbR.Commands
             }
 
             // Add mentions
-            foreach (string s in pendingAdd)
+            foreach (var s in pendingAdd)
             {
-                context.Repository.Add(new ChatUserMention { 
+                context.Repository.Add(new ChatUserMention
+                {
                     String = s,
                     UserKey = callingUser.Key
                 });

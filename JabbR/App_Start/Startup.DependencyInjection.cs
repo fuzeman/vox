@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
 using JabbR.Models;
@@ -7,15 +5,13 @@ using JabbR.Nancy;
 using JabbR.Services;
 using JabbR.UploadHandlers;
 using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNet.SignalR.Json;
+using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.DataProtection;
-using Microsoft.Owin.Security.Forms;
-using Nancy.Authentication.WorldDomination;
 using Nancy.Bootstrappers.Ninject;
+using Nancy.SimpleAuthentication;
 using Newtonsoft.Json;
 using Ninject;
-using Ninject.Extensions;
-using WorldDomination.Web.Authentication;
+using Microsoft.AspNet.SignalR;
 
 namespace JabbR
 {
@@ -28,6 +24,10 @@ namespace JabbR
             kernel.Bind<JabbrContext>()
                 .To<JabbrContext>();
 
+            kernel.Bind<IRecentMessageCache>()
+                  .To<NoopCache>()
+                  .InSingletonScope();
+
             kernel.Bind<IJabbrRepository>()
                 .To<PersistedRepository>();
 
@@ -37,11 +37,14 @@ namespace JabbR
             kernel.Bind<IDataProtector>()
                   .To<JabbRDataProtection>();
 
-            kernel.Bind<IFormsAuthenticationProvider>()
+            kernel.Bind<ICookieAuthenticationProvider>()
                   .To<JabbRFormsAuthenticationProvider>();
 
             kernel.Bind<ILogger>()
                   .To<RealtimeLogger>();
+
+            kernel.Bind<IUserIdProvider>()
+                  .To<JabbrUserIdProvider>();
 
             kernel.Bind<IJabbrConfiguration>()
                   .ToConstant(configuration);
@@ -52,15 +55,17 @@ namespace JabbR
                   .ToMethod(context =>
                   {
                       var resourceProcessor = context.Kernel.Get<ContentProviderProcessor>();
+                      var recentMessageCache = context.Kernel.Get<IRecentMessageCache>();
                       var repository = context.Kernel.Get<IJabbrRepository>();
                       var cache = context.Kernel.Get<ICache>();
                       var logger = context.Kernel.Get<ILogger>();
                       var settings = context.Kernel.Get<ApplicationSettings>();
 
-                      var service = new ChatService(cache, repository, settings);
+                      var service = new ChatService(cache, recentMessageCache, repository, settings);
 
                       return new Chat(resourceProcessor,
                                       service,
+                                      recentMessageCache,
                                       repository,
                                       cache,
                                       logger);
@@ -92,10 +97,10 @@ namespace JabbR
                   .To<DefaultUserAuthenticator>();
 
             kernel.Bind<IAuthenticationService>()
-                  .ToConstant(new AuthenticationService());
+                  .To<AuthenticationService>();
 
             kernel.Bind<IAuthenticationCallbackProvider>()
-                      .To<JabbRAuthenticationCallbackProvider>();
+                  .To<JabbRAuthenticationCallbackProvider>();
 
             kernel.Bind<ICache>()
                   .To<DefaultCache>()
@@ -124,6 +129,18 @@ namespace JabbR
 
             kernel.Bind<ContentProviderProcessor>()
                   .ToConstant(new ContentProviderProcessor(kernel));
+
+            kernel.Bind<IEmailTemplateContentReader>()
+                  .To<RazorEmailTemplateContentReader>();
+
+            kernel.Bind<IEmailTemplateEngine>()
+                  .To<RazorEmailTemplateEngine>();
+
+            kernel.Bind<IEmailSender>()
+                  .To<SmtpClientEmailSender>();
+
+            kernel.Bind<IEmailService>()
+                  .To<EmailService>();
 
             return kernel;
         }

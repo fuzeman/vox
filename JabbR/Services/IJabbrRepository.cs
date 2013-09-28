@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using JabbR.Models;
 using System;
-using JabbR.Models;
+using System.Linq;
 
 namespace JabbR.Services
 {
@@ -9,6 +9,7 @@ namespace JabbR.Services
         IQueryable<ChatRoom> Rooms { get; }
         IQueryable<ChatUser> Users { get; }
         IQueryable<ChatClient> Clients { get; }
+        IQueryable<Settings> Settings { get; }
 
         IQueryable<ChatUser> GetOnlineUsers(ChatRoom room);
         IQueryable<ChatUser> GetOnlineUsers();
@@ -17,7 +18,7 @@ namespace JabbR.Services
         IQueryable<ChatMessage> GetMessagesByRoom(ChatRoom room);
         IQueryable<ChatMessage> GetPreviousMessages(string messageId);
         IQueryable<ChatRoom> GetAllowedRooms(ChatUser user);
-        IQueryable<Notification> GetNotificationsByUser(ChatUser user);
+        IQueryable<Notification> GetNotificationsByUser(ChatUser user, bool extended = false);
         ChatMessage GetMessageById(string id);
         int GetMessageCount();
 
@@ -28,7 +29,10 @@ namespace JabbR.Services
         ChatUser GetUserByClientId(string clientId);
         ChatUser GetUserByLegacyIdentity(string userIdentity);
         ChatUser GetUserByIdentity(string providerName, string userIdentity);
+        ChatUser GetUserByRequestResetPasswordId(string userName, string requestResetPasswordId);
+        ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room);
         Notification GetNotificationById(int notificationId);
+        Notification GetNotificationByMessage(ChatMessage message, ChatUser user);
 
         IQueryable<ChatUserMention> GetMentions();
         IQueryable<ChatUserMention> GetMentionsByUser(ChatUser callingUser);
@@ -41,13 +45,16 @@ namespace JabbR.Services
         void Add(ChatClient client);
         void Add(ChatMessage message);
         void Add(ChatRoom room);
+        void Add(ChatRoomUserData roomUserData);
         void Add(ChatUser user);
         void Add(ChatUserIdentity identity);
         void Add(ChatUserMention mention);
         void Add(Attachment attachment);
+        void Add(Settings settings);
 
         void Remove(ChatClient client);
         void Remove(ChatRoom room);
+        void Remove(ChatRoomUserData roomUserData);
         void Remove(ChatUser user);
         void Remove(ChatUserIdentity identity);
         void Remove(ChatUserMention mention);

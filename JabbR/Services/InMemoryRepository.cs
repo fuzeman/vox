@@ -1,8 +1,8 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using JabbR.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using JabbR.Infrastructure;
-using JabbR.Models;
 
 namespace JabbR.Services
 {
@@ -12,6 +12,8 @@ namespace JabbR.Services
         private readonly ICollection<ChatUserIdentity> _identities;
         private readonly ICollection<ChatUserMention> _mentions;
         private readonly ICollection<ChatRoom> _rooms;
+        private readonly ICollection<ChatRoomUserData> _roomUserData;
+        private readonly ICollection<Settings> _settings;
         private readonly ICollection<Attachment> _attachments;
         private readonly ICollection<Notification> _notifications;
 
@@ -19,13 +21,17 @@ namespace JabbR.Services
         {
             _users = new SafeCollection<ChatUser>();
             _rooms = new SafeCollection<ChatRoom>();
+            _roomUserData = new SafeCollection<ChatRoomUserData>();
             _identities = new SafeCollection<ChatUserIdentity>();
             _mentions = new SafeCollection<ChatUserMention>();
             _attachments = new SafeCollection<Attachment>();
             _notifications = new SafeCollection<Notification>();
+            _settings = new SafeCollection<Settings>();
         }
 
         public IQueryable<ChatRoom> Rooms { get { return _rooms.AsQueryable(); } }
+
+        public IQueryable<Settings> Settings { get { return _settings.AsQueryable(); } }
 
         public IQueryable<ChatUser> Users { get { return _users.AsQueryable(); } }
 
@@ -33,12 +39,22 @@ namespace JabbR.Services
 
         public void Add(Attachment attachment)
         {
-            _attachments.Add(attachment);   
+            _attachments.Add(attachment);
         }
 
         public void Add(ChatRoom room)
         {
             _rooms.Add(room);
+        }
+
+        public void Add(Settings settings)
+        {
+            _settings.Add(settings);
+        }
+
+        public void Add(ChatRoomUserData roomUserData)
+        {
+            _roomUserData.Add(roomUserData);
         }
 
         public void Add(ChatUser user)
@@ -91,6 +107,11 @@ namespace JabbR.Services
         public void Remove(ChatRoom room)
         {
             _rooms.Remove(room);
+        }
+
+        public void Remove(ChatRoomUserData roomUserData)
+        {
+            _roomUserData.Remove(roomUserData);
         }
 
         public void Remove(ChatUser user)
@@ -168,7 +189,7 @@ namespace JabbR.Services
                 .AsQueryable();
         }
 
-        public IQueryable<Notification> GetNotificationsByUser(ChatUser user)
+        public IQueryable<Notification> GetNotificationsByUser(ChatUser user, bool extended = false)
         {
             return _notifications.Where(n => n.UserKey == user.Key).AsQueryable();
         }
@@ -210,6 +231,13 @@ namespace JabbR.Services
             return _users.FirstOrDefault(u => u.ConnectedClients.Any(c => c.Id == clientId));
         }
 
+        public ChatUser GetUserByRequestResetPasswordId(string userName, string requestResetPasswordId)
+        {
+            return _users.FirstOrDefault(u => u.RequestPasswordResetId != null &&
+                                              u.RequestPasswordResetId.Equals(requestResetPasswordId, StringComparison.OrdinalIgnoreCase) &&
+                                              u.RequestPasswordResetValidThrough > DateTimeOffset.UtcNow);
+        }
+
         public ChatUser GetUserByLegacyIdentity(string userIdentity)
         {
             return _users.FirstOrDefault(u => u.Identity == userIdentity);
@@ -225,9 +253,34 @@ namespace JabbR.Services
             return null;
         }
 
+        public ChatRoomUserData GetRoomUserData(ChatUser user, ChatRoom room)
+        {
+            var roomUserData = _roomUserData.FirstOrDefault(d => d.UserKey == user.Key && d.RoomKey == room.Key);
+
+            if (roomUserData == null)
+            {
+                roomUserData = new ChatRoomUserData
+                {
+                    User = user,
+                    Room = room,
+
+                    IsMuted = false
+                };
+
+                Add(roomUserData);
+            }
+
+            return roomUserData;
+        }
+
         public Notification GetNotificationById(int notificationId)
         {
             return _notifications.SingleOrDefault(n => n.Key == notificationId);
+        }
+
+        public Notification GetNotificationByMessage(ChatMessage message, ChatUser user)
+        {
+            return _notifications.SingleOrDefault(n => n.MessageKey == message.Key && n.UserKey == user.Key);
         }
 
         public ChatClient GetClientById(string clientId, bool includeUser = false)

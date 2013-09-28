@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using JabbR.Infrastructure;
+﻿using JabbR.Infrastructure;
 using JabbR.Models;
 using JabbR.Services;
 using JabbR.ViewModels;
@@ -9,13 +6,16 @@ using Nancy;
 using Nancy.Helpers;
 using Nancy.ModelBinding;
 using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace JabbR.Nancy
 {
     public class NotificationsModule : JabbRModule
     {
-        public NotificationsModule(IJabbrRepository repository, 
-                                   IChatService chatService, 
+        public NotificationsModule(IJabbrRepository repository,
+                                   IChatService chatService,
                                    IChatNotificationService notificationService)
             : base("/notifications")
         {
@@ -37,6 +37,7 @@ namespace JabbR.Nancy
                     ShowAll = request.All,
                     UnreadCount = unreadCount,
                     Notifications = notifications,
+                    DebugMode = (bool)Context.Items["_debugMode"],
                 };
 
                 return View["index", viewModel];
@@ -68,6 +69,7 @@ namespace JabbR.Nancy
                 notification.Read = true;
                 repository.CommitChanges();
 
+                notificationService.MessageReadStateChanged(user, notification.Message, notification);
                 UpdateUnreadCountInChat(repository, notificationService, user);
 
                 var response = Response.AsJson(new { success = true });
@@ -93,6 +95,7 @@ namespace JabbR.Nancy
                 foreach (var notification in unReadNotifications)
                 {
                     notification.Read = true;
+                    notificationService.MessageReadStateChanged(user, notification.Message, notification);
                 }
 
                 repository.CommitChanges();
@@ -115,7 +118,7 @@ namespace JabbR.Nancy
         private static IPagedList<NotificationViewModel> GetNotifications(IJabbrRepository repository, ChatUser user, bool all = false,
                                                                           int page = 1, int take = 20, string roomName = null)
         {
-            IQueryable<Notification> notificationsQuery = repository.GetNotificationsByUser(user);
+            IQueryable<Notification> notificationsQuery = repository.GetNotificationsByUser(user, true);
 
             if (!all)
             {

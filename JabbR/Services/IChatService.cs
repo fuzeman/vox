@@ -6,7 +6,7 @@ namespace JabbR.Services
 {
     public interface IChatService
     {
-        // Users 
+        // Users
         ChatClient AddClient(ChatUser user, string clientId, string userAgent);
         void UpdateActivity(ChatUser user, string clientId, string userAgent);
         string DisconnectClient(string clientId);
@@ -27,6 +27,8 @@ namespace JabbR.Services
         void KickUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom, string message = null, Uri imageUrl = null);
         void AllowUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
         void UnallowUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
+        void MuteUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
+        void UnMuteUser(ChatUser user, ChatUser targetUser, ChatRoom targetRoom);
         void LockRoom(ChatUser user, ChatRoom targetRoom);
         void CloseRoom(ChatUser user, ChatRoom targetRoom);
         void OpenRoom(ChatUser user, ChatRoom targetRoom);
@@ -42,6 +44,6 @@ namespace JabbR.Services
         void AddAttachment(ChatMessage message, string fileName, string contentType, long size, UploadResult result);
 
         // Add mention
-        void AddNotification(ChatUser mentionedUser, ChatMessage message, ChatRoom room, bool markAsRead);
+        Notification AddNotification(ChatUser mentionedUser, ChatMessage message, ChatRoom room, bool markAsRead);
     }
 }

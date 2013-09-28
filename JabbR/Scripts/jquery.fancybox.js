@@ -657,7 +657,12 @@
 			}
 
 			D.unbind('.fb');
-			W.unbind('.fb');
+		    
+		    // PATCH: fix for "too much recursion" errors on firefox
+			W.unbind('orientationchange.fb');
+			W.unbind('resize.fb');
+			W.unbind('scroll.fb');
+		    W.unbind('resize.overlay');
 		},
 
 		bindEvents: function () {

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using JabbR.Models;
+﻿using JabbR.Models;
 using System;
+using System.Collections.Generic;
 
 namespace JabbR.Services
 {
@@ -26,10 +26,12 @@ namespace JabbR.Services
 
         void ChangePassword();
         void SetPassword();
+        void ChangeAfk(ChatUser user);
         void ChangeNote(ChatUser user);
         void ChangeFlag(ChatUser user);
         void ChangeTopic(ChatUser user, ChatRoom room);
         void ChangeWelcome(ChatUser user, ChatRoom room);
+        void GenerateMeme(ChatUser user, ChatRoom room, string message);
 
         void PostNotification(ChatRoom room, ChatUser user, string message);
         void SendPrivateMessage(ChatUser user, ChatUser targetUser, string messageText);
@@ -40,6 +42,8 @@ namespace JabbR.Services
         void KickUser(ChatUser targetUser, ChatRoom targetRoom, string message = null, Uri imageUrl = null);
         void AllowUser(ChatUser targetUser, ChatRoom targetRoom);
         void UnallowUser(ChatUser targetUser, ChatRoom targetRoom);
+        void MuteUser(ChatUser targetUser, ChatRoom targetRoom);
+        void UnMuteUser(ChatUser targetUser, ChatRoom targetRoom);
         void BanUser(ChatUser targetUser);
 
         void OnUserCreated(ChatUser user);

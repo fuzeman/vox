@@ -1,7 +1,8 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JabbR.Infrastructure;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JabbR.Models
 {
@@ -40,12 +41,19 @@ namespace JabbR.Models
         public bool IsAdmin { get; set; }
         public bool IsBanned { get; set; }
 
+        // Request password reset token
+        public string RequestPasswordResetId { get; set; }
+        public DateTimeOffset? RequestPasswordResetValidThrough { get; set; }
+
         // List of clients that are currently connected for this user
         public virtual ICollection<ChatUserIdentity> Identities { get; set; }
+
+        public string RawPreferences { get; set; }
         public virtual ICollection<ChatUserMention> Mentions { get; set; }
         public virtual ICollection<ChatClient> ConnectedClients { get; set; }
         public virtual ICollection<ChatRoom> OwnedRooms { get; set; }
         public virtual ICollection<ChatRoom> Rooms { get; set; }
+        public virtual ICollection<ChatRoomUserData> RoomUserData { get; set; }
 
         public virtual ICollection<Attachment> Attachments { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
@@ -60,6 +68,7 @@ namespace JabbR.Models
             ConnectedClients = new SafeCollection<ChatClient>();
             OwnedRooms = new SafeCollection<ChatRoom>();
             Rooms = new SafeCollection<ChatRoom>();
+            RoomUserData = new SafeCollection<ChatRoomUserData>();
             AllowedRooms = new SafeCollection<ChatRoom>();
             Attachments = new SafeCollection<Attachment>();
             Notifications = new SafeCollection<Notification>();
@@ -68,6 +77,20 @@ namespace JabbR.Models
         public bool HasUserNameAndPasswordCredentials()
         {
             return !String.IsNullOrEmpty(HashedPassword) && !String.IsNullOrEmpty(Name);
+        }
+
+        [NotMapped]
+        public ChatUserPreferences Preferences
+        {
+            get
+            {
+                return ChatUserPreferences.GetPreferences(this);
+            }
+
+            set
+            {
+                value.Serialize(this);
+            }
         }
     }
 }

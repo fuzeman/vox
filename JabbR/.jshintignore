@@ -1,2 +1,4 @@
 Scripts/
 bin/
+App/require.js
+App/build.js
