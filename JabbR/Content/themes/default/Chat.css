@@ -1365,11 +1365,20 @@ li.clearfix {
         margin-top: 0px;
     }
 
-.flag-container {
+.glyph-container {
     position: relative;
     float: right;
     margin-top: 4px;
 }
+
+    .glyph-container .flag {
+        float: left;
+    }
+
+    .glyph-container .inactive-since {
+        float: left;
+        line-height: 11px;
+    }
 
 .flag {
     width: 16px;
@@ -3380,15 +3389,11 @@ h3.userlist-header {
         width: 45px;
     }
 
-    .user .details .name-container .inactive-since {
-        float: left;
-    }
-
     .user-status {
         margin: 0;
     }
 
-    .flag-container {
+    .glyph-container {
         display: none;
     }
 }
