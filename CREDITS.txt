@@ -4,6 +4,8 @@ S: Wood019.wav by HardPCM (http://www.freesound.org/people/HardPCM/sounds/35978/
 
 JabbR uses icons from http://thenounproject.com/.
 
+The Noun Project
+-------------------------------------------
 http://thenounproject.com/noun/speaker/#icon-No100
 - /content/images/sound-on.png
 - /content/images/sound-off.png
@@ -20,10 +22,17 @@ http://thenounproject.com/noun/paper-clip/#icon-No286
 - /content/images/clippy.png
 http://thenounproject.com/noun/download/#icon-No435
 - /content/images/download-icon.png
+
+P.J. Onori from The Noun Project
+-------------------------------------------
 http://thenounproject.com/noun/question/#icon-No2877
 - /content/images/question-icon.png
 
-All symbols included above are by Joe Smith except the question-icon symbol which is by P.J. Onori, from The Noun Project collection.
+Ben Rex Furneaux from The Noun Project
+-------------------------------------------
+http://thenounproject.com/noun/crown/#icon-No3677
+- /content/images/crown-admin.png
+
 
 JabbR uses icons from http://www.iconfinder.com
 
