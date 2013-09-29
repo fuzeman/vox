@@ -130,13 +130,13 @@
             </div>
             <img class="gravatar" src="https://secure.gravatar.com/avatar/${hash}?s=32&d=mm" />
             <div class="details {{if admin}}admin{{/if}}">
-                <div class="flag-container">
+                <div class="glyph-container">
                     <div class="flag{{if flagClass}} ${flagClass}{{/if}}" {{if flag}}title="${country}"{{/if}}></div>
+                    {{if admin}}<div class="admin"></div>{{/if}}
+                    <div class="inactive-since"></div>
                 </div>
                 <div class="name-container">
                     <div class="name" {{if note}}title="${note}"{{else}}title="${name}"{{/if}}>${name}</div>
-                    <div class="inactive-since"></div>
-                    {{if admin}}<div class="admin">(@LanguageResources.Client_AdminTag)</div>{{/if}}
                 </div>
                 <div style="clear:both"></div>
             </div>
