@@ -531,20 +531,6 @@ form#send-message {
     text-overflow: ellipsis;
     float: left;
     padding-right: 2px;
-    width: 135px;
-}
-
-.user .details.admin .name-container .name {
-    width: 90px;
-}
-
-.user .details .name-container .admin {
-    float: right;
-    margin-top: -1px;
-    font-size: 11px;
-    font-weight: 300;
-    color: #999999;
-    padding-right: 5px;
 }
 
 .users li {
@@ -1372,11 +1358,20 @@ li.clearfix {
 }
 
     .glyph-container .flag {
-        float: left;
+        float: right;
+        margin-left: 5px;
+    }
+
+    .glyph-container .admin {
+        float: right;
+        width: 11px;
+        height: 11px;
+        margin-left: 5px;
+        background: url('../../images/crown-admin.png') no-repeat;
     }
 
     .glyph-container .inactive-since {
-        float: left;
+        float: right;
         line-height: 11px;
     }
 
@@ -3167,7 +3162,6 @@ h3.userlist-header {
     font-size: 11px;
     font-weight: bold;
     color: #ccc;
-    padding-right: 5px;
 }
 
 #loadingRoomHistory {
@@ -3269,15 +3263,11 @@ h3.userlist-header {
     }
 
     .user.inactive .details.admin .name-container .name {
-        width: 72px;
+        width: 85px;
     }
 
     .user .details .name-container .name {
-        width: 110px;
-    }
-
-    .user .details.admin .name-container .name {
-        width: 95px;
+        width: 105px;
     }
 }
 
@@ -3313,22 +3303,11 @@ h3.userlist-header {
         display: none;
     }
 
-    .user .details .name-container .admin {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        width: 27px;
-    }
-
     .users {
         width: 150px;
     }
 
     .user .details .name-container .name {
-        width: 65px;
-    }
-
-    .user .details.admin .name-container .name {
         width: 55px;
     }
 }
