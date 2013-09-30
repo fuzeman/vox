@@ -982,31 +982,31 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Account\_username.cshtml" />
-    <Content Include="Views\Account\register.cshtml" />
-    <Content Include="Views\Home\index.cshtml" />
-    <Content Include="Views\Account\_layout.cshtml" />
-    <Content Include="Views\Account\_social.cshtml" />
-    <Content Include="Views\Account\login.cshtml" />
-    <Content Include="Views\Account\index.cshtml" />
+    <Content Include="Views\desktop\account\_username.cshtml" />
+    <Content Include="Views\desktop\account\register.cshtml" />
+    <Content Include="Views\desktop\home\index.cshtml" />
+    <Content Include="Views\desktop\account\_layout.cshtml" />
+    <Content Include="Views\desktop\account\_social.cshtml" />
+    <Content Include="Views\desktop\account\login.cshtml" />
+    <Content Include="Views\desktop\account\index.cshtml" />
     <Content Include="Scripts\livestamp.min.js.map">
       <DependentUpon>livestamp.js</DependentUpon>
     </Content>
-    <Content Include="Views\Notifications\index.cshtml" />
-    <Content Include="Views\Home\monitor.cshtml" />
-    <Content Include="Views\Administration\index.cshtml" />
+    <Content Include="Views\desktop\notifications\index.cshtml" />
+    <Content Include="Views\desktop\home\monitor.cshtml" />
+    <Content Include="Views\desktop\administration\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
     <Compile Include="ContentProviders\MinusContentProvider.cs" />
-    <Content Include="Views\EmailTemplates\RequestResetPassword.cshtml" />
-    <Content Include="Views\EmailTemplates\RequestResetPassword.text.cshtml" />
-    <Content Include="Views\Account\requestresetpassword.cshtml" />
-    <Content Include="Views\Account\requestresetpasswordsuccess.cshtml" />
-    <Content Include="Views\Account\resetpassword.cshtml" />
-    <Content Include="Views\Account\resetpassworderror.cshtml" />
-    <Content Include="Views\Account\resetpasswordsuccess.cshtml" />
+    <Content Include="Views\email\RequestResetPassword.cshtml" />
+    <Content Include="Views\email\RequestResetPassword.text.cshtml" />
+    <Content Include="Views\desktop\account\requestresetpassword.cshtml" />
+    <Content Include="Views\desktop\account\requestresetpasswordsuccess.cshtml" />
+    <Content Include="Views\desktop\account\resetpassword.cshtml" />
+    <Content Include="Views\desktop\account\resetpassworderror.cshtml" />
+    <Content Include="Views\desktop\account\resetpasswordsuccess.cshtml" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />
   </ItemGroup>
   <ItemGroup>
@@ -1148,6 +1148,7 @@
     <Compile Include="Nancy\HomeModule.cs" />
     <Compile Include="Nancy\NotificationsModule.cs" />
     <Compile Include="Nancy\SessionExtensions.cs" />
+    <Compile Include="Nancy\UserAgentDetect.cs" />
     <Compile Include="Services\DefaultUserAuthenticator.cs" />
     <Compile Include="Services\Email\Email.cs" />
     <Compile Include="Services\Email\EmailService.cs" />
@@ -1423,7 +1424,9 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\mobile\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

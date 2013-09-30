@@ -12,6 +12,7 @@ using Nancy.Owin;
 using Nancy.Security;
 
 using Ninject;
+using Nancy.Cookies;
 
 namespace JabbR.Nancy
 {
@@ -31,6 +32,36 @@ namespace JabbR.Nancy
 
         protected override void ApplicationStartup(IKernel container, IPipelines pipelines)
         {
+            Conventions.ViewLocationConventions.Add((viewName, model, context) =>
+            {
+                string view_mode = null;
+
+                // Try get the current view_mode from cookies
+                if (context.Context.Request.Cookies.ContainsKey("view_mode"))
+                {
+                    var cookie_value = context.Context.Request.Cookies["view_mode"];
+
+                    if (cookie_value == "desktop" || cookie_value == "mobile")
+                        view_mode = cookie_value;
+                }
+
+                // Try determine the view_mode to use via the user agent
+                if (view_mode == null)
+                {
+                    if (UserAgentDetect.IsSmartphone(context.Context.Request.Headers.UserAgent))
+                        view_mode = "mobile";
+                }
+
+                // Default to desktop
+                if (view_mode == null)
+                    view_mode = "desktop";
+
+                // Set cookie
+                context.Context.NegotiationContext.Cookies.Add(new NancyCookie("view_mode", view_mode));
+
+                return string.Join("/", new[] {"views", view_mode, context.ModuleName.ToLower(), viewName});
+            });
+
             base.ApplicationStartup(container, pipelines);
 
             Csrf.Enable(pipelines);

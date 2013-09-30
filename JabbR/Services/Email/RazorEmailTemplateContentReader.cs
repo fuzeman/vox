@@ -2,7 +2,7 @@
 {
     public class RazorEmailTemplateContentReader : FileEmailTemplateContentReader
     {
-        public const string DefaultTemplateDirectory = "views/emailtemplates";
+        public const string DefaultTemplateDirectory = "views/email";
         public const string DefaultFileExtension = ".cshtml";
 
         public RazorEmailTemplateContentReader()
