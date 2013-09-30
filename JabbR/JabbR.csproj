@@ -861,6 +861,7 @@
     <Content Include="Content\themes\desktop_default\Chat.nuget.css" />
     <Content Include="Content\themes\mobile_default\account.css" />
     <Content Include="Content\themes\mobile_default\fries.holo_dark.min.css" />
+    <Content Include="Content\themes\mobile_default\layout.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\images\big-logo.png" />
     <Content Include="Content\images\logo32.png" />
@@ -982,6 +983,7 @@
     <Content Include="Scripts\stacktrace-min-0.4.js" />
     <None Include="Views\mobile\account\_layout.cshtml" />
     <None Include="Views\mobile\account\register.cshtml" />
+    <None Include="Views\mobile\_layout.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
