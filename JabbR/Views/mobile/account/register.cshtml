@@ -1,0 +1,36 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<object>
+
+@using JabbR;
+@using JabbR.ViewModels;
+@using System.Linq;
+@using SquishIt.Framework
+
+@{
+    Layout = "_layout.cshtml";
+}
+
+<form class="large-inset" action="@Url.Content("~/account/create" + Html.RequestQuery())" method="post">
+    @Html.ValidationSummary()
+
+    @Html.TextBox("username", "input-text", @LanguageResources.Account_UserName)
+
+    <input type="email" id="email" name="email" value="" class="input-text" placeholder="Email">
+
+    @Html.Password("password", "input-text", @LanguageResources.Account_Pass)
+    @Html.Password("confirmPassword", "input-text", @LanguageResources.Account_PassConfirm)
+
+    <div class="form-actions centered">
+        <button type="submit" class="btn">@LanguageResources.Account_Register</button>
+        <button href="@Url.Content("~/account/login" + Html.RequestQuery())" class="btn">@LanguageResources.Account_Cancel</button>
+    </div>
+
+    @Html.AntiForgeryToken()
+</form>
+
+<script type="text/javascript">
+    $('button[href]').click(function (ev) {
+        ev.preventDefault();
+
+        window.location.href = $(this).attr('href');
+    });
+</script>

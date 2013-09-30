@@ -22,3 +22,4 @@ JabbR/Build
 JabbR/App_Data
 /_UpgradeReport_Files
 /UpgradeLog*
+*.!sync

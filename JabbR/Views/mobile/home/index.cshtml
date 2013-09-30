@@ -1,0 +1,38 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<SettingsViewModel>
+
+@using System
+@using JabbR
+@using JabbR.ViewModels
+@using SquishIt.Framework;
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+
+        <title>iceJabbR</title>
+
+        <link href="@Url.Content("~/Content/images/logo32.png")" rel="icon" type="image/png" sizes="32x32">
+        <link href="@Url.Content("~/Content/images/logo64.png")" rel="icon" type="image/png" sizes="64x64">
+        <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16">
+
+        @{
+            WriteLiteral(Bundle.Css().ForceDebugIf(() => Model.DebugMode)
+                .Add("~/Content/themes/mobile_holo_dark/fries.holo_dark.min.css")
+                .Render("~/Content/JabbR_#.css"));
+        }
+    </head>
+
+    <body>
+        <div class="page">
+            <header class="action-bar fixed-top">
+                <a href="javascript: void(0);" class="app-icon action" data-ignore="true">
+                    <i class="icon-fries"></i>
+                </a>
+                <h1 class="title">iceJabbR</h1>
+            </header>
+        </div>
+    </body>
+</html>

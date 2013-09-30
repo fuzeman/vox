@@ -1,0 +1,16 @@
+﻿.large-inset {
+    padding: 15% 30%;
+}
+
+.validation-summary-errors {
+    list-style: none;
+    font-size: 14px;
+}
+
+form {
+    text-align: center;
+}
+
+.form-actions.centered {
+    display: inline-block;
+}

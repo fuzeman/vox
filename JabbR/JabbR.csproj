@@ -283,6 +283,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\animate.min.css" />
+    <Content Include="Content\fonts\icomoon.dev.svg" />
+    <Content Include="Content\fonts\icomoon.svg" />
     <Content Include="Content\images\crown-admin.png" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
@@ -302,7 +304,7 @@
     <Content Include="Content\font-awesome-ie7.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\font\fontawesome-webfont.svg" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\images\close-icon-hover.png" />
     <Content Include="Content\images\close-icon.png" />
     <Content Include="Content\images\contentproviders\bbcnews-header.png" />
@@ -852,11 +854,13 @@
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
     <Content Include="Chat.githubissues.js" />
-    <Content Include="Content\themes\desktop\default\Chat.bbcnews.css" />
-    <Content Include="Content\themes\desktop\default\Chat.css" />
-    <Content Include="Content\themes\desktop\default\Chat.dictionary.css" />
-    <Content Include="Content\themes\desktop\default\Chat.githubissues.css" />
-    <Content Include="Content\themes\desktop\default\Chat.nuget.css" />
+    <Content Include="Content\themes\desktop_default\Chat.bbcnews.css" />
+    <Content Include="Content\themes\desktop_default\Chat.css" />
+    <Content Include="Content\themes\desktop_default\Chat.dictionary.css" />
+    <Content Include="Content\themes\desktop_default\Chat.githubissues.css" />
+    <Content Include="Content\themes\desktop_default\Chat.nuget.css" />
+    <Content Include="Content\themes\mobile_holo_dark\account.css" />
+    <Content Include="Content\themes\mobile_holo_dark\fries.holo_dark.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\images\big-logo.png" />
     <Content Include="Content\images\logo32.png" />
@@ -866,6 +870,7 @@
     <EmbeddedResource Include="LanguageResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201208211555032_BanUser.resx">
       <DependentUpon>201208211555032_BanUser.cs</DependentUpon>
@@ -882,10 +887,10 @@
     <EmbeddedResource Include="Migrations\201301262237296_FixProviderName.resx">
       <DependentUpon>201301262237296_FixProviderName.cs</DependentUpon>
     </EmbeddedResource>
-    <Content Include="Content\font\fontawesome-webfont.eot" />
-    <Content Include="Content\font\fontawesome-webfont.ttf" />
-    <Content Include="Content\font\fontawesome-webfont.woff" />
-    <Content Include="Content\font\FontAwesome.otf" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
     <EmbeddedResource Include="Migrations\201303220549121_ContentProviderContent.resx">
       <DependentUpon>201303220549121_ContentProviderContent.cs</DependentUpon>
     </EmbeddedResource>
@@ -928,6 +933,9 @@
     <Content Include="Scripts\jquery.fancybox-thumbs.js" />
     <Content Include="Scripts\jquery.fancybox.js" />
     <Content Include="Scripts\jquery.fancybox.pack.js" />
+    <Content Include="Content\fonts\icomoon.eot" />
+    <Content Include="Content\fonts\icomoon.ttf" />
+    <Content Include="Content\fonts\icomoon.woff" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -972,6 +980,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\stacktrace-min-0.4.js" />
+    <None Include="Views\mobile\account\_layout.cshtml" />
+    <None Include="Views\mobile\account\register.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -995,6 +1005,8 @@
     <Content Include="Views\desktop\notifications\index.cshtml" />
     <Content Include="Views\desktop\home\monitor.cshtml" />
     <Content Include="Views\desktop\administration\index.cshtml" />
+    <Content Include="Views\mobile\home\index.cshtml" />
+    <Content Include="Views\mobile\account\login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\MuteCommand.cs" />
@@ -1424,9 +1436,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\mobile\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

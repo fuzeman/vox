@@ -253,7 +253,7 @@
     <value>Email is required.</value>
   </data>
   <data name="Authentication_GenericFailure" xml:space="preserve">
-    <value>Login failed. Check your username/password.</value>
+    <value>Login failed. Please check your username and password.</value>
   </data>
   <data name="Authentication_NameChangeCompleted" xml:space="preserve">
     <value>Successfully changed your username.</value>
