@@ -190,9 +190,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SimpleAuthentication.Core.0.3.3\lib\net40\SimpleAuthentication.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SquishIt.Framework, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SquishIt.Framework, Version=0.9.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SquishIt.0.9.3\lib\SquishIt.Framework.dll</HintPath>
+      <HintPath>..\packages\SquishIt.0.9.5-alpha1\lib\SquishIt.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -286,8 +286,6 @@
     <Content Include="Content\images\crown-admin.png" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
-    <Content Include="Content\themes\default\Chat.bbcnews.css" />
-    <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Chat.documentOnWrite.js" />
     <Content Include="Chat.twitter.js" />
     <Content Include="Chat.ui.fileUpload.js" />
@@ -854,8 +852,11 @@
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
     <Content Include="Chat.githubissues.js" />
-    <Content Include="Content\themes\default\Chat.githubissues.css" />
-    <Content Include="Content\themes\default\Chat.nuget.css" />
+    <Content Include="Content\themes\desktop\default\Chat.bbcnews.css" />
+    <Content Include="Content\themes\desktop\default\Chat.css" />
+    <Content Include="Content\themes\desktop\default\Chat.dictionary.css" />
+    <Content Include="Content\themes\desktop\default\Chat.githubissues.css" />
+    <Content Include="Content\themes\desktop\default\Chat.nuget.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\images\big-logo.png" />
     <Content Include="Content\images\logo32.png" />
@@ -967,7 +968,6 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
-    <Content Include="Content\themes\default\Chat.dictionary.css" />
     <Content Include="Scripts\r.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
