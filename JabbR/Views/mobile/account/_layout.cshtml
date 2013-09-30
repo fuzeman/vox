@@ -7,6 +7,8 @@
         <meta charset="utf-8" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
         <title>iceJabbR</title>
 
@@ -14,17 +16,21 @@
         <link href="@Url.Content("~/Content/images/logo64.png")" rel="icon" type="image/png" sizes="64x64">
         <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16">
 
-        <link href="@Url.Content("~/Content/themes/mobile_holo_dark/fries.holo_dark.min.css")" rel="stylesheet" />
-        <link href="@Url.Content("~/Content/themes/mobile_holo_dark/account.css")" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/themes/mobile_default/fries.holo_dark.min.css")" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/themes/mobile_default/account.css")" rel="stylesheet" />
 
         <script src="@Url.Content("~/Scripts/jquery-2.0.3.min.js")"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function () { setTimeout(scrollTo, 200, 0, 1) });
+        </script>
     </head>
 
     <body>
         <div class="page">
             <header class="action-bar fixed-top">
                 <a href="javascript: void(0);" class="app-icon action" data-ignore="true">
-                    <i class="icon-fries"></i>
+                    <img src="@Url.Content("~/Content/images/logo64.png")" />
                 </a>
                 <h1 class="title">iceJabbR</h1>
             </header>

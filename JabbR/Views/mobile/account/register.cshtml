@@ -9,7 +9,7 @@
     Layout = "_layout.cshtml";
 }
 
-<form class="large-inset" action="@Url.Content("~/account/create" + Html.RequestQuery())" method="post">
+<form class="inset" action="@Url.Content("~/account/create" + Html.RequestQuery())" method="post">
     @Html.ValidationSummary()
 
     @Html.TextBox("username", "input-text", @LanguageResources.Account_UserName)

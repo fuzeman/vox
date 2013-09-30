@@ -1,0 +1,36 @@
+﻿.action-bar {
+    background-color: #00103F;
+    border-bottom: none;
+    box-shadow: none;
+}
+
+    .action-bar .title {
+        margin-left: 5px;
+    }
+
+.page {
+    background-color: #171717;
+}
+
+.app-icon {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+    .app-icon img {
+        width: 32px;
+        height: 32px;
+    }
+
+.validation-summary-errors {
+    list-style: none;
+    font-size: 14px;
+}
+
+form {
+    text-align: center;
+}
+
+.form-actions.centered {
+    display: inline-block;
+}

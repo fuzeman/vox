@@ -10,14 +10,14 @@
     var hasSocialProviders = Model.SocialDetails.ConfiguredProviders.Any();
 }
 
-<form class="large-inset" action="@Url.Content("~/account/login" + Html.RequestQuery())" method="post">
+<form class="inset" action="@Url.Content("~/account/login" + Html.RequestQuery())" method="post">
     @Html.ValidationSummary()
 
     @Html.TextBox("username", "input-text", @LanguageResources.Account_UserName)
     @Html.Password("password", "input-text", @LanguageResources.Account_Pass)
 
-    <div class="form-actions">
-        <button class="btn btn-block">@LanguageResources.Account_SignIn</button>
+    <div class="form-actions centered">
+        <button class="btn">@LanguageResources.Account_SignIn</button>
     </div>
 
     @if (Model.AllowUserRegistration || Model.AllowUserResetPassword)
