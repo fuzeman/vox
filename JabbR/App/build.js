@@ -4,11 +4,11 @@
     dir: "../Build",
     modules: [
         {
-            name: 'chat-main',
+            name: 'desktop-jabbr',
             include: [
-                'jabbr/messageprocessors/fancybox',
-                'jabbr/messageprocessors/plexr',
-                'jabbr/messageprocessors/italics'
+                'jabbr/core/messageprocessors/fancybox',
+                'jabbr/core/messageprocessors/plexr',
+                'jabbr/core/messageprocessors/italics'
             ]
         },
         {

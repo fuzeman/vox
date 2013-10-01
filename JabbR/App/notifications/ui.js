@@ -1,6 +1,6 @@
 ﻿define([
     'jquery', 
-    'jabbr/utility', 
+    'jabbr/core/utility',
     'notifications/counter', 
     'jquery.pubsub'
 ], function ($, utility, counter) {

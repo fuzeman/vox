@@ -236,46 +236,46 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
-    <Content Include="App\jabbr\contentproviders\capture-document-write.js" />
-    <Content Include="App\jabbr\components\client-settings.js" />
-    <Content Include="App\jabbr\components\external-status.steam.js" />
-    <Content Include="App\jabbr\components\external-status.evolve.js" />
-    <Content Include="App\jabbr\components\external-status.js" />
-    <Content Include="App\jabbr\components\external-status.trakt.js" />
-    <Content Include="App\jabbr\contentproviders\github-issues.js" />
-    <Content Include="App\jabbr\contentproviders\core.js" />
-    <Content Include="App\jabbr\contentproviders\twitter.js" />
+    <Content Include="App\jabbr\core\contentproviders\capture-document-write.js" />
+    <Content Include="App\jabbr\desktop\components\client-settings.js" />
+    <Content Include="App\jabbr\core\components\external-status.steam.js" />
+    <Content Include="App\jabbr\core\components\external-status.evolve.js" />
+    <Content Include="App\jabbr\core\components\external-status.js" />
+    <Content Include="App\jabbr\core\components\external-status.trakt.js" />
+    <Content Include="App\jabbr\core\contentproviders\github-issues.js" />
+    <Content Include="App\jabbr\core\contentproviders\core.js" />
+    <Content Include="App\jabbr\core\contentproviders\twitter.js" />
     <Content Include="App\notifications-main.js" />
-    <Content Include="App\jabbr\client.js" />
-    <Content Include="App\jabbr\components\connection-status.js" />
-    <Content Include="App\jabbr\components\emoji.js" />
-    <Content Include="App\jabbr\components\help.js" />
-    <Content Include="App\jabbr\components\lobby.js" />
-    <Content Include="App\jabbr\components\messages.js" />
-    <Content Include="App\jabbr\components\message-ticker.js" />
-    <Content Include="App\jabbr\components\notifications.js" />
-    <Content Include="App\jabbr\components\rooms.client.js" />
-    <Content Include="App\jabbr\components\rooms.ui.js" />
-    <Content Include="App\jabbr\components\toast.js" />
-    <Content Include="App\jabbr\components\users.js" />
-    <Content Include="App\jabbr\events.js" />
-    <Content Include="App\jabbr\messageprocessors\collapse.js" />
-    <Content Include="App\jabbr\messageprocessors\fancybox.js" />
-    <Content Include="App\jabbr\messageprocessors\italics.js" />
-    <Content Include="App\jabbr\messageprocessors\plexr.js" />
-    <Content Include="App\jabbr\messageprocessors\processor.js" />
-    <Content Include="App\jabbr\templates.js" />
-    <Content Include="App\jabbr\viewmodels\message.js" />
-    <Content Include="App\jabbr\viewmodels\room-user.js" />
-    <Content Include="App\jabbr\viewmodels\user.js" />
-    <Content Include="App\jabbr\viewmodels\room.js" />
-    <Content Include="App\jabbr\utility.js" />
+    <Content Include="App\jabbr\desktop\client.js" />
+    <Content Include="App\jabbr\desktop\components\connection-status.js" />
+    <Content Include="App\jabbr\core\components\emoji.js" />
+    <Content Include="App\jabbr\desktop\components\help.js" />
+    <Content Include="App\jabbr\desktop\components\lobby.js" />
+    <Content Include="App\jabbr\desktop\components\messages.js" />
+    <Content Include="App\jabbr\desktop\components\message-ticker.js" />
+    <Content Include="App\jabbr\desktop\components\notifications.js" />
+    <Content Include="App\jabbr\desktop\components\rooms.client.js" />
+    <Content Include="App\jabbr\desktop\components\rooms.ui.js" />
+    <Content Include="App\jabbr\core\components\toast.js" />
+    <Content Include="App\jabbr\core\components\users.js" />
+    <Content Include="App\jabbr\core\events.js" />
+    <Content Include="App\jabbr\core\messageprocessors\collapse.js" />
+    <Content Include="App\jabbr\core\messageprocessors\fancybox.js" />
+    <Content Include="App\jabbr\core\messageprocessors\italics.js" />
+    <Content Include="App\jabbr\core\messageprocessors\plexr.js" />
+    <Content Include="App\jabbr\core\messageprocessors\processor.js" />
+    <Content Include="App\jabbr\core\templates.js" />
+    <Content Include="App\jabbr\core\viewmodels\message.js" />
+    <Content Include="App\jabbr\core\viewmodels\room-user.js" />
+    <Content Include="App\jabbr\core\viewmodels\user.js" />
+    <Content Include="App\jabbr\core\viewmodels\room.js" />
+    <Content Include="App\jabbr\core\utility.js" />
     <Content Include="App\kernel.js" />
     <Content Include="App\keys.js" />
     <Content Include="App\logger.js" />
-    <Content Include="App\chat-main.js" />
-    <Content Include="App\jabbr\state.js" />
-    <Content Include="App\jabbr\ui.js" />
+    <Content Include="App\desktop-jabbr.js" />
+    <Content Include="App\jabbr\core\state.js" />
+    <Content Include="App\jabbr\desktop\ui.js" />
     <Content Include="App\notifications\counter.js" />
     <Content Include="App\notifications\ui.js" />
     <Content Include="App\plugins\noext.js" />
@@ -923,7 +923,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="App\build.js" />
-    <Content Include="App\jabbr\components\external-status.lastfm.js" />
+    <Content Include="App\jabbr\core\components\external-status.lastfm.js" />
     <EmbeddedResource Include="Migrations\201307251218442_AddChatRoomUserData.resx">
       <DependentUpon>201307251218442_AddChatRoomUserData.cs</DependentUpon>
     </EmbeddedResource>
@@ -1438,7 +1438,9 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App\jabbr\mobile\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
