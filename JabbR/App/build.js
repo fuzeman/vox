@@ -12,6 +12,14 @@
             ]
         },
         {
+            name: 'mobile-jabbr',
+            include: [
+                'jabbr/core/messageprocessors/fancybox',
+                'jabbr/core/messageprocessors/plexr',
+                'jabbr/core/messageprocessors/italics'
+            ]
+        },
+        {
             name: 'notifications-main'
         }
     ],

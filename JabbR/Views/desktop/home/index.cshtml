@@ -580,13 +580,19 @@
     </section>
     <div id="paste" contenteditable="true" style="height: 1px; width: 1px;"></div>
     <script type="text/javascript">
-        window.jabbrVersion = '@Model.Version';
+        window.jabbr = {
+            version: '@Model.Version',
+            viewMode: 'desktop',
+            debug: false,
+        };
+
         window.languageResources = {
            @Html.Raw(Model.ClientLanguageResources)
         };
+
         @if (Model.DebugMode)
         {
-            @: window.jabbr = { debug: true };
+            @: window.jabbr.debug = true;
         }
     </script>
     @if (Model.DebugMode)

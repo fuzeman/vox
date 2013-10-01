@@ -11,3 +11,32 @@
 
 @section Head {
 }
+
+<script type="text/javascript">
+    window.jabbr = {
+        version: '@Model.Version',
+        viewMode: 'mobile',
+        debug: false,
+    };
+
+    window.languageResources = {
+        @Html.Raw(Model.ClientLanguageResources)
+    };
+
+    @if (Model.DebugMode)
+    {
+        @: window.jabbr.debug = true;
+    }
+</script>
+@if (Model.DebugMode)
+{
+    // Load un-optimized require.js module
+    @: <script type="text/javascript" src="/App/require.js"></script>
+    @: <script type="text/javascript" src="/App/mobile-jabbr.js"></script>
+}
+else
+{
+    // Load optimized require.js module
+    @: <script type="text/javascript" src="/App/require.js"></script>
+    @: <script type="text/javascript" src="/Build/mobile-jabbr.js"></script>
+}

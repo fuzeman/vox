@@ -32,7 +32,7 @@ define([
         }
 
         connection.hub.logging = logging;
-        connection.hub.qs = "version=" + window.jabbrVersion;
+        connection.hub.qs = "version=" + window.jabbr.version;
 
         function generateCustomMentionRegex(strings) {
             var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
