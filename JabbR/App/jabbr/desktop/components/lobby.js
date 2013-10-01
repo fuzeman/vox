@@ -42,7 +42,7 @@ define([
                 // Populate the user list with room names
                 client.chat.server.getRooms()
                     .done(function (rooms) {
-                        populateRooms(rooms, client.getPrivateRooms());
+                        populateRooms(rooms, client.privateRooms);
                         rc.setInitialized('Lobby');
                         d.resolveWith(client.chat);
                     });

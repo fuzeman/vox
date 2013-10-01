@@ -2,199 +2,54 @@
 define([
     'jquery',
     'logger',
-    'kernel',
+    'jabbr/base/client',
     'jabbr/core/events',
-    // Libraries
-    'jquery.cookie',
-    'jquery.signalr',
-    'noext!signalr/hubs'
-], function ($, Logger, kernel, events) {
-    var logger = new Logger('jabbr/client'),
-        object = null;
+], function ($, Logger, Client, events) {
+    var logger = new Logger('jabbr/desktop/client');
 
     logger.trace('loaded');
 
-    var initialize = function () {
-        var $window = $(window),
-            $this = $(this),
-            connection = $.connection,
-            chat = connection.chat,
-            options = {},
-            initial = true,
-            mentionStrings = null,
-            customMentionRegex = null,
-            privateRooms = null,
-            logging = $.cookie('jabbr.logging') === '1',
-            transport = $.cookie('jabbr.transport');
+    return Client.extend({
+        constructor: function () {
+            this.base();
 
-        if (transport) {
-            options.transport = transport;
-        }
+            this.mentionStrings = null,
+            this.customMentionRegex = null,
+            this.privateRooms = null
 
-        connection.hub.logging = logging;
-        connection.hub.qs = "version=" + window.jabbr.version;
+            $(window).bind(events.focused, $.proxy(this.focused, this));
+        },
 
-        function generateCustomMentionRegex(strings) {
+        generateCustomMentionRegex: function (strings) {
             var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
             result = result.replace("{0}", strings.join("|"));
 
             return new RegExp(result, "i");
-        }
+        },
 
-        function updateMentions(mentions) {
-            mentionStrings = mentions;
-            customMentionRegex = generateCustomMentionRegex(mentions);
-        }
+        updateMentions: function (mentions) {
+            this.mentionStrings = mentions;
+            this.customMentionRegex = this.generateCustomMentionRegex(mentions);
+        },
 
-        //
-        // Chat Event Handlers
-        //
+        login: function (rooms, myRooms, preferences, mentions, notifications) {
+            logger.trace('login');
 
-        chat.client.logOn = function (rooms, myRooms, preferences, mentions, notifications) {
-            logger.trace('logOn');
+            this.updateMentions(mentions);
+            this.privateRooms = myRooms;
 
-            updateMentions(mentions);
-            privateRooms = myRooms;
+            this.base(rooms, myRooms, preferences, mentions, notifications);
+        },
 
-            $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions, notifications]);
-        };
-
-        //
-        // Core Event Handlers
-        //
-
-        function stateChanged(change) {
-            var eventData = [change, initial];
-            $this.trigger(events.client.stateChanged, eventData);
-
-            if (change.newState === $.connection.connectionState.connected) {
-                $this.trigger(events.client.connected, eventData);
-                initial = false;
-            } else if (change.newState === $.connection.connectionState.reconnecting) {
-                $this.trigger(events.client.reconnecting, eventData);
-            }
-        }
-
-        function disconnected() {
-            connection.hub.log('Dropped the connection from the server. Restarting in 5 seconds.');
-
-            $this.trigger(events.client.disconnected);
-
-            // Restart the connection
-            setTimeout(function () {
-                connection.hub.start(options).done(function () {
-                    // When this works uncomment it.
-                    // ui.showReloadMessageNotification();
-
-                    // Turn the firehose back on
-                    chat.server.join(true).fail(function () {
-                        // So refresh the page, our auth token is probably gone
-                        performLogout();
-                    });
-                });
-            }, 5000);
-        }
-
-        function performLogout() {
-            var d = $.Deferred();
-
-            $.post('account/logout', {}).done(function () {
-                d.resolveWith(null);
-                document.location = document.location.pathname;
-            });
-
-            return d.promise();
-        }
-
-        chat.client.logOut = performLogout;
-
-        function focused() {
+        focused: function () {
             events.trigger(events.ui.clearUnread);
-            $this.trigger(events.client.activityUpdated);
+            this.trigger(events.client.activityUpdated);
 
             try {
-                chat.server.updateActivity();
+                this.chat.server.updateActivity();
             } catch (e) {
-                connection.hub.log('updateActivity failed');
+                this.connection.hub.log('updateActivity failed');
             }
         }
-
-        $window.bind(events.focused, focused);
-
-        function logout() {
-            performLogout().done(function () {
-                chat.server.send('/logout', chat.state.activeRoom)
-                    .fail(function (e) {
-                        if (e.source == 'HubException') {
-                            $window.trigger(events.error, [e.message, 'error', chat.state.activeRoom]);
-                        }
-                    });
-            });
-        }
-
-        return {
-            activate: function () {
-                logger.trace('activated');
-            },
-
-            events: events,
-
-            $this: $this,
-            connection: connection,
-            chat: chat,
-
-            getInitial: function () {
-                return initial;
-            },
-
-            getPrivateRooms: function () {
-                return privateRooms;
-            },
-
-            getMentionStrings: function () {
-                return mentionStrings;
-            },
-
-            getCustomMentionRegex: function () {
-                return customMentionRegex;
-            },
-
-            updateMentions: updateMentions,
-
-            start: function () {
-                connection.hub.start(options).done(function () {
-                    chat.server.join().fail(function () {
-                        logger.warn('join failed');
-                    }).done(function () {
-                        $this.trigger(events.client.started);
-                    });
-                });
-
-                connection.hub.stateChanged(stateChanged);
-                connection.hub.disconnected(disconnected);
-
-                connection.hub.error(function () {
-                    // Make all pending messages failed if there's an error
-                    // TODO messages.failPendingMessages();
-                });
-            },
-
-            focused: focused,
-            performLogout: performLogout,
-            logout: logout,
-
-            bind: function (eventType, handler) {
-                $this.bind(eventType, handler);
-            }
-        };
-    };
-
-    return function () {
-        if (object === null) {
-            object = initialize();
-            kernel.bind('jabbr/client', object);
-        }
-
-        return object;
-    };
+    });
 });

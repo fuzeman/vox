@@ -236,6 +236,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
+    <Content Include="App\jabbr\base\client.js" />
+    <Content Include="App\jabbr\base\event-object.js" />
+    <Content Include="App\jabbr\mobile\client.js" />
+    <Content Include="App\jabbr\mobile\components\rooms.ui.js" />
+    <Content Include="App\jabbr\mobile\ui.js" />
     <Content Include="App\mobile-jabbr.js" />
     <Content Include="App\jabbr\core\contentproviders\capture-document-write.js" />
     <Content Include="App\jabbr\desktop\components\client-settings.js" />
@@ -921,6 +926,7 @@
       <DependentUpon>201308080731011_UpstreamAddUserPreferencesAllowUserResetPassword.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="Scripts\ba-linkify.min.js" />
+    <Content Include="Scripts\Base.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="App\build.js" />
@@ -938,6 +944,7 @@
     <Content Include="Content\fonts\icomoon.eot" />
     <Content Include="Content\fonts\icomoon.ttf" />
     <Content Include="Content\fonts\icomoon.woff" />
+    <Content Include="App\jabbr\mobile\components\rooms.client.js" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -1439,9 +1446,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App\jabbr\mobile\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

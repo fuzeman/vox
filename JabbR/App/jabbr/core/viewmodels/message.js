@@ -35,7 +35,7 @@ define([
         this.id = data.Id;
         this.date = data.When.fromJsonDate();
         this.highlight = (reUsername.test(data.Content) ||
-            client.getCustomMentionRegex().test(data.Content)) ? 'highlight' : '';
+            client.customMentionRegex.test(data.Content)) ? 'highlight' : '';
         this.isOwn = reUsername.test(data.User.name);
         this.isMine = data.User.Name === client.chat.state.name;
         this.isHistory = 'isHistory' in data ? data.isHistory : false;
