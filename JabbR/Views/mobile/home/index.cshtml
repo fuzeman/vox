@@ -10,7 +10,12 @@
 }
 
 @section Head {
+    <link href="@Url.Content("~/Content/snap.css")" rel="stylesheet" />
 }
+
+<div class="content">
+    home/index
+</div>
 
 <script type="text/javascript">
     window.jabbr = {
@@ -28,6 +33,7 @@
         @: window.jabbr.debug = true;
     }
 </script>
+
 @if (Model.DebugMode)
 {
     // Load un-optimized require.js module

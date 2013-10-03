@@ -28,7 +28,8 @@ require.config({
         'livestamp': '../Scripts/livestamp.min',
         'linkify': '../Scripts/ba-linkify.min',
         'stacktrace': '../Scripts/stacktrace-min-0.4',
-        'json2': '../Scripts/json2'
+        'json2': '../Scripts/json2',
+        'snap': '../Scripts/snap.min.js'
     },
 
     shim: {

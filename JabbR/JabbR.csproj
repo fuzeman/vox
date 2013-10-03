@@ -861,6 +861,7 @@
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
     <Content Include="Chat.githubissues.js" />
+    <Content Include="Content\snap.css" />
     <Content Include="Content\themes\desktop_default\Chat.bbcnews.css" />
     <Content Include="Content\themes\desktop_default\Chat.css" />
     <Content Include="Content\themes\desktop_default\Chat.dictionary.css" />
@@ -989,6 +990,7 @@
     <Content Include="Scripts\r.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\snap.min.js" />
     <Content Include="Scripts\stacktrace-min-0.4.js" />
     <None Include="Views\mobile\account\_layout.cshtml" />
     <None Include="Views\mobile\account\register.cshtml" />
