@@ -238,6 +238,7 @@
     <Content Include="apple-touch-icon.png" />
     <Content Include="App\jabbr\base\client.js" />
     <Content Include="App\jabbr\base\event-object.js" />
+    <Content Include="App\jabbr\base\ui.js" />
     <Content Include="App\jabbr\mobile\client.js" />
     <Content Include="App\jabbr\mobile\components\rooms.ui.js" />
     <Content Include="App\jabbr\mobile\ui.js" />

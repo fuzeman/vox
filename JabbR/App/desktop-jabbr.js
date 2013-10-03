@@ -82,13 +82,13 @@ window.onload = function () {
             'jabbr/desktop/client',
             'jabbr/desktop/ui',
             'jabbr/core/events',
-    ], function ($, signalr, Logger, base, DesktopClient, ui, events) {
+    ], function ($, signalr, Logger, base, DesktopClient, DesktopUI, events) {
         var logger = new Logger('chat');
         logger.trace('loading');
 
         // Initialize sub-modules
         client = new DesktopClient();
-        ui = ui();
+        ui = new DesktopUI();
 
         // Activate all the modules
         ui.activate();
