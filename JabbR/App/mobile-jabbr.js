@@ -83,13 +83,13 @@ window.onload = function () {
             'jabbr/mobile/client',
             'jabbr/mobile/ui',
             'jabbr/core/events',
-    ], function ($, signalr, Logger, base, MobileClient, ui, events) {
+    ], function ($, signalr, Logger, base, MobileClient, MobileUI, events) {
         var logger = new Logger('chat');
         logger.trace('loading');
 
         // Initialize sub-modules
         client = new MobileClient();
-        ui = ui();
+        ui = new MobileUI();
 
         // Activate all the modules
         ui.activate();

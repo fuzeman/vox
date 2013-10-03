@@ -368,7 +368,7 @@ define([
             var key = ev.keyCode || ev.which,
                 roomName = $(this).val();
 
-            if (key == Keys.Enter) {
+            if (key === Keys.Enter) {
                 // only if it's an exact match
                 if (rc.inRoomCache(roomName)) {
                     rc.activateOrOpenRoom(roomName);

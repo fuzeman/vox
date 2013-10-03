@@ -24,7 +24,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
-    <JSLintSkip>\Chat.documentOnWrite.js|\Chat.emoji.js|\Chat.githubissues.js|\Chat.js|\Chat.messageTicker.js|\Chat.pinnedWindows.js|\Chat.toast.js|\Chat.twitter.js|\Chat.ui.js|\Chat.ui.room.js|\Chat.utility.js|\Scripts\|\notifications.unreadcounter.js|\notifications.js|\App\require.js|\App\build.js|\App\jabbr\components\emoji.js|\App\jabbr\utility.js</JSLintSkip>
+    <JSLintSkip>\Chat.documentOnWrite.js|\Chat.emoji.js|\Chat.githubissues.js|\Chat.js|\Chat.messageTicker.js|\Chat.pinnedWindows.js|\Chat.toast.js|\Chat.twitter.js|\Chat.ui.js|\Chat.ui.room.js|\Chat.utility.js|\Scripts\|\notifications.unreadcounter.js|\notifications.js|\App\require.js|\App\build.js|\App\jabbr\components\emoji.js|\App\jabbr\utility.js|\App\jabbr\core\components\emoji.js</JSLintSkip>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -947,6 +947,8 @@
     <Content Include="Content\fonts\icomoon.ttf" />
     <Content Include="Content\fonts\icomoon.woff" />
     <Content Include="App\jabbr\mobile\components\rooms.client.js" />
+    <Content Include="App\jabbr\base\components\rooms.ui.js" />
+    <Content Include="App\jabbr\base\components\rooms.client.js" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
