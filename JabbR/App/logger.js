@@ -159,9 +159,7 @@ define([
     }
 
     function consoleWrite (level, message) {
-        if (level == levels.TRACE)
-            console.trace(message);
-        else if (level == levels.DEBUG)
+        if (level == levels.TRACE || level == levels.DEBUG)
             console.debug(message);
         else if (level == levels.INFO)
             console.info(message);
