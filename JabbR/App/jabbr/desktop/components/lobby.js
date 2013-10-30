@@ -3,66 +3,121 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/base/components/lobby',
+    
     'keys',
     'jabbr/core/events',
     'jabbr/core/state',
     'jabbr/core/templates',
     'jabbr/core/utility'
-], function ($, Logger, kernel, Keys, events, state, templates, utility) {
-    var logger = new Logger('jabbr/components/lobby'),
-        client = null,
-        ru = null,
+], function (
+    $, Logger, kernel, Lobby,
+    Keys, events, state, templates, utility
+) {
+    var ru = null,
         rc = null,
-        object = null;
+        $document = $(document),
+        $lobbyRoomFilterForm = $('#room-filter-form'),
+        $closedRoomFilter = $('#room-filter-closed'),
+        $loadMoreRooms = $('#load-more-rooms-item'),
+        $lobbyPrivateRooms = $('#lobby-private'),
+        $lobbyOtherRooms = $('#lobby-other'),
+        $roomFilterInput = $('#room-filter'),
+        maxRoomsToLoad = 100,
+        lastLoadedRoomIndex = 0;
 
-    logger.trace('loaded');
+    return Lobby.extend({
+        constructor: function () {
+            this.base();
+        },
 
-    var initialize = function () {
-        var $document = $(document),
-            $roomFilterInput = $('#room-filter'),
-            $closedRoomFilter = $('#room-filter-closed'),
-            $lobbyRoomFilterForm = $('#room-filter-form'),
-            //$lobbyWrapper = $('#lobby-wrapper'),
-            $lobbyPrivateRooms = $('#lobby-private'),
-            $lobbyOtherRooms = $('#lobby-other'),
-            $loadMoreRooms = $('#load-more-rooms-item'),
-            sortedRoomList = null,
-            publicRoomList = null,
-            maxRoomsToLoad = 100,
-            lastLoadedRoomIndex = 0;
+        activate: function () {
+            this.base();
 
-        function getLobby() {
-            return ru.getRoomElements('Lobby');
-        }
+            ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
+            
+            client.chat.client.updateRoom = $.proxy(this.updateRoom, this);
 
-        function updateRooms() {
-            var d = $.Deferred();
+            this.attach();
+        },
+        
+        attach: function () {
+            var _this = this;
 
-            try {
-                // Populate the user list with room names
-                client.chat.server.getRooms()
-                    .done(function (rooms) {
-                        populateRooms(rooms, client.privateRooms);
-                        rc.setInitialized('Lobby');
-                        d.resolveWith(client.chat);
-                    });
-            } catch (e) {
-                client.connection.hub.log('getRooms failed');
-                d.rejectWith(client.chat);
-            }
+            $roomFilterInput
+                .bind('input', function () {
+                    $lobbyRoomFilterForm.submit();
+                })
+                .keyup(function () {
+                    $lobbyRoomFilterForm.submit();
+                });
 
-            return d.promise();
-        }
+            $closedRoomFilter.click(function () {
+                $lobbyRoomFilterForm.submit();
+            });
 
-        function lockRoom(roomName) {
+            $lobbyRoomFilterForm.submit(function () {
+                var room = ru.getCurrentRoomElements(),
+                    $lobbyRoomsLists = $lobbyPrivateRooms.add($lobbyOtherRooms);
+
+                // hide all elements except those that match the input / closed filters
+                $lobbyRoomsLists
+                    .find('li:not(.empty)')
+                    .each(function () { _this.filterIndividualRoom($(this)); });
+
+                $lobbyRoomsLists.find('ul').each(function () {
+                    room.setListState($(this));
+                });
+
+                return false;
+            });
+
+            $roomFilterInput.keypress(function (ev) {
+                var key = ev.keyCode || ev.which,
+                    roomName = $(this).val();
+
+                if (key === Keys.Enter) {
+                    // only if it's an exact match
+                    if (rc.inRoomCache(roomName)) {
+                        rc.activateOrOpenRoom(roomName);
+                        return;
+                    }
+                }
+            });
+
+            $document.on('click', '#load-more-rooms-item', function () {
+                var spinner = $loadMoreRooms.find('i');
+                spinner.addClass('icon-spin');
+                spinner.show();
+                
+                var loader = $loadMoreRooms.find('.load-more-rooms a');
+                loader.html(' Loading more rooms...');
+
+                _this.loadMoreLobbyRooms();
+
+                spinner.hide();
+                spinner.removeClass('icon-spin');
+                loader.html('Load More...');
+
+                if (lastLoadedRoomIndex < publicRoomList.length) {
+                    $loadMoreRooms.show();
+                } else {
+                    $loadMoreRooms.hide();
+                }
+            });
+        },
+
+        lockRoom: function (roomName) {
             var $room = getLobby().users.find('li[data-name="' + roomName + '"]');
 
             $room.addClass('locked').appendTo(getLobby().owners);
-        }
+        },
 
-        function populateRooms(rooms, privateRooms) {
-            var lobby = getLobby(),
+        populateRooms: function (rooms, privateRooms) {
+            var lobby = this.getLobby(),
                 i;
+
             if (!lobby.isInitialized()) {
                 // Process the topics
                 for (i = 0; i < rooms.length; ++i) {
@@ -71,7 +126,7 @@ define([
 
                 for (i = 0; i < privateRooms.length; ++i) {
                     privateRooms[i].processedTopic = utility.processContent(privateRooms[i].Topic);
-                } 
+                }
 
                 // Populate the room cache
                 for (i = 0; i < rooms.length; ++i) {
@@ -83,17 +138,17 @@ define([
                 }
 
                 // sort private lobby rooms
-                var privateSorted = sortRoomList(privateRooms);
+                var privateSorted = this.sortRoomList(privateRooms);
 
                 // sort other lobby rooms but filter out private rooms
-                publicRoomList = sortRoomList(rooms).filter(function (room) {
+                this.publicRoomList = this.sortRoomList(rooms).filter(function (room) {
                     return !privateSorted.some(function (allowed) {
                         return allowed.Name === room.Name;
                     });
                 });
 
 
-                sortedRoomList = rooms.sort(function(a, b) {
+                this.sortedRoomList = rooms.sort(function (a, b) {
                     return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
                 });
 
@@ -112,10 +167,10 @@ define([
                 }
 
                 var listOfRooms = $('<ul/>');
-                populateRoomList(publicRoomList.splice(0, maxRoomsToLoad), templates.lobbyroom, listOfRooms);
+                this.populateRoomList(this.publicRoomList.splice(0, maxRoomsToLoad), templates.lobbyroom, listOfRooms);
                 lastLoadedRoomIndex = listOfRooms.children('li').length;
                 listOfRooms.children('li').appendTo(lobby.users);
-                if (lastLoadedRoomIndex < sortedRoomList.length) {
+                if (lastLoadedRoomIndex < this.sortedRoomList.length) {
                     $loadMoreRooms.show();
                 }
                 $lobbyOtherRooms.show();
@@ -128,33 +183,14 @@ define([
 
             // re-filter lists
             $lobbyRoomFilterForm.submit();
-        }
+        },
 
-        function populateRoomList(item, template, listToPopulate) {
+        populateRoomList: function (item, template, listToPopulate) {
             $.tmpl(template, item).appendTo(listToPopulate);
-        }
-
-        function sortRoomList(listToSort) {
-            var sortedList = listToSort.sort(function (a, b) {
-                if (a.Closed && !b.Closed) {
-                    return 1;
-                } else if (b.Closed && !a.Closed) {
-                    return -1;
-                }
-
-                if (a.Count > b.Count) {
-                    return -1;
-                } else if (b.Count > a.Count) {
-                    return 1;
-                }
-
-                return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
-            });
-            return sortedList;
-        }
-
-        function addRoom(roomViewModel) {
-            var lobby = getLobby(),
+        },
+        
+        addRoom: function (roomViewModel) {
+            var lobby = this.getLobby(),
                 room = null,
                 $room = null,
                 roomName = roomViewModel.Name.toString().toUpperCase(),
@@ -176,28 +212,28 @@ define([
                 $room.appendTo($targetList);
             }
 
-            filterIndividualRoom($room);
+            this.filterIndividualRoom($room);
             //room.setListState($targetList);
 
             rc.roomCache[roomName] = true;
 
             // don't try to populate the sortedRoomList while we're initially filling up the lobby
-            if (sortedRoomList) {
-                var sortedRoomInsertIndex = sortedRoomList.length;
-                for (i = 0; i < sortedRoomList.length; i++) {
-                    if (sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) > 0) {
+            if (this.sortedRoomList) {
+                var sortedRoomInsertIndex = this.sortedRoomList.length;
+                for (i = 0; i < this.sortedRoomList.length; i++) {
+                    if (this.sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) > 0) {
                         sortedRoomInsertIndex = i;
                         break;
                     }
                 }
-                sortedRoomList.splice(sortedRoomInsertIndex, 0, roomViewModel);
+                this.sortedRoomList.splice(sortedRoomInsertIndex, 0, roomViewModel);
             }
             
             // handle updates on rooms not currently displayed to clients by removing from the public room list
-            if (publicRoomList) {
-                for (i = 0; i < publicRoomList.length; i++) {
-                    if (publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) === 0) {
-                        publicRoomList.splice(i, 1);
+            if (this.publicRoomList) {
+                for (i = 0; i < this.publicRoomList.length; i++) {
+                    if (this.publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) === 0) {
+                        this.publicRoomList.splice(i, 1);
                         break;
                     }
                 }
@@ -208,9 +244,9 @@ define([
                 $lobbyPrivateRooms.show();
                 $lobbyOtherRooms.find('.nav-header').html(utility.getLanguageResource('Client_OtherRooms'));
             }
-        }
-
-        function removeRoom(roomName) {
+        },
+        
+        removeRoom: function (roomName) {
             var roomNameUppercase = roomName.toString().toUpperCase(),
                 i = null;
             
@@ -244,9 +280,9 @@ define([
                 $lobbyPrivateRooms.hide();
                 $lobbyOtherRooms.find('.nav-header').html(utility.getLanguageResource('Client_Rooms'));
             }
-        }
-
-        function filterIndividualRoom($room) {
+        },
+        
+        filterIndividualRoom: function ($room) {
             var filter = $roomFilterInput.val().toUpperCase(),
                 showClosedRooms = $closedRoomFilter.is(':checked');
 
@@ -256,10 +292,10 @@ define([
             } else {
                 $room.hide();
             }
-        }
-
-        function updateRoom(room) {
-            var lobby = getLobby(),
+        },
+        
+        updateRoom: function (room) {
+            var lobby = this.getLobby(),
                 $targetList = room.Private === true ? lobby.owners : lobby.users,
                 $room = $targetList.find('[data-room="' + room.Name + '"]'),
                 $count = $room.find('.count'),
@@ -306,20 +342,16 @@ define([
 
             // Do a little animation
             $room.css('-webkit-animation-play-state', 'running').css('animation-play-state', 'running'); 
-        }
-
-        function updatePrivateRooms(roomName) {
+        },
+        
+        updatePrivateRooms: function (roomName) {
             var lobby = getLobby(),
                 $room = lobby.users.find('li[data-name="' + roomName + '"]');
 
             $room.addClass('locked').appendTo(lobby.owners);
-        }
-
-        function getRooms() {
-            return sortedRoomList;
-        }
-
-        function loadMoreLobbyRooms() {
+        },
+        
+        loadMoreLobbyRooms: function () {
             var lobby = getLobby(),
                 moreRooms = publicRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
 
@@ -328,116 +360,14 @@ define([
 
             // re-filter lists
             $lobbyRoomFilterForm.submit();
+        },
+        
+        hideForm: function () {
+            $lobbyRoomFilterForm.hide();
+        },
+        
+        showForm: function () {
+            $lobbyRoomFilterForm.show();
         }
-
-        //
-        // Event Handlers
-        //
-
-        // #region DOM Event Handlers
-
-        $roomFilterInput
-            .bind('input', function () {
-                $lobbyRoomFilterForm.submit();
-            })
-            .keyup(function () {
-                $lobbyRoomFilterForm.submit();
-            });
-
-        $closedRoomFilter.click(function () {
-            $lobbyRoomFilterForm.submit();
-        });
-
-        $lobbyRoomFilterForm.submit(function () {
-            var room = ru.getCurrentRoomElements(),
-                $lobbyRoomsLists = $lobbyPrivateRooms.add($lobbyOtherRooms);
-
-            // hide all elements except those that match the input / closed filters
-            $lobbyRoomsLists
-                .find('li:not(.empty)')
-                .each(function () { filterIndividualRoom($(this)); });
-
-            $lobbyRoomsLists.find('ul').each(function () {
-                room.setListState($(this));
-            });
-
-            return false;
-        });
-
-        $roomFilterInput.keypress(function (ev) {
-            var key = ev.keyCode || ev.which,
-                roomName = $(this).val();
-
-            if (key === Keys.Enter) {
-                // only if it's an exact match
-                if (rc.inRoomCache(roomName)) {
-                    rc.activateOrOpenRoom(roomName);
-                    return;
-                }
-            }
-        });
-
-        $document.on('click', '#load-more-rooms-item', function () {
-            var spinner = $loadMoreRooms.find('i');
-            spinner.addClass('icon-spin');
-            spinner.show();
-            var loader = $loadMoreRooms.find('.load-more-rooms a');
-            loader.html(' Loading more rooms...');
-
-            loadMoreLobbyRooms();
-
-            spinner.hide();
-            spinner.removeClass('icon-spin');
-            loader.html('Load More...');
-
-            if (lastLoadedRoomIndex < publicRoomList.length) {
-                $loadMoreRooms.show();
-            } else {
-                $loadMoreRooms.hide();
-            }
-        });
-
-        // #endregion
-
-        return {
-            activate: function () {
-                client = kernel.get('jabbr/client');
-                ru = kernel.get('jabbr/components/rooms.ui');
-                rc = kernel.get('jabbr/components/rooms.client');
-
-                logger.trace('activated');
-
-                client.chat.client.updateRoom = updateRoom;
-
-                ru.createRoom('Lobby');
-            },
-
-            addRoom: addRoom,
-            removeRoom: removeRoom,
-
-            updateRooms: updateRooms,
-            updatePrivateRooms: updatePrivateRooms,
-
-            lockRoom: lockRoom,
-
-            populateRooms: populateRooms,
-            getRooms: getRooms,
-
-            hideForm: function () {
-                $lobbyRoomFilterForm.hide();
-            },
-            showForm: function () {
-                $lobbyRoomFilterForm.show();
-            }
-        };
-    };
-
-    return function () {
-        if (object === null) {
-            object = initialize();
-            kernel.bind('jabbr/components/lobby', object);
-        }
-
-        return object;
-    };
+    });
 });
