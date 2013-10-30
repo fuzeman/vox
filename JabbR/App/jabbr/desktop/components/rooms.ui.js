@@ -148,9 +148,10 @@ define([
         },
 
         getAllRoomElements: function () {
-            var rooms = [];
+            var _this = this,
+                rooms = [];
             $("ul#tabs > li.room").each(function () {
-                rooms[rooms.length] = this.getRoomElements($(this).data("name"));
+                rooms[rooms.length] = _this.getRoomElements($(this).data("name"));
             });
             return rooms;
         },
