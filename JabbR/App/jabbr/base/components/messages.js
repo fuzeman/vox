@@ -60,11 +60,11 @@
         sendClientMessage: function (clientMessage, messageCompleteTimeout) { logger.warn('sendClientMessage not implemented'); },
 
         failPendingMessages: function () {
-            for (var id in pendingMessages) {
-                if (pendingMessages.hasOwnProperty(id)) {
-                    clearTimeout(pendingMessages[id]);
-                    failMessage(id);
-                    delete pendingMessages[id];
+            for (var id in this.pendingMessages) {
+                if (this.pendingMessages.hasOwnProperty(id)) {
+                    clearTimeout(this.pendingMessages[id]);
+                    this.failMessage(id);
+                    delete this.pendingMessages[id];
                 }
             }
         },
