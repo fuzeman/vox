@@ -30,10 +30,11 @@ define([
     Room, Message,
     
     // Components
-    rc, users, DesktopLobby, messages, notifications, contentProviders, processor
+    rc, users, DesktopLobby, messages, DesktopNotifications, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/desktop/components/rooms.ui'),
         lobby = null,
+        notifications = null,
         $this = $(this),
         $document = $(document),
         $chatArea = $('#chat-area'),
@@ -56,7 +57,6 @@ define([
             rc = rc();
             users = users();
             messages = messages();
-            notifications = notifications();
             contentProviders = contentProviders();
             processor = processor();
             
@@ -65,7 +65,7 @@ define([
                 users: users,
                 lobby: new DesktopLobby(),
                 messages: messages,
-                notifications: notifications,
+                notifications: new DesktopNotifications(),
                 contentProviders: contentProviders,
                 processor: processor
             };
@@ -75,6 +75,7 @@ define([
             this.base();
 
             lobby = kernel.get('jabbr/components/lobby');
+            notifications = kernel.get('jabbr/components/notifications');
             
             client.chat.client.changeTopic = this.updateRoomTopic;
 
