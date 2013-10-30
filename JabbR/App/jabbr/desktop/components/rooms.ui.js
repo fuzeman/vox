@@ -10,13 +10,15 @@ define([
     'jabbr/core/viewmodels/room',
     'jabbr/core/viewmodels/message',
     
-    'jabbr/desktop/components/rooms.client',
-    'jabbr/core/components/users',
-    'jabbr/desktop/components/lobby',
-    'jabbr/desktop/components/messages',
     'jabbr/desktop/components/notifications',
+    'jabbr/desktop/components/rooms.client',
+    'jabbr/desktop/components/messages',
+    'jabbr/desktop/components/lobby',
+    
+    'jabbr/core/components/users',
     'jabbr/core/contentproviders/core',
     'jabbr/core/messageprocessors/processor',
+    
     'jquery-migrate',
     'jquery.history',
     'jquery.tmpl',
@@ -30,7 +32,8 @@ define([
     Room, Message,
     
     // Components
-    rc, users, DesktopLobby, messages, DesktopNotifications, contentProviders, processor
+    DesktopNotifications, rc, messages, DesktopLobby,
+    users, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/desktop/components/rooms.ui'),
         lobby = null,
