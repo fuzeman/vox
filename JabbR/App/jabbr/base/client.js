@@ -94,10 +94,12 @@
 
             this.restarting = true;
 
+            var _this = this;
+
             // Restart the connection
             setTimeout(function () {
-                this.connection.hub.start(this.options)
-                    .done($.proxy(this.started, this));
+                _this.connection.hub.start(_this.options)
+                    .done($.proxy(_this.started, _this));
             }, 5000);
         },
 
