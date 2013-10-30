@@ -1,11 +1,17 @@
-﻿define([
+﻿/*global define, moment*/
+define([
+    'jquery',
     'logger',
     'kernel',
     'jabbr/base/event-object',
     'jabbr/core/viewmodels/message',
-    'jabbr/core/messageprocessors/collapse'
-], function (Logger, kernel, EventObject, Message, collapse) {
+    'jabbr/core/messageprocessors/collapse',
+    'jabbr/core/events'
+], function ($, Logger, kernel, EventObject, Message, collapse, events) {
     var logger = new Logger('jabbr/components/messages'),
+        notifications = null,
+        client = null,
+        ui = null,
         ru = null,
         rc = null;
 
@@ -20,6 +26,9 @@
         },
 
         activate: function () {
+            notifications = kernel.get('jabbr/components/notifications');
+            client = kernel.get('jabbr/client');
+            ui = kernel.get('jabbr/ui');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
 
@@ -47,7 +56,9 @@
 
         addPrivateMessage: function (content, type) { logger.warn('addPrivateMessage not implemented'); },
 
-        addMessageBeforeTarget: function (content, type, $target) { logger.warn('addMessageBeforeTarget not implemented'); },
+        addMessageBeforeTarget: function (content, type, $target) {
+            logger.warn('addMessageBeforeTarget not implemented');
+        },
 
         prependChatMessages: function (messages, roomName) { logger.warn('prependChatMessages not implemented'); },
 
@@ -57,7 +68,9 @@
         
         sendMessage: function (msg) { logger.warn('sendMessage not implemented'); },
 
-        sendClientMessage: function (clientMessage, messageCompleteTimeout) { logger.warn('sendClientMessage not implemented'); },
+        sendClientMessage: function (clientMessage, messageCompleteTimeout) {
+            logger.warn('sendClientMessage not implemented');
+        },
 
         failPendingMessages: function () {
             for (var id in this.pendingMessages) {

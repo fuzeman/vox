@@ -7,12 +7,14 @@ define([
     'jabbr/core/templates',
     'jabbr/core/utility',
     'jabbr/core/events',
-    'jabbr/desktop/components/message-ticker',
+    'jabbr/desktop/components/message-ticker'
 ], function (
     $, Logger, kernel, Messages, templates,
     utility, events, MessageTicker
 ) {
     var logger = new Logger('jabbr/desktop/components/messages'),
+        client = null,
+        ui = null,
         ru = null,
         rc = null,
         notifications = null,
@@ -28,6 +30,8 @@ define([
         activate: function () {
             this.base();
 
+            client = kernel.get('jabbr/client');
+            ui = kernel.get('jabbr/ui');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
             notifications = kernel.get('jabbr/components/notifications');
@@ -38,15 +42,15 @@ define([
         
         attach: function () {
             // handle click on notifications
-            $document.on('click', '.notification a.info', function () {
+            $document.on('click', '.notification a.info', $.proxy(function () {
                 var $notification = $(this).closest('.notification');
 
                 if ($(this).hasClass('collapse')) {
-                    collapseNotifications($notification);
+                    this.collapseNotifications($notification);
                 } else {
-                    expandNotifications($notification);
+                    this.expandNotifications($notification);
                 }
-            });
+            }, this));
         },
 
         // #region Add Message
@@ -200,20 +204,21 @@ define([
             var rooms = ru.getAllRoomElements();
             for (var r in rooms) {
                 if (rooms[r].getName() !== undefined && rooms[r].isClosed() === false) {
-                    addMessage(content, type, rooms[r].getName());
+                    this.addMessage(content, type, rooms[r].getName());
                 }
             }
         },
         
         addMessageBeforeTarget: function (content, type, $target) {
-            var $element = prepareNotificationMessage(content, type);
+            var $element = this.prepareNotificationMessage(content, type);
             $target.before($element);
 
             return $element;
         },
 
         prependChatMessages: function (messages, roomName) {
-            var room = rc.getRoom(roomName),
+            var _this = this,
+                room = rc.getRoom(roomName),
                 $messages = room.messages,
                 $target = $messages.children().first(),
                 $previousMessage = null,
@@ -241,7 +246,7 @@ define([
 
             // Populate the old messages
             $.each(messages, function () {
-                processMessage(this, roomName);
+                _this.processMessage(this, roomName);
 
                 if ($previousMessage) {
                     previousUser = $previousMessage.data('name');
@@ -249,7 +254,7 @@ define([
                 }
 
                 if (this.date.toDate().diffDays(previousTimestamp.toDate())) {
-                    addMessageBeforeTarget(dateHeaderFormat(this.date), 'list-header', $target)
+                    _this.addMessageBeforeTarget(_this.dateHeaderFormat(this.date), 'list-header', $target)
                       .addClass('date-header')
                       .find('.right').remove(); // remove timestamp on date indicator
 
@@ -347,7 +352,7 @@ define([
             if (msg[0] !== '/') {
                 // if you're in the lobby, you can't send mesages (only commands)
                 if (client.chat.state.activeRoom === undefined) {
-                    addMessage('You cannot send messages within the Lobby', 'error');
+                    this.addMessage('You cannot send messages within the Lobby', 'error');
                     return false;
                 }
 
@@ -413,7 +418,7 @@ define([
             } catch (e) {
                 client.connection.hub.log('Failed to send via websockets');
 
-                clearTimeout(pendingMessages[clientMessage.id]);
+                clearTimeout(this.pendingMessages[clientMessage.id]);
                 this.failMessage(clientMessage.id);
             }
         },
@@ -455,7 +460,7 @@ define([
             }
         },
 
-        confirmMessage: function(id) {
+        confirmMessage: function (id) {
             $('#m-' + id).removeClass('failed')
                          .removeClass('loading');
         },
@@ -527,7 +532,7 @@ define([
             } else {
                 if (cur.length === 0) {
                     var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
-                    $readButton.click(messageReadClick);
+                    $readButton.click(this.messageReadClick);
 
                     $('#m-' + mid + ' .left .state').append($readButton);
                 }
@@ -541,6 +546,6 @@ define([
             if (mid !== undefined) {
                 client.chat.server.setMessageReadState(mid, true);
             }
-        },
+        }
     });
 });
