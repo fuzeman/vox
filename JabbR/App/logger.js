@@ -158,12 +158,27 @@ define([
         return null;
     }
 
+    function consoleWrite (level, message) {
+        if (level == levels.TRACE)
+            console.trace(message);
+        else if (level == levels.DEBUG)
+            console.debug(message);
+        else if (level == levels.INFO)
+            console.info(message);
+        else if (level == levels.WARN)
+            console.warn(message);
+        else if (level == levels.ERROR)
+            console.error(message);
+        else
+            console.log(message);
+    }
+
     Logger.prototype.write = function (level, message) {
         if (window.jabbr.debug) {
             var caller = getCaller();
 
             if (caller !== null) {
-                console.log(
+                consoleWrite(level,
                     "[" + padLeft(this.tag, 32) + "]  " +
                     "[" + padRight(caller.filename, 12) + "]:" + padRight(caller.line, 4) + "  " +
                     "(" + padRight(toLevelString(level), 5) + ")    " + message
@@ -171,7 +186,7 @@ define([
                 return;
             }
         } else if (level != levels.TRACE && level != levels.DEBUG) {
-            console.log(
+            consoleWrite(level,
                 "[" + padLeft(this.tag, 32) + "]  " +
                 "(" + padRight(toLevelString(level), 5) + ")    " + message
             );
