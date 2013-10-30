@@ -10,7 +10,10 @@ define([
 ], function (
     $, Logger, kernel, Notifications, state, events, toast
 ) {
-    var ru = null,
+    var client = null,
+        ui = null,
+        ru = null,
+        rc = null,
         $unreadNotificationCount = $('#notification-unread-count'),
         $downloadIcon = $('#room-preferences .download'),
         $richness = $('#room-preferences .richness'),
@@ -26,7 +29,10 @@ define([
         activate: function () {
             this.base();
 
+            client = kernel.get('jabbr/client');
+            ui = kernel.get('jabbr/ui');
             ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
             
             // Bind events
             client.bind(events.client.loggedOn, $.proxy(function () {
@@ -194,6 +200,6 @@ define([
                 $unreadNotificationCount.text('');
                 $unreadNotificationCount.hide();
             }
-        },
+        }
     });
 });

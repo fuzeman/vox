@@ -3,7 +3,7 @@ define([
     'jquery',
     'logger',
     'jabbr/base/client',
-    'jabbr/core/events',
+    'jabbr/core/events'
 ], function ($, Logger, Client, events) {
     var logger = new Logger('jabbr/desktop/client');
 
@@ -13,9 +13,9 @@ define([
         constructor: function () {
             this.base();
 
-            this.mentionStrings = null,
-            this.customMentionRegex = null,
-            this.privateRooms = null
+            this.mentionStrings = null;
+            this.customMentionRegex = null;
+            this.privateRooms = null;
 
             $(window).bind(events.focused, $.proxy(this.focused, this));
         },

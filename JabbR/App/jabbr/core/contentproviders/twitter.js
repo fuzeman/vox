@@ -2,14 +2,14 @@
 define([
     'jquery',
     'logger',
-    'kernel',
+    'kernel'
 ], function ($, Logger, kernel) {
     var logger = new Logger('jabbr/contentproviders/twitter'),
         ru = null,
         object = null;
 
     var initialize = function () {
-        function addTweet (tweet) {
+        function addTweet(tweet) {
             // Keep track of whether we're near the end, so we can auto-scroll once the tweet is added.
             var nearEnd = ru.isNearTheEnd(),
                 elements = null,

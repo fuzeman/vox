@@ -1,8 +1,9 @@
-﻿define(['jquery', 'jquery.pubsub'], function ($) {
+﻿/*global define*/
+define(['jquery', 'jquery.pubsub'], function ($) {
     var $unreadCounter = $('#js-unread-counter'),
         count = $unreadCounter.data('unread');
 
-    function set (newCount) {
+    function set(newCount) {
         count = newCount;
         $unreadCounter.text(count);
         $unreadCounter.data('unread', count);
@@ -18,7 +19,7 @@
         handleChange();
     });
 
-    function handleChange () {
+    function handleChange() {
         if (count === 0) {
             $.publish('notifications.empty');
         }

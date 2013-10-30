@@ -8,7 +8,7 @@ define(['jquery', 'jabbr/core/utility'], function ($, utility) {
         w3Notifications = typeof Notification !== 'undefined' ? Notification : null,
         w3Toast = null;
     
-    function createTitle (message, roomName) {
+    function createTitle(message, roomName) {
         var title = utility.trim(message.name, 21);
         
         // we can reliably show 22 chars
@@ -65,7 +65,7 @@ define(['jquery', 'jabbr/core/utility'], function ($, utility) {
                 wkToast.show();
             },
 
-            hideToast: function() {
+            hideToast: function () {
                 if (wkToast && wkToast.cancel) {
                     wkToast.cancel();
                 }

@@ -7,7 +7,7 @@ define([
     'jabbr/core/contentproviders/capture-document-write',
     'jabbr/core/contentproviders/github-issues',
     'jabbr/core/contentproviders/twitter'
-], function($, Logger, kernel, captureDocumentWrite, githubIssues, twitter) {
+], function ($, Logger, kernel, captureDocumentWrite, githubIssues, twitter) {
     var logger = new Logger('jabbr/contentproviders/core'),
         object = null;
 

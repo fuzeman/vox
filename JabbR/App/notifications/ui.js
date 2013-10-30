@@ -1,4 +1,5 @@
-﻿define([
+﻿/*global define*/
+define([
     'jquery', 
     'jabbr/core/utility',
     'notifications/counter', 

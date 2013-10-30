@@ -14,7 +14,8 @@ define([
     $, Logger, kernel, Lobby,
     Keys, events, state, templates, utility
 ) {
-    var ru = null,
+    var client = null,
+        ru = null,
         rc = null,
         $document = $(document),
         $lobbyRoomFilterForm = $('#room-filter-form'),
@@ -34,6 +35,7 @@ define([
         activate: function () {
             this.base();
 
+            client = kernel.get('jabbr/client');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
             
@@ -100,7 +102,7 @@ define([
                 spinner.removeClass('icon-spin');
                 loader.html('Load More...');
 
-                if (lastLoadedRoomIndex < publicRoomList.length) {
+                if (lastLoadedRoomIndex < _this.publicRoomList.length) {
                     $loadMoreRooms.show();
                 } else {
                     $loadMoreRooms.hide();
@@ -109,9 +111,9 @@ define([
         },
 
         lockRoom: function (roomName) {
-            var $room = getLobby().users.find('li[data-name="' + roomName + '"]');
+            var $room = this.getLobby().users.find('li[data-name="' + roomName + '"]');
 
-            $room.addClass('locked').appendTo(getLobby().owners);
+            $room.addClass('locked').appendTo(this.getLobby().owners);
         },
 
         populateRooms: function (rooms, privateRooms) {
@@ -157,7 +159,7 @@ define([
 
                 var listOfPrivateRooms = $('<ul/>');
                 if (privateSorted.length > 0) {
-                    populateRoomList(privateSorted, templates.lobbyroom, listOfPrivateRooms);
+                    this.populateRoomList(privateSorted, templates.lobbyroom, listOfPrivateRooms);
                     listOfPrivateRooms.children('li').appendTo(lobby.owners);
                     $lobbyPrivateRooms.show();
                     $lobbyOtherRooms.find('.nav-header').html('Other Rooms');
@@ -255,23 +257,23 @@ define([
             }
             
             // find the element in the sorted room list and remove it
-            for (i = 0; i < sortedRoomList.length; i++) {
-                if (sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
-                    sortedRoomList.splice(i, 1);
+            for (i = 0; i < this.sortedRoomList.length; i++) {
+                if (this.sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
+                    this.sortedRoomList.splice(i, 1);
                     break;
                 }
             }
             
             // find the element in the lobby public room list and remove it
-            for (i = 0; i < publicRoomList.length; i++) {
-                if (publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
-                    publicRoomList.splice(i, 1);
+            for (i = 0; i < this.publicRoomList.length; i++) {
+                if (this.publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomNameUppercase) === 0) {
+                    this.publicRoomList.splice(i, 1);
                     break;
                 }
             }
             
             // remove the items from the lobby screen
-            var lobby = getLobby(),
+            var lobby = this.getLobby(),
                 $room = lobby.users.add(lobby.owners).find('[data-room="' + roomName + '"]');
             $room.remove();
             
@@ -305,7 +307,7 @@ define([
 
             // if we don't find the room we need to create it
             if ($room.length === 0) {
-                addRoom(room);
+                this.addRoom(room);
                 return;
             }
 
@@ -345,17 +347,17 @@ define([
         },
         
         updatePrivateRooms: function (roomName) {
-            var lobby = getLobby(),
+            var lobby = this.getLobby(),
                 $room = lobby.users.find('li[data-name="' + roomName + '"]');
 
             $room.addClass('locked').appendTo(lobby.owners);
         },
         
         loadMoreLobbyRooms: function () {
-            var lobby = getLobby(),
-                moreRooms = publicRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
+            var lobby = this.getLobby(),
+                moreRooms = this.publicRoomList.slice(lastLoadedRoomIndex, lastLoadedRoomIndex + maxRoomsToLoad);
 
-            populateRoomList(moreRooms, templates.lobbyroom, lobby.users);
+            this.populateRoomList(moreRooms, templates.lobbyroom, lobby.users);
             lastLoadedRoomIndex = lastLoadedRoomIndex + maxRoomsToLoad;
 
             // re-filter lists

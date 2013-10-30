@@ -158,17 +158,18 @@ define([
         return null;
     }
 
-    function consoleWrite (level, message) {
-        if (level == levels.TRACE || level == levels.DEBUG)
+    function consoleWrite(level, message) {
+        if (level == levels.TRACE || level == levels.DEBUG) {
             console.debug(message);
-        else if (level == levels.INFO)
+        } else if (level == levels.INFO) {
             console.info(message);
-        else if (level == levels.WARN)
+        } else if (level == levels.WARN) {
             console.warn(message);
-        else if (level == levels.ERROR)
+        } else if (level == levels.ERROR) {
             console.error(message);
-        else
+        } else {
             console.log(message);
+        }
     }
 
     Logger.prototype.write = function (level, message) {

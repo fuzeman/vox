@@ -1,9 +1,12 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'logger',
     'kernel',
     'jabbr/base/event-object'
-], function (Logger, kernel, EventObject) {
+], function ($, Logger, kernel, EventObject) {
     var logger = new Logger('jabbr/components/lobby'),
+        client = null,
         ru = null,
         rc = null;
 
@@ -18,6 +21,7 @@
         },
 
         activate: function () {
+            client = kernel.get('jabbr/client');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
 
@@ -31,7 +35,7 @@
         },
         
         getRooms: function () {
-            return sortedRoomList;
+            return this.sortedRoomList;
         },
 
         lockRoom: function (roomName) { logger.warn('lockRoom not implemented'); },

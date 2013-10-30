@@ -1,8 +1,11 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'logger',
     'kernel',
-    'jabbr/base/event-object'
-], function (Logger, kernel, EventObject) {
+    'jabbr/base/event-object',
+    'jabbr/core/state'
+], function ($, Logger, kernel, EventObject, state) {
     var logger = new Logger('jabbr/components/rooms.ui'),
         client = null,
         ru = null,
@@ -11,7 +14,7 @@
         trimRoomHistoryFrequency = 1000 * 60 * 2;  // 2 minutes in ms
 
     return EventObject.extend({
-        constructor: function() {
+        constructor: function () {
             this.base();
 
             kernel.bind('jabbr/components/rooms.ui', this);
@@ -28,7 +31,7 @@
                 module.activate();
             });
 
-            this.handlers.bind();
+            this.handlers.bind(this);
 
             setInterval($.proxy(this.trimRoomMessageHistory, this), trimRoomHistoryFrequency);
 
@@ -125,7 +128,9 @@
         // #region Chat Hub Handlers
         
         handlers: {
-            bind: function () {
+            bind: function (ru) {
+                this.ru = ru;
+
                 client.chat.client.joinRoom = this.joinRoom;
                 client.chat.client.kick = this.kick;
             },
@@ -157,7 +162,7 @@
 
             kick: function (userdata, roomName, message, imageUrl) {
                 if (rc.isSelf(userdata)) {
-                    showKickPopup(roomName, message, imageUrl);
+                    this.ru.showKickPopup(roomName, message, imageUrl);
                     rc.setActiveRoom('Lobby');
                     rc.removeRoom(roomName);
                     // TODO Where does this message go?
@@ -178,7 +183,7 @@
                     messages.addMessage({ content: roomMessage, encoded: true }, 'notification', roomName);
                 }
             }
-        },
+        }
         
         // #endregion
     });

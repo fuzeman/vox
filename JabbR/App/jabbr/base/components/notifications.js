@@ -1,11 +1,18 @@
-﻿define([
+﻿/*global define*/
+define([
+    'jquery',
     'logger',
     'kernel',
     'jabbr/base/event-object',
+    'jabbr/core/utility',
     'jabbr/core/state'
-], function (Logger, kernel, EventObject, state) {
+], function ($, Logger, kernel, EventObject, utility, state) {
     var logger = new Logger('jabbr/components/notifications'),
-        ru = null;
+        client = null,
+        ru = null,
+        rc = null,
+        messages = null,
+        lobby = null;
 
     return EventObject.extend({        
         constructor: function () {
@@ -15,7 +22,11 @@
         },
 
         activate: function () {
+            client = kernel.get('jabbr/client');
             ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
+            messages = kernel.get('jabbr/components/messages');
+            lobby = kernel.get('jabbr/components/lobby');
 
             logger.trace('activated');
 
@@ -106,16 +117,16 @@
                 messages.addMessage(message, 'notification', state.get().activeRoom);
             };
 
-            client.chat.client.sendInvite = function (from, to, room) {
+            client.chat.client.sendInvite = $.proxy(function (from, to, room) {
                 if (rc.isSelf({ Name: to })) {
-                    notifyMention(true);
+                    this.notifyMention(true);
                     messages.addPrivateMessage('*' + from + '* has invited you to #' + room +
                         '. Click the room name to join.', 'pm');
                 }
                 else {
                     messages.addPrivateMessage('Invitation to *' + to + '* to join #' + room + ' has been sent.', 'pm');
                 }
-            };
+            }, this);
 
             // Called when you make someone an admin
             client.chat.client.adminMade = function (user) {

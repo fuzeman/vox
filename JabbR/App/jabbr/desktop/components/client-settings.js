@@ -1,4 +1,4 @@
-﻿/*global Storage*/
+﻿/*global define, Storage*/
 define([
     'jquery',
     'logger',

@@ -5,8 +5,9 @@ define([
     'kernel',
     'jabbr/core/state',
     'jabbr/core/events',
+    'jabbr/core/utility',
     'jabbr/core/viewmodels/message'
-], function ($, Logger, kernel, state, events, Message) {
+], function ($, Logger, kernel, state, events, utility, Message) {
     var logger = new Logger('jabbr/components/rooms.client'),
         ru = null,
         client = null,
@@ -127,7 +128,7 @@ define([
                 client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
                     .fail(function (e) {
                         // TODO: setActiveRoom('Lobby');
-                        if(e.source === 'HubException') {
+                        if (e.source === 'HubException') {
                             $this.trigger(events.error, [e, 'error']);
                         }
                     });
@@ -323,7 +324,7 @@ define([
                 }
             },
 
-            roomLoaded: function(roomInfo) {
+            roomLoaded: function (roomInfo) {
                 populateRoomFromInfo(roomInfo);
             },
 
@@ -527,7 +528,7 @@ define([
                 try {
                     client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
                         .fail(function (e) {
-                            if(e.source === 'HubException') {
+                            if (e.source === 'HubException') {
                                 $this.trigger(events.error, [e, 'error']);
                             }
                         });

@@ -1,4 +1,5 @@
-﻿define([
+﻿/*global define*/
+define([
     'jabbr/base/components/rooms.ui',
     
     'jabbr/mobile/components/notifications',

@@ -10,7 +10,7 @@ define([
         object = null;
 
     var initialize = function () {
-        function addGitHubIssue (issue) {
+        function addGitHubIssue(issue) {
             if (!issue.data.user) {
                 return;
             }
@@ -42,7 +42,7 @@ define([
             }
         }
 
-        function addGitHubIssueComment (comment) {
+        function addGitHubIssueComment(comment) {
             var nearEnd = ru.isNearTheEnd(),
                 elements = null;
 
@@ -64,7 +64,7 @@ define([
             }
         }
 
-        function addGitHubIssuesUser (user) {
+        function addGitHubIssuesUser(user) {
             var elements = $("a.github-issue-user-" + user.data.login);
             elements.attr("href", user.data.html_url);
         }

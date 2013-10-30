@@ -36,6 +36,8 @@ define([
     users, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/desktop/components/rooms.ui'),
+        client = null,
+        ui = null,
         notifications = null,
         lobby = null,
         messages = null,
@@ -78,6 +80,8 @@ define([
         activate: function () {
             this.base();
 
+            client = kernel.get('jabbr/client');
+            ui = kernel.get('jabbr/ui');
             notifications = kernel.get('jabbr/components/notifications');
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');
@@ -97,16 +101,16 @@ define([
             });
 
             // TODO - Replace with DI object call
-            events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
+            events.bind(events.rooms.ui.updateUnread, $.proxy(function (event, roomName, isMentioned) {
                 logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
-                var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
+                var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();
 
                 if (ui.isFocused() && room.isActive()) {
                     return;
                 }
 
                 room.updateUnread(isMentioned);
-            });
+            }, this));
 
             // #endregion
 
@@ -148,7 +152,7 @@ define([
         getCurrentRoomElements: function () {
             var currentRoom = $tabs.find('li.current');
 
-            if(currentRoom.length > 0) {
+            if (currentRoom.length > 0) {
                 return rc.getRoom(currentRoom.data('name'));
             }
             return null;
@@ -218,7 +222,7 @@ define([
 
             if (rc.hasRoom(roomViewModel.Name)) {
                 if (!rc.validRoom(roomViewModel.Name)) {
-                    updateRoom(roomViewModel.Name);
+                    this.updateRoom(roomViewModel.Name);
                 }
                 return false;
             }
@@ -457,7 +461,7 @@ define([
 
         setLoadingHistory: function (loadingHistory) {
             if (loadingHistory) {
-                var room = getCurrentRoomElements();
+                var room = this.getCurrentRoomElements();
                 $loadingHistoryIndicator.appendTo(room.messages);
                 $loadingHistoryIndicator.fadeIn('slow');
             } else {

@@ -1,4 +1,5 @@
-﻿define([
+﻿/*global define*/
+define([
     'jquery',
     'logger',
     'kernel',
@@ -9,7 +10,8 @@
     'jquery.signalr',
     'noext!signalr/hubs'
 ], function ($, Logger, kernel, EventObject, events) {
-    var logger = new Logger('jabbr/client');
+    var logger = new Logger('jabbr/client'),
+        $window = $(window);
 
     logger.trace('loaded');
 
@@ -26,8 +28,8 @@
             this.chat = this.connection.chat;
 
             this.options = {};
-            
-            this.transport = $.cookie('jabbr.transport')
+
+            this.transport = $.cookie('jabbr.transport');
             if (this.transport) {
                 this.options.transport = this.transport;
             }
@@ -67,7 +69,7 @@
             this.chat.server.join().fail(function () {
                 logger.warn('join failed');
 
-                if(this_.restarting) {
+                if (this_.restarting) {
                     this_.logOut();
                 }
             }).done(function () {
@@ -81,7 +83,7 @@
 
             if (change.newState === this.connection.connectionState.connected) {
                 this.trigger(events.client.connected, eventData);
-                initial = false;
+                this.initial = false;
             } else if (change.newState === this.connection.connectionState.reconnecting) {
                 this.trigger(events.client.reconnecting, eventData);
             }
@@ -109,13 +111,13 @@
         },
 
         logout: function () {
-            var this_ = this;
+            var _this = this;
 
             this.performLogout().done(function () {
-                this_.chat.server.send('/logout', this_.chat.state.activeRoom)
+                _this.chat.server.send('/logout', _this.chat.state.activeRoom)
                     .fail(function (e) {
                         if (e.source == 'HubException') {
-                            $window.trigger(events.error, [e.message, 'error', this_.chat.state.activeRoom]);
+                            $window.trigger(events.error, [e.message, 'error', _this.chat.state.activeRoom]);
                         }
                     });
             });

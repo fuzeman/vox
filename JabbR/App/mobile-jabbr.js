@@ -76,20 +76,20 @@ require.config({
 
 window.onload = function () {
     require([
-            'jquery',
-            'jquery.signalr',
-            'logger',
-            'base',
-            'jabbr/mobile/client',
-            'jabbr/mobile/ui',
-            'jabbr/core/events',
+        'jquery',
+        'jquery.signalr',
+        'logger',
+        'base',
+        'jabbr/mobile/client',
+        'jabbr/mobile/ui',
+        'jabbr/core/events'
     ], function ($, signalr, Logger, base, MobileClient, MobileUI, events) {
         var logger = new Logger('chat');
         logger.trace('loading');
 
         // Initialize sub-modules
-        client = new MobileClient();
-        ui = new MobileUI();
+        var client = new MobileClient(),
+            ui = new MobileUI();
 
         // Activate all the modules
         ui.activate();
@@ -97,9 +97,7 @@ window.onload = function () {
 
         events.trigger(events.activated);
 
-        require([
-            'jabbr/mobile/components/rooms.ui'
-        ], function () {
+        require(['jabbr/mobile/components/rooms.ui'], function () {
             client.bind(events.client.started, function () {
                 logger.trace('started');
             });

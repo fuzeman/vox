@@ -9,11 +9,12 @@ define([
     'jquery.captureDocumentWrite'
 ], function ($, Logger, kernel, collapse, utility) {
     var logger = new Logger('jabbr/contentproviders/capture-document-write'),
+        ui = null,
         ru = null,
         object = null;
 
     var initialize = function () {
-        function captureDocumentWrite (documentWritePath, headerText, elementToAppendTo) {
+        function captureDocumentWrite(documentWritePath, headerText, elementToAppendTo) {
             $.fn.captureDocumentWrite(documentWritePath, function (content) {
                 var nearEnd = ru.isNearTheEnd(),
                     roomName = null,
@@ -53,6 +54,7 @@ define([
 
         return {
             activate: function () {
+                ui = kernel.get('jabbr/ui');
                 ru = kernel.get('jabbr/components/rooms.ui');
 
                 logger.trace('activated');

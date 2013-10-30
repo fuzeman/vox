@@ -75,20 +75,20 @@ require.config({
 
 window.onload = function () {
     require([
-            'jquery',
-            'jquery.signalr',
-            'logger',
-            'base',
-            'jabbr/desktop/client',
-            'jabbr/desktop/ui',
-            'jabbr/core/events'
+        'jquery',
+        'jquery.signalr',
+        'logger',
+        'base',
+        'jabbr/desktop/client',
+        'jabbr/desktop/ui',
+        'jabbr/core/events'
     ], function ($, signalr, Logger, base, DesktopClient, DesktopUI, events) {
         var logger = new Logger('chat');
         logger.trace('loading');
 
         // Initialize sub-modules
-        client = new DesktopClient();
-        ui = new DesktopUI();
+        var client = new DesktopClient(),
+            ui = new DesktopUI();
 
         // Activate all the modules
         ui.activate();
@@ -96,9 +96,7 @@ window.onload = function () {
 
         events.trigger(events.activated);
 
-        require([
-            'jabbr/desktop/components/rooms.ui'
-        ], function () {
+        require(['jabbr/desktop/components/rooms.ui'], function () {
             client.bind(events.client.started, function () {
                 logger.trace('started');
             });

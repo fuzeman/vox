@@ -18,7 +18,7 @@ define([
                 result = handler.get();
 
             // Ignore multi-line paste messages
-            if(result.indexOf('\n') != -1) {
+            if (result.indexOf('\n') != -1) {
                 return;
             }
 
