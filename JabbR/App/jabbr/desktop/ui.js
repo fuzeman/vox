@@ -12,12 +12,14 @@ define([
     'jabbr/core/components/external-status',
     'jabbr/core/utility',
 
-    'jquery.autotabcomplete'
+    'jquery.autotabcomplete',
+    'livestamp'
 ], function ($, kernel, Keys, UI,
-    connectionStatus, ru, help, cs,
+    connectionStatus, DesktopRoomsUI, help, cs,
     emoji, externalStatus, utility
 ) {
     var client = null,
+        ru = null,
         rc = null,
         lobby = null,
         messages = null,
@@ -42,14 +44,13 @@ define([
             this.updateTimeout = 15000;
 
             connectionStatus = connectionStatus();
-            ru = ru();
             help = help();
             cs = cs();
             externalStatus = externalStatus();
 
             this.submodules = {
                 connectionStatus: connectionStatus,
-                ru: ru,
+                ru: new DesktopRoomsUI(),
                 help: help,
                 cs: cs,
                 externalStatus: externalStatus
@@ -60,6 +61,7 @@ define([
             this.base();
 
             client = kernel.get('jabbr/client');
+            ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');

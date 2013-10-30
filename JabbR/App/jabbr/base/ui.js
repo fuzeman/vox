@@ -44,8 +44,8 @@ define([
 
         activate: function () {
             client = kernel.get('jabbr/client');
-            rc = kernel.get('jabbr/components/rooms.client');
             ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
             lobby = kernel.get('jabbr/components/lobby');
             help = kernel.get('jabbr/components/help');
             messages = kernel.get('jabbr/components/messages');

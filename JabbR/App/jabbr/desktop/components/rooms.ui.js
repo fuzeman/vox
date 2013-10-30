@@ -3,11 +3,13 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/base/components/rooms.ui',
     'jabbr/core/state',
     'jabbr/core/events',
     'jabbr/core/templates',
     'jabbr/core/viewmodels/room',
     'jabbr/core/viewmodels/message',
+    
     'jabbr/desktop/components/rooms.client',
     'jabbr/core/components/users',
     'jabbr/desktop/components/lobby',
@@ -20,109 +22,137 @@ define([
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
-], function ($, Logger, kernel,
+], function ($, Logger, kernel, RoomsUI,
     // Core
     state, events, templates,
+    
     // View Models
     Room, Message,
+    
     // Components
     rc, users, lobby, messages, notifications, contentProviders, processor
 ) {
-    var logger = new Logger('jabbr/components/rooms.ui'),
-        client = null,
-        ui = null,
-        object = null;
+    var logger = new Logger('jabbr/desktop/components/rooms.ui'),
+        $this = $(this),
+        $document = $(document),
+        $chatArea = $('#chat-area'),
+        $tabs = $('#tabs'),
+        $topicBar = $('#topic-bar'),
+        $roomActions = $('#room-actions'),
+        $toast = $('#room-preferences .toast'),
+        $sound = $('#room-preferences .sound'),
+        $richness = $('#room-preferences .richness'),
+        $notify = $('#room-actions .notify'),
+        $kickedPopup = $('#jabbr-kicked'),
+        $loadingHistoryIndicator = $('#loadingRoomHistory'),
+        trimRoomHistoryFrequency = 1000 * 60 * 2,  // 2 minutes in ms
+        scrollTopThreshold = 75,
+        lobbyLoaded = false;
 
-    logger.trace('loaded');
+    return RoomsUI.extend({
+        constructor: function () {
+            this.base();
 
-    var initialize = function () {
-        var $document = $(document),
-            $toast = $('#room-preferences .toast'),
-            $sound = $('#room-preferences .sound'),
-            $richness = $('#room-preferences .richness'),
-            $roomActions = $('#room-actions'),
-            $notify = $('#room-actions .notify'),
-            $tabs = $('#tabs'),
-            $chatArea = $('#chat-area'),
-            $topicBar = $('#topic-bar'),
-            $kickedPopup = $('#jabbr-kicked'),
-            $loadingHistoryIndicator = $('#loadingRoomHistory'),
-            $this = $(this),
-            scrollTopThreshold = 75,
-            trimRoomHistoryFrequency = 1000 * 60 * 2, // 2 minutes in ms
-            lobbyLoaded = false;
+            rc = rc();
+            users = users();
+            lobby = lobby();
+            messages = messages();
+            notifications = notifications();
+            contentProviders = contentProviders();
+            processor = processor();
+            
+            this.submodules = {
+                rc: rc,
+                users: users,
+                lobby: lobby,
+                messages: messages,
+                notifications: notifications,
+                contentProviders: contentProviders,
+                processor: processor
+            };
+        },
 
-        // #region Room Elements
+        activate: function () {
+            this.base();
+            
+            client.chat.client.changeTopic = this.updateRoomTopic;
 
-        function updateRoom(roomName) {
-            var roomId = rc.getRoomId(roomName),
-                room = rc.rooms[rc.cleanRoomName(roomName)];
+            // Bind events
+            rc.bind(events.rooms.client.scrollToBottom, $.proxy(this._rcScrollToBottom, this));
+            rc.bind(events.rooms.client.createMessage, $.proxy(this._rcCreateMessage, this));
 
-            logger.trace("Updating current room elements");
+            // #region Global Events
 
-            // Update the current elements if the room has already been added
-            room.tab = $('#tabs-' + roomId);
-            room.users = $('#userlist-' + roomId);
-            room.owners = $('#userlist-' + roomId + '-owners');
-            room.activeUsers = $('#userlist-' + roomId + '-active');
-            room.messages = $('#messages-' + roomId);
-            room.roomTopic = $('#roomTopic-' + roomId);
+            // TODO - Replace with DI object call
+            events.bind(events.error, function (event, exception, type) {
+                messages.addMessage(exception.message, type);
+            });
 
-            if (!rc.validRoom(roomName)) {
-                logger.warn('Failed to update invalid room "' + roomName + '"');
-                return false;
-            }
+            // TODO - Replace with DI object call
+            events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
+                logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
+                var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
 
-            return true;
-        }
-
-        function createRoom(roomName) {
-            if (!rc.hasRoom(roomName)) {
-                logger.trace("Creating room '" + roomName + "'");
-                var roomId = rc.getRoomId(roomName);
-                rc.rooms[rc.cleanRoomName(roomName)] = new Room(
-                    $('#tabs-' + roomId),
-                    $('#userlist-' + roomId),
-                    $('#userlist-' + roomId + '-owners'),
-                    $('#userlist-' + roomId + '-active'),
-                    $('#messages-' + roomId),
-                    $('#roomTopic-' + roomId)
-                );
-
-                if (rc.validRoom(roomName)) {
-                    return rc.rooms[rc.cleanRoomName(roomName)];
-                } else {
-                    logger.warn('Failed to create room "' + roomName + '"');
-                    return null;
+                if (ui.isFocused() && room.isActive()) {
+                    return;
                 }
-            }
 
-            return rc.getRoom(roomName);
-        }
+                room.updateUnread(isMentioned);
+            });
 
-        // Deprecated - TODO: Remove
-        function getRoomElements(roomName) {
-            return rc.getRoom(roomName);
-        }
+            // #endregion
+            
+            setInterval($.proxy(this.trimRoomMessageHistory, this), trimRoomHistoryFrequency);
 
-        function getCurrentRoomElements() {
+            this.attach();
+        },
+        
+        attach: function () {
+            $document.on('click', 'li.room .room-row', function () {
+                var roomName = $(this).parent().data('name');
+                rc.activateOrOpenRoom(roomName);
+            });
+
+            $document.on('click', '#tabs li', function () {
+                var roomName = $(this).data('name');
+                rc.activateOrOpenRoom(roomName);
+            });
+
+            $document.on('mousedown', '#tabs li.room', function (ev) {
+                // if middle mouse
+                if (ev.which === 2) {
+                    rc.leaveRoom($(this).data('name'));
+                }
+            });
+
+            $document.on('click', '#tabs li .close', function (ev) {
+                var roomName = $(this).closest('li').data('name');
+
+                rc.leaveRoom(roomName);
+
+                ev.preventDefault();
+                return false;
+            });
+        },
+        
+        getCurrentRoomElements: function () {
             var currentRoom = $tabs.find('li.current');
 
             if(currentRoom.length > 0) {
                 return rc.getRoom(currentRoom.data('name'));
             }
             return null;
-        }
+        },
 
-        function getAllRoomElements() {
+        getAllRoomElements: function () {
             var rooms = [];
             $("ul#tabs > li.room").each(function () {
                 rooms[rooms.length] = getRoomElements($(this).data("name"));
             });
             return rooms;
-        }
+        },
 
-        function getNextRoomListElement($targetList, roomName, count, closed) {
+        getNextRoomListElement: function ($targetList, roomName, count, closed) {
             var nextListElement = null;
 
             // move the item to before the next element
@@ -164,102 +194,37 @@ define([
             });
 
             return nextListElement;
-        }
+        },
 
-        function isNearTheEnd(roomName) {
-            var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
+        
+        createRoom: function (roomName) {
+            if (!rc.hasRoom(roomName)) {
+                logger.trace("Creating room '" + roomName + "'");
+                var roomId = rc.getRoomId(roomName);
+                rc.rooms[rc.cleanRoomName(roomName)] = new Room(
+                    $('#tabs-' + roomId),
+                    $('#userlist-' + roomId),
+                    $('#userlist-' + roomId + '-owners'),
+                    $('#userlist-' + roomId + '-active'),
+                    $('#messages-' + roomId),
+                    $('#roomTopic-' + roomId)
+                );
 
-            return room.isNearTheEnd();
-        }
-
-        function updateRoomTopic(roomName, topic) {
-            var room = getRoomElements(roomName);
-
-            if (room === null) {
-                logger.warn('Room does not exist yet');
-                return;
+                if (rc.validRoom(roomName)) {
+                    return rc.rooms[rc.cleanRoomName(roomName)];
+                } else {
+                    logger.warn('Failed to create room "' + roomName + '"');
+                    return null;
+                }
             }
 
-            var topicHtml = topic === '' ?
-                'You\'re chatting in ' + roomName :
-                processor.processPlainContent(topic);
-            var roomTopic = room.roomTopic;
-            var isVisibleRoom = getCurrentRoomElements().getName() === roomName;
+            return rc.getRoom(roomName);
+        },
+        
+        setActiveRoomCore: function (roomName) {
+            var room = this.getRoomElements(roomName);
 
-            if (isVisibleRoom) {
-                roomTopic.hide();
-            }
-
-            roomTopic.html(topicHtml);
-
-            if (isVisibleRoom) {
-                roomTopic.fadeIn(2000);
-            }
-        }
-
-        // #endregion
-
-        // #region Preferences
-
-        function loadRoomPreferences(roomName) {
-            // Set defaults
-            if (state.getRoomPreference(roomName, 'hasSound') === undefined) {
-                state.setRoomPreference(roomName, 'hasSound', true);
-            }
-
-            // Placeholder for room level preferences
-            toggleElement($sound, 'hasSound', roomName);
-            toggleElement($toast, 'canToast', roomName);
-            toggleRichness($richness, roomName);
-            toggleNotify($notify, roomName);
-        }
-
-        function toggleRichness($element, roomName) {
-            var blockRichness = roomName ?
-                state.getRoomPreference(roomName, 'blockRichness') :
-                state.get().preferences.blockRichness;
-
-            if (blockRichness === true) {
-                $element.addClass('off');
-            } else {
-                $element.removeClass('off');
-            }
-        }
-
-        function toggleNotify($element, roomName) {
-            var notifyState = state.getRoomPreference(roomName, 'notify') || 'mentions';
-
-            if (notifyState === 'all' && $element.hasClass('notify-mentions')) {
-                $element.removeClass('notify-mentions');
-                $element.addClass('notify-all');
-                $('.notify-text', $element).text('All');
-            } else if (notifyState === 'mentions' && $element.hasClass('notify-all')) {
-                $element.removeClass('notify-all');
-                $element.addClass('notify-mentions');
-                $('.notify-text', $element).text('Mentions');
-            }
-        }
-
-        function toggleElement($element, preferenceName, roomName) {
-            var value = roomName ?
-                state.getRoomPreference(roomName, preferenceName) :
-                this.get().preferences[preferenceName];
-
-            if (value === true) {
-                $element.removeClass('off');
-            } else {
-                $element.addClass('off');
-            }
-        }
-
-        // #endregion
-
-        // #region Room Navigation/Loading
-
-        function setActiveRoomCore(roomName) {
-            var room = getRoomElements(roomName);
-
-            loadRoomPreferences(roomName);
+            this.loadRoomPreferences(roomName);
 
             if (room === null) {
                 return false;
@@ -271,7 +236,7 @@ define([
                 return true;
             }
 
-            var currentRoom = getCurrentRoomElements();
+            var currentRoom = this.getCurrentRoomElements();
 
             if (room.exists()) {
                 if (currentRoom !== null && currentRoom.exists()) {
@@ -300,19 +265,9 @@ define([
             }
 
             return false;
-        }
+        },
 
-        function setAccessKeys() {
-            $.each($tabs.find('li.room'), function (index, item) {
-                if (index < 10) {
-                    $(item).attr('accesskey', ((index + 1) % 10).toString());
-                } else {
-                    $(item).attr('accesskey', null);
-                }
-            });
-        }
-
-        function createScrollHandler(roomName, roomId, $messages) {
+        _createScrollHandler: function (roomName, roomId, $messages) {
             return function (ev) {
                 var messageId = null;
 
@@ -334,9 +289,32 @@ define([
                     }
                 }
             };
-        }
+        },
+        
+        setAccessKeys: function () {
+            $.each($tabs.find('li.room'), function (index, item) {
+                if (index < 10) {
+                    $(item).attr('accesskey', ((index + 1) % 10).toString());
+                } else {
+                    $(item).attr('accesskey', null);
+                }
+            });
+        },
 
-        function addRoom(roomViewModel) {
+        // TODO: this could be moved to base
+        _rcScrollToBottom: function (event, roomName) {
+            this.scrollToBottom(roomName);
+        },
+
+        // TODO: this could be moved to base
+        _rcCreateMessage: function (event, data, room) {
+            var viewModel = new Message(data);
+
+            rc.addMessage(viewModel.id);
+            messages.addChatMessage(viewModel, room);
+        },
+
+        addRoom: function (roomViewModel) {
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
             logger.trace("addRoom(" + roomName + ")");
@@ -348,7 +326,7 @@ define([
                 return false;
             }
 
-            var room = createRoom(roomViewModel.Name),
+            var room = this.createRoom(roomViewModel.Name),
                 roomId = null,
                 viewModel = null,
                 $messages = null,
@@ -396,7 +374,7 @@ define([
                     return rc.cleanRoomName($(a).data('name')) > rc.cleanRoomName($(b).data('name')) ? 1 : -1;
                 });
 
-            scrollHandler = createScrollHandler(roomName, roomId, $messages);
+            scrollHandler = this._createScrollHandler(roomName, roomId, $messages);
 
             // Hookup the scroll handler since event delegation doesn't work with scroll events
             $messages.bind('scroll', scrollHandler);
@@ -404,34 +382,162 @@ define([
             // Store the scroll handler so we can remove it later
             $messages.data('scrollHandler', scrollHandler);
 
-            setAccessKeys();
+            this.setAccessKeys();
 
             lobbyLoaded = false;
             return true;
-        }
+        },
+        
+        updateRoom: function (roomName) {
+            var roomId = rc.getRoomId(roomName),
+                room = rc.rooms[rc.cleanRoomName(roomName)];
 
-        function scrollToBottom(roomName) {
-            var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
+            logger.trace("Updating current room elements");
+
+            // Update the current elements if the room has already been added
+            room.tab = $('#tabs-' + roomId);
+            room.users = $('#userlist-' + roomId);
+            room.owners = $('#userlist-' + roomId + '-owners');
+            room.activeUsers = $('#userlist-' + roomId + '-active');
+            room.messages = $('#messages-' + roomId);
+            room.roomTopic = $('#roomTopic-' + roomId);
+
+            if (!rc.validRoom(roomName)) {
+                logger.warn('Failed to update invalid room "' + roomName + '"');
+                return false;
+            }
+
+            return true;
+        },
+        
+        updateRoomTopic: function (roomName, topic) {
+            var room = this.getRoomElements(roomName);
+
+            if (room === null) {
+                logger.warn('Room does not exist yet');
+                return;
+            }
+
+            var topicHtml = topic === '' ?
+                'You\'re chatting in ' + roomName :
+                processor.processPlainContent(topic);
+            var roomTopic = room.roomTopic;
+            var isVisibleRoom = this.getCurrentRoomElements().getName() === roomName;
+
+            if (isVisibleRoom) {
+                roomTopic.hide();
+            }
+
+            roomTopic.html(topicHtml);
+
+            if (isVisibleRoom) {
+                roomTopic.fadeIn(2000);
+            }
+        },
+
+        scrollToBottom: function  (roomName) {
+            var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();
 
             if (room.isActive()) {
                 room.scrollToBottom();
             }
-        }
+        },
+        
+        isNearTheEnd: function (roomName) {
+            var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();
+
+            return room.isNearTheEnd();
+        },
+        
+        scrollIfNecessary: function (callback, room) {
+            var nearEnd = this.isNearTheEnd(room);
+
+            callback();
+
+            if (nearEnd) {
+                this.scrollToBottom(room);
+            }
+        },
+
+        setLoadingHistory: function (loadingHistory) {
+            if (loadingHistory) {
+                var room = getCurrentRoomElements();
+                $loadingHistoryIndicator.appendTo(room.messages);
+                $loadingHistoryIndicator.fadeIn('slow');
+            } else {
+                $loadingHistoryIndicator.hide();
+            }
+        },
+        
+        trimRoomMessageHistory: function (roomName) {
+            var rooms = roomName ? [rc.getRoomElements(roomName)] : getAllRoomElements();
+
+            for (var i = 0; i < rooms.length; i++) {
+                rooms[i].trimHistory();
+            }
+        },
+
+        // #region Preferences
+
+        loadRoomPreferences: function (roomName) {
+            // Set defaults
+            if (state.getRoomPreference(roomName, 'hasSound') === undefined) {
+                state.setRoomPreference(roomName, 'hasSound', true);
+            }
+
+            // Placeholder for room level preferences
+            this.toggleElement($sound, 'hasSound', roomName);
+            this.toggleElement($toast, 'canToast', roomName);
+            this.toggleRichness($richness, roomName);
+            this.toggleNotify($notify, roomName);
+        },
+
+        getActiveRoomPreference: function (name) {
+            var room = getCurrentRoomElements();
+            return state.getRoomPreference(room.getName(), name);
+        },
+
+        toggleRichness: function ($element, roomName) {
+            var blockRichness = roomName ?
+                state.getRoomPreference(roomName, 'blockRichness') :
+                state.get().preferences.blockRichness;
+
+            if (blockRichness === true) {
+                $element.addClass('off');
+            } else {
+                $element.removeClass('off');
+            }
+        },
+
+        toggleNotify: function ($element, roomName) {
+            var notifyState = state.getRoomPreference(roomName, 'notify') || 'mentions';
+
+            if (notifyState === 'all' && $element.hasClass('notify-mentions')) {
+                $element.removeClass('notify-mentions');
+                $element.addClass('notify-all');
+                $('.notify-text', $element).text('All');
+            } else if (notifyState === 'mentions' && $element.hasClass('notify-all')) {
+                $element.removeClass('notify-all');
+                $element.addClass('notify-mentions');
+                $('.notify-text', $element).text('Mentions');
+            }
+        },
+
+        toggleElement: function ($element, preferenceName, roomName) {
+            var value = roomName ?
+                state.getRoomPreference(roomName, preferenceName) :
+                this.get().preferences[preferenceName];
+
+            if (value === true) {
+                $element.removeClass('off');
+            } else {
+                $element.addClass('off');
+            }
+        },
 
         // #endregion
-
-        function rcScrollToBottom(event, roomName) {
-            scrollToBottom(roomName);
-        }
-
-        function rcCreateMessage(event, data, room) {
-            var viewModel = new Message(data);
-
-            rc.addMessage(viewModel.id);
-            messages.addChatMessage(viewModel, room);
-        }
-
-        function showKickPopup(roomName, message, imageUrl) {
+        
+        showKickPopup: function (roomName, message, imageUrl) {
             if (message !== null) {
                 $('.kick-message', $kickedPopup).text(message);
             } else {
@@ -446,9 +552,9 @@ define([
                 $('.kick-image', $kickedPopup).hide();
             }
             $kickedPopup.modal();
-        }
+        },
 
-        function showGravatarProfile(profile) {
+        showGravatarProfile: function (profile) {
             var room = getCurrentRoomElements(),
                 nearEnd = isNearTheEnd();
 
@@ -456,239 +562,6 @@ define([
             if (nearEnd) {
                 scrollToBottom();
             }
-        }
-
-        function setLoadingHistory(loadingHistory) {
-            if (loadingHistory) {
-                var room = getCurrentRoomElements();
-                $loadingHistoryIndicator.appendTo(room.messages);
-                $loadingHistoryIndicator.fadeIn('slow');
-            } else {
-                $loadingHistoryIndicator.hide();
-            }
-        }
-
-        function trimRoomMessageHistory(roomName) {
-            var rooms = roomName ? [rc.getRoomElements(roomName)] : getAllRoomElements();
-
-            for (var i = 0; i < rooms.length; i++) {
-                rooms[i].trimHistory();
-            }
-        }
-
-        // #region Global Events
-
-        // TODO - Replace with DI object call
-        events.bind(events.error, function (event, exception, type) {
-            messages.addMessage(exception.message, type);
-        });
-
-        // TODO - Replace with DI object call
-        events.bind(events.rooms.ui.updateUnread, function (event, roomName, isMentioned) {
-            logger.trace("updateUnread(" + roomName + ", " + isMentioned + ")");
-            var room = roomName ? getRoomElements(roomName) : getCurrentRoomElements();
-
-            if (ui.isFocused() && room.isActive()) {
-                return;
-            }
-
-            room.updateUnread(isMentioned);
-        });
-
-        // #endregion
-
-        // #region DOM
-
-        $document.on('click', 'li.room .room-row', function () {
-            var roomName = $(this).parent().data('name');
-            rc.activateOrOpenRoom(roomName);
-        });
-
-        $document.on('click', '#tabs li', function () {
-            var roomName = $(this).data('name');
-            rc.activateOrOpenRoom(roomName);
-        });
-
-        $document.on('mousedown', '#tabs li.room', function (ev) {
-            // if middle mouse
-            if (ev.which === 2) {
-                rc.leaveRoom($(this).data('name'));
-            }
-        });
-
-        $document.on('click', '#tabs li .close', function (ev) {
-            var roomName = $(this).closest('li').data('name');
-
-            rc.leaveRoom(roomName);
-
-            ev.preventDefault();
-            return false;
-        });
-
-        // #endregion
-
-        setInterval(function () {
-            trimRoomMessageHistory();
-        }, trimRoomHistoryFrequency);
-
-        // Hub Handlers
-        var handlers = {
-            bind: function () {
-                client.chat.client.joinRoom = this.joinRoom;
-
-                client.chat.client.kick = this.kick;
-            },
-
-            joinRoom: function (roomdata) {
-                var added = addRoom(roomdata),
-                    roomName = roomdata.Name,
-                    room = rc.getRoom(roomName);
-
-                rc.setActiveRoom(roomName);
-
-                if (roomdata.Private) {
-                    room.setLocked(true);
-                }
-                if (roomdata.Closed) {
-                    room.setClosed(true);
-                }
-
-                if (added) {
-                    rc.populateRoom(roomdata.Name).done(function () {
-                        messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
-
-                        if (roomdata.Welcome) {
-                            messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
-                        }
-                    });
-                }
-            },
-
-            kick: function (userdata, roomName, message, imageUrl) {
-                if (rc.isSelf(userdata)) {
-                    showKickPopup(roomName, message, imageUrl);
-                    rc.setActiveRoom('Lobby');
-                    rc.removeRoom(roomName);
-                    // TODO Where does this message go?
-                    messages.addMessage('You were kicked from ' + roomName, 'notification');
-                } else {
-                    users.remove(userdata, roomName);
-                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;
-
-                    if (message !== null && imageUrl !== null) {
-                        roomMessage += ' (' + [message, '<a href="' + imageUrl +
-                            '">' + imageUrl + '</a>'].join(' - ') + ')';
-                    } else if (message !== null) {
-                        roomMessage += ' (' + message + ')';
-                    } else if (imageUrl !== null) {
-                        roomMessage += ' (<a href="' + imageUrl + '">' + imageUrl + '</a>)';
-                    }
-
-                    messages.addMessage({ content: roomMessage, encoded: true }, 'notification', roomName);
-                }
-            }
-        };
-
-        return {
-            activate: function () {
-                client = kernel.get('jabbr/client');
-                ui = kernel.get('jabbr/ui');
-
-                client.activate();
-                rc.activate();
-                users.activate();
-                lobby.activate();
-                messages.activate();
-                notifications.activate();
-                contentProviders.activate();
-                processor.activate();
-
-                logger.trace('activated');
-
-                // Bind events
-                rc.bind(events.rooms.client.scrollToBottom, rcScrollToBottom);
-                rc.bind(events.rooms.client.createMessage, rcCreateMessage);
-
-                client.chat.client.changeTopic = updateRoomTopic;
-
-                handlers.bind();
-            },
-
-            // #region Room Elements
-
-            createRoom: createRoom,
-            updateRoom: updateRoom,
-
-            getRoomElements: getRoomElements,
-            getCurrentRoomElements: getCurrentRoomElements,
-            getAllRoomElements: getAllRoomElements,
-            getNextRoomListElement: getNextRoomListElement,
-
-            // #endregion
-
-            getActiveRoomPreference: function (name) {
-                var room = getCurrentRoomElements();
-                return state.getRoomPreference(room.getName(), name);
-            },
-
-            updateRoomTopic: updateRoomTopic,
-
-            // #region Room Navigation/Loading
-            addRoom: addRoom,
-            addRooms: function (rooms) {
-                $.each(rooms, function (index, roomdata) {
-                    addRoom(roomdata);
-                    var room = rc.getRoom(roomdata.Name);
-
-                    if (roomdata.Private) {
-                        room.setLocked(true);
-                    }
-                    if (roomdata.Closed) {
-                        room.setClosed(true);
-                    }
-                });
-            },
-            setActiveRoomCore: setActiveRoomCore,
-            // #endregion
-
-            isNearTheEnd: isNearTheEnd,
-            scrollToBottom: scrollToBottom,
-            scrollIfNecessary: function (callback, room) {
-                var nearEnd = isNearTheEnd(room);
-
-                callback();
-
-                if (nearEnd) {
-                    this.scrollToBottom(room);
-                }
-            },
-
-            setAccessKeys: setAccessKeys,
-
-            showGravatarProfile: showGravatarProfile,
-            setLoadingHistory: setLoadingHistory,
-
-            bind: function (eventType, handler) {
-                $this.bind(eventType, handler);
-            }
-        };
-    };
-
-    return function () {
-        if (object === null) {
-            // initialize sub-modules
-            rc = rc();
-            users = users();
-            lobby = lobby();
-            messages = messages();
-            notifications = notifications();
-            contentProviders = contentProviders();
-            processor = processor();
-
-            object = initialize();
-            kernel.bind('jabbr/components/rooms.ui', object);
-        }
-
-        return object;
-    };
+        },
+    });
 });
