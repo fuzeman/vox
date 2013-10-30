@@ -56,7 +56,7 @@ require.config({
         'moment': {
             exports: 'moment'
         },
-        'livestamp': ['jquery'],
+        'livestamp': ['jquery', 'moment'],
         'linkify': {
             exports: 'linkify'
         },
