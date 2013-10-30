@@ -470,7 +470,7 @@ define([
         },
         
         trimRoomMessageHistory: function (roomName) {
-            var rooms = roomName ? [rc.getRoomElements(roomName)] : getAllRoomElements();
+            var rooms = roomName ? [rc.getRoomElements(roomName)] : this.getAllRoomElements();
 
             for (var i = 0; i < rooms.length; i++) {
                 rooms[i].trimHistory();
