@@ -85,6 +85,6 @@
         
         updatePrivateRooms: function (roomName) { logger.warn('updatePrivateRooms not implemented'); },
         
-        loadMoreLobbyRooms: function () { logger.warn('loadMoreLobbyRooms not implemented'); },
+        loadMoreLobbyRooms: function () { logger.warn('loadMoreLobbyRooms not implemented'); }
     });
 });

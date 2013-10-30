@@ -545,6 +545,6 @@ define([
             if (nearEnd) {
                 this.scrollToBottom();
             }
-        },
+        }
     });
 });

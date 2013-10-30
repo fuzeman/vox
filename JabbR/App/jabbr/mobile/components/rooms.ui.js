@@ -14,7 +14,7 @@
                 notifications: new MobileNotifications(),
                 rc: new MobileRoomsClient(),
                 messages: new MobileMessages(),
-                lobby: new MobileLobby(),
+                lobby: new MobileLobby()
             };
         }
     });

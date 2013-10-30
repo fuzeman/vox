@@ -45,7 +45,9 @@
         
         getAllRoomElements: function () { logger.warn('getAllRoomElements not implemented'); },
 
-        getNextRoomListElement: function ($targetList, roomName, count, closed) { logger.warn('getNextRoomListElement not implemented'); },
+        getNextRoomListElement: function ($targetList, roomName, count, closed) {
+            logger.warn('getNextRoomListElement not implemented');
+        },
 
         // #endregion
         

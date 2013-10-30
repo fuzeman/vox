@@ -76,7 +76,7 @@
                 set(enabled, username, interval);
                 clear();
                 if (loaded) {
-                    timeout = setTimeout(poll, 1000 * 1);
+                    timeout = setTimeout(poll, 1000);
                 } else {
                     timeout = setTimeout(poll, 1000 * 5); // Initial poll in 5 seconds
                     loaded = true;

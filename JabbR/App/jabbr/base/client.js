@@ -19,7 +19,7 @@
 
             this.connection = $.connection;
 
-            this.logging = $.cookie('jabbr.logging') === '1',
+            this.logging = $.cookie('jabbr.logging') === '1';
             this.connection.hub.logging = this.logging;
             this.connection.hub.qs = "version=" + window.jabbr.version;
 

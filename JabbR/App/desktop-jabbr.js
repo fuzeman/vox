@@ -81,7 +81,7 @@ window.onload = function () {
             'base',
             'jabbr/desktop/client',
             'jabbr/desktop/ui',
-            'jabbr/core/events',
+            'jabbr/core/events'
     ], function ($, signalr, Logger, base, DesktopClient, DesktopUI, events) {
         var logger = new Logger('chat');
         logger.trace('loading');
