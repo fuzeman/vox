@@ -32,12 +32,13 @@ define([
     Room, Message,
     
     // Components
-    DesktopNotifications, rc, messages, DesktopLobby,
+    DesktopNotifications, rc, DesktopMessages, DesktopLobby,
     users, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/desktop/components/rooms.ui'),
-        lobby = null,
         notifications = null,
+        lobby = null,
+        messages = null,
         $this = $(this),
         $document = $(document),
         $chatArea = $('#chat-area'),
@@ -59,16 +60,16 @@ define([
 
             rc = rc();
             users = users();
-            messages = messages();
             contentProviders = contentProviders();
             processor = processor();
             
             this.submodules = {
-                rc: rc,
-                users: users,
-                lobby: new DesktopLobby(),
-                messages: messages,
                 notifications: new DesktopNotifications(),
+                rc: rc,
+                messages: new DesktopMessages(),
+                lobby: new DesktopLobby(),
+                
+                users: users,
                 contentProviders: contentProviders,
                 processor: processor
             };
@@ -77,8 +78,10 @@ define([
         activate: function () {
             this.base();
 
-            lobby = kernel.get('jabbr/components/lobby');
             notifications = kernel.get('jabbr/components/notifications');
+            lobby = kernel.get('jabbr/components/lobby');
+            messages = kernel.get('jabbr/components/messages');
+            
             
             client.chat.client.changeTopic = this.updateRoomTopic;
 
@@ -404,6 +407,8 @@ define([
         // #endregion
 
         _createScrollHandler: function (roomName, roomId, $messages) {
+            var _this = this;
+
             return function (ev) {
                 var messageId = null;
 
@@ -416,7 +421,7 @@ define([
                 // bar is small enough that we're at the bottom edge, ignore it.
                 // We have to use the ui version because the room object above is
                 // not fully initialized, so there are no messages.
-                if ($(this).scrollTop() <= scrollTopThreshold && !isNearTheEnd(roomId)) {
+                if ($(this).scrollTop() <= scrollTopThreshold && !_this.isNearTheEnd(roomId)) {
                     var $child = $messages.children('.message:first');
                     if ($child.length > 0) {
                         messageId = $child.attr('id').substr(2); // Remove the "m-"
@@ -533,12 +538,12 @@ define([
         },
 
         showGravatarProfile: function (profile) {
-            var room = getCurrentRoomElements(),
-                nearEnd = isNearTheEnd();
+            var room = this.getCurrentRoomElements(),
+                nearEnd = this.isNearTheEnd();
 
             messages.appendMessage(templates.gravatarprofile.tmpl(profile), room);
             if (nearEnd) {
-                scrollToBottom();
+                this.scrollToBottom();
             }
         },
     });

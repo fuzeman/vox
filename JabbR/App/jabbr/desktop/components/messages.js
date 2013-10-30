@@ -3,47 +3,55 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/base/components/messages',
     'jabbr/core/templates',
-    'jabbr/core/events',
     'jabbr/core/utility',
-    'jabbr/core/viewmodels/message',
+    'jabbr/core/events',
     'jabbr/desktop/components/message-ticker',
-    'jabbr/core/messageprocessors/collapse'
 ], function (
-    $, Logger, kernel, templates,
-    events, utility, Message, MessageTicker, collapse
+    $, Logger, kernel, Messages, templates,
+    utility, events, MessageTicker
 ) {
-    var logger = new Logger('jabbr/components/messages'),
-        client = null,
-        ui = null,
-        rc = null,
+    var logger = new Logger('jabbr/desktop/components/messages'),
         ru = null,
+        rc = null,
         notifications = null,
         processor = null,
-        object = null;
+        $document = $(document),
+        messageSendingDelay = 1500;
 
-    var initialize = function () {
-        var $document = $(document),
-            messageSendingDelay = 1500,
-            lastPrivate = null,
-            pendingMessages = {};
+    return Messages.extend({
+        constructor: function () {
+            this.base();
+        },
+        
+        activate: function () {
+            this.base();
 
-        function dateHeaderFormat(date) {
-            return moment(date).format('dddd, MMMM Do YYYY');
-        }
+            ru = kernel.get('jabbr/components/rooms.ui');
+            rc = kernel.get('jabbr/components/rooms.client');
+            notifications = kernel.get('jabbr/components/notifications');
+            processor = kernel.get('jabbr/messageprocessors/processor');
 
-        function processMessage(message, roomName) {
-            message.when = message.date.formatTime(true);
-            message.fulldate = message.date.toLocaleString();
+            this.attach();
+        },
+        
+        attach: function () {
+            // handle click on notifications
+            $document.on('click', '.notification a.info', function () {
+                var $notification = $(this).closest('.notification');
 
-            message.message = collapse.process(message.message, {
-                roomName: roomName
+                if ($(this).hasClass('collapse')) {
+                    collapseNotifications($notification);
+                } else {
+                    expandNotifications($notification);
+                }
             });
-        }
+        },
 
         // #region Add Message
 
-        function addChatMessage(message, roomName) {
+        addChatMessage: function (message, roomName) {
             var room = ru.getRoomElements(roomName);
 
             if (room === null) {
@@ -76,7 +84,7 @@ define([
             showUserName = previousUser !== message.name && !isNotification;
             message.showUser = showUserName;
 
-            processMessage(message, roomName);
+            this.processMessage(message, roomName);
 
             if (showUserName === false) {
                 $previousMessage.addClass('continue');
@@ -102,9 +110,9 @@ define([
                     encoded: true
                 };
 
-                addMessage(model, 'postedNotification', roomName);
+                this.addMessage(model, 'postedNotification', roomName);
             } else {
-                appendMessage(templates.message.tmpl(message), room);
+                this.appendMessage(templates.message.tmpl(message), room);
 
                 if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
                     MessageTicker.appendMessage(message, roomName);
@@ -112,14 +120,14 @@ define([
             }
 
             if (message.htmlContent) {
-                addChatMessageContent(message.id, message.htmlContent, room.getName());
+                this.addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
 
             // Trigger notification
             notifications.messageNotification(message, room);
-        }
-
-        function addChatMessageContent(id, content, roomName) {
+        },
+        
+        addChatMessageContent: function (id, content, roomName) {
             var $message = $('#m-' + id),
                 $middle = $message.find('.middle'),
                 $body = $message.find('.content');
@@ -137,9 +145,9 @@ define([
             }
 
             processor.afterRichElementAttached($middle);
-        }
-
-        function appendMessage(newMessage, room) {
+        },
+        
+        appendMessage: function (newMessage, room) {
             // Determine if we need to show a new date header: Two conditions
             // for instantly skipping are if this message is a date header, or
             // if the room only contains non-chat messages and we're adding a
@@ -152,7 +160,7 @@ define([
                     thisDate = new Date($(newMessage).data('timestamp'));
 
                 if (!lastMessage.length || thisDate.toDate().diffDays(lastDate.toDate())) {
-                    addMessage(dateHeaderFormat(thisDate), 'date-header list-header', room.getName())
+                    this.addMessage(this.dateHeaderFormat(thisDate), 'date-header list-header', room.getName())
                         .find('.right').remove(); // remove timestamp on date indicator
                 }
             }
@@ -162,9 +170,9 @@ define([
             }
 
             $(newMessage).appendTo(room.messages);
-        }
-
-        function addMessage(content, type, roomName) {
+        },
+        
+        addMessage: function (content, type, roomName) {
             var room = roomName ? ru.getRoomElements(roomName) : ru.getCurrentRoomElements();
 
             if (room === null) {
@@ -173,12 +181,12 @@ define([
             }
 
             var nearEnd = room.isNearTheEnd(),
-                $element = prepareNotificationMessage(content, type);
+                $element = this.prepareNotificationMessage(content, type);
 
-            appendMessage($element, room);
+            this.appendMessage($element, room);
 
             if (type === 'notification' && room.isLobby() === false) {
-                collapseNotifications($element);
+                this.collapseNotifications($element);
             }
 
             if (nearEnd) {
@@ -186,25 +194,25 @@ define([
             }
 
             return $element;
-        }
-
-        function addMessageBeforeTarget(content, type, $target) {
-            var $element = prepareNotificationMessage(content, type);
-            $target.before($element);
-
-            return $element;
-        }
-
-        function addPrivateMessage(content, type) {
+        },
+        
+        addPrivateMessage: function (content, type) {
             var rooms = ru.getAllRoomElements();
             for (var r in rooms) {
                 if (rooms[r].getName() !== undefined && rooms[r].isClosed() === false) {
                     addMessage(content, type, rooms[r].getName());
                 }
             }
-        }
+        },
+        
+        addMessageBeforeTarget: function (content, type, $target) {
+            var $element = prepareNotificationMessage(content, type);
+            $target.before($element);
 
-        function prependChatMessages(messages, roomName) {
+            return $element;
+        },
+
+        prependChatMessages: function (messages, roomName) {
             var room = rc.getRoom(roomName),
                 $messages = room.messages,
                 $target = $messages.children().first(),
@@ -272,13 +280,48 @@ define([
 
             // Scroll to the bottom element so the user sees there's more messages
             $target[0].scrollIntoView();
-        }
+        },
+
+        overwriteMessage: function (id, message) {
+            var $message = $('#m-' + id);
+            this.processMessage(message);
+
+            $message.find('.middle').html(message.message);
+            $message.find('.right .time').attr('title', message.fulldate).text(message.when);
+            $message.attr('id', 'm-' + message.id);
+
+            this.changeMessageId(id, message.id);
+        },
+        
+        replaceMessageElement: function (message) {
+            this.processMessage(message);
+
+            $('#m-' + message.id).find('.middle')
+                                 .html(message.message);
+        },
+
+        messageExists: function (id) {
+            return $('#m-' + id).length > 0;
+        },
+
+        failMessage: function (id) {
+            $('#m-' + id).removeClass('loading')
+                         .addClass('failed');
+        },
+
+        markMessagePending: function (id) {
+            var $message = $('#m-' + id);
+
+            if ($message.hasClass('failed') === false) {
+                $message.addClass('loading');
+            }
+        },
 
         // #endregion
-
+        
         // #region Send Message
 
-        function sendMessage(msg) {
+        sendMessage: function (msg) {
             events.trigger(events.ui.clearUnread);
 
             var id, clientMessage, type, messageCompleteTimeout = null;
@@ -320,202 +363,64 @@ define([
                 };
 
                 if (type === 'append') {
-                    addChatMessage(viewModel, clientMessage.room);
+                    this.addChatMessage(viewModel, clientMessage.room);
                     ui.incrementMessageCount();
                 } else {
-                    replaceMessageElement(viewModel);
+                    this.replaceMessageElement(viewModel);
                 }
 
                 // If there's a significant delay in getting the message sent
                 // mark it as pending
                 messageCompleteTimeout = window.setTimeout(function () {
                     if ($.connection.hub.state === $.connection.connectionState.reconnecting) {
-                        failMessage(id);
+                        this.failMessage(id);
                     } else {
                         // If after a second
-                        markMessagePending(id);
+                        this.markMessagePending(id);
                     }
                 },
                     messageSendingDelay);
 
-                pendingMessages[id] = messageCompleteTimeout;
+                this.pendingMessages[id] = messageCompleteTimeout;
             }
 
             rc.historyLocation = 0;
 
-            sendClientMessage(clientMessage, messageCompleteTimeout);
-            historyPush(type, clientMessage);
-        }
+            this.sendClientMessage(clientMessage, messageCompleteTimeout);
+            this.historyPush(type, clientMessage);
+        },
+        
+        sendClientMessage: function (clientMessage, messageCompleteTimeout) {
+            var _this = this;
 
-        function sendClientMessage(clientMessage, messageCompleteTimeout) {
             try {
                 client.chat.server.send(clientMessage)
                     .done(function () {
                         if (messageCompleteTimeout) {
                             clearTimeout(messageCompleteTimeout);
-                            delete pendingMessages[clientMessage.id];
+                            delete _this.pendingMessages[clientMessage.id];
                         }
 
-                        confirmMessage(clientMessage.id);
+                        _this.confirmMessage(clientMessage.id);
                     })
                     .fail(function (e) {
-                        failMessage(clientMessage.id);
+                        _this.failMessage(clientMessage.id);
+                        
                         if (e.source === 'HubException') {
-                            addMessage(e.message, 'error');
+                            _this.addMessage(e.message, 'error');
                         }
                     });
             } catch (e) {
                 client.connection.hub.log('Failed to send via websockets');
 
                 clearTimeout(pendingMessages[clientMessage.id]);
-                failMessage(clientMessage.id);
+                this.failMessage(clientMessage.id);
             }
-        }
-
-        function failPendingMessages() {
-            for (var id in pendingMessages) {
-                if (pendingMessages.hasOwnProperty(id)) {
-                    clearTimeout(pendingMessages[id]);
-                    failMessage(id);
-                    delete pendingMessages[id];
-                }
-            }
-        }
-
+        },
+        
         // #endregion
-
-        function historyPush(type, clientMessage) {
-            if (type === 'replace') {
-                // Search for message in history and replace it
-                for (var i = 0; i < (rc.messageHistory[client.chat.state.activeRoom] || []).length; i++) {
-                    if (rc.messageHistory[client.chat.state.activeRoom][i].id == clientMessage.id) {
-                        rc.messageHistory[client.chat.state.activeRoom][i] = clientMessage;
-                    }
-                }
-            }
-            if (type == 'append') {
-                // Ensure room exists
-                if (rc.messageHistory[client.chat.state.activeRoom] === undefined) {
-                    rc.messageHistory[client.chat.state.activeRoom] = [];
-                }
-
-                rc.messageHistory[client.chat.state.activeRoom].push(clientMessage);
-            }
-
-            // REVIEW: should this pop items off the top after a certain length?
-            rc.historyLocation = (rc.messageHistory[client.chat.state.activeRoom] || []).length;
-        }
-
-        function confirmMessage(id) {
-            $('#m-' + id).removeClass('failed')
-                .removeClass('loading');
-        }
-
-        function changeMessageId(oldId, newId) {
-            for (var roomName in rc.messageHistory) {
-                for (var i = 0; i < rc.messageHistory[roomName].length; i++) {
-                    if (rc.messageHistory[roomName][i].id == oldId) {
-                        rc.messageHistory[roomName][i].id = newId;
-                        rc.messageHistory[roomName][i].replaced = true;
-                        return;
-                    }
-                }
-            }
-        }
-
-        function overwriteMessage(id, message) {
-            var $message = $('#m-' + id);
-            processMessage(message);
-
-            $message.find('.middle').html(message.message);
-            $message.find('.right .time').attr('title', message.fulldate).text(message.when);
-            $message.attr('id', 'm-' + message.id);
-
-            changeMessageId(id, message.id);
-        }
-
-        function replaceMessageElement(message) {
-            processMessage(message);
-
-            $('#m-' + message.id).find('.middle')
-                                 .html(message.message);
-        }
-
-        function messageExists(id) {
-            return $('#m-' + id).length > 0;
-        }
-
-        function failMessage(id) {
-            $('#m-' + id).removeClass('loading')
-                         .addClass('failed');
-        }
-
-        function markMessagePending(id) {
-            var $message = $('#m-' + id);
-
-            if ($message.hasClass('failed') === false) {
-                $message.addClass('loading');
-            }
-        }
-
-        // #region Notifications
-
-        function prepareNotificationMessage(options, type) {
-            if (typeof options === 'string') {
-                options = { content: options, encoded: false };
-            }
-
-            var now = new Date(),
-                message = {
-                    // TODO: use jabbr/viewmodels/message ?
-                    message: options.encoded ? options.content : processor.processPlainContent(options.content, {
-                        type: type,
-                        source: options.source
-                    }),
-                    type: type,
-                    date: now,
-                    when: now.formatTime(true),
-                    fulldate: now.toLocaleString(),
-                    img: options.img,
-                    source: options.source,
-                    id: options.id
-                };
-
-            return templates.notification.tmpl(message);
-        }
-
-        function collapseNotifications($notification) {
-            // collapse multiple notifications
-            var $notifications = $notification.prevUntil(':not(.notification)');
-            if ($notifications.length > 3) {
-                $notifications
-                    .hide()
-                    .find('.info').text(''); // clear any prior text
-                $notification.find('.info')
-                    .text(' (plus ' + $notifications.length + ' hidden... click to expand)')
-                    .removeClass('collapse');
-            }
-        }
-
-        function expandNotifications($notification) {
-            // expand collapsed notifications
-            var $notifications = $notification.prevUntil(':not(.notification)'),
-                topBefore = $notification.position().top;
-
-            $notification.find('.info')
-                .text(' (click to collapse)')
-                .addClass('collapse');
-            $notifications.show();
-
-            var room = ru.getCurrentRoomElements(),
-                topAfter = $notification.position().top,
-                scrollTop = room.messages.scrollTop();
-
-            // make sure last notification is visible
-            room.messages.scrollTop(scrollTop + topAfter - topBefore + $notification.height());
-        }
-
-        function watchMessageScroll(messageIds, roomName) {
+        
+        watchMessageScroll: function (messageIds, roomName) {
             // Given an array of message ids, if there is any embedded content
             // in it, it may cause the window to scroll off of the bottom, so we
             // can watch for that and correct it.
@@ -548,24 +453,73 @@ define([
                     $(this).unbind(event);
                 });
             }
-        }
+        },
+
+        confirmMessage: function(id) {
+            $('#m-' + id).removeClass('failed')
+                         .removeClass('loading');
+        },
+
+        // #region Notifications
+        
+        prepareNotificationMessage: function (options, type) {
+            if (typeof options === 'string') {
+                options = { content: options, encoded: false };
+            }
+
+            var now = new Date(),
+                message = {
+                    // TODO: use jabbr/viewmodels/message ?
+                    message: options.encoded ? options.content : processor.processPlainContent(options.content, {
+                        type: type,
+                        source: options.source
+                    }),
+                    type: type,
+                    date: now,
+                    when: now.formatTime(true),
+                    fulldate: now.toLocaleString(),
+                    img: options.img,
+                    source: options.source,
+                    id: options.id
+                };
+
+            return templates.notification.tmpl(message);
+        },
+        
+        collapseNotifications: function ($notification) {
+            // collapse multiple notifications
+            var $notifications = $notification.prevUntil(':not(.notification)');
+            if ($notifications.length > 3) {
+                $notifications
+                    .hide()
+                    .find('.info').text(''); // clear any prior text
+                $notification.find('.info')
+                    .text(' (plus ' + $notifications.length + ' hidden... click to expand)')
+                    .removeClass('collapse');
+            }
+        },
+
+        expandNotifications: function ($notification) {
+            // expand collapsed notifications
+            var $notifications = $notification.prevUntil(':not(.notification)'),
+                topBefore = $notification.position().top;
+
+            $notification.find('.info')
+                .text(' (click to collapse)')
+                .addClass('collapse');
+            $notifications.show();
+
+            var room = ru.getCurrentRoomElements(),
+                topAfter = $notification.position().top,
+                scrollTop = room.messages.scrollTop();
+
+            // make sure last notification is visible
+            room.messages.scrollTop(scrollTop + topAfter - topBefore + $notification.height());
+        },
 
         // #endregion
-
-        // #region DOM Events
-
-        // handle click on notifications
-        $document.on('click', '.notification a.info', function () {
-            var $notification = $(this).closest('.notification');
-
-            if ($(this).hasClass('collapse')) {
-                collapseNotifications($notification);
-            } else {
-                expandNotifications($notification);
-            }
-        });
         
-        function setMessageReadState(mid, read) {
+        setMessageReadState: function (mid, read) {
             var cur = $('#m-' + mid + ' .left .state a.read');
 
             if (read) {
@@ -578,143 +532,15 @@ define([
                     $('#m-' + mid + ' .left .state').append($readButton);
                 }
             }
-        }
+        },
 
-        function messageReadClick() {
+        messageReadClick: function () {
             var message = $(this).closest('.message'),
                 mid = message.attr('id').substring(2);
 
             if (mid !== undefined) {
                 client.chat.server.setMessageReadState(mid, true);
             }
-        }
-
-        // #endregion
-
-        //
-        // Hub Events
-        //
-
-        var handlers = {
-            bind: function () {
-                client.chat.client.addMessage = this.addMessage;
-                client.chat.client.addMessageContent = this.addMessageContent;
-                client.chat.client.replaceMessage = this.replaceMessage;
-                client.chat.client.postMessage = addMessage;
-
-                client.chat.client.sendMeMessage = this.sendMeMessage;
-                client.chat.client.sendPrivateMessage = this.sendPrivateMessage;
-
-                client.chat.client.messageReadStateChanged = this.messageReadStateChanged;
-            },
-
-            addMessage: function (message, room) {
-                var viewModel = new Message(message),
-                    edited = messageExists(viewModel.id);
-
-                ru.scrollIfNecessary(function () {
-                    // Update your message when it comes from the server
-                    if (edited) {
-                        replaceMessageElement(viewModel);
-                    } else {
-                        addChatMessage(viewModel, room);
-                        ui.incrementMessageCount();
-                    }
-                }, room);
-
-                var isMentioned = viewModel.highlight === 'highlight';
-
-                if (!viewModel.isMine && !edited) {
-                    events.trigger(events.ui.updateUnread, [room, isMentioned]);
-                }
-            },
-
-            addMessageContent: function (id, content, room) {
-                ru.scrollIfNecessary(function () {
-                    addChatMessageContent(id, content, room);
-                }, room);
-
-                // isMentioned: this is outside normal messages and user shouldn't be mentioned
-                events.trigger(events.ui.updateUnread, [room, false]);
-
-                watchMessageScroll([id], room);
-            },
-
-            replaceMessage: function (id, message, room) {
-                confirmMessage(id);
-
-                var viewModel = new Message(message);
-
-                ru.scrollIfNecessary(function () {
-                    // Update your message when it comes from the server
-                    overwriteMessage(id, viewModel);
-                }, room);
-
-                var isMentioned = viewModel.highlight === 'highlight';
-
-                if (!viewModel.isMine) {
-                    events.trigger(events.ui.updateUnread, [room, isMentioned]);
-                }
-            },
-
-            sendMeMessage: function (name, message, room) {
-                addMessage('*' + name + ' ' + message, 'action', room);
-            },
-
-            sendPrivateMessage: function (from, to, message) {
-                if (rc.isSelf({ Name: to })) {
-                    // Force notification for direct messages
-                    notifications.notify(true);
-                    lastPrivate = from;
-                }
-
-                addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
-            },
-
-            messageReadStateChanged: function (mid, read) {
-                logger.debug('messageReadStateChanged ' + mid + ' ' + read);
-                setMessageReadState(mid, read);
-            }
-        };
-
-        return {
-            activate: function () {
-                client = kernel.get('jabbr/client');
-                ui = kernel.get('jabbr/ui');
-                rc = kernel.get('jabbr/components/rooms.client');
-                ru = kernel.get('jabbr/components/rooms.ui');
-                notifications = kernel.get('jabbr/components/notifications');
-                processor = kernel.get('jabbr/messageprocessors/processor');
-
-                logger.trace('activated');
-
-                handlers.bind();
-            },
-
-            appendMessage: appendMessage,
-            addChatMessage: addChatMessage,
-            addMessage: addMessage,
-            addPrivateMessage: addPrivateMessage,
-
-            sendMessage: sendMessage,
-            failPendingMessages: failPendingMessages,
-            getLastPrivate: function () {
-                return lastPrivate;
-            },
-
-            prependChatMessages: prependChatMessages,
-            setMessageReadState: setMessageReadState,
-
-            watchMessageScroll: watchMessageScroll
-        };
-    };
-
-    return function () {
-        if (object === null) {
-            object = initialize();
-            kernel.bind('jabbr/components/messages', object);
-        }
-
-        return object;
-    };
+        },
+    });
 });

@@ -121,6 +121,7 @@
         // #endregion
 
         // #region Chat Hub Handlers
+        
         handlers: {
             bind: function () {
                 client.chat.client.joinRoom = this.joinRoom;
@@ -176,6 +177,7 @@
                 }
             }
         },
+        
         // #endregion
     });
 });
