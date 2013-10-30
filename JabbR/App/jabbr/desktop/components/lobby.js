@@ -343,7 +343,7 @@ define([
             }
 
             // Do a little animation
-            $room.css('-webkit-animation-play-state', 'running').css('animation-play-state', 'running'); 
+            $room.css('-webkit-animation-play-state', 'running').css('animation-play-state', 'running');
         },
         
         updatePrivateRooms: function (roomName) {

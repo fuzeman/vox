@@ -14,7 +14,7 @@ define([
         messages = null,
         lobby = null;
 
-    return EventObject.extend({        
+    return EventObject.extend({
         constructor: function () {
             this.base();
 

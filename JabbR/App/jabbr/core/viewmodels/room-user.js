@@ -86,7 +86,7 @@ define([
         
         if (!$inactiveSince.html()) {
             $inactiveSince.livestamp(new Date());
-        } 
+        }
 
         return true;
     };

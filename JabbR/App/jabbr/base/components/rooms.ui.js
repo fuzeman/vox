@@ -97,7 +97,7 @@ define([
             return state.getRoomPreference(room.getName(), name);
         },
         
-        // #region Room Scrolling 
+        // #region Room Scrolling
 
         scrollToBottom: function (roomName) {
             var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();

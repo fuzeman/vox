@@ -1,4 +1,4 @@
-﻿/*global define, window, setTimeout*/
+﻿/*global define, window, setTimeout, Notification*/
 define(['jquery', 'jabbr/core/utility'], function ($, utility) {
     var ToastStatus = { Allowed: 0, NotConfigured: 1, Blocked: 2 },
         toastTimeOut = 10000,
@@ -120,7 +120,7 @@ define(['jquery', 'jabbr/core/utility'], function ($, utility) {
                 // Hide any previously displayed toast
                 this.hideToast();
 
-               w3Toast = new Notification(toastTitle, {
+                w3Toast = new Notification(toastTitle, {
                     dir: "auto",
                     lang: "",
                     body: $('<div/>').html(message.message).text(),

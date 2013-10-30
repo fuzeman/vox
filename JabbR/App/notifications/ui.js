@@ -1,8 +1,8 @@
 ﻿/*global define*/
 define([
-    'jquery', 
+    'jquery',
     'jabbr/core/utility',
-    'notifications/counter', 
+    'notifications/counter',
     'jquery.pubsub'
 ], function ($, utility, counter) {
     var notificationsMode = $('#notifications-container').data('mode'),
