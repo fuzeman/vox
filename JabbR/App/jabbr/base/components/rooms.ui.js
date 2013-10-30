@@ -7,7 +7,8 @@
         client = null,
         ru = null,
         rc = null,
-        messages = null;
+        messages = null,
+        trimRoomHistoryFrequency = 1000 * 60 * 2;  // 2 minutes in ms
 
     return EventObject.extend({
         constructor: function() {
@@ -29,21 +30,26 @@
 
             this.handlers.bind();
 
+            setInterval($.proxy(this.trimRoomMessageHistory, this), trimRoomHistoryFrequency);
+
             logger.trace('activated');
         },
         
-        getCurrentRoomElements: function () { logger.warn('getCurrentRoomElements not implemented'); },
-        
+        // #region Room Elements
+
         getRoomElements: function (roomName) {
             return rc.getRoom(roomName);
         },
+
+        getCurrentRoomElements: function () { logger.warn('getCurrentRoomElements not implemented'); },
         
+        getAllRoomElements: function () { logger.warn('getAllRoomElements not implemented'); },
+
         getNextRoomListElement: function ($targetList, roomName, count, closed) { logger.warn('getNextRoomListElement not implemented'); },
 
+        // #endregion
         
-        createRoom: function (roomName) { logger.warn('createRoom not implemented'); },
-        
-        setActiveRoomCore: function (roomName) { logger.warn('setActiveRoomCore not implemented'); },
+        // #region Room Collection Methods
 
         addRooms: function (rooms) {
             var _this = this;
@@ -63,11 +69,58 @@
         
         addRoom: function (roomViewModel) { logger.warn('addRoom not implemented'); },
         
+        createRoom: function (roomName) { logger.warn('createRoom not implemented'); },
+
+        // #endregion
+
+        setActiveRoomCore: function (roomName) { logger.warn('setActiveRoomCore not implemented'); },
+
         updateRoom: function (roomName) { logger.warn('updateRoom not implemented'); },
         
         updateRoomTopic: function (roomName, topic) { logger.warn('updateRoomTopic not implemented'); },
         
-        // Hub Handlers
+        trimRoomMessageHistory: function (roomName) {
+            var rooms = roomName ? [rc.getRoomElements(roomName)] : this.getAllRoomElements();
+
+            for (var i = 0; i < rooms.length; i++) {
+                rooms[i].trimHistory();
+            }
+        },
+        
+        getActiveRoomPreference: function (name) {
+            var room = this.getCurrentRoomElements();
+            return state.getRoomPreference(room.getName(), name);
+        },
+        
+        // #region Room Scrolling 
+
+        scrollToBottom: function (roomName) {
+            var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();
+
+            if (room.isActive()) {
+                room.scrollToBottom();
+            }
+        },
+        
+        isNearTheEnd: function (roomName) {
+            var room = roomName ? this.getRoomElements(roomName) : this.getCurrentRoomElements();
+            
+            return room.isNearTheEnd();
+        },
+        
+        scrollIfNecessary: function (callback, room) {
+            var nearEnd = this.isNearTheEnd(room);
+
+            callback();
+
+            if (nearEnd) {
+                this.scrollToBottom(room);
+            }
+        },
+        
+        // #endregion
+
+        // #region Chat Hub Handlers
         handlers: {
             bind: function () {
                 client.chat.client.joinRoom = this.joinRoom;
@@ -123,5 +176,6 @@
                 }
             }
         },
+        // #endregion
     });
 });
