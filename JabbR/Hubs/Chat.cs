@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JabbR.Commands;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
@@ -28,9 +29,11 @@ namespace JabbR
         private readonly IRecentMessageCache _recentMessageCache;
         private readonly ICache _cache;
         private readonly ContentProviderProcessor _resourceProcessor;
+        private readonly PushNotificationService _pushNotification;
         private readonly ILogger _logger;
 
         public Chat(ContentProviderProcessor resourceProcessor,
+                    PushNotificationService pushNotification,
                     IChatService service,
                     IRecentMessageCache recentMessageCache,
                     IJabbrRepository repository,
@@ -38,6 +41,7 @@ namespace JabbR
                     ILogger logger)
         {
             _resourceProcessor = resourceProcessor;
+            _pushNotification = pushNotification;
             _service = service;
             _recentMessageCache = recentMessageCache;
             _repository = repository;
@@ -279,6 +283,8 @@ namespace JabbR
                 if (!markAsRead)
                 {
                     MessageReadStateChanged(mentionedUser, message, notification);
+
+                    _pushNotification.Send(notification);
                 }
 
                 mentionedUsers.Add(mentionedUser);

@@ -31,6 +31,6 @@ namespace JabbR.Models
 
         public IList<string> TabOrder { get; set; }
 
-        public PushNotifications PushNotifications { get; set; }
+        public PushNotificationPreferences PushNotifications { get; set; }
     }
 }

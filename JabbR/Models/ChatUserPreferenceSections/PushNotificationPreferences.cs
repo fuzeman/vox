@@ -1,20 +1,20 @@
 ﻿namespace JabbR.Models.ChatUserPreferenceSections
 {
-    public class PushNotifications
+    public class PushNotificationPreferences
     {
-        public NotifyMyAndroid NMA { get; set; }
+        public NotifyMyAndroidPreferences NMA { get; set; }
 
-        public Pushover Pushover { get; set; }
+        public PushoverPreferences Pushover { get; set; }
     }
 
-    public class NotifyMyAndroid
+    public class NotifyMyAndroidPreferences
     {
         public bool Enabled { get; set; }
 
         public string APIKey { get; set; }
     }
 
-    public class Pushover
+    public class PushoverPreferences
     {
         public bool Enabled { get; set; }
 
