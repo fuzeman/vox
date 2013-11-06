@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using JabbR.Models;
 using System.Net.Http;
 using Microsoft.Ajax.Utilities;
-using PushoverClient;
 
 namespace JabbR.Services
 {
@@ -11,13 +10,11 @@ namespace JabbR.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ApplicationSettings _settings;
-        private readonly Pushover _pushover;
 
         public PushNotificationService(ApplicationSettings settings)
         {
             _httpClient = new HttpClient();
             _settings = settings;
-            _pushover = new Pushover(_settings.PushoverAPIKey);
         }
 
         public void SendAsync(Notification notification)
@@ -80,13 +77,6 @@ namespace JabbR.Services
 
             if (!preferences.Enabled || preferences.UserKey.IsNullOrWhiteSpace())
                 return;
-
-            _pushover.Push(
-                message.Content,
-                message.Content,
-                preferences.UserKey,
-                preferences.DeviceName.IfNullOrWhiteSpace("")
-            );
 
             var request = new Dictionary<string, string>
             {
