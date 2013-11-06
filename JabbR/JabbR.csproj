@@ -1087,6 +1087,7 @@
     <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\ChatUserPreferenceSections\PushNotifications.cs" />
     <Compile Include="Models\ClientNotification.cs" />
     <Compile Include="Models\ChatUserPreferences.cs" />
     <Compile Include="Models\Mapping\AttachmentMap.cs" />
