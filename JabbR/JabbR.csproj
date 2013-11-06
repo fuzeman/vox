@@ -1087,6 +1087,7 @@
     <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\ChatUserPreferenceSections\PushNotificationPreferences.cs" />
     <Compile Include="Models\ClientNotification.cs" />
     <Compile Include="Models\ChatUserPreferences.cs" />
     <Compile Include="Models\Mapping\AttachmentMap.cs" />
@@ -1168,6 +1169,7 @@
     <Compile Include="Services\IUserAuthenticator.cs" />
     <Compile Include="Services\JabbrConfiguration.cs" />
     <Compile Include="Services\PresenceMonitor.cs" />
+    <Compile Include="Services\PushNotificationService.cs" />
     <Compile Include="Services\RecentMessageCache.cs" />
     <Compile Include="Services\SettingsKeyProvider.cs" />
     <Compile Include="Services\ApplicationSettings.cs" />

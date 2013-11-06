@@ -2479,6 +2479,7 @@ li.clearfix {
             margin-bottom: 0;
             background: #999;
             min-width: 0;
+            border: none;
         }
 
         #jabbr-client-settings .nav-tabs li a:hover {

@@ -444,7 +444,7 @@ define([
             setReadOnly(true);
         }
 
-        function clientLoggedOn(event, currentRooms, ownedRooms, mentions, unreadNotifications) {
+        function clientLoggedOn(event, currentRooms, ownedRooms, preferences, mentions, unreadNotifications) {
             ru.addRooms(currentRooms);
 
             // Process any urls that may contain room names
