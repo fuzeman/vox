@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR
 {
@@ -623,6 +624,18 @@ namespace JabbR
             }
         }
 
+        public void UpdatePreferences(JObject newPreferences)
+        {
+            var userId = Context.User.GetUserId();
+            var user = _repository.GetUserById(userId);
+
+            user.Preferences = newPreferences.ToObject<ChatUserPreferences>();
+
+            _repository.CommitChanges();
+
+            Clients.User(user.Id).preferencesChanged(user.Preferences);
+        }
+
         public void TabOrderChanged(string[] tabOrdering)
         {
             string userId = Context.User.GetUserId();
@@ -702,6 +715,9 @@ namespace JabbR
                     unreadNotifications
                 );
             }
+            
+            // Send preferences to client
+            Clients.Caller.preferencesChanged(user.Preferences);
         }
 
         private void UpdateActivity(ChatUser user, ChatRoom room)
