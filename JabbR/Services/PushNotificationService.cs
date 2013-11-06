@@ -1,31 +1,44 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using JabbR.Models;
 using System.Net.Http;
+using Microsoft.Ajax.Utilities;
+using PushoverClient;
 
 namespace JabbR.Services
 {
     public class PushNotificationService
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly ApplicationSettings _settings;
+        private readonly Pushover _pushover;
 
-        public PushNotificationService()
+        public PushNotificationService(ApplicationSettings settings)
         {
             _httpClient = new HttpClient();
+            _settings = settings;
+            _pushover = new Pushover(_settings.PushoverAPIKey);
         }
 
-        public void Send(Notification notification)
+        public void SendAsync(Notification notification)
         {
             if (notification.Read) return;
 
-            Send(notification.User, notification.Message);
+            SendAsync(notification.User, notification.Message);
+        }
+
+        public void SendAsync(ChatUser user, ChatMessage message)
+        {
+            Task.Run(() => Send(user, message));
         }
 
         public void Send(ChatUser user, ChatMessage message)
         {
             NotifyMyAndroid(user, message);
+            Pushover(user, message);
         }
 
-        private void NotifyMyAndroid(ChatUser user, ChatMessage message)
+        private async void NotifyMyAndroid(ChatUser user, ChatMessage message)
         {
             var preferences = user.Preferences.PushNotifications.NMA;
 
@@ -54,12 +67,38 @@ namespace JabbR.Services
                 {"description", descriptionContent}
             };
 
-            _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
+            var result = await _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
         }
 
-        private void Pushover(ChatUser user, ChatMessage message)
+        private async void Pushover(ChatUser user, ChatMessage message)
         {
-            
+            if (_settings.PushoverAPIKey.IsNullOrWhiteSpace())
+                return;
+
+            // Check preferences validity
+            var preferences = user.Preferences.PushNotifications.Pushover;
+
+            if (!preferences.Enabled || preferences.UserKey.IsNullOrWhiteSpace())
+                return;
+
+            _pushover.Push(
+                message.Content,
+                message.Content,
+                preferences.UserKey,
+                preferences.DeviceName.IfNullOrWhiteSpace("")
+            );
+
+            var request = new Dictionary<string, string>
+            {
+                {"token", _settings.PushoverAPIKey},
+                {"user", preferences.UserKey},
+                {"message", message.Content}
+            };
+
+            if (!preferences.DeviceName.IsNullOrWhiteSpace())
+                request["device"] = preferences.DeviceName;
+
+            var result = await _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
         }
     }
 }

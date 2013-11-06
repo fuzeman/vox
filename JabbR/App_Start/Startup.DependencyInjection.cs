@@ -77,7 +77,7 @@ namespace JabbR
                 .To<CryptoService>();
 
             kernel.Bind<PushNotificationService>()
-                  .ToConstant(new PushNotificationService());
+                  .To<PushNotificationService>();
 
             kernel.Bind<IResourceProcessor>()
                 .ToConstant(new ResourceProcessor(kernel));

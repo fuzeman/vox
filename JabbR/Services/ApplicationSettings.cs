@@ -33,6 +33,8 @@ namespace JabbR.Services
 
         public IDictionary<string, string> AuthenticationProviders { get; set; }
 
+        public string PushoverAPIKey { get; set; }
+
         public string EmailSender { get; set; }
 
         public static ApplicationSettings GetDefaultSettings()

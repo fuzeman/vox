@@ -284,7 +284,7 @@ namespace JabbR
                 {
                     MessageReadStateChanged(mentionedUser, message, notification);
 
-                    _pushNotification.Send(notification);
+                    _pushNotification.SendAsync(notification);
                 }
 
                 mentionedUsers.Add(mentionedUser);

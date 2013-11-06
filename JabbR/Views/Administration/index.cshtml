@@ -121,6 +121,15 @@
                     <div class="control-group">
                     </div>
                 </fieldset>
+                <fieldset id="pushNotifications">
+                    <legend>@LanguageResources.Administration_PushNotifications</legend>
+                    <div class="control-group">
+                        <label class="control-label" for="pushoverAPIKey">@LanguageResources.Administration_PushNotificationsPushover</label>
+                        <div class="controls">
+                            <input type="text" id="pushoverAPIKey" name="pushoverAPIKey" class="input-xlarge" value="@Model.PushoverAPIKey" placeholder="@LanguageResources.Administration_PushNotificationsPushover"/>
+                        </div>
+                    </div>
+                </fieldset>
                 <div class="control-group">
                     <div class="controls">
                         <input type="submit" class="btn pull-right" value="@LanguageResources.SettingsSave" />
