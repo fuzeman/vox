@@ -180,9 +180,9 @@ define([
             }
         }
         
-        function updateElementValue(id, value) {
+        function updateElementValue($element, id, value) {
             if (id === undefined) {
-                logger.warn("'" + $(this).html() + "' has no id specified");
+                logger.warn("'" + $element.html() + "' has no id specified");
                 return;
             }
 
@@ -191,14 +191,14 @@ define([
                 return;
             }
 
-            if ($(this).attr('type') == 'checkbox') {
+            if ($element.attr('type') == 'checkbox') {
                 if (value === true) {
-                    $(this).attr('checked', '');
+                    $element.attr('checked', '');
                 } else {
-                    $(this).removeAttr('checked');
+                    $element.removeAttr('checked');
                 }
             } else {
-                $(this).val(value);
+                $element.val(value);
             }
         }
 
@@ -214,7 +214,7 @@ define([
                 var id = $(this).attr('id'),
                     value = data[id];
 
-                updateElementValue(id, value);
+                updateElementValue($(this), id, value);
             });
             
             // Update user preference option elements
@@ -229,7 +229,7 @@ define([
                     return;
                 }
 
-                updateElementValue(id, getPreference(section, attribute));
+                updateElementValue($(this), id, getPreference(section, attribute));
             });
 
             $stateCheckboxes.each(toggleGroupState);
@@ -281,11 +281,7 @@ define([
                     logger.trace('preferencesChanged');
                     
                     preferences = newPreferences;
-                    
-                    // Update user preferences based options
-                    if (typeof (Storage) != "undefined") {
-                        reset();
-                    }
+                    reset();
                 };
             },
             isOpen: function () {
