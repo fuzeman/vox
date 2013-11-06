@@ -35,7 +35,7 @@ namespace JabbR.Services
             Pushover(user, message);
         }
 
-        private async void NotifyMyAndroid(ChatUser user, ChatMessage message)
+        private void NotifyMyAndroid(ChatUser user, ChatMessage message)
         {
             var preferences = user.Preferences.PushNotifications.NMA;
 
@@ -64,10 +64,10 @@ namespace JabbR.Services
                 {"description", descriptionContent}
             };
 
-            var result = await _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
+            _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
         }
 
-        private async void Pushover(ChatUser user, ChatMessage message)
+        private void Pushover(ChatUser user, ChatMessage message)
         {
             if (_settings.PushoverAPIKey.IsNullOrWhiteSpace())
                 return;
@@ -88,7 +88,7 @@ namespace JabbR.Services
             if (!preferences.DeviceName.IsNullOrWhiteSpace())
                 request["device"] = preferences.DeviceName;
 
-            var result = await _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
+            _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
         }
     }
 }
