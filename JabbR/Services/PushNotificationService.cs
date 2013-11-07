@@ -35,6 +35,9 @@ namespace JabbR.Services
 
         public void Send(ChatUser user, ChatMessage message)
         {
+            if (user.Preferences == null || user.Preferences.PushNotifications == null)
+                return;
+
             _logger.Log("Send user: {0}, message: {1}", user.Id, message.Id);
 
             try
@@ -63,7 +66,7 @@ namespace JabbR.Services
             var preferences = user.Preferences.PushNotifications.NMA;
 
             // Check preferences validity
-            if (!preferences.Enabled || preferences.APIKey == null)
+            if (preferences == null || !preferences.Enabled || preferences.APIKey == null)
                 return;
 
             var apikey = preferences.APIKey.Replace(" ", "");
@@ -97,7 +100,7 @@ namespace JabbR.Services
             // Check preferences validity
             var preferences = user.Preferences.PushNotifications.Pushover;
 
-            if (!preferences.Enabled || preferences.UserKey.IsNullOrWhiteSpace())
+            if (preferences == null || !preferences.Enabled || preferences.UserKey.IsNullOrWhiteSpace())
                 return;
 
             var request = new Dictionary<string, string>
