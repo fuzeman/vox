@@ -1,11 +1,11 @@
 using JabbR.Models;
 using JabbR.UploadHandlers;
+using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.AspNet.SignalR;
-using Newtonsoft.Json;
 
 namespace JabbR.Services
 {
@@ -293,7 +293,7 @@ namespace JabbR.Services
         public ChatService(ICache cache, IRecentMessageCache recentMessageCache, IJabbrRepository repository)
             : this(cache,
                    recentMessageCache,
-                   repository,  
+                   repository,
                    ApplicationSettings.GetDefaultSettings())
         {
         }
@@ -471,8 +471,17 @@ namespace JabbR.Services
 
         public Notification AddNotification(ChatUser mentionedUser, ChatMessage message, ChatRoom room, bool markAsRead)
         {
+            var notification = _repository.GetNotificationByMessage(message, mentionedUser);
+
+            if (notification != null)
+            {
+                notification.Read = markAsRead;
+
+                return notification;
+            }
+
             // We need to use the key here since messages might be a new entity
-            var notification = new Notification
+            notification = new Notification
             {
                 User = mentionedUser,
                 Message = message,
