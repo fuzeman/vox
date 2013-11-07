@@ -48,6 +48,16 @@ namespace JabbR.Services
             }
         }
 
+        private string GetTitle(ChatMessage message, int lengthLimit = 0)
+        {
+            var title = string.Format("Message from {0} in #{1}", message.User.Name, message.Room.Name);
+
+            if (lengthLimit > 0 && title.Length > lengthLimit)
+                title = title.Substring(0, lengthLimit - 3) + "...";
+
+            return title;
+        }
+
         private async void NotifyMyAndroid(ChatUser user, ChatMessage message)
         {
             var preferences = user.Preferences.PushNotifications.NMA;
@@ -61,9 +71,6 @@ namespace JabbR.Services
                 return;
 
             // Create event and description content values and add ellipsis if over limits
-            var eventContent = message.Content;
-            if (eventContent.Length > 1000)
-                eventContent = eventContent.Substring(0, 1000 - 3) + "...";
 
             var descriptionContent = message.Content;
             if (descriptionContent.Length > 10000)
@@ -73,7 +80,7 @@ namespace JabbR.Services
             {
                 {"apikey", apikey},
                 {"application", "iceJabbR"},
-                {"event", eventContent},
+                {"event", GetTitle(message, 100)},
                 {"description", descriptionContent}
             };
 
@@ -97,6 +104,7 @@ namespace JabbR.Services
             {
                 {"token", _settings.PushoverAPIKey},
                 {"user", preferences.UserKey},
+                {"title", GetTitle(message)},
                 {"message", message.Content}
             };
 
