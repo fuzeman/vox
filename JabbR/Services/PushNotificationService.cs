@@ -78,6 +78,8 @@ namespace JabbR.Services
             };
 
             var result = await _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
+
+            _logger.Log("Send NotifyMyAndroid: {0}", result.StatusCode);
         }
 
         private async void Pushover(ChatUser user, ChatMessage message)
@@ -102,6 +104,8 @@ namespace JabbR.Services
                 request["device"] = preferences.DeviceName;
 
             var result = await _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
+
+            _logger.Log("Send Pushover: {0}", result.StatusCode);
         }
     }
 }
