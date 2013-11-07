@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using JabbR.Infrastructure;
 using JabbR.Models;
 using System.Net.Http;
 using Microsoft.Ajax.Utilities;
@@ -10,11 +12,13 @@ namespace JabbR.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ApplicationSettings _settings;
+        private readonly ILogger _logger;
 
-        public PushNotificationService(ApplicationSettings settings)
+        public PushNotificationService(ApplicationSettings settings, ILogger logger)
         {
             _httpClient = new HttpClient();
             _settings = settings;
+            _logger = logger;
         }
 
         public void SendAsync(Notification notification)
@@ -31,11 +35,20 @@ namespace JabbR.Services
 
         public void Send(ChatUser user, ChatMessage message)
         {
-            NotifyMyAndroid(user, message);
-            Pushover(user, message);
+            _logger.Log("Send user: {0}, message: {1}", user.Id, message.Id);
+
+            try
+            {
+                NotifyMyAndroid(user, message);
+                Pushover(user, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("Send error: {0}", ex.ToString());
+            }
         }
 
-        private void NotifyMyAndroid(ChatUser user, ChatMessage message)
+        private async void NotifyMyAndroid(ChatUser user, ChatMessage message)
         {
             var preferences = user.Preferences.PushNotifications.NMA;
 
@@ -64,10 +77,10 @@ namespace JabbR.Services
                 {"description", descriptionContent}
             };
 
-            _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
+            var result = await _httpClient.PostAsync("https://www.notifymyandroid.com/publicapi/notify", new FormUrlEncodedContent(request));
         }
 
-        private void Pushover(ChatUser user, ChatMessage message)
+        private async void Pushover(ChatUser user, ChatMessage message)
         {
             if (_settings.PushoverAPIKey.IsNullOrWhiteSpace())
                 return;
@@ -88,7 +101,7 @@ namespace JabbR.Services
             if (!preferences.DeviceName.IsNullOrWhiteSpace())
                 request["device"] = preferences.DeviceName;
 
-            _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
+            var result = await _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
         }
     }
 }
