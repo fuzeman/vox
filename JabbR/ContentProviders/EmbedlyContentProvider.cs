@@ -14,12 +14,14 @@ namespace JabbR.ContentProviders
     public class EmbedlyContentProvider : CollapsibleContentProvider
     {
         private readonly IKernel _kernel;
+        private readonly IJabbrConfiguration _configuration;
         private ApplicationSettings _settings;
 
         [ImportingConstructor]
         public EmbedlyContentProvider(IKernel kernel)
         {
             _kernel = kernel;
+            _configuration = kernel.Get<IJabbrConfiguration>();
         }
 
         public override Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request)
@@ -56,12 +58,12 @@ namespace JabbR.ContentProviders
 
             if (type == "photo")
             {
-                var url = Encoder.HtmlAttributeEncode(result.Value<string>("url"));
+                var url = Encoder.HtmlAttributeEncode(SecureUrl(result.Value<string>("url")));
                 content = String.Format(ImageContentProvider.HtmlFormat, url, url);
             }
             else if (type == "rich" || type == "video")
             {
-                content = result.Value<string>("html");
+                content = SecureEmbed(result.Value<string>("html"));
             }
             else if (type == "link")
             {
@@ -73,7 +75,7 @@ namespace JabbR.ContentProviders
                         "<a class=\"title\" href=\"{1}\"><h3>{2}</h3></a>" +
                         "<p>{3}</p>" +
                     "</div>",
-                    result.Value<string>("thumbnail_url"),
+                    SecureUrl(result.Value<string>("thumbnail_url")),
                     result.Value<string>("url"),
                     result.Value<string>("title"),
                     result.Value<string>("description")
@@ -89,6 +91,24 @@ namespace JabbR.ContentProviders
                 Title = GetTitle(result),
                 Content = content
             });
+        }
+
+        private string SecureEmbed(string html)
+        {
+            if (!_configuration.RequireHttps)
+                return html;
+
+            html = html.Replace("src=\"http://", "src=\"https://");
+
+            return html;
+        }
+
+        private string SecureUrl(string url)
+        {
+            if (!_configuration.RequireHttps)
+                return url;
+
+            return url.Replace("http://", "https://");
         }
 
         private string GetTitle(JObject result)
