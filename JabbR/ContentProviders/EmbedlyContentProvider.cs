@@ -59,9 +59,25 @@ namespace JabbR.ContentProviders
                 var url = Encoder.HtmlAttributeEncode(result.Value<string>("url"));
                 content = String.Format(ImageContentProvider.HtmlFormat, url, url);
             }
-            else if (type == "rich")
+            else if (type == "rich" || type == "video")
             {
                 content = result.Value<string>("html");
+            }
+            else if (type == "link")
+            {
+                content = string.Format(
+                    "<div class=\"embedly-content\">" +
+                        "<a rel=\"nofollow external\" target=\"_blank\" href=\"{0}\" class=\"imageContent\">" +
+                            "<div class=\"thumbnail\" style=\"background-image: url('{0}')\"></div>" +
+                        "</a>" +
+                        "<a class=\"title\" href=\"{1}\"><h3>{2}</h3></a>" +
+                        "<p>{3}</p>" +
+                    "</div>",
+                    result.Value<string>("thumbnail_url"),
+                    result.Value<string>("url"),
+                    result.Value<string>("title"),
+                    result.Value<string>("description")
+                );
             }
             else
             {
@@ -70,9 +86,14 @@ namespace JabbR.ContentProviders
             }
 
             return ProcessResult(new ContentProviderResult{
-                Title = result.Value<string>("title") ?? result.Value<string>("url"),
+                Title = GetTitle(result),
                 Content = content
             });
+        }
+
+        private string GetTitle(JObject result)
+        {
+            return result.Value<string>("title") ?? result.Value<string>("url");
         }
 
         public override bool IsValidContent(Uri uri)

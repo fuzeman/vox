@@ -1305,6 +1305,39 @@ li.error {
         max-width: 100%;
     }
 
+.embedly-content {
+    height: 105px;
+}
+    .embedly-content a.imageContent .thumbnail {
+        width: 95px;
+        height: 95px;
+        float: left;
+
+        margin-right: 10px;
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .embedly-content a.title {
+        color: black;
+    }
+
+        .embedly-content a.title:hover {
+            color: #08c;
+        }
+
+        .embedly-content a.title h3 {
+            font-size: 18px;
+
+            margin: 0;
+            padding: 0;
+        }
+
+    .embedly-content p {
+        font-size: 11px;
+    }
+
 pre.multiline {
     white-space: pre-wrap; /* css-3 */
     white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
