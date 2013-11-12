@@ -22,7 +22,13 @@ namespace JabbR.ContentProviders
             _kernel = kernel;
         }
 
-        protected override Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request)
+        public override Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request)
+        {
+            // Delay the result until this is actually picked
+            return ContentProviderResult.Create(GetResult, -10);
+        }
+
+        private Task<ContentProviderResult> GetResult(ContentProviderHttpRequest request)
         {
             if (_settings == null)
                 _settings = _kernel.Get<ApplicationSettings>();
@@ -38,11 +44,11 @@ namespace JabbR.ContentProviders
                 if (result == null)
                     return (ContentProviderResult) null;
 
-                return CreateResult(result);
+                return ParseResult(result);
             });
         }
 
-        private ContentProviderResult CreateResult(JObject result)
+        private ContentProviderResult ParseResult(JObject result)
         {
             string content = null;
 
@@ -63,12 +69,10 @@ namespace JabbR.ContentProviders
                 return null;
             }
 
-            return new ContentProviderResult
-            {
-                Content = content,
+            return ProcessResult(new ContentProviderResult{
                 Title = result.Value<string>("title") ?? result.Value<string>("url"),
-                Weight = -10 // Pick "native" content providers over Embed.ly
-            };
+                Content = content
+            });
         }
 
         public override bool IsValidContent(Uri uri)

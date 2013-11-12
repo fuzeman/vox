@@ -21,7 +21,7 @@ namespace JabbR.ContentProviders.Core
             return GetCollapsibleContent(request, match).Then(result => ProcessResult(result));
         }
 
-        private ContentProviderResult ProcessResult(ContentProviderResult result)
+        protected ContentProviderResult ProcessResult(ContentProviderResult result)
         {
             if (IsCollapsible && result != null)
             {
