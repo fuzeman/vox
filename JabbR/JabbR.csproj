@@ -999,6 +999,7 @@
   <ItemGroup>
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
+    <Compile Include="ContentProviders\EmbedlyContentProvider.cs" />
     <Compile Include="ContentProviders\MinusContentProvider.cs" />
     <Content Include="Views\EmailTemplates\RequestResetPassword.cshtml" />
     <Content Include="Views\EmailTemplates\RequestResetPassword.text.cshtml" />
