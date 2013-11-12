@@ -1150,4 +1150,10 @@ Use ? or type /? to display the FAQ and list of commands.</value>
   <data name="Administration_PushNotificationsPushover" xml:space="preserve">
     <value>Pushover API key</value>
   </data>
+  <data name="Administration_Embedly" xml:space="preserve">
+    <value>Embed.ly</value>
+  </data>
+  <data name="Administration_EmbedlyKey" xml:space="preserve">
+    <value>Embed.ly API Key</value>
+  </data>
 </root>

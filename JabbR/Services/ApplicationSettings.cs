@@ -35,6 +35,8 @@ namespace JabbR.Services
 
         public string PushoverAPIKey { get; set; }
 
+        public string EmbedlyKey { get; set; }
+
         public string EmailSender { get; set; }
 
         public static ApplicationSettings GetDefaultSettings()

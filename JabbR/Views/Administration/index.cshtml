@@ -130,6 +130,15 @@
                         </div>
                     </div>
                 </fieldset>
+                <fieldset id="embedly">
+                    <legend>@LanguageResources.Administration_Embedly</legend>
+                    <div class="control-group">
+                        <label class="control-label" for="embedlyKey">@LanguageResources.Administration_EmbedlyKey</label>
+                        <div class="controls">
+                            <input type="text" id="embedlyKey" name="embedlyKey" class="input-xlarge" value="@Model.EmbedlyKey" placeholder="@LanguageResources.Administration_EmbedlyKey"/>
+                        </div>
+                    </div>
+                </fieldset>
                 <div class="control-group">
                     <div class="controls">
                         <input type="submit" class="btn pull-right" value="@LanguageResources.SettingsSave" />

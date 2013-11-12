@@ -460,6 +460,24 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Embed.ly.
+        /// </summary>
+        public static string Administration_Embedly {
+            get {
+                return ResourceManager.GetString("Administration_Embedly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Embed.ly API Key.
+        /// </summary>
+        public static string Administration_EmbedlyKey {
+            get {
+                return ResourceManager.GetString("Administration_EmbedlyKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Encryption.
         /// </summary>
         public static string Administration_Encryption {
