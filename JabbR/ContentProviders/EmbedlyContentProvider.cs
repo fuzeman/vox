@@ -67,19 +67,8 @@ namespace JabbR.ContentProviders
             }
             else if (type == "link")
             {
-                content = string.Format(
-                    "<div class=\"embedly-content\">" +
-                        "<a rel=\"nofollow external\" target=\"_blank\" href=\"{0}\" class=\"imageContent\">" +
-                            "<div class=\"thumbnail\" style=\"background-image: url('{0}')\"></div>" +
-                        "</a>" +
-                        "<a class=\"title\" href=\"{1}\"><h3>{2}</h3></a>" +
-                        "<p>{3}</p>" +
-                    "</div>",
-                    SecureUrl(result.Value<string>("thumbnail_url")),
-                    result.Value<string>("url"),
-                    result.Value<string>("title"),
-                    result.Value<string>("description")
-                );
+                if (!CreateLinkContent(result, out content))
+                    return null;
             }
             else
             {
@@ -91,6 +80,68 @@ namespace JabbR.ContentProviders
                 Title = GetTitle(result),
                 Content = content
             });
+        }
+
+        private bool CreateLinkContent(JObject result, out string content)
+        {
+            content = null;
+
+            // container
+
+            var container = "";
+
+            var thumbnail = SecureUrl(result.Value<string>("thumbnail_url"));
+
+            if (thumbnail != null)
+            {
+                container += string.Format(
+                    "<a rel=\"nofollow external\" target=\"_blank\" href=\"{0}\" class=\"imageContent\">" +
+                        "<div class=\"thumbnail\" style=\"background-image: url('{0}')\"></div>" +
+                    "</a>",
+                    thumbnail
+                );
+            }
+
+            // right content
+
+            var right = "";
+
+            var url = result.Value<string>("url");
+            var title = result.Value<string>("title");
+
+            if (url != null && title != null)
+            {
+                right += string.Format(
+                    "<a class=\"title\" href=\"{0}\"><h3>{1}</h3></a>",
+                    url,
+                    title
+                );
+            }
+
+            var description = result.Value<string>("description");
+
+            if (description != null)
+            {
+                right += "<p>" + description + "</p>";
+            }
+
+            if (right.Length == 0)
+                return false;
+
+            container += "<div class=\"content\">" + right + "</div>";
+
+
+            if (container.Length == 0)
+                return false;
+
+            if (description == null || description.Length < 50)
+                return false;
+
+            content = string.Format(
+                "<div class=\"embedly-content{0}\">" + container + "</div>",
+                thumbnail != null ? " embedly-thumbnail" : ""
+            );
+            return true;
         }
 
         private string SecureEmbed(string html)
@@ -105,6 +156,9 @@ namespace JabbR.ContentProviders
 
         private string SecureUrl(string url)
         {
+            if (url == null)
+                return null;
+
             if (!_configuration.RequireHttps)
                 return url;
 
