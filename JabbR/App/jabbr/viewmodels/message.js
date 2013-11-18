@@ -21,6 +21,15 @@ define([
 
     logger.trace('loaded');
 
+    function mentionsMatch(content) {
+        var mentionRegex = client.getCustomMentionRegex();
+        if (mentionRegex === null) {
+            return false;
+        }
+
+        return client.getCustomMentionRegex().test(content);
+    }
+
     function Message(data) {
         if (data === null) {
             logger.warn('invalid message data');
@@ -34,8 +43,7 @@ define([
         this.mention = data.User.Mention;
         this.id = data.Id;
         this.date = data.When.fromJsonDate();
-        this.highlight = (reUsername.test(data.Content) ||
-            client.getCustomMentionRegex().test(data.Content)) ? 'highlight' : '';
+        this.highlight = (reUsername.test(data.Content) || mentionsMatch(data.Content)) ? 'highlight' : '';
         this.isOwn = reUsername.test(data.User.name);
         this.isMine = data.User.Name === client.chat.state.name;
         this.isHistory = 'isHistory' in data ? data.isHistory : false;
