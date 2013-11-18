@@ -45,12 +45,6 @@ define([
         }
 
         function updateMentions(mentions) {
-            var name = chat.state.name.toLowerCase();
-
-            if (mentions.indexOf(name) == -1) {
-                mentions.push(name);
-            }
-
             mentionStrings = mentions;
             customMentionRegex = generateCustomMentionRegex(mentions);
         }

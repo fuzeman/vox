@@ -36,7 +36,7 @@ define([
             return;
         }
 
-        var reUsername = new RegExp("\\b@?" + client.chat.state.name.replace(/\./, '\\.') + "\\b", "i");
+        var reUsername = new RegExp("\\b@" + client.chat.state.name.replace(/\./, '\\.') + "\\b", "i");
 
         this.name = data.User.Name;
         this.hash = data.User.Hash;
