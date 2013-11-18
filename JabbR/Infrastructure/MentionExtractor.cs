@@ -9,7 +9,7 @@ namespace JabbR.Infrastructure
     public static class MentionExtractor
     {
         private const string UsernameMentionPattern = @"(?<user>(?<=@{1}(?!@))[a-zA-Z0-9-_\.]{1,50})";
-        private const string CustomMentionPattern = @"(?<=\s|,|\.|\(|\[|^)(?:{0})(?=\s|,|\.|\!|\?|\)|\]|$)";
+        private const string CustomMentionPattern = @"(?<=\W|^)(?:{0})(?=\W|$)";
         private const string GroupFormat = @"(?<{0}>{1})";
 
         private static string _customCachedPattern = null;
@@ -20,26 +20,25 @@ namespace JabbR.Infrastructure
             if (message == null)
                 return new List<string>();
 
-            var matches = new List<string>();
 
             // Find username mentions
-            foreach (var u in Regex.Matches(message, UsernameMentionPattern)
-                                   .Cast<Match>()
-                                   .Where(m => m.Success)
-                                   .Select(m => m.Groups["user"].Value.Trim())
-                                   .Where(u => !String.IsNullOrEmpty(u))) {
-                matches.Add(u);
-            }
+            var matches = Regex.Matches(message, UsernameMentionPattern)
+                .Cast<Match>()
+                .Where(m => m.Success)
+                .Select(m => m.Groups["user"].Value.Trim())
+                .Where(u => !String.IsNullOrEmpty(u))
+                .ToList();
 
             // Find custom mentions
-            if (mentions == null) return matches;
+            if (mentions == null || !mentions.Any()) return matches;
             
-            Regex regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
-            foreach (Match match in regex.Matches(message)
-                                         .Cast<Match>()
-                                         .Where(m => m.Success))
+            var regex = new Regex(GetPattern(mentions), RegexOptions.IgnoreCase);
+
+            foreach (var match in regex.Matches(message)
+                                       .Cast<Match>()
+                                       .Where(m => m.Success))
             {
-                for (int i = 1; i < match.Groups.Count; i++)
+                for (var i = 1; i < match.Groups.Count; i++)
                 {
                     if (!match.Groups[i].Success) continue;
                     
@@ -57,20 +56,17 @@ namespace JabbR.Infrastructure
                 return UpdatePattern(mentions.ToList());
 
             // Check all the users are in the pattern
-            int addedCount = mentions.Where(p => !_customCachedPatternMentions.Contains(p.Key)).Count();
+            var addedCount = mentions.Count(p => !_customCachedPatternMentions.Contains(p.Key));
             if (addedCount > 0)
             {
                 return UpdatePattern(mentions.ToList());
             }
 
-            List<int> currentKeys = mentions.Select(p => p.Key).ToList();
-            int removedCount = _customCachedPatternMentions.Where(p => !currentKeys.Contains(p)).Count();
-            if (removedCount > 0)
-            {
-                return UpdatePattern(mentions.ToList());
-            }
+            var currentKeys = mentions.Select(p => p.Key).ToList();
 
-            return _customCachedPattern;
+            var removedCount = _customCachedPatternMentions.Where(p => !currentKeys.Contains(p)).Count();
+
+            return removedCount > 0 ? UpdatePattern(mentions.ToList()) : _customCachedPattern;
         }
 
         public static string UpdatePattern(IList<ChatUserMention> mentions)
@@ -84,6 +80,7 @@ namespace JabbR.Infrastructure
                             )
                         ))
             ));
+
             _customCachedPatternMentions = mentions.Select(p => p.Key).ToArray();
             return _customCachedPattern;
         }

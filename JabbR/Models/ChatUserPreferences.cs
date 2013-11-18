@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JabbR.Models.ChatUserPreferenceSections;
 using Newtonsoft.Json;
 
 namespace JabbR.Models
@@ -29,5 +30,7 @@ namespace JabbR.Models
         }
 
         public IList<string> TabOrder { get; set; }
+
+        public PushNotificationPreferences PushNotifications { get; set; }
     }
 }

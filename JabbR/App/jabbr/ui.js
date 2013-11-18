@@ -444,7 +444,7 @@ define([
             setReadOnly(true);
         }
 
-        function clientLoggedOn(event, currentRooms, ownedRooms, mentions, unreadNotifications) {
+        function clientLoggedOn(event, currentRooms, ownedRooms, preferences, mentions, unreadNotifications) {
             ru.addRooms(currentRooms);
 
             // Process any urls that may contain room names
@@ -690,10 +690,13 @@ define([
                         return $.grep(room.users.find('li[data-name != "' + client.chat.state.name + '"]')
                             .not('.room')
                             .map(function () {
-                                if ($(this).data('mention') !== undefined &&
-                                    $(this).data('mention')[0] == prefix.toLowerCase()) {
-                                    return ($(this).data('mention').substr(1) + ' ' || "").toString();
+                                var mention = $(this).data('mention');
+                                
+                                if (mention !== undefined && mention !== null &&
+                                    mention[0] == prefix.toLowerCase()) {
+                                    return (mention.substr(1) + ' ' || "").toString();
                                 }
+                                
                                 return "";
                             }), function (s) { return s.length !== 0; });
                 }

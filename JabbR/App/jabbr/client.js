@@ -35,10 +35,13 @@ define([
         connection.hub.qs = "version=" + window.jabbrVersion;
 
         function generateCustomMentionRegex(strings) {
-            var result = "(<=,|\\s|\\.|\\(|\\[|^)(?:{0})(?=,|\\s|\\.|\\!|\\?|\\)|\\]|$)";
-            result = result.replace("{0}", strings.join("|"));
+            if (strings === null || strings.length < 0) {
+                return null;
+            }
 
-            return new RegExp(result, "i");
+            var pattern = "(\\W|^)(?:" + strings.join("|") + ")(\\W|$)";
+
+            return new RegExp(pattern, "i");
         }
 
         function updateMentions(mentions) {
@@ -50,13 +53,13 @@ define([
         // Chat Event Handlers
         //
 
-        chat.client.logOn = function (rooms, myRooms, preferences, mentions, notifications) {
+        chat.client.logOn = function (rooms, myRooms, userPreferences, mentions, notifications) {
             logger.trace('logOn');
 
             updateMentions(mentions);
             privateRooms = myRooms;
 
-            $this.trigger(events.client.loggedOn, [rooms, myRooms, mentions, notifications]);
+            $this.trigger(events.client.loggedOn, [rooms, myRooms, userPreferences, mentions, notifications]);
         };
 
         //

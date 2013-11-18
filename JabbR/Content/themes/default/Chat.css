@@ -1305,6 +1305,58 @@ li.error {
         max-width: 100%;
     }
 
+.embedly-content {
+    position: relative;
+
+    min-height: 105px;
+    max-width: 700px;
+}
+    .embedly-content a.imageContent .thumbnail {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+
+        width: 95px;
+        float: left;
+
+        margin-right: 10px;
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .embedly-content .content {
+        padding-bottom: 8px;
+    }
+
+    .embedly-content.embedly-thumbnail .content {
+        margin-left: 115px;
+    }
+
+    .embedly-content a.title {
+        color: black;
+    }
+
+        .embedly-content a.title:hover {
+            color: #08c;
+        }
+
+        .embedly-content a.title h3 {
+            font-size: 18px;
+
+            margin: 0;
+            padding: 0;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .embedly-content p {
+        font-size: 11px;
+        margin: 0;
+    }
+
 pre.multiline {
     white-space: pre-wrap; /* css-3 */
     white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
@@ -2479,6 +2531,7 @@ li.clearfix {
             margin-bottom: 0;
             background: #999;
             min-width: 0;
+            border: none;
         }
 
         #jabbr-client-settings .nav-tabs li a:hover {

@@ -436,11 +436,43 @@
                 <a class="close" data-dismiss="modal">&times;</a>
                 <div class="tabbable tabs-left">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#external-status" data-toggle="tab"><i class="icon-share-alt"></i></a></li>
+                        <li class="active"><a href="#push-notifications" data-toggle="tab"><i class="icon-signin"></i></a></li>
+                        <li><a href="#external-status" data-toggle="tab"><i class="icon-share-alt"></i></a></li>
                         <li><a href="#misc" data-toggle="tab"><i class="icon-cogs"></i></a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="tab-pane active" id="external-status">
+                        <div class="tab-pane preference-section active" id="push-notifications" data-section="PushNotifications">
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend><span>Push Notifications</span></legend>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label" for="pn_nma_apikey">Notify My Android</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="pn_nma_enabled" class="state" data-attribute="NMA.Enabled" />
+                                            <input type="text" id="pn_nma_apikey" placeholder="API key" data-attribute="NMA.APIKey"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label class="control-label" for="pn_nma_apikey">Pushover</label>
+                                        <div class="controls">
+                                            <input type="checkbox" id="pn_pushover_enabled" class="state" data-attribute="Pushover.Enabled" />
+
+                                            <input type="text" id="pn_pushover_userkey" placeholder="User key" data-attribute="Pushover.UserKey"/>
+                                            <input type="text" id="pn_pushover_devicename" placeholder="Device name" data-attribute="Pushover.DeviceName"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary save-button">Save changes</button>
+                                        <button type="button" class="btn cancel-button">Cancel</button>
+                                        <span class="error label label-important"></span>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="tab-pane legacy-section" id="external-status">
                             <form class="form-horizontal">
                                 <fieldset>
                                     <legend><span>External Status</span></legend>
@@ -474,7 +506,7 @@
                                         </div>
                                     </div>
                                     <div class="control-group">
-                                        <label class="control-label" for="steam_steamid">Steam</label>
+                                        <label class="control-label" for="steam_id">Steam</label>
                                         <div class="controls">
                                             <input type="checkbox" id="steam_enabled" class="state"/>
 
@@ -510,7 +542,7 @@
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="tab-pane" id="misc">
+                        <div class="tab-pane legacy-section" id="misc">
                             <form class="form-horizontal">
                                 <fieldset>
                                     <legend><span>Misc</span></legend>
