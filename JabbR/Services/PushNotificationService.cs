@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using JabbR.Infrastructure;
 using JabbR.Models;
 using System.Net.Http;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR.Services
 {
@@ -44,6 +47,7 @@ namespace JabbR.Services
             {
                 NotifyMyAndroid(user, message);
                 Pushover(user, message);
+                Pushbullet(user, message);
             }
             catch (Exception ex)
             {
@@ -117,6 +121,87 @@ namespace JabbR.Services
             var result = await _httpClient.PostAsync("https://api.pushover.net/1/messages.json", new FormUrlEncodedContent(request));
 
             _logger.Log("Send Pushover: {0}", result.StatusCode);
+        }
+
+        private async void Pushbullet(ChatUser user, ChatMessage message)
+        {
+            // Check preferences validity
+            var preferences = user.Preferences.PushNotifications.Pushbullet;
+
+            if (preferences == null || !preferences.Enabled || preferences.APIKey.IsNullOrWhiteSpace())
+                return;
+
+            List<string> deviceIdentifiers;
+
+            if (preferences.Devices.IsNullOrWhiteSpace())
+            {
+                // Get a list of all devices for user from pushbullet
+                var devices = await PushbulletRequest(preferences.APIKey, "devices", HttpMethod.Get);
+
+                if (devices.Item1.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.Log("Pushbullet /api/devices request failed, StatusCode: {0}", devices.Item1.StatusCode);
+                    return;
+                }
+
+                deviceIdentifiers = devices.Item2["devices"].Select(d => d["id"].Value<string>()).ToList();
+            }
+            else
+            {
+                // Parse devices from input
+                deviceIdentifiers = PushbulletParseDevices(preferences.Devices).ToList();
+            }
+
+            foreach (var deviceId in deviceIdentifiers)
+            {
+                var request = new Dictionary<string, string>
+                {
+                    {"device_id", deviceId},
+                    {"type", "note"},
+                    {"title", GetTitle(message)},
+                    {"body", message.Content}
+                };
+
+                var result = await PushbulletRequest(preferences.APIKey, "pushes", HttpMethod.Post, request);
+
+                _logger.Log("Send Pushbullet: {0}", result.Item1.StatusCode);
+            }
+        }
+
+        private IEnumerable<string> PushbulletParseDevices(string devicesString)
+        {
+            var devices = devicesString.Split(',').Where(s => s.Length > 0);
+
+            var validDevices = new List<int>();
+
+            foreach (var s in devices)
+            {
+                var i = -1;
+                if (!int.TryParse(s, out i))
+                {
+                    _logger.Log("Pushbullet Device with ID \"{0}\" is not an integer", s);
+                    return null;
+                }
+
+                validDevices.Add(i);
+            }
+
+            return validDevices.Select(s => s.ToString());
+        }
+
+        private Task<Tuple<HttpResponseMessage, JObject>> PushbulletRequest(string apiKey, string method, HttpMethod httpMethod, Dictionary<string, string> request = null)
+        {
+            var message = new HttpRequestMessage(httpMethod, string.Format("https://api.pushbullet.com/api/{0}", method));
+
+            var auth = System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:", apiKey));
+            message.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(auth));
+
+            if(request != null)
+                message.Content = new FormUrlEncodedContent(request);
+
+            return _httpClient.SendAsync(message).Then(response =>
+                response.Content.ReadAsStringAsync().Then(s => 
+                    new Tuple<HttpResponseMessage, JObject>(response, JObject.Parse(s))));
         }
     }
 }
