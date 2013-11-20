@@ -6,9 +6,8 @@ using System.Web;
 
 namespace JabbR.Commands
 {
-    [Command("mentions", "When a message contains one of these strings mark it as a mention.",
-        "[string,]", "user")]
-    public class MentionOnCommand : UserCommand
+    [Command("mentions", "Mentions_CommandInfo", "[string,]", "user")]
+    public class MentionsCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
         {

@@ -2453,6 +2453,15 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When a message contains one of these strings mark it as a mention..
+        /// </summary>
+        public static string Mentions_CommandInfo {
+            get {
+                return ResourceManager.GetString("Mentions_CommandInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can&apos;t private message yourself!.
         /// </summary>
         public static string Msg_CannotMsgSelf {
@@ -2485,6 +2494,15 @@ namespace JabbR {
         public static string Msg_UserRequired {
             get {
                 return ResourceManager.GetString("Msg_UserRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revoke a user&apos;s permission to send messages in a room. Only works if you&apos;re an owner of that room..
+        /// </summary>
+        public static string Mute_CommandInfo {
+            get {
+                return ResourceManager.GetString("Mute_CommandInfo", resourceCulture);
             }
         }
         
@@ -3016,6 +3034,15 @@ namespace JabbR {
         public static string UnAllow_UserRequired {
             get {
                 return ResourceManager.GetString("UnAllow_UserRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give a user permission to send messages in a room. Only works if you&apos;re an owner of that room..
+        /// </summary>
+        public static string UnMute_CommandInfo {
+            get {
+                return ResourceManager.GetString("UnMute_CommandInfo", resourceCulture);
             }
         }
         

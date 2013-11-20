@@ -1156,4 +1156,13 @@ Use ? or type /? to display the FAQ and list of commands.</value>
   <data name="Administration_EmbedlyKey" xml:space="preserve">
     <value>Embed.ly API Key</value>
   </data>
+  <data name="Mentions_CommandInfo" xml:space="preserve">
+    <value>When a message contains one of these strings mark it as a mention.</value>
+  </data>
+  <data name="Mute_CommandInfo" xml:space="preserve">
+    <value>Revoke a user's permission to send messages in a room. Only works if you're an owner of that room.</value>
+  </data>
+  <data name="UnMute_CommandInfo" xml:space="preserve">
+    <value>Give a user permission to send messages in a room. Only works if you're an owner of that room.</value>
+  </data>
 </root>
