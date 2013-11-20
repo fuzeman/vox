@@ -139,6 +139,7 @@ define([
                 client.chat.client.changeGravatar = this.chat.changeGravatar;
                 client.chat.client.changeMentions = this.chat.changeMentions;
                 client.chat.client.changeNote = this.chat.changeNote;
+                client.chat.client.changeAfk = this.chat.changeAfk;
                 client.chat.client.changeFlag = this.chat.changeFlag;
                 client.chat.client.changeExternalStatus = this.chat.changeExternalStatus;
 
@@ -207,18 +208,51 @@ define([
                     }
 
                     users[userdata.Name].changeNote(userdata);
+                    
+                    var message;
 
                     if (!rc.isSelf(userdata)) {
-                        var message;
-
-                        if (userdata.IsAfk === true) {
-                            message = userdata.Name + ' has gone AFK';
+                        if (userdata.Note) {
+                            message = userdata.Name + " has set their note to \"" + userdata.Note + "\".";
                         } else {
-                            message = userdata.Name + ' has ' + (userdata.Note ? 'set' : 'cleared') + ' their note';
+                            message = userdata.Name + " has cleared their note.";
                         }
-
-                        messages.addMessage(message, 'notification', roomName);
+                    } else {
+                        if (userdata.Note) {
+                            message = "Your note has been set to \"" + userdata.Note + "\".";
+                        } else {
+                            message = "Your note has been cleared.";
+                        }
                     }
+                    
+                    messages.addMessage(message, 'notification', roomName);
+                },
+                
+                changeAfk: function (userdata, roomName) {
+                    if (!(userdata.Name in users)) {
+                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                        return;
+                    }
+                    
+                    users[userdata.Name].changeNote(userdata);
+
+                    var message;
+
+                    if (!rc.isSelf(userdata)) {
+                        if (userdata.AfkNote) {
+                            message = userdata.Name + " has gone AFK, with the message \"" + userdata.AfkNote + "\".";
+                        } else {
+                            message = userdata.Name + " has gone AFK.";
+                        }
+                    } else {
+                        if (userdata.AfkNote) {
+                            message = "You have gone AFK, with the message \"" + userdata.AfkNote + "\".";
+                        } else {
+                            message = "You have gone AFK.";
+                        }
+                    }
+
+                    messages.addMessage(message, 'notification', roomName);
                 },
 
                 changeFlag: function (userdata, roomName) {
@@ -227,8 +261,7 @@ define([
                         return;
                     }
 
-                    var user = users[userdata.Name];
-                    user.changeFlag(userdata);
+                    users[userdata.Name].changeFlag(userdata);
 
                     if (!rc.isSelf(userdata)) {
                         var action = userdata.Flag ? 'set' : 'cleared',
