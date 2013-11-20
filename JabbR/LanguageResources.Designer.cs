@@ -1460,6 +1460,15 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear your current mention strings..
+        /// </summary>
+        public static string ClearMentions_CommandInfo {
+            get {
+                return ResourceManager.GetString("ClearMentions_CommandInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Account Settings.
         /// </summary>
         public static string Client_AccountSettings {
@@ -2453,7 +2462,7 @@ namespace JabbR {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When a message contains one of these strings mark it as a mention..
+        ///   Looks up a localized string similar to Replaces your current mention strings with the strings provided. If no strings are given, your current mention strings are listed..
         /// </summary>
         public static string Mentions_CommandInfo {
             get {

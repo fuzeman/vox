@@ -864,7 +864,6 @@
     <Content Include="robots.txt" />
     <EmbeddedResource Include="LanguageResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201208211555032_BanUser.resx">
       <DependentUpon>201208211555032_BanUser.cs</DependentUpon>
@@ -997,6 +996,7 @@
     <Content Include="Views\Administration\index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ClearMentionsCommands.cs" />
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
     <Compile Include="ContentProviders\EmbedlyContentProvider.cs" />
