@@ -91,16 +91,15 @@ namespace JabbR.ContentProviders
             var container = "";
 
             var thumbnail = SecureUrl(result.Value<string>("thumbnail_url"));
+            if (thumbnail == null)
+                return false;
 
-            if (thumbnail != null)
-            {
-                container += string.Format(
-                    "<a rel=\"nofollow external\" target=\"_blank\" href=\"{0}\" class=\"imageContent\">" +
-                        "<div class=\"thumbnail\" style=\"background-image: url('{0}')\"></div>" +
-                    "</a>",
-                    thumbnail
-                );
-            }
+            container += string.Format(
+                "<a rel=\"nofollow external\" target=\"_blank\" href=\"{0}\" class=\"imageContent\">" +
+                    "<div class=\"thumbnail\" style=\"background-image: url('{0}')\"></div>" +
+                "</a>",
+                thumbnail
+            );
 
             // right content
 
@@ -112,7 +111,7 @@ namespace JabbR.ContentProviders
             if (url != null && title != null)
             {
                 right += string.Format(
-                    "<a class=\"title\" href=\"{0}\"><h3>{1}</h3></a>",
+                    "<a class=\"title\" target=\"_blank\" href=\"{0}\"><h3>{1}</h3></a>",
                     url,
                     title
                 );
