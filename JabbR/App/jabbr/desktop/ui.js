@@ -16,7 +16,7 @@ define([
     'jquery.autotabcomplete',
     'livestamp'
 ], function ($, kernel, Keys, UI,
-    connectionStatus, DesktopRoomsUI, help, cs, templates,
+    connectionStatus, DesktopRoomsUI, DesktopHelp, cs, templates,
     emoji, externalStatus, utility
 ) {
     var client = null,
@@ -24,6 +24,7 @@ define([
         rc = null,
         lobby = null,
         messages = null,
+        help = null,
         $updatePopup = $('#jabbr-update'),
         $messageTotal = $('#message-total'),
         $hiddenFile = $('#hidden-file'),
@@ -45,7 +46,6 @@ define([
             this.updateTimeout = 15000;
 
             connectionStatus = connectionStatus();
-            help = help();
             cs = cs();
             externalStatus = externalStatus();
             templates = templates();
@@ -53,7 +53,7 @@ define([
             this.submodules = {
                 connectionStatus: connectionStatus,
                 ru: new DesktopRoomsUI(),
-                help: help,
+                help: new DesktopHelp(),
                 cs: cs,
                 externalStatus: externalStatus
             };
@@ -67,6 +67,7 @@ define([
             rc = kernel.get('jabbr/components/rooms.client');
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');
+            help = kernel.get('jabbr/components/help');
 
 
             $newMessage.keypress($.proxy(this._newMessage.keypress, this))
@@ -209,7 +210,7 @@ define([
                         return lobby.getRooms()
                             .map(function (room) { return room.Name + ' '; });
                     case '/':
-                        return help.getCommands()
+                        return help.commands
                             .map(function (cmd) { return cmd.Name + ' '; });
                     case ':':
                         return emoji.getIcons();

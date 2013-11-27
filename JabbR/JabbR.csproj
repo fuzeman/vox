@@ -237,12 +237,14 @@
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
     <Content Include="App\jabbr\base\client.js" />
+    <Content Include="App\jabbr\base\components\help.js" />
     <Content Include="App\jabbr\base\components\lobby.js" />
     <Content Include="App\jabbr\base\components\messages.js" />
     <Content Include="App\jabbr\base\components\notifications.js" />
     <Content Include="App\jabbr\base\event-object.js" />
     <Content Include="App\jabbr\base\ui.js" />
     <Content Include="App\jabbr\mobile\client.js" />
+    <Content Include="App\jabbr\mobile\components\help.js" />
     <Content Include="App\jabbr\mobile\components\lobby.js" />
     <Content Include="App\jabbr\mobile\components\messages.js" />
     <Content Include="App\jabbr\mobile\components\notifications.js" />
