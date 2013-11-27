@@ -3,128 +3,90 @@ define([
     'jquery',
     'logger',
     'kernel',
-    'jabbr/core/events'
-], function ($, Logger, kernel, events) {
-    var logger = new Logger('jabbr/components/help'),
-        client = null,
-        ui = null,
-        templates = null,
-        object = null;
+    'jabbr/base/components/help'
+], function ($, Logger, kernel, Help) {
+    var templates = null,
+        $helpPopup = $('#jabbr-help'),
+        $help = $('#preferences .help'),
+        $helpBody = $('#jabbr-help .help-body'),
+        $shortCutHelp = $('#jabbr-help #shortcut'),
+        $globalCmdHelp = $('#jabbr-help #global'),
+        $roomCmdHelp = $('#jabbr-help #room'),
+        $userCmdHelp = $('#jabbr-help #user'),
+        help = {
+            shortcut: 'shortcut',
+            global: 'global',
+            room: 'room',
+            user: 'user'
+        };
 
-    logger.trace('loaded');
+    return Help.extend({
+        constructor: function () {
+            this.base();
 
-    var initialize = function () {
-        var $shortCutHelp = $('#jabbr-help #shortcut'),
-            $globalCmdHelp = $('#jabbr-help #global'),
-            $roomCmdHelp = $('#jabbr-help #room'),
-            $userCmdHelp = $('#jabbr-help #user'),
-            $helpPopup = $('#jabbr-help'),
-            $help = $('#preferences .help'),
-            $helpBody = $('#jabbr-help .help-body'),
-            shortcuts = null,
-            commands = null,
-            helpHeight = 0,
-            help = {
-                shortcut: 'shortcut',
-                global: 'global',
-                room: 'room',
-                user: 'user'
-            };
+            this.helpHeight = 0;
+        },
 
-        function load() {
-            client.chat.server.getCommands().done(function (currentCommands) {
-                commands = currentCommands;
-                
-                $globalCmdHelp.empty();
-                $roomCmdHelp.empty();
-                $userCmdHelp.empty();
+        activate: function () {
+            this.base();
+            
+            templates = kernel.get('jabbr/templates');
 
-                $.each(commands, function () {
-                    switch (this.Group) {
-                        case help.shortcut:
-                            $shortCutHelp.append(templates.commandhelp.tmpl(this));
-                            break;
-                        case help.global:
-                            $globalCmdHelp.append(templates.commandhelp.tmpl(this));
-                            break;
-                        case help.room:
-                            $roomCmdHelp.append(templates.commandhelp.tmpl(this));
-                            break;
-                        case help.user:
-                            $userCmdHelp.append(templates.commandhelp.tmpl(this));
-                            break;
-                    }
-                });
-
-                logger.trace("loaded " + commands.length + " commands");
+            this.attach();
+        },
+        
+        attach: function () {
+            $help.click(this.show);
+            
+            // hack to get Chrome to scroll back to top of help body
+            // when redisplaying it after scrolling down and closing it
+            $helpPopup.on('hide', function () {
+                $helpBody.scrollTop(0);
             });
 
-            client.chat.server.getShortcuts().done(function (currentShortcuts) {
-                shortcuts = currentShortcuts;
-                $shortCutHelp.empty();
+            // set the height of the help body when displaying the help dialog
+            // so that the scroll bar does not block the rounded corners
+            $helpPopup.on('show', $.proxy(function () {
+                if (this.helpHeight === 0) {
+                    this.helpHeight = $helpPopup.height() - $helpBody.position().top - 10;
+                }
+                $helpBody.css('height', this.helpHeight);
+            }, this));
+        },
 
-                $.each(shortcuts, function () {
-                    $shortCutHelp.append(templates.commandhelp.tmpl(this));
-                });
+        updateCommands: function () {
+            $globalCmdHelp.empty();
+            $roomCmdHelp.empty();
+            $userCmdHelp.empty();
 
-                logger.trace("loaded " + shortcuts.length + " shortcuts");
+            $.each(this.commands, function () {
+                switch (this.Group) {
+                    case help.shortcut:
+                        $shortCutHelp.append(templates.commandhelp.tmpl(this));
+                        break;
+                    case help.global:
+                        $globalCmdHelp.append(templates.commandhelp.tmpl(this));
+                        break;
+                    case help.room:
+                        $roomCmdHelp.append(templates.commandhelp.tmpl(this));
+                        break;
+                    case help.user:
+                        $userCmdHelp.append(templates.commandhelp.tmpl(this));
+                        break;
+                }
             });
-        }
+        },
+        
+        updateShortcuts: function () {
+            $shortCutHelp.empty();
 
-        function show() {
+            $.each(this.shortcuts, function () {
+                $shortCutHelp.append(templates.commandhelp.tmpl(this));
+            });
+        },
+        
+        show: function () {
             $helpPopup.modal();
         }
-
-        //
-        // DOM Event Handlers
-        //
-
-        $help.click(show);
-
-        // hack to get Chrome to scroll back to top of help body
-        // when redisplaying it after scrolling down and closing it
-        $helpPopup.on('hide', function () {
-            $helpBody.scrollTop(0);
-        });
-
-        // set the height of the help body when displaying the help dialog
-        // so that the scroll bar does not block the rounded corners
-        $helpPopup.on('show', function () {
-            if (helpHeight === 0) {
-                helpHeight = $helpPopup.height() - $helpBody.position().top - 10;
-            }
-            $helpBody.css('height', helpHeight);
-        });
-
-        return {
-            activate: function () {
-                client = kernel.get('jabbr/client');
-                ui = kernel.get('jabbr/ui');
-                templates = kernel.get('jabbr/templates');
-
-                logger.trace('activated');
-
-                client.chat.client.showCommands = show;
-            },
-
-            getCommands: function () {
-                return commands;
-            },
-            getShortcuts: function () {
-                return shortcuts;
-            },
-
-            show: show,
-            load: load
-        };
-    };
-
-    return function () {
-        if (object === null) {
-            object = initialize();
-            kernel.bind('jabbr/components/help', object);
-        }
-
-        return object;
-    };
+    });
 });
