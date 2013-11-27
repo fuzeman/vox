@@ -9,7 +9,11 @@
     }
 
 .page {
-    background-color: #171717;
+    background-color: #444;
+}
+
+.snap-drawer {
+    background-color: #222;
 }
 
 .app-icon {
@@ -21,3 +25,7 @@
         width: 32px;
         height: 32px;
     }
+
+#container .content {
+    padding: 4px 8px;
+}

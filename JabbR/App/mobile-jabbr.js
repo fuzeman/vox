@@ -29,7 +29,7 @@ require.config({
         'linkify': '../Scripts/ba-linkify.min',
         'stacktrace': '../Scripts/stacktrace-min-0.4',
         'json2': '../Scripts/json2',
-        'snap': '../Scripts/snap.min.js'
+        'snap': '../Scripts/snap.min'
     },
 
     shim: {
