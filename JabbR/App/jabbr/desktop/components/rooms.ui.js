@@ -20,7 +20,6 @@ define([
     'jabbr/core/messageprocessors/processor',
     
     'jquery-migrate',
-    'jquery.history',
     'jquery.tmpl',
     'jquery.sortElements',
     'quicksilver'
