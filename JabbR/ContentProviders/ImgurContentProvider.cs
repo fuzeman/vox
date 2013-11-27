@@ -9,20 +9,21 @@ namespace JabbR.ContentProviders
 {
     public class ImgurContentProvider : CollapsibleContentProvider
     {
-        private static readonly Regex UriRegex = new Regex("^https?://(i\\.)?imgur.com/(?<id>.*?)(\\.(?<ext>.*))?$", RegexOptions.IgnoreCase);
+        private static readonly Regex UriRegex = new Regex("^https?://(i\\.)?imgur.com/(?<id>\\w+)(\\.(?<ext>\\w+))?$", RegexOptions.IgnoreCase);
 
         protected override Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request, Match match)
         {
-            if(!match.Success) throw new ArgumentException("Invalid match, expected a successful match", "match");
+            if (!match.Success || match.Groups["id"].Value == "")
+                return null;
 
             var url = String.Format("https://i.imgur.com/{0}.{1}", match.Groups["id"],
                                     match.Groups["ext"].Success ? match.Groups["ext"].Value : "jpg");
 
+            url = Encoder.HtmlAttributeEncode(url);
+
             return TaskAsyncHelper.FromResult(new ContentProviderResult
             {
-                Content = String.Format(ImageContentProvider.HtmlFormat,
-                    Encoder.HtmlAttributeEncode(request.RequestUri.AbsoluteUri),
-                    Encoder.HtmlAttributeEncode(url)),
+                Content = String.Format(ImageContentProvider.HtmlFormat, url, url),
                 Title = url,
                 Weight = 1
             });

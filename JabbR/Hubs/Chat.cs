@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JabbR.Commands;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
@@ -14,6 +15,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace JabbR
 {
@@ -27,9 +29,11 @@ namespace JabbR
         private readonly IRecentMessageCache _recentMessageCache;
         private readonly ICache _cache;
         private readonly ContentProviderProcessor _resourceProcessor;
+        private readonly PushNotificationService _pushNotification;
         private readonly ILogger _logger;
 
         public Chat(ContentProviderProcessor resourceProcessor,
+                    PushNotificationService pushNotification,
                     IChatService service,
                     IRecentMessageCache recentMessageCache,
                     IJabbrRepository repository,
@@ -37,6 +41,7 @@ namespace JabbR
                     ILogger logger)
         {
             _resourceProcessor = resourceProcessor;
+            _pushNotification = pushNotification;
             _service = service;
             _recentMessageCache = recentMessageCache;
             _repository = repository;
@@ -278,6 +283,8 @@ namespace JabbR
                 if (!markAsRead)
                 {
                     MessageReadStateChanged(mentionedUser, message, notification);
+
+                    _pushNotification.SendAsync(notification);
                 }
 
                 mentionedUsers.Add(mentionedUser);
@@ -623,6 +630,18 @@ namespace JabbR
             }
         }
 
+        public void UpdatePreferences(JObject newPreferences)
+        {
+            var userId = Context.User.GetUserId();
+            var user = _repository.GetUserById(userId);
+
+            user.Preferences = newPreferences.ToObject<ChatUserPreferences>();
+
+            _repository.CommitChanges();
+
+            Clients.User(user.Id).preferencesChanged(user.Preferences);
+        }
+
         public void TabOrderChanged(string[] tabOrdering)
         {
             string userId = Context.User.GetUserId();
@@ -702,6 +721,9 @@ namespace JabbR
                     unreadNotifications
                 );
             }
+            
+            // Send preferences to client
+            Clients.Caller.preferencesChanged(user.Preferences);
         }
 
         private void UpdateActivity(ChatUser user, ChatRoom room)
@@ -955,14 +977,14 @@ namespace JabbR
             }
         }
 
-        void INotificationService.ChangeMentions(ChatUser user, string[] mentions)
+        void INotificationService.ChangeMentions(ChatUser user, string[] mentions, bool update)
         {
             Clients.Caller.hash = user.Hash;
 
             // Update the calling client
             foreach (var client in user.ConnectedClients)
             {
-                Clients.Client(client.Id).mentionsChanged(mentions);
+                Clients.Client(client.Id).mentionsChanged(mentions, update);
             }
 
             // Create the view model

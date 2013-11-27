@@ -197,7 +197,7 @@ define([
             sendPrivateMessage: function (from, to, message) {
                 if (rc.isSelf({ Name: to })) {
                     // Force notification for direct messages
-                    notifications.notify(true);
+                    notifications.notifyMention(true);
                     this.messages.lastPrivate = from;
                 }
 

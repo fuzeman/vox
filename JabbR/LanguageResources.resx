@@ -1144,4 +1144,28 @@ Use ? or type /? to display the FAQ and list of commands.</value>
   <data name="Chat_YouAreAfkNote" xml:space="preserve">
     <value>You have gone AFK, with the message "{0}".</value>
   </data>
+  <data name="Administration_PushNotifications" xml:space="preserve">
+    <value>Push Notifications</value>
+  </data>
+  <data name="Administration_PushNotificationsPushover" xml:space="preserve">
+    <value>Pushover API key</value>
+  </data>
+  <data name="Administration_Embedly" xml:space="preserve">
+    <value>Embed.ly</value>
+  </data>
+  <data name="Administration_EmbedlyKey" xml:space="preserve">
+    <value>Embed.ly API Key</value>
+  </data>
+  <data name="Mentions_CommandInfo" xml:space="preserve">
+    <value>Replaces your current mention strings with the strings provided. If no strings are given, your current mention strings are listed.</value>
+  </data>
+  <data name="Mute_CommandInfo" xml:space="preserve">
+    <value>Revoke a user's permission to send messages in a room. Only works if you're an owner of that room.</value>
+  </data>
+  <data name="UnMute_CommandInfo" xml:space="preserve">
+    <value>Give a user permission to send messages in a room. Only works if you're an owner of that room.</value>
+  </data>
+  <data name="ClearMentions_CommandInfo" xml:space="preserve">
+    <value>Clear your current mention strings.</value>
+  </data>
 </root>

@@ -3,7 +3,7 @@ require.config({
     baseUrl: '/app',
 
     paths: {
-        'jquery': '../Scripts/jquery-1.9.1',
+        'jquery': '../Scripts/jquery-2.0.3',
         'jquery.pubsub': '../Scripts/jquery.pubsub',
         
         'markdown': '../Scripts/Markdown.Converter',

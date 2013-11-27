@@ -460,6 +460,24 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Embed.ly.
+        /// </summary>
+        public static string Administration_Embedly {
+            get {
+                return ResourceManager.GetString("Administration_Embedly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Embed.ly API Key.
+        /// </summary>
+        public static string Administration_EmbedlyKey {
+            get {
+                return ResourceManager.GetString("Administration_EmbedlyKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Encryption.
         /// </summary>
         public static string Administration_Encryption {
@@ -501,6 +519,24 @@ namespace JabbR {
         public static string Administration_MaxFileUploadBytes {
             get {
                 return ResourceManager.GetString("Administration_MaxFileUploadBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Push Notifications.
+        /// </summary>
+        public static string Administration_PushNotifications {
+            get {
+                return ResourceManager.GetString("Administration_PushNotifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pushover API key.
+        /// </summary>
+        public static string Administration_PushNotificationsPushover {
+            get {
+                return ResourceManager.GetString("Administration_PushNotificationsPushover", resourceCulture);
             }
         }
         
@@ -1420,6 +1456,15 @@ namespace JabbR {
         public static string Chat_YouSetRoomWelcome {
             get {
                 return ResourceManager.GetString("Chat_YouSetRoomWelcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear your current mention strings..
+        /// </summary>
+        public static string ClearMentions_CommandInfo {
+            get {
+                return ResourceManager.GetString("ClearMentions_CommandInfo", resourceCulture);
             }
         }
         
@@ -2417,6 +2462,15 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Replaces your current mention strings with the strings provided. If no strings are given, your current mention strings are listed..
+        /// </summary>
+        public static string Mentions_CommandInfo {
+            get {
+                return ResourceManager.GetString("Mentions_CommandInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can&apos;t private message yourself!.
         /// </summary>
         public static string Msg_CannotMsgSelf {
@@ -2449,6 +2503,15 @@ namespace JabbR {
         public static string Msg_UserRequired {
             get {
                 return ResourceManager.GetString("Msg_UserRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revoke a user&apos;s permission to send messages in a room. Only works if you&apos;re an owner of that room..
+        /// </summary>
+        public static string Mute_CommandInfo {
+            get {
+                return ResourceManager.GetString("Mute_CommandInfo", resourceCulture);
             }
         }
         
@@ -2980,6 +3043,15 @@ namespace JabbR {
         public static string UnAllow_UserRequired {
             get {
                 return ResourceManager.GetString("UnAllow_UserRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give a user permission to send messages in a room. Only works if you&apos;re an owner of that room..
+        /// </summary>
+        public static string UnMute_CommandInfo {
+            get {
+                return ResourceManager.GetString("UnMute_CommandInfo", resourceCulture);
             }
         }
         

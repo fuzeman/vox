@@ -84,11 +84,11 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.0-pre-130916-b211\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.0-pre-131001-b229\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.1.0-pre-130916-b211\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.1.0-pre-131001-b229\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -978,8 +978,8 @@
     <Content Include="Scripts\jquery.pubsub.js" />
     <Content Include="Scripts\jquery.pulse.js" />
     <Content Include="Scripts\jquery.pulse.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.1.0-pre-130916-b211.js" />
-    <Content Include="Scripts\jquery.signalR-2.1.0-pre-130916-b211.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.1.0-pre-131001-b229.js" />
+    <Content Include="Scripts\jquery.signalR-2.1.0-pre-131001-b229.min.js" />
     <Content Include="Scripts\jquery.sortElements.js" />
     <Content Include="Scripts\jquery.timeago.0.10.js" />
     <Content Include="Scripts\jQuery.tmpl.js" />
@@ -1030,8 +1030,10 @@
     <Content Include="Views\mobile\account\login.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\ClearMentionsCommands.cs" />
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
+    <Compile Include="ContentProviders\EmbedlyContentProvider.cs" />
     <Compile Include="ContentProviders\MinusContentProvider.cs" />
     <Content Include="Views\email\RequestResetPassword.cshtml" />
     <Content Include="Views\email\RequestResetPassword.text.cshtml" />
@@ -1120,6 +1122,7 @@
     <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\ChatUserPreferenceSections\PushNotificationPreferences.cs" />
     <Compile Include="Models\ClientNotification.cs" />
     <Compile Include="Models\ChatUserPreferences.cs" />
     <Compile Include="Models\Mapping\AttachmentMap.cs" />
@@ -1202,6 +1205,7 @@
     <Compile Include="Services\IUserAuthenticator.cs" />
     <Compile Include="Services\JabbrConfiguration.cs" />
     <Compile Include="Services\PresenceMonitor.cs" />
+    <Compile Include="Services\PushNotificationService.cs" />
     <Compile Include="Services\RecentMessageCache.cs" />
     <Compile Include="Services\SettingsKeyProvider.cs" />
     <Compile Include="Services\ApplicationSettings.cs" />

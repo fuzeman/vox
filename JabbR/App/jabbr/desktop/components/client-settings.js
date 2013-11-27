@@ -3,15 +3,17 @@ define([
     'jquery',
     'logger',
     'kernel',
+    'jabbr/core/events',
     'json2'
-], function ($, Logger, kernel) {
+], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/components/client-settings'),
+        client = null,
         object = null;
 
     logger.trace('loaded');
 
     var initialize = function () {
-        var events = {
+        var csEvents = {
             changed: 'jabbr.clientSettings.changed'
         },
             $this = $(this),
@@ -21,7 +23,8 @@ define([
             $cancelButton = $('.cancel-button', $popup),
             $stateCheckboxes = $('.control-group input[type="checkbox"].state', $popup),
             open = false,
-            data = {};
+            data = {},
+            preferences = {};
 
         function trigger(eventType, parameters) {
             $this.trigger(eventType, parameters);
@@ -37,8 +40,10 @@ define([
             open = false;
         }
 
-        function findElements() {
-            return $('input,select', $popup);
+        function findElements(sectionSelector) {
+            sectionSelector = typeof sectionSelector !== 'undefined' ? sectionSelector : '.legacy-section';
+
+            return $('input,select', $(sectionSelector, $popup));
         }
 
         function toggleGroupState() {
@@ -55,70 +60,176 @@ define([
             $saveButton.attr('disabled', '');
             $cancelButton.attr('disabled', '');
             $('input,select', $popup).attr('disabled', '');
-            findElements().text(error);
+            findElements('.legacy-section').text(error);
         }
 
         function save() {
             localStorage.cs = JSON.stringify(data);
+            
+            client.chat.server.updatePreferences(preferences);
+        }
+        
+        function getSectionName($option) {
+            var $section = $option.closest('.preference-section');
+            
+            return  $section.data('section');
+        }
+        
+        function getElementValue(id, $element) {
+            if (id === undefined) {
+                logger.warn("'" + $element.html() + "' has no id specified");
+                return null;
+            }
+
+            // Get element value
+            if ($element.attr('type') == 'checkbox') {
+                return $element.is(':checked');
+            } else {
+                return $element.val();
+            }
+        }
+
+        function setPreference(section, attribute, value) {
+            attribute = attribute.split('.');
+
+            if (preferences[section] === null || preferences[section] === undefined) {
+                preferences[section] = {};
+            }
+            
+            var cur = preferences[section];
+
+            $.each(attribute, function (i, segment) {
+                if (i == attribute.length - 1) {
+                    cur[segment] = value;
+                    return;
+                }
+
+                if (cur[segment] === undefined || cur[segment] === null) {
+                    cur[segment] = {};
+                }
+
+                cur = cur[segment];
+            });
+        }
+
+        function getPreference(section, attribute) {
+            attribute = attribute.split('.');
+
+            if (preferences[section] === null || preferences[section] === undefined) {
+                return null;
+            }
+
+            var cur = preferences[section];
+            
+            $.each(attribute, function (i, segment) {
+                if (cur === null) {
+                    return;
+                }
+
+                if (cur[segment] === undefined || cur[segment] === null) {
+                    cur = null;
+                    logger.warn("segment missing from preferences '" + segment + "'");
+                    return;
+                }
+
+                cur = cur[segment];
+            });
+
+            return cur;
         }
 
         function store(triggerChanged) {
             triggerChanged = typeof triggerChanged !== 'undefined' ? triggerChanged : true;
 
-            findElements().each(function () {
-                if ($(this).attr('id') !== undefined) {
-                    var id = $(this).attr('id'),
-                        value = null;
-
-                    // Get element value
-                    if ($(this).attr('type') == 'checkbox') {
-                        value = $(this).is(':checked');
-                    } else {
-                        value = $(this).val();
-                    }
-
-                    // Update value
-                    data[id] = value;
-                    logger.trace("stored ['" + id + "'] = '" + value + "'");
-                } else {
-                    logger.warn("'" + $(this).html() + "' has no id specified");
+            // Store legacy options
+            findElements('.legacy-section').each(function () {
+                var id = $(this).attr('id'),
+                    value = getElementValue(id, $(this));
+                
+                if (value === null) {
+                    return;
                 }
+                
+                // Update value
+                data[id] = value;
+                logger.trace("stored ['" + id + "'] = '" + value + "'");
+            });
+            
+            // Store user preference options
+            findElements('.preference-section').each(function () {
+                var section = getSectionName($(this)),
+                    sectionData = preferences[section],
+                    id = $(this).attr('id'),
+                    attribute = $(this).data('attribute'),
+                    value = getElementValue(id, $(this));
+
+                if (value === null) {
+                    return;
+                }
+
+                // Update the local value
+                setPreference(section, attribute, value);
+                logger.trace("stored ['" + section + "']." + attribute + " = '" + value + "'");
             });
 
+            // Save options and trigger changed event
             save();
-
+            
             if (triggerChanged) {
-                trigger(events.changed);
+                trigger(csEvents.changed);
+            }
+        }
+        
+        function updateElementValue($element, id, value) {
+            if (id === undefined) {
+                logger.warn("'" + $element.html() + "' has no id specified");
+                return;
+            }
+
+            if (value === null || value === undefined) {
+                logger.warn("No previous setting stored for '" + id + "'");
+                return;
+            }
+
+            if ($element.attr('type') == 'checkbox') {
+                if (value === true) {
+                    $element.attr('checked', '');
+                } else {
+                    $element.removeAttr('checked');
+                }
+            } else {
+                $element.val(value);
             }
         }
 
         function reset() {
+            // Load legacy settings from local storage
             data = {};
-
             if (localStorage.cs !== undefined) {
                 data = JSON.parse(localStorage.cs);
             }
+            
+            // Update legacy option elements
+            findElements('.legacy-section').each(function () {
+                var id = $(this).attr('id'),
+                    value = data[id];
 
-            findElements().each(function () {
-                if ($(this).attr('id') !== undefined) {
-                    if (data[$(this).attr('id')] !== undefined) {
-                        var value = data[$(this).attr('id')];
-
-                        if ($(this).attr('type') == 'checkbox') {
-                            if (value === true) {
-                                $(this).attr('checked', '');
-                            } else {
-                                $(this).removeAttr('checked');
-                            }
-                        } else {
-                            $(this).val(value);
-                        }
-                    } else {
-                        logger.warn("No previous setting stored for '" + $(this).attr('id') + "'");
-                    }
-                } else {
-                    logger.warn("'" + $(this).html() + "' has no id specified");
+                updateElementValue($(this), id, value);
+            });
+            
+            // Update user preference option elements
+            findElements('.preference-section').each(function () {
+                var section = getSectionName($(this)),
+                    sectionData = preferences[section],
+                    id = $(this).attr('id'),
+                    attribute = $(this).data('attribute');
+                
+                if (sectionData === undefined || sectionData === null) {
+                    logger.warn("Section '" + section + "' is empty");
+                    return;
                 }
+
+                updateElementValue($(this), id, getPreference(section, attribute));
             });
 
             $stateCheckboxes.each(toggleGroupState);
@@ -159,10 +270,19 @@ define([
         $stateCheckboxes.change(toggleGroupState);
 
         return {
-            events: events,
+            events: csEvents,
 
             activate: function () {
+                client = kernel.get('jabbr/client');
+
                 logger.trace('activated');
+
+                client.chat.client.preferencesChanged = function (newPreferences) {
+                    logger.trace('preferencesChanged');
+                    
+                    preferences = newPreferences;
+                    reset();
+                };
             },
             isOpen: function () {
                 return open;

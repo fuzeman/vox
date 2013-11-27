@@ -63,14 +63,15 @@ namespace JabbR.ContentProviders.Core
 
             Task.Factory.ContinueWhenAll(tasks, completedTasks =>
             {
-                ContentProviderResult result = completedTasks.Where(t => !t.IsFaulted && !t.IsCanceled)
-                                                             .Select(t => t.Result)
-                                                             .Where(u => u != null)
-                                                             .OrderByDescending(v => v.Weight)
-                                                             .FirstOrDefault();
+                var result = completedTasks.Where(t => !t.IsFaulted && !t.IsCanceled)
+                                           .Select(t => t.Result)
+                                           .Where(u => u != null)
+                                           .OrderByDescending(v => v.Weight)
+                                           .FirstOrDefault();
                 if (result != null)
                 {
-                    tcs.SetResult(result);
+                    // Get the result if ready or execute the delayed task
+                    result.Execute(request).Then(r => tcs.SetResult(r));
                 }
                 else
                 {

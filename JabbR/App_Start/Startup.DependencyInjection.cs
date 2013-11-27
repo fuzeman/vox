@@ -55,6 +55,7 @@ namespace JabbR
                   .ToMethod(context =>
                   {
                       var resourceProcessor = context.Kernel.Get<ContentProviderProcessor>();
+                      var pushNotification = context.Kernel.Get<PushNotificationService>();
                       var recentMessageCache = context.Kernel.Get<IRecentMessageCache>();
                       var repository = context.Kernel.Get<IJabbrRepository>();
                       var cache = context.Kernel.Get<ICache>();
@@ -64,6 +65,7 @@ namespace JabbR
                       var service = new ChatService(cache, recentMessageCache, repository, settings);
 
                       return new Chat(resourceProcessor,
+                                      pushNotification,
                                       service,
                                       recentMessageCache,
                                       repository,
@@ -73,6 +75,9 @@ namespace JabbR
 
             kernel.Bind<ICryptoService>()
                 .To<CryptoService>();
+
+            kernel.Bind<PushNotificationService>()
+                  .To<PushNotificationService>();
 
             kernel.Bind<IResourceProcessor>()
                 .ToConstant(new ResourceProcessor(kernel));

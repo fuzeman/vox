@@ -105,9 +105,9 @@ define([
             }, 5000);
         },
 
-        login: function (rooms, myRooms, preferences, mentions, notifications) {
+        login: function (rooms, myRooms, userPreferences, mentions, notifications) {
             logger.trace('login');
-            this.trigger(events.client.loggedOn, [rooms, myRooms, mentions, notifications]);
+            this.trigger(events.client.loggedOn, [rooms, myRooms, userPreferences, mentions, notifications]);
         },
 
         logout: function () {

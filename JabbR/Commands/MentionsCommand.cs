@@ -1,43 +1,65 @@
-﻿using JabbR.Models;
+﻿using System.Collections.Generic;
+using JabbR.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace JabbR.Commands
 {
-    [Command("mentions", "When a message contains one of these strings mark it as a mention.",
-        "[string,]", "user")]
-    public class MentionOnCommand : UserCommand
+    [Command("mentions", "Mentions_CommandInfo", "[string,]", "user")]
+    public class MentionsCommand : UserCommand
     {
-        public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
+        public override void Execute(CommandContext context, CallerContext callerContext, ChatUser callingUser, string[] args)
         {
-            var pendingAdd = String.Join(" ", args)
-                                   .Split(',')
-                                   .Where(p => p != String.Empty)
-                                   .Select(p => p.Trim().ToLower())
-                                   .Distinct()
-                                   .ToList();
+            var mentions = ParseMentions(args);
 
-            var mentions = pendingAdd.ToArray();
+            if (mentions.Length == 0)
+            {
+                // List current mentions for user
+                var currentMentions = context.Repository.GetMentionsByUser(callingUser)
+                                                        .Select(m => m.String);
 
-            if (mentions.Length > 5)
+                context.NotificationService.ChangeMentions(callingUser, currentMentions.ToArray(), false);
+            }
+            else if (mentions.Length > 5)
             {
                 throw new InvalidOperationException("You are not allowed more than 5 mention strings.");
             }
+            else
+            {
+                // Update mentions for user
+                UpdateMentions(context, callingUser, mentions);
+                context.NotificationService.ChangeMentions(callingUser, mentions);
+
+                context.Repository.CommitChanges();
+            }
+        }
+
+        private string[] ParseMentions(string[] args)
+        {
+            return String.Join(" ", args)
+                         .Split(',')
+                         .Where(p => p != String.Empty)
+                         .Select(p => p.Trim().ToLower())
+                         .Distinct()
+                         .ToArray();
+        }
+
+        private void UpdateMentions(CommandContext context, ChatUser callingUser, IEnumerable<string> mentions)
+        {
+            var pending = new List<string>(mentions);
 
             // Remove mentions
             var userMentions = context.Repository.GetMentionsByUser(callingUser).ToList();
             foreach (var m in userMentions)
             {
-                if (pendingAdd.Contains(m.String))
-                    pendingAdd.Remove(m.String);
+                if (pending.Contains(m.String))
+                    pending.Remove(m.String);
                 else
                     context.Repository.Remove(m);
             }
 
             // Add mentions
-            foreach (var s in pendingAdd)
+            foreach (var s in pending)
             {
                 context.Repository.Add(new ChatUserMention
                 {
@@ -45,10 +67,6 @@ namespace JabbR.Commands
                     UserKey = callingUser.Key
                 });
             }
-
-            context.NotificationService.ChangeMentions(callingUser, mentions);
-
-            context.Repository.CommitChanges();
         }
     }
 }
