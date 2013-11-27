@@ -37,6 +37,8 @@ define([
             this.initial = true;
             this.restarting = false;
 
+            this.privateRooms = null;
+
             // Bind chat hub events
             this.chat.client.logOn = $.proxy(this.login, this);
             this.chat.client.logOut = $.proxy(this.performLogout, this);
@@ -107,6 +109,9 @@ define([
 
         login: function (rooms, myRooms, userPreferences, mentions, notifications) {
             logger.trace('login');
+            
+            this.privateRooms = myRooms;
+
             this.trigger(events.client.loggedOn, [rooms, myRooms, userPreferences, mentions, notifications]);
         },
 

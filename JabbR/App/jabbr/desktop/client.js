@@ -15,7 +15,6 @@ define([
 
             this.mentionStrings = null;
             this.customMentionRegex = null;
-            this.privateRooms = null;
 
             $(window).bind(events.focused, $.proxy(this.focused, this));
         },
@@ -39,7 +38,6 @@ define([
             logger.trace('login');
 
             this.updateMentions(mentions);
-            this.privateRooms = myRooms;
 
             this.base(rooms, myRooms, preferences, mentions, notifications);
         },
