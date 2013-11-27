@@ -2,10 +2,11 @@
 define([
     'jabbr/base/ui',
     'jabbr/mobile/components/rooms.ui',
+    'jabbr/mobile/components/help',
     'jabbr/mobile/templates',
 
     'snap'
-], function (UI, MobileRoomsUI, templates) {
+], function (UI, MobileRoomsUI, MobileHelp, templates) {
     return UI.extend({
         constructor: function () {
             this.base();
@@ -15,7 +16,8 @@ define([
             templates = templates();
 
             this.submodules = {
-                ru: new MobileRoomsUI()
+                ru: new MobileRoomsUI(),
+                help: new MobileHelp()
             };
         },
         
