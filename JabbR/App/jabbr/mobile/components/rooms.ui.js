@@ -12,7 +12,8 @@ define([
     'jabbr/mobile/components/messages',
     'jabbr/mobile/components/lobby',
         
-    'jquery.tmpl'
+    'jquery.tmpl',
+    'jquery.sortElements'
 ], function ($, Logger, kernel, RoomsUI,
 
     // View Models
@@ -29,7 +30,9 @@ define([
         lobby = null,
         messages = null,
         templates = null,
-        $roomsList = $('#rooms-drawer .list');
+        $chatArea = $('#chat-area'),
+        $roomList = $('#room-list'),
+        $userList = $('#user-list');
 
     return RoomsUI.extend({
         constructor: function () {
@@ -56,6 +59,50 @@ define([
             templates = kernel.get('jabbr/templates');
         },
         
+        getNextRoomListElement: function ($targetList, roomName, count, closed) {
+            var nextListElement = null;
+
+            // move the item to before the next element
+            $targetList.find('li').each(function () {
+                var $this = $(this),
+                    liRoomCount = $this.data('count'),
+                    liRoomClosed = $this.hasClass('closed'),
+                    name = $this.data('name'),
+                    nameComparison;
+
+                if (name === undefined) {
+                    return true;
+                }
+
+                nameComparison = name.toString().toUpperCase().localeCompare(roomName);
+
+                // skip this element
+                if (nameComparison === 0) {
+                    return true;
+                }
+
+                // skip closed rooms which always go after unclosed ones
+                if (!liRoomClosed && closed) {
+                    return true;
+                }
+
+                // skip where we have more occupants
+                if (liRoomCount > count) {
+                    return true;
+                }
+
+                // skip where we have the same number of occupants but the room is alphabetically earlier
+                if (liRoomCount === count && nameComparison < 0) {
+                    return true;
+                }
+
+                nextListElement = $this;
+                return false;
+            });
+
+            return nextListElement;
+        },
+        
         addRoom: function (roomViewModel) {
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
@@ -70,7 +117,11 @@ define([
 
             var room = this.createRoom(roomViewModel.Name),
                 roomId = null,
-                viewModel = null;
+                viewModel = null,
+                $messages = null,
+                $roomTopic = null,
+                scrollHandler = null,
+                userContainer = null;
             
             roomId = rc.getRoomId(roomName);
             
@@ -85,7 +136,21 @@ define([
                 lobby.addRoom(roomViewModel);
             }
             
-            templates.drawer.room.tmpl(viewModel).data('name', roomName).appendTo($roomsList);
+            templates.drawer.room.tmpl(viewModel).data('name', roomName).appendTo($roomList);
+            
+            $messages = $('<ul/>').attr('id', 'messages-' + roomId)
+                .addClass('messages')
+                .appendTo($chatArea)
+                .hide();
+            
+            $roomList.find('li.room-item')
+                .not('.lobby')
+                .sortElements(function (a, b) {
+                    return rc.cleanRoomName($(a).data('name')) > rc.cleanRoomName($(b).data('name')) ? 1 : -1;
+                });
+            
+            lobbyLoaded = false;
+            return true;
         },
         
         createRoom: function (roomName) {

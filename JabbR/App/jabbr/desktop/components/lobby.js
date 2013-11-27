@@ -118,66 +118,9 @@ define([
         },
 
         populateRooms: function (rooms, privateRooms) {
-            var lobby = this.getLobby(),
-                i;
+            var lobby = this.getLobby();
 
-            if (!lobby.isInitialized()) {
-                // Process the topics
-                for (i = 0; i < rooms.length; ++i) {
-                    rooms[i].processedTopic = utility.processContent(rooms[i].Topic);
-                }
-
-                for (i = 0; i < privateRooms.length; ++i) {
-                    privateRooms[i].processedTopic = utility.processContent(privateRooms[i].Topic);
-                }
-
-                // Populate the room cache
-                for (i = 0; i < rooms.length; ++i) {
-                    rc.roomCache[rc.cleanRoomName(rooms[i].Name)] = true;
-                }
-
-                for (i = 0; i < privateRooms.length; ++i) {
-                    rc.roomCache[rc.cleanRoomName(privateRooms[i].Name)] = true;
-                }
-
-                // sort private lobby rooms
-                var privateSorted = this.sortRoomList(privateRooms);
-
-                // sort other lobby rooms but filter out private rooms
-                this.publicRoomList = this.sortRoomList(rooms).filter(function (room) {
-                    return !privateSorted.some(function (allowed) {
-                        return allowed.Name === room.Name;
-                    });
-                });
-
-
-                this.sortedRoomList = rooms.sort(function (a, b) {
-                    return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
-                });
-
-                lobby.owners.empty();
-                lobby.users.empty();
-
-                var listOfPrivateRooms = $('<ul/>');
-                if (privateSorted.length > 0) {
-                    this.populateRoomList(privateSorted, templates.lobbyroom, listOfPrivateRooms);
-                    listOfPrivateRooms.children('li').appendTo(lobby.owners);
-                    $lobbyPrivateRooms.show();
-                    $lobbyOtherRooms.find('.nav-header').html('Other Rooms');
-                } else {
-                    $lobbyPrivateRooms.hide();
-                    $lobbyOtherRooms.find('.nav-header').html('Rooms');
-                }
-
-                var listOfRooms = $('<ul/>');
-                this.populateRoomList(this.publicRoomList.splice(0, maxRoomsToLoad), templates.lobbyroom, listOfRooms);
-                lastLoadedRoomIndex = listOfRooms.children('li').length;
-                listOfRooms.children('li').appendTo(lobby.users);
-                if (lastLoadedRoomIndex < this.sortedRoomList.length) {
-                    $loadMoreRooms.show();
-                }
-                $lobbyOtherRooms.show();
-            }
+            this.base(rooms, privateRooms);
 
             if (lobby.isActive()) {
                 // update cache of room names
@@ -187,6 +130,33 @@ define([
             // re-filter lists
             $lobbyRoomFilterForm.submit();
         },
+        
+        updateElements: function (privateSorted) {
+            var lobby = this.getLobby();
+
+            lobby.owners.empty();
+            lobby.users.empty();
+
+            var listOfPrivateRooms = $('<ul/>');
+            if (privateSorted.length > 0) {
+                this.populateRoomList(privateSorted, templates.lobbyroom, listOfPrivateRooms);
+                listOfPrivateRooms.children('li').appendTo(lobby.owners);
+                $lobbyPrivateRooms.show();
+                $lobbyOtherRooms.find('.nav-header').html('Other Rooms');
+            } else {
+                $lobbyPrivateRooms.hide();
+                $lobbyOtherRooms.find('.nav-header').html('Rooms');
+            }
+
+            var listOfRooms = $('<ul/>');
+            this.populateRoomList(this.publicRoomList.splice(0, maxRoomsToLoad), templates.lobbyroom, listOfRooms);
+            lastLoadedRoomIndex = listOfRooms.children('li').length;
+            listOfRooms.children('li').appendTo(lobby.users);
+            if (lastLoadedRoomIndex < this.sortedRoomList.length) {
+                $loadMoreRooms.show();
+            }
+            $lobbyOtherRooms.show();
+        },
 
         populateRoomList: function (item, template, listToPopulate) {
             $.tmpl(template, item).appendTo(listToPopulate);
@@ -194,14 +164,12 @@ define([
         
         addRoom: function (roomViewModel) {
             var lobby = this.getLobby(),
-                room = null,
                 $room = null,
                 roomName = roomViewModel.Name.toString().toUpperCase(),
                 count = roomViewModel.Count,
                 closed = roomViewModel.Closed,
                 nonPublic = roomViewModel.Private,
-                $targetList = roomViewModel.Private ? lobby.owners : lobby.users,
-                i = null;
+                $targetList = roomViewModel.Private ? lobby.owners : lobby.users;
 
             roomViewModel.processedTopic = utility.processContent(roomViewModel.Topic);
             $room = templates.lobbyroom.tmpl(roomViewModel);
@@ -218,29 +186,7 @@ define([
             this.filterIndividualRoom($room);
             //room.setListState($targetList);
 
-            rc.roomCache[roomName] = true;
-
-            // don't try to populate the sortedRoomList while we're initially filling up the lobby
-            if (this.sortedRoomList) {
-                var sortedRoomInsertIndex = this.sortedRoomList.length;
-                for (i = 0; i < this.sortedRoomList.length; i++) {
-                    if (this.sortedRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) > 0) {
-                        sortedRoomInsertIndex = i;
-                        break;
-                    }
-                }
-                this.sortedRoomList.splice(sortedRoomInsertIndex, 0, roomViewModel);
-            }
-            
-            // handle updates on rooms not currently displayed to clients by removing from the public room list
-            if (this.publicRoomList) {
-                for (i = 0; i < this.publicRoomList.length; i++) {
-                    if (this.publicRoomList[i].Name.toString().toUpperCase().localeCompare(roomName) === 0) {
-                        this.publicRoomList.splice(i, 1);
-                        break;
-                    }
-                }
-            }
+            this.base(roomViewModel);
             
             // if it's a private room, make sure that we're displaying the private room section
             if (nonPublic) {

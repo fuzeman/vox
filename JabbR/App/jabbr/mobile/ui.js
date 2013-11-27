@@ -25,7 +25,9 @@ define([
             this.base();
             
             this.snapper = new Snap({
-                element: document.getElementById('container')
+                element: document.getElementById('container'),
+                hyperextensible: true,
+                resistance: 0.6
             });
         }
     });

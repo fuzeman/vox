@@ -2,6 +2,13 @@
     background-color: #00103F;
     border-bottom: none;
     box-shadow: none;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
     .action-bar .title {
@@ -9,11 +16,20 @@
     }
 
 .page {
-    background-color: #444;
+    background-color: #333;
 }
 
 .snap-drawer {
     background-color: #222;
+
+    padding-top: 15px;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .app-icon {
@@ -29,18 +45,3 @@
 #container .content {
     padding: 4px 8px;
 }
-
-#rooms-drawer .room-item {
-    
-}
-    
-    #rooms-drawer a {
-        position: relative;
-    }
-
-    #rooms-drawer .room-item .close {
-        position: absolute;
-        right: 0;
-
-        margin: 8px 0;
-    }

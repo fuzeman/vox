@@ -877,6 +877,7 @@
     <Content Include="Content\themes\desktop_default\Chat.githubissues.css" />
     <Content Include="Content\themes\desktop_default\Chat.nuget.css" />
     <Content Include="Content\themes\mobile_default\account.css" />
+    <Content Include="Content\themes\mobile_default\chat.css" />
     <Content Include="Content\themes\mobile_default\fries.holo_dark.min.css" />
     <Content Include="Content\themes\mobile_default\layout.css" />
     <Content Include="favicon.ico" />

@@ -10,6 +10,9 @@
 }
 
 @section Head {
+    <link href="@Url.Content("~/Content/themes/mobile_default/chat.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/emoji20.css")" rel="stylesheet" />
+
     <script id="drawer-room-template" type="text/x-jquery-tmpl">
         <li id="tabs-${id}" class="room-item list-item-single-line" data-name="${name}" data-closed="${closed}" data-trimmable="true" role="tab">
             <a>
@@ -20,12 +23,24 @@
             </a>
         </li>
     </script>
+    
+    <script id="lobby-room-template" type="text/x-jquery-tmpl">
+        <li class="room {{if Private}}locked{{/if}} {{if Closed}}closed{{/if}} {{if processedTopic}}list-item-two-lines{{else}}list-item-single-line{{/if}}" data-room="${Name}" data-name="${Name}" data-count="${Count}">
+            {{if processedTopic}}
+                <h3>${Name}</h3>
+                <p class="topic">{{html processedTopic}}</p>
+            {{else}}
+                ${Name}
+            {{/if}}
+        </li>
+    </script>
 }
 
 @section Drawers {
-    <div id="rooms-drawer" class="snap-drawer snap-drawer-left">
+    <div id="drawer-left" class="snap-drawer snap-drawer-left">
         <div>
-            <ul class="list">
+            <ul id="room-list" class="list">
+                <li class="list-divider">Rooms</li>
                 <li id="tabs-lobby" class="room-item current lobby no-close list-item-single-line" data-name="Lobby" data-trimmable="false" role="tab">
                     <a accesskey="l">
                         <span>@LanguageResources.Client_Lobby</span>
@@ -34,13 +49,36 @@
             </ul>
         </div>
     </div>
-    <div id="menu-drawer" class="snap-drawer snap-drawer-right">
-        [Menu]
+    <div id="drawer-right" class="snap-drawer snap-drawer-right">
+        <div>
+            <ul id="user-list" class="list">
+                <li class="list-divider">Users</li>
+            </ul>
+        </div>
     </div>
 }
 
 <div class="content">
-    home/index
+    <div id="chat-area" role="tabpanel">
+        <div id="lobby-wrapper">
+            <div id="lobby-private">
+                <h2 class="userlist-header nav-header">@LanguageResources.Client_YourPrivateRooms</h2>
+                <ul id="userlist-lobby-owners" class="list" data-empty-message="@LanguageResources.Client_NoMatchingRooms"></ul>
+            </div>
+            <div id="lobby-other">
+                <h2 class="userlist-header nav-header">@LanguageResources.Client_Rooms</h2>
+                <ul id="userlist-lobby" class="list" data-empty-message="@LanguageResources.Client_NoMatchingRooms"></ul>
+
+                <div id="load-more-rooms-item" class="room" style="display:none;">
+                    <div class="row-fluid room-row load-more-rooms">
+                        <i class="icon-spinner" style="display:none;"></i>
+                        <a href="#">@LanguageResources.Client_LoadMore</a>
+                    </div>
+                </div>
+            </div>
+            <ul id="messages-lobby" class="messages current" role="log" style="visibility: hidden;"></ul>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
