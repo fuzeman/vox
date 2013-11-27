@@ -4,7 +4,9 @@ define([
     'kernel',
     'jabbr/base/event-object',
     'jabbr/core/events',
-    'jabbr/core/state'
+    'jabbr/core/state',
+    
+    'jquery.history'
 ], function (Logger, kernel, EventObject, events, state) {
     var logger = new Logger('jabbr/components/rooms.client'),
         client = null,
