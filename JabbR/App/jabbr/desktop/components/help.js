@@ -3,12 +3,12 @@ define([
     'jquery',
     'logger',
     'kernel',
-    'jabbr/core/events',
-    'jabbr/core/templates'
-], function ($, Logger, kernel, events, templates) {
+    'jabbr/core/events'
+], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/components/help'),
         client = null,
         ui = null,
+        templates = null,
         object = null;
 
     logger.trace('loaded');
@@ -100,6 +100,7 @@ define([
             activate: function () {
                 client = kernel.get('jabbr/client');
                 ui = kernel.get('jabbr/ui');
+                templates = kernel.get('jabbr/templates');
 
                 logger.trace('activated');
 

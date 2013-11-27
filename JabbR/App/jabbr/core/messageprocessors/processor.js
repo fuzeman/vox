@@ -4,12 +4,12 @@ define([
     'logger',
     'kernel',
     'jabbr/core/events',
-    'jabbr/core/utility',
-    'jabbr/core/templates'
-], function ($, Logger, kernel, events, utility, templates) {
+    'jabbr/core/utility'
+], function ($, Logger, kernel, events, utility) {
     var logger = new Logger('jabbr/messageprocessors/processor'),
         rc = null,
         ru = null,
+        templates = null,
         object = null;
 
     logger.trace('loaded');
@@ -105,6 +105,8 @@ define([
             activate: function () {
                 rc = kernel.get('jabbr/components/rooms.client');
                 ru = kernel.get('jabbr/components/rooms.ui');
+                templates = kernel.get('jabbr/templates');
+                
                 var processor = this;
 
                 logger.trace('activated');

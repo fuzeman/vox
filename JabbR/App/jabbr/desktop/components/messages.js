@@ -4,12 +4,11 @@ define([
     'logger',
     'kernel',
     'jabbr/base/components/messages',
-    'jabbr/core/templates',
     'jabbr/core/utility',
     'jabbr/core/events',
     'jabbr/desktop/components/message-ticker'
 ], function (
-    $, Logger, kernel, Messages, templates,
+    $, Logger, kernel, Messages,
     utility, events, MessageTicker
 ) {
     var logger = new Logger('jabbr/desktop/components/messages'),
@@ -19,6 +18,7 @@ define([
         rc = null,
         notifications = null,
         processor = null,
+        templates = null,
         $document = $(document),
         messageSendingDelay = 1500;
 
@@ -36,6 +36,7 @@ define([
             rc = kernel.get('jabbr/components/rooms.client');
             notifications = kernel.get('jabbr/components/notifications');
             processor = kernel.get('jabbr/messageprocessors/processor');
+            templates = kernel.get('jabbr/templates');
 
             this.attach();
         },

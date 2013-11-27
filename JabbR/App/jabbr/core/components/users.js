@@ -4,15 +4,15 @@ define([
     'logger',
     'kernel',
     'jabbr/core/state',
-    'jabbr/core/templates',
     'jabbr/core/viewmodels/user',
     'jabbr/core/viewmodels/room-user'
-], function ($, Logger, kernel, state, templates, User, RoomUser) {
+], function ($, Logger, kernel, state, User, RoomUser) {
     var logger = new Logger('jabbr/components/users'),
         client = null,
         ru = null,
         rc = null,
         messages = null,
+        templates = null,
         object = null;
 
     logger.trace('loaded');
@@ -383,6 +383,7 @@ define([
                 ru = kernel.get('jabbr/components/rooms.ui');
                 rc = kernel.get('jabbr/components/rooms.client');
                 messages = kernel.get('jabbr/components/messages');
+                templates = kernel.get('jabbr/templates');
 
                 logger.trace('activated');
 

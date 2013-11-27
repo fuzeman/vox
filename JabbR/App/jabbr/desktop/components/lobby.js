@@ -8,15 +8,15 @@ define([
     'keys',
     'jabbr/core/events',
     'jabbr/core/state',
-    'jabbr/core/templates',
     'jabbr/core/utility'
 ], function (
     $, Logger, kernel, Lobby,
-    Keys, events, state, templates, utility
+    Keys, events, state, utility
 ) {
     var client = null,
         ru = null,
         rc = null,
+        templates = null,
         $document = $(document),
         $lobbyRoomFilterForm = $('#room-filter-form'),
         $closedRoomFilter = $('#room-filter-closed'),
@@ -38,6 +38,7 @@ define([
             client = kernel.get('jabbr/client');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
+            templates = kernel.get('jabbr/templates');
             
             client.chat.client.updateRoom = $.proxy(this.updateRoom, this);
 

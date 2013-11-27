@@ -1,6 +1,6 @@
 ﻿/*global define*/
-define(['jquery'], function ($) {
-    return {
+define(['jquery', 'kernel'], function ($, kernel) {
+    var templates = {
         userlist: $('#new-userlist-template'),
         user: $('#new-user-template'),
         message: $('#new-message-template'),
@@ -12,5 +12,11 @@ define(['jquery'], function ($) {
         multiline: $('#multiline-content-template'),
         lobbyroom: $('#new-lobby-room-template'),
         otherlobbyroom: $('#new-other-lobby-room-template')
+    };
+
+    return function () {
+        kernel.bind('jabbr/templates', templates);
+
+        return templates;
     };
 });

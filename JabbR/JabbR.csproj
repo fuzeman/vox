@@ -247,6 +247,7 @@
     <Content Include="App\jabbr\mobile\components\messages.js" />
     <Content Include="App\jabbr\mobile\components\notifications.js" />
     <Content Include="App\jabbr\mobile\components\rooms.ui.js" />
+    <Content Include="App\jabbr\mobile\templates.js" />
     <Content Include="App\jabbr\mobile\ui.js" />
     <Content Include="App\mobile-jabbr.js" />
     <Content Include="App\jabbr\core\contentproviders\capture-document-write.js" />
@@ -277,7 +278,7 @@
     <Content Include="App\jabbr\core\messageprocessors\italics.js" />
     <Content Include="App\jabbr\core\messageprocessors\plexr.js" />
     <Content Include="App\jabbr\core\messageprocessors\processor.js" />
-    <Content Include="App\jabbr\core\templates.js" />
+    <Content Include="App\jabbr\desktop\templates.js" />
     <Content Include="App\jabbr\core\viewmodels\message.js" />
     <Content Include="App\jabbr\core\viewmodels\room-user.js" />
     <Content Include="App\jabbr\core\viewmodels\user.js" />

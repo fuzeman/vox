@@ -6,7 +6,6 @@ define([
     'jabbr/base/components/rooms.ui',
     'jabbr/core/state',
     'jabbr/core/events',
-    'jabbr/core/templates',
     'jabbr/core/viewmodels/room',
     'jabbr/core/viewmodels/message',
     
@@ -25,7 +24,7 @@ define([
     'quicksilver'
 ], function ($, Logger, kernel, RoomsUI,
     // Core
-    state, events, templates,
+    state, events,
     
     // View Models
     Room, Message,
@@ -41,6 +40,7 @@ define([
         notifications = null,
         lobby = null,
         messages = null,
+        templates = null,
         $this = $(this),
         $document = $(document),
         $chatArea = $('#chat-area'),
@@ -86,6 +86,7 @@ define([
             notifications = kernel.get('jabbr/components/notifications');
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');
+            templates = kernel.get('jabbr/templates');
             
             
             client.chat.client.changeTopic = this.updateRoomTopic;

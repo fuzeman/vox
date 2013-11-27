@@ -3,9 +3,8 @@ define([
     'logger',
     'kernel',
     'jabbr/core/events',
-    'jabbr/core/utility',
-    'jabbr/core/templates'
-], function (Logger, kernel, events, utility, templates) {
+    'jabbr/core/utility'
+], function (Logger, kernel, events, utility) {
     var logger = new Logger('jabbr/viewmodels/message'),
         client = null,
         ru = null,

@@ -8,6 +8,7 @@ define([
     'jabbr/desktop/components/rooms.ui',
     'jabbr/desktop/components/help',
     'jabbr/desktop/components/client-settings',
+    'jabbr/desktop/templates',
     'jabbr/core/components/emoji',
     'jabbr/core/components/external-status',
     'jabbr/core/utility',
@@ -15,7 +16,7 @@ define([
     'jquery.autotabcomplete',
     'livestamp'
 ], function ($, kernel, Keys, UI,
-    connectionStatus, DesktopRoomsUI, help, cs,
+    connectionStatus, DesktopRoomsUI, help, cs, templates,
     emoji, externalStatus, utility
 ) {
     var client = null,
@@ -47,6 +48,7 @@ define([
             help = help();
             cs = cs();
             externalStatus = externalStatus();
+            templates = templates();
 
             this.submodules = {
                 connectionStatus: connectionStatus,

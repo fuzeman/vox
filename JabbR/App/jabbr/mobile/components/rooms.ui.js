@@ -8,7 +8,9 @@ define([
     'jabbr/mobile/components/notifications',
     'jabbr/mobile/components/rooms.client',
     'jabbr/mobile/components/messages',
-    'jabbr/mobile/components/lobby'
+    'jabbr/mobile/components/lobby',
+        
+    'jquery.tmpl'
 ], function ($, Logger, kernel, RoomsUI,
 
     // Components
@@ -21,6 +23,7 @@ define([
         notifications = null,
         lobby = null,
         messages = null;
+        templates = null,
 
     return RoomsUI.extend({
         constructor: function () {
@@ -44,6 +47,7 @@ define([
             notifications = kernel.get('jabbr/components/notifications');
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');
+            templates = kernel.get('jabbr/templates');
         },
         
         addRoom: function (roomViewModel) {
