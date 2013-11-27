@@ -162,6 +162,10 @@ define([
         _windowFocus: function () {
             // clear unread count in active room
             var room = ru.getCurrentRoomElements();
+            if (room === null || room === undefined) {
+                return;
+            }
+
             room.makeActive();
 
             if (!this.focus) {

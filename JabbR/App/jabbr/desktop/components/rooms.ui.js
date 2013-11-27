@@ -32,11 +32,12 @@ define([
     Room, Message,
     
     // Components
-    DesktopNotifications, rc, DesktopMessages, DesktopLobby,
+    DesktopNotifications, DesktopRoomsClient, DesktopMessages, DesktopLobby,
     users, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/desktop/components/rooms.ui'),
         client = null,
+        rc = null,
         ui = null,
         notifications = null,
         lobby = null,
@@ -60,14 +61,13 @@ define([
         constructor: function () {
             this.base();
 
-            rc = rc();
             users = users();
             contentProviders = contentProviders();
             processor = processor();
             
             this.submodules = {
                 notifications: new DesktopNotifications(),
-                rc: rc,
+                rc: new DesktopRoomsClient(),
                 messages: new DesktopMessages(),
                 lobby: new DesktopLobby(),
                 
@@ -75,6 +75,8 @@ define([
                 contentProviders: contentProviders,
                 processor: processor
             };
+
+            rc = this.submodules.rc;
         },
 
         activate: function () {

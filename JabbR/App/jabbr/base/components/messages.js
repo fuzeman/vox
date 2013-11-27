@@ -68,9 +68,7 @@ define([
         
         sendMessage: function (msg) { logger.warn('sendMessage not implemented'); },
 
-        sendClientMessage: function (clientMessage, messageCompleteTimeout) {
-            logger.warn('sendClientMessage not implemented');
-        },
+        sendClientMessage: function (clientMessage, messageCompleteTimeout) { logger.warn('sendClientMessage not implemented'); },
 
         failPendingMessages: function () {
             for (var id in this.pendingMessages) {
