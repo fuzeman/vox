@@ -29,3 +29,18 @@
 #container .content {
     padding: 4px 8px;
 }
+
+#rooms-drawer .room-item {
+    
+}
+    
+    #rooms-drawer a {
+        position: relative;
+    }
+
+    #rooms-drawer .room-item .close {
+        position: absolute;
+        right: 0;
+
+        margin: 8px 0;
+    }

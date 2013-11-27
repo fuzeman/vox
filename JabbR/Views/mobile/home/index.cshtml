@@ -10,11 +10,29 @@
 }
 
 @section Head {
+    <script id="drawer-room-template" type="text/x-jquery-tmpl">
+        <li id="tabs-${id}" class="room-item list-item-single-line" data-name="${name}" data-closed="${closed}" data-trimmable="true" role="tab">
+            <a>
+                <i class="icon-lock lock hide"></i>
+                <i class="icon-ban-circle readonly hide"></i>
+                <span>${name}</span>
+                <button class="close">&times;</button>
+            </a>
+        </li>
+    </script>
 }
 
 @section Drawers {
     <div id="rooms-drawer" class="snap-drawer snap-drawer-left">
-        [Rooms]
+        <div>
+            <ul class="list">
+                <li id="tabs-lobby" class="room-item current lobby no-close list-item-single-line" data-name="Lobby" data-trimmable="false" role="tab">
+                    <a accesskey="l">
+                        <span>@LanguageResources.Client_Lobby</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
     <div id="menu-drawer" class="snap-drawer snap-drawer-right">
         [Menu]
