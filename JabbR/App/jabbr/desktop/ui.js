@@ -152,14 +152,14 @@ define([
                         break;
 
                     case Keys.Esc:
-                        $(this).val('');
+                        $newMessage.val('');
                         this.newMessageLines = 1;
                         this.updateNewMessageSize();
-                        if ($(this).attr('message-id') !== undefined) {
-                            $('#m-' + $(this).attr('message-id')).removeClass('editing');
-                            $(this).removeAttr('message-id');
+                        if ($newMessage.attr('message-id') !== undefined) {
+                            $('#m-' + $newMessage.attr('message-id')).removeClass('editing');
+                            $newMessage.removeAttr('message-id');
                         }
-                        $(this).removeClass('editing');
+                        $newMessage.removeClass('editing');
                         break;
 
                     case Keys.Backspace:
@@ -171,8 +171,8 @@ define([
 
                     case Keys.Space:
                         // Check for "/r " to reply to last private message
-                        if ($(this).val() === "/r" && messages.getLastPrivate()) {
-                            this.setMessage("/msg " + messages.getLastPrivate());
+                        if ($newMessage.val() === "/r" && messages.lastPrivate) {
+                            this.setMessage("/msg " + messages.lastPrivate);
                         }
                         break;
                 }
