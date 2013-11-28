@@ -120,11 +120,6 @@ define([
         },
         
         attach: function () {
-            $document.on('click', 'li.room .room-row', function () {
-                var roomName = $(this).parent().data('name');
-                rc.activateOrOpenRoom(roomName);
-            });
-
             $document.on('click', '#tabs li', function () {
                 var roomName = $(this).data('name');
                 rc.activateOrOpenRoom(roomName);

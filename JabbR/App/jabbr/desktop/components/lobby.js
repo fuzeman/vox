@@ -48,6 +48,11 @@ define([
         attach: function () {
             var _this = this;
 
+            $document.on('click', 'li.room .room-row', function () {
+                var roomName = $(this).parent().data('name');
+                rc.activateOrOpenRoom(roomName);
+            });
+
             $roomFilterInput
                 .bind('input', function () {
                     $lobbyRoomFilterForm.submit();
