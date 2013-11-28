@@ -14,6 +14,7 @@ define([
         ru = null,
         rc = null,
         templates = null,
+        $document = $(document),
         $loadMoreRooms = $('#load-more-rooms-item'),
         $lobbyPrivateRooms = $('#lobby-private'),
         $lobbyOtherRooms = $('#lobby-other'),
@@ -39,7 +40,12 @@ define([
             this.attach();
         },
         
-        attach: function () { },
+        attach: function () {
+            $document.on('click', '#lobby-wrapper li.room', function () {
+                var roomName = $(this).data('name');
+                rc.activateOrOpenRoom(roomName);
+            });
+        },
         
         updateElements: function (privateSorted) {
             var lobby = this.getLobby();
