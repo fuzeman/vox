@@ -51,3 +51,44 @@
     #lobby-wrapper .room .topic {
         line-height: 14px;
     }
+
+.message {
+    list-style-type: none;
+    position: relative;
+    margin: 0px;
+
+    border-left: 26px solid #444;
+}
+
+    .message.continue {
+        border-bottom: 1px solid #444;
+    }
+    
+    .message.my-message {
+        border-color: #4D5C66;
+        background: #444;
+    }
+
+    .message .left {
+        float: left;
+        width: 26px;
+
+        margin-left: -26px;
+        padding: 7px 5px;
+    }
+
+    .message .middle {
+        margin-right: 95px;
+        padding: 5px 10px;
+        word-wrap: break-word;
+    }
+
+    .message .right {
+        position: absolute;
+        padding: 5px;
+        top: 0px;
+        right: 0px;
+        width: 95px;
+        font-size: 0.9em;
+        text-align: right;
+    }

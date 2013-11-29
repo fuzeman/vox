@@ -5,6 +5,8 @@ define([
     return Client.extend({
         constructor: function () {
             this.base();
+
+            this.customMentionRegex = null;
         }
     });
 });

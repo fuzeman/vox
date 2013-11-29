@@ -9,7 +9,13 @@ define(['jquery', 'kernel'], function ($, kernel) {
             room: $('#lobby-room-template')
         },
         
-        userlist: $('#userlist-template')
+        userlist: $('#userlist-template'),
+        user: $('#user-template'),
+        
+        message: {
+            plain: $('#message-single-template'),
+            collapsible: $('#message-collapsible-template'),
+        }
     };
 
     return function () {

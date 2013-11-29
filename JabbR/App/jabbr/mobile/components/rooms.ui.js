@@ -12,7 +12,11 @@ define([
     'jabbr/mobile/components/rooms.client',
     'jabbr/mobile/components/messages',
     'jabbr/mobile/components/lobby',
-        
+    
+    'jabbr/core/components/users',
+    'jabbr/core/contentproviders/core',
+    'jabbr/core/messageprocessors/processor',
+
     'jquery.tmpl',
     'jquery.sortElements'
 ], function ($, Logger, kernel, RoomsUI,
@@ -23,7 +27,8 @@ define([
     Room,
 
     // Components
-    MobileNotifications, MobileRoomsClient, MobileMessages, MobileLobby
+    MobileNotifications, MobileRoomsClient, MobileMessages, MobileLobby,
+    users, contentProviders, processor
 ) {
     var logger = new Logger('jabbr/mobile/components/rooms.ui'),
         client = null,
@@ -42,12 +47,20 @@ define([
     return RoomsUI.extend({
         constructor: function () {
             this.base();
+            
+            users = users();
+            contentProviders = contentProviders();
+            processor = processor();
 
             this.submodules = {
                 notifications: new MobileNotifications(),
                 rc: new MobileRoomsClient(),
                 messages: new MobileMessages(),
-                lobby: new MobileLobby()
+                lobby: new MobileLobby(),
+                
+                users: users,
+                contentProviders: contentProviders,
+                processor: processor
             };
 
             rc = this.submodules.rc;
