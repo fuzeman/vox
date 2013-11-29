@@ -44,8 +44,7 @@ define(['jquery'], function ($) {
                 activateRoom: 'jabbr.components.rooms.ui.activateRoom'
             },
             client: {
-                scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom',
-                createMessage: 'jabbr.components.rooms.client.addMessage'
+                scrollToBottom: 'jabbr.components.rooms.client.scrollToBottom'
             }
         },
 

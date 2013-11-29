@@ -4,8 +4,16 @@ define([
     'logger',
     'kernel',
     'jabbr/base/event-object',
-    'jabbr/core/state'
-], function ($, Logger, kernel, EventObject, state) {
+    'jabbr/core/state',
+        
+    'jabbr/core/viewmodels/message'
+], function ($, Logger, kernel, EventObject,
+    // Core
+    state,
+    
+    // View Models
+    Message
+) {
     var logger = new Logger('jabbr/components/rooms.ui'),
         client = null,
         ru = null,
@@ -36,6 +44,13 @@ define([
             setInterval($.proxy(this.trimRoomMessageHistory, this), trimRoomHistoryFrequency);
 
             logger.trace('activated');
+        },
+        
+        createMessage: function (data, room) {
+            var viewModel = new Message(data);
+
+            rc.addMessage(viewModel.id);
+            messages.addChatMessage(viewModel, room);
         },
         
         // #region Room Elements

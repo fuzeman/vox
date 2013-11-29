@@ -93,7 +93,6 @@ define([
 
             // Bind events
             rc.bind(events.rooms.client.scrollToBottom, $.proxy(this._rcScrollToBottom, this));
-            rc.bind(events.rooms.client.createMessage, $.proxy(this._rcCreateMessage, this));
 
             // #region Global Events
 
@@ -446,14 +445,6 @@ define([
         // TODO: this could be moved to base
         _rcScrollToBottom: function (event, roomName) {
             this.scrollToBottom(roomName);
-        },
-
-        // TODO: this could be moved to base
-        _rcCreateMessage: function (event, data, room) {
-            var viewModel = new Message(data);
-
-            rc.addMessage(viewModel.id);
-            messages.addChatMessage(viewModel, room);
         },
 
         setLoadingHistory: function (loadingHistory) {

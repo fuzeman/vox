@@ -4,6 +4,7 @@ define([
     'logger',
     'kernel',
     'jabbr/base/components/rooms.client',
+    
     'jabbr/core/events',
     'jabbr/core/utility',
     'jabbr/core/viewmodels/message'
@@ -195,7 +196,7 @@ define([
             logger.info('loading recent messages');
             $.each(roomInfo.RecentMessages, $.proxy(function (i, message) {
                 message.isHistory = true;
-                this.trigger(events.rooms.client.createMessage, [message, room]);
+                ru.createMessage(message, room);
             }, this));
             logger.info('finished loading recent messages');
 
