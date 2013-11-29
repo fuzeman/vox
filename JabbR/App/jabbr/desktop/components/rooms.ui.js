@@ -333,7 +333,7 @@ define([
                 if (currentRoom !== null && currentRoom.exists()) {
                     currentRoom.makeInactive();
                     if (currentRoom.isLobby()) {
-                        lobby.hideForm();
+                        lobby.hide();
                         $roomActions.show();
                     }
                 }
@@ -342,7 +342,7 @@ define([
 
                 if (room.isLobby()) {
                     $roomActions.hide();
-                    lobby.showForm();
+                    lobby.show();
 
                     room.messages.hide();
                 }

@@ -15,6 +15,7 @@ define([
         rc = null,
         templates = null,
         $document = $(document),
+        $lobby = $('#lobby-wrapper'),
         $loadMoreRooms = $('#load-more-rooms-item'),
         $lobbyPrivateRooms = $('#lobby-private'),
         $lobbyOtherRooms = $('#lobby-other'),
@@ -117,5 +118,13 @@ define([
                 $lobbyOtherRooms.find('.nav-header').html(utility.getLanguageResource('Client_OtherRooms'));
             }
         },
+        
+        hide: function () {
+            $lobby.hide();
+        },
+
+        show: function () {
+            $lobby.show();
+        }
     });
 });

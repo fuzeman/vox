@@ -114,6 +114,8 @@ define([
 
             this.trigger(events.client.loggedOn, [rooms, myRooms, userPreferences, mentions, notifications]);
         },
+        
+        focused: function () { logger.warn('focused not implemented'); },
 
         logout: function () {
             var _this = this;

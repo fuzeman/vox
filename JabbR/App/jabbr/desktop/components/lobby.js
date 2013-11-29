@@ -316,11 +316,11 @@ define([
             $lobbyRoomFilterForm.submit();
         },
         
-        hideForm: function () {
+        hide: function () {
             $lobbyRoomFilterForm.hide();
         },
         
-        showForm: function () {
+        show: function () {
             $lobbyRoomFilterForm.show();
         }
     });
