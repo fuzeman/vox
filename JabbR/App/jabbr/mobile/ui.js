@@ -29,6 +29,12 @@ define([
                 hyperextensible: true,
                 resistance: 0.6
             });
+        },
+        
+        _activateRoom: function (event, activateRoom) {
+            this.base(event, activateRoom);
+
+            this.snapper.close();
         }
     });
 });
