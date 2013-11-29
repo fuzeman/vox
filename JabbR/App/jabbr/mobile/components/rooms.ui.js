@@ -5,6 +5,7 @@ define([
     'kernel',
     'jabbr/base/components/rooms.ui',
     
+    'jabbr/core/events',
     'jabbr/core/viewmodels/room',
     
     'jabbr/mobile/components/notifications',
@@ -15,6 +16,8 @@ define([
     'jquery.tmpl',
     'jquery.sortElements'
 ], function ($, Logger, kernel, RoomsUI,
+    // Core
+    events,
 
     // View Models
     Room,
@@ -22,7 +25,7 @@ define([
     // Components
     MobileNotifications, MobileRoomsClient, MobileMessages, MobileLobby
 ) {
-    var logger = new Logger('jabbr/desktop/components/rooms.ui'),
+    var logger = new Logger('jabbr/mobile/components/rooms.ui'),
         client = null,
         rc = null,
         ui = null,
@@ -30,9 +33,11 @@ define([
         lobby = null,
         messages = null,
         templates = null,
+        $document = $(document),
         $chatArea = $('#chat-area'),
         $roomList = $('#room-list'),
-        $userList = $('#user-list');
+        $userlistContainer = $('#userlist-container'),
+        lobbyLoaded = false;
 
     return RoomsUI.extend({
         constructor: function () {
@@ -57,6 +62,46 @@ define([
             lobby = kernel.get('jabbr/components/lobby');
             messages = kernel.get('jabbr/components/messages');
             templates = kernel.get('jabbr/templates');
+
+            this.attach();
+        },
+        
+        attach: function () {
+            $document.on('click', '#room-list li.room-item', function () {
+                var roomName = $(this).data('name');
+                rc.activateOrOpenRoom(roomName);
+            });
+
+            $document.on('click', '#room-list li.room-item .close', function (ev) {
+                var roomName = $(this).closest('li.room-item').data('name');
+
+                rc.leaveRoom(roomName);
+
+                ev.preventDefault();
+                return false;
+            });
+        },
+        
+        // #region Implement RoomsUI
+        
+        // #region Room Elements
+
+        getCurrentRoomElements: function () {
+            var currentRoom = $roomList.find('li.current');
+
+            if (currentRoom.length > 0) {
+                return rc.getRoom(currentRoom.data('name'));
+            }
+            return null;
+        },
+
+        getAllRoomElements: function () {
+            var _this = this,
+                rooms = [];
+            $roomList.find('li.room-item').each(function () {
+                rooms[rooms.length] = _this.getRoomElements($(this).data("name"));
+            });
+            return rooms;
         },
         
         getNextRoomListElement: function ($targetList, roomName, count, closed) {
@@ -103,6 +148,10 @@ define([
             return nextListElement;
         },
         
+        // #endregion
+
+        // #region Room Collection Methods
+
         addRoom: function (roomViewModel) {
             // Do nothing if the room exists
             var roomName = roomViewModel.Name;
@@ -143,6 +192,15 @@ define([
                 .appendTo($chatArea)
                 .hide();
             
+            userContainer = $('<div/>').attr('id', 'userlist-' + roomId)
+                .addClass('users')
+                .appendTo($userlistContainer).hide();
+            templates.userlist.tmpl({ listname: 'Room Owners', id: 'userlist-' + roomId + '-owners' })
+                .addClass('owners')
+                .appendTo(userContainer);
+            templates.userlist.tmpl({ listname: 'Users', id: 'userlist-' + roomId + '-active' })
+                .appendTo(userContainer);
+
             $roomList.find('li.room-item')
                 .not('.lobby')
                 .sortElements(function (a, b) {
@@ -176,5 +234,77 @@ define([
 
             return rc.getRoom(roomName);
         },
+        
+        // #endregion
+        
+        setActiveRoomCore: function (roomName) {
+            var room = this.getRoomElements(roomName);
+
+            // TODO this.loadRoomPreferences(roomName);
+
+            if (room === null) {
+                return false;
+            }
+
+            if (room.isActive()) {
+                // Still trigger the event (just do less overall work)
+                rc.activeRoomChanged(roomName);
+                return true;
+            }
+
+            var currentRoom = this.getCurrentRoomElements();
+
+            if (room.exists()) {
+                if (currentRoom !== null && currentRoom.exists()) {
+                    currentRoom.makeInactive();
+                    if (currentRoom.isLobby()) {
+                        lobby.hide();
+                        // TODO $roomActions.show();
+                    }
+                }
+
+                room.makeActive();
+
+                if (room.isLobby()) {
+                    // TODO $roomActions.hide();
+                    lobby.show();
+
+                    room.messages.hide();
+                }
+
+                this.trigger(events.rooms.ui.activateRoom, room);
+
+                rc.activeRoomChanged(roomName);
+                events.trigger(events.focused, room);
+
+                return true;
+            }
+
+            return false;
+        },
+
+        updateRoom: function (roomName) {
+            var roomId = rc.getRoomId(roomName),
+                room = rc.rooms[rc.cleanRoomName(roomName)];
+
+            logger.trace("Updating current room elements");
+
+            // Update the current elements if the room has already been added
+            room.tab = $('#tabs-' + roomId);
+            room.users = $('#userlist-' + roomId);
+            room.owners = $('#userlist-' + roomId + '-owners');
+            room.activeUsers = $('#userlist-' + roomId + '-active');
+            room.messages = $('#messages-' + roomId);
+            room.roomTopic = $('#roomTopic-' + roomId);
+
+            if (!rc.validRoom(roomName)) {
+                logger.warn('Failed to update invalid room "' + roomName + '"');
+                return false;
+            }
+
+            return true;
+        },
+
+        // #endregion
     });
 });

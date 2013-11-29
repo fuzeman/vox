@@ -27,12 +27,17 @@
     <script id="lobby-room-template" type="text/x-jquery-tmpl">
         <li class="room {{if Private}}locked{{/if}} {{if Closed}}closed{{/if}} {{if processedTopic}}list-item-two-lines{{else}}list-item-single-line{{/if}}" data-room="${Name}" data-name="${Name}" data-count="${Count}">
             {{if processedTopic}}
-                <h3>${Name}</h3>
-                <p class="topic">{{html processedTopic}}</p>
+            <h3>${Name}</h3>
+            <p class="topic">{{html processedTopic}}</p>
             {{else}}
-                ${Name}
+            ${Name}
             {{/if}}
         </li>
+    </script>
+    
+    <script id="userlist-template" type="text/x-jquery-tmpl">
+        <h3 class="userlist-header">${listname}</h3>
+        <ul id="${id}" class="list" data-empty-message="@LanguageResources.Client_NoUsersInList"></ul>
     </script>
 }
 
@@ -50,11 +55,7 @@
         </div>
     </div>
     <div id="drawer-right" class="snap-drawer snap-drawer-right">
-        <div>
-            <ul id="user-list" class="list">
-                <li class="list-divider">Users</li>
-            </ul>
-        </div>
+        <div id="userlist-container"></div>
     </div>
 }
 

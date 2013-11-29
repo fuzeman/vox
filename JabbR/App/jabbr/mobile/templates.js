@@ -4,9 +4,12 @@ define(['jquery', 'kernel'], function ($, kernel) {
         drawer: {
             room: $('#drawer-room-template')
         },
+        
         lobby: {
             room: $('#lobby-room-template')
-        }
+        },
+        
+        userlist: $('#userlist-template')
     };
 
     return function () {
