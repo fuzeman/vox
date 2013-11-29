@@ -13,7 +13,8 @@ define([
         client = null,
         ui = null,
         ru = null,
-        rc = null;
+        rc = null,
+        templates = null;
 
     return EventObject.extend({
         constructor: function () {
@@ -31,6 +32,7 @@ define([
             ui = kernel.get('jabbr/ui');
             ru = kernel.get('jabbr/components/rooms.ui');
             rc = kernel.get('jabbr/components/rooms.client');
+            templates = kernel.get('jabbr/templates');
 
             logger.trace('activated');
 
@@ -48,7 +50,77 @@ define([
         
         // #region Add Message
 
-        addChatMessage: function (message, roomName) { logger.warn('addChatMessage not implemented'); },
+        addChatMessage: function (message, roomName) {
+            var room = ru.getRoomElements(roomName);
+
+            if (room === null) {
+                logger.warn('Room does not exist yet');
+                return;
+            }
+
+            // bounce out of here if the room is closed
+            if (room.isClosed()) {
+                return;
+            }
+
+            var previousMessage = room.getLastMessage(),
+                showUserName = true,
+                isNotification = message.messageType === 1;;
+
+            if (previousMessage.timestamp === null) {
+                previousMessage.timestamp = new Date().addDays(1); // Tomorrow so we always see a date line
+            }
+
+            // Force a user name to show if a header will be displayed
+            if (message.date.toDate().diffDays(previousMessage.timestamp.toDate())) {
+                previousMessage.name = null;
+            }
+
+            // Determine if we need to show the user name next to the message
+            showUserName = previousMessage.name !== message.name && !isNotification;
+            message.showUser = showUserName;
+
+            this.processMessage(message, roomName);
+
+            if (showUserName === false) {
+                previousMessage.element.addClass('continue');
+            }
+
+            // check to see if room needs a separator
+            if (room.needsSeparator()) {
+                // if there's an existing separator, remove it
+                if (room.hasSeparator()) {
+                    room.removeSeparator();
+                }
+                room.addSeparator();
+            }
+
+            if (isNotification === true) {
+                var model = {
+                    id: message.id,
+                    content: message.message,
+                    img: message.imageUrl,
+                    source: message.source,
+                    encoded: true
+                };
+
+                this.addMessage(model, 'postedNotification', roomName);
+            } else {
+                this.appendMessage(templates.message.plain.tmpl(message), room);
+
+                // TODO Message Ticker
+                //if (!message.isMine && !message.isHistory && roomName != room.getName()) {
+                //    MessageTicker.appendMessage(message, roomName);
+                //}
+            }
+
+            if (message.htmlContent) {
+                this.addChatMessageContent(message.id, message.htmlContent, room.getName());
+            }
+
+            // Trigger notification
+            notifications.messageNotification(message, room);
+        },
         
         appendMessage: function (newMessage, room) { logger.warn('appendMessage not implemented'); },
         

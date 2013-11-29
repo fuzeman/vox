@@ -236,6 +236,21 @@ define([
             this.messages.find(getUserClassName(userName)));
     };
 
+    Room.prototype.getLastMessage = function () {
+        var message = {
+            element: this.messages.children().last(),
+            name: null,
+            timestamp: null
+        };
+
+        if (message.element.length > 0) {
+            message.name = message.element.data('name');
+            message.timestamp = new Date(message.element.data('timestamp') || new Date());
+        }
+
+        return message;
+    };
+
     Room.prototype.setLocked = function (isLocked) {
         if (isLocked) {
             this.tab.addClass('locked');
