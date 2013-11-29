@@ -26,19 +26,25 @@ define([
             issue.data.body = utility.markdownToHtml(utility.encodeHtml(issue.data.body));
 
             // Process the template, and add it in to the div.
-            $('#github-issues-template').tmpl(issue.data).appendTo(elements);
+            var $issue = $('#github-issues-template').tmpl(issue.data);
 
-            // After the string has been added to the template etc, remove any existing targets and re-add with _blank
-            $('a', elements).removeAttr('target').attr('target', '_blank');
+            if ($issue.length > 0) {
+                $issue.appendTo(elements);
 
-            $('.js-relative-date').timeago();
-            // If near the end, scroll.
-            if (nearEnd) {
-                ru.scrollToBottom();
-            }
-            elements.append('<script src="https://api.github.com/users/' + issue.data.user.login + '?callback=addGitHubIssuesUser"></script>');
-            if (issue.data.assignee) {
-                elements.append('<script src="https://api.github.com/users/' + issue.data.assignee.login + '?callback=addGitHubIssuesUser"></script>');
+                // After the string has been added to the template etc, remove any existing targets and re-add with _blank
+                $('a', elements).removeAttr('target').attr('target', '_blank');
+
+                $('.js-relative-date').timeago();
+                // If near the end, scroll.
+                if (nearEnd) {
+                    ru.scrollToBottom();
+                }
+                elements.append('<script src="https://api.github.com/users/' + issue.data.user.login + '?callback=addGitHubIssuesUser"></script>');
+                if (issue.data.assignee) {
+                    elements.append('<script src="https://api.github.com/users/' + issue.data.assignee.login + '?callback=addGitHubIssuesUser"></script>');
+                }
+            } else {
+                logger.warn('missing github issue template');
             }
         }
 
@@ -52,15 +58,21 @@ define([
 
             comment.data.body = utility.markdownToHtml(utility.encodeHtml(comment.data.body));
             // Process the template, and add it in to the div.
-            $('#github-issues-comment-template').tmpl(comment.data).appendTo(elements);
+            var $comment = $('#github-issues-comment-template').tmpl(comment.data);
 
-            // After the string has been added to the template etc, remove any existing targets and re-add with _blank
-            $('a', elements).removeAttr('target').attr('target', '_blank');
+            if ($comment.length > 0) {
+                $comment.appendTo(elements);
 
-            $('.js-relative-date').timeago();
-            // If near the end, scroll.
-            if (nearEnd) {
-                ru.scrollToBottom();
+                // After the string has been added to the template etc, remove any existing targets and re-add with _blank
+                $('a', elements).removeAttr('target').attr('target', '_blank');
+
+                $('.js-relative-date').timeago();
+                // If near the end, scroll.
+                if (nearEnd) {
+                    ru.scrollToBottom();
+                }
+            } else {
+                logger.warn('missing github comment template');
             }
         }
 

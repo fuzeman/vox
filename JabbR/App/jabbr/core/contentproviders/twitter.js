@@ -23,11 +23,17 @@ define([
             .removeClass('tweet_' + id);
 
             // Process the template, and add it in to the div.
-            $('#tweet-template').tmpl(tweet).appendTo(elements);
+            var $tweet = $('#tweet-template').tmpl(tweet);
+            
+            if ($tweet.length > 0) {
+                $tweet.appendTo(elements);
 
-            // If near the end, scroll.
-            if (nearEnd) {
-                ru.scrollToBottom();
+                // If near the end, scroll.
+                if (nearEnd) {
+                    ru.scrollToBottom();
+                }
+            } else {
+                logger.warn('missing tweet template');
             }
         }
 
