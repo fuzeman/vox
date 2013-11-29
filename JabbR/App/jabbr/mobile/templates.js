@@ -15,6 +15,7 @@ define(['jquery', 'kernel'], function ($, kernel) {
         message: {
             plain: $('#message-single-template'),
             collapsible: $('#message-collapsible-template'),
+            notification: $('#message-notification-template')
         }
     };
 

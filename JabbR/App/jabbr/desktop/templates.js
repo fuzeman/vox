@@ -3,7 +3,6 @@ define(['jquery', 'kernel'], function ($, kernel) {
     var templates = {
         userlist: $('#new-userlist-template'),
         user: $('#new-user-template'),
-        notification: $('#new-notification-template'),
         separator: $('#message-separator-template'),
         tab: $('#new-tab-template'),
         gravatarprofile: $('#gravatar-profile-template'),
@@ -13,7 +12,8 @@ define(['jquery', 'kernel'], function ($, kernel) {
         
         message: {
             plain: $('#new-message-template'),
-            collapsible: $('#multiline-content-template')
+            collapsible: $('#multiline-content-template'),
+            notification: $('#new-notification-template')
         }
     };
 

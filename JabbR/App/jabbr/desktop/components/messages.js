@@ -489,7 +489,7 @@ define([
                     id: options.id
                 };
 
-            return templates.notification.tmpl(message);
+            return templates.message.notification.tmpl(message);
         },
         
         collapseNotifications: function ($notification) {
