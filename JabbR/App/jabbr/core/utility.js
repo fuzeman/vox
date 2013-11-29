@@ -140,7 +140,7 @@ define([
 
         if (hasNewline) {
             // Multiline detection
-            return $('<div />').append(templates.multiline.tmpl({ content: content })).html();
+            return $('<div />').append(templates.message.collapsible.tmpl({ content: content })).html();
         } else {
             // Emoji
             content = utility.parseEmojis(content);

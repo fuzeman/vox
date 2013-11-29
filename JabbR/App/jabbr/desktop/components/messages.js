@@ -117,7 +117,7 @@ define([
 
                 this.addMessage(model, 'postedNotification', roomName);
             } else {
-                this.appendMessage(templates.message.tmpl(message), room);
+                this.appendMessage(templates.message.plain.tmpl(message), room);
 
                 if (!message.isMine && !message.isHistory && roomName != currentRoomName) {
                     MessageTicker.appendMessage(message, roomName);
@@ -267,7 +267,7 @@ define([
                 this.showUser = !previousUser || previousUser !== this.name;
 
                 // Render the new message
-                $target.before(templates.message.tmpl(this));
+                $target.before(templates.message.plain.tmpl(this));
 
                 if (this.showUser === false) {
                     $previousMessage.addClass('continue');
