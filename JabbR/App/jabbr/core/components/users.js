@@ -5,7 +5,9 @@ define([
     'kernel',
     'jabbr/core/state',
     'jabbr/core/viewmodels/user',
-    'jabbr/core/viewmodels/room-user'
+    'jabbr/core/viewmodels/room-user',
+        
+    'jquery.tmpl'
 ], function ($, Logger, kernel, state, User, RoomUser) {
     var logger = new Logger('jabbr/components/users'),
         client = null,
