@@ -1,4 +1,9 @@
-﻿#room-list {
+﻿.fries-content {
+    overflow: visible;
+    overflow-wrap: normal;
+}
+
+#room-list {
     
 }
 
@@ -55,6 +60,56 @@
     #lobby-wrapper .room .topic {
         line-height: 14px;
     }
+
+#chat-area {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+#message-form {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 53px;
+
+    background-color: #222;
+}
+    
+    #message-form .message-container {
+        margin-right: 90px;
+        margin-left: 8px;
+    }
+
+        #message-form .message-container input {
+            margin-top: -3px;
+        }
+
+    #message-form .send-btn {
+        float: right;
+
+        width: 70px;
+        height: 32px;
+
+        margin: 10px;
+        padding: 6px 10px;
+    }
+
+.messages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 53px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+}
 
 .message {
     list-style-type: none;
