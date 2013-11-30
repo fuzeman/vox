@@ -58,6 +58,7 @@
     margin: 0px;
 
     border-left: 26px solid #444;
+    border-bottom: 1px solid #444;
 }
 
     .message.continue {
@@ -91,4 +92,14 @@
         width: 95px;
         font-size: 0.9em;
         text-align: right;
+    }
+
+.list-header {
+    padding: 3px 5px;
+    color: #B3B3B3;
+    border-bottom: 1px solid #444;
+}
+
+    .list-header .content {
+        font-size: 0.9em;
     }
