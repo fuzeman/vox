@@ -34,10 +34,14 @@
     margin-top:5px;
 }
 
-#lobby-private,
-#lobby-other {
-    display: none;
+#lobby-wrapper {
+    padding: 5px 10px;
 }
+
+    #lobby-private,
+    #lobby-other {
+        display: none;
+    }
 
     #lobby-wrapper .nav-header {
         margin: 5px 0 10px 0;
@@ -67,7 +71,7 @@
     
     .message.my-message {
         border-color: #4D5C66;
-        background: #444;
+        background: #4A4A4A;
     }
 
     .message .left {
