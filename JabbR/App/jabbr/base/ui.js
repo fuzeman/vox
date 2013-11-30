@@ -92,8 +92,8 @@ define([
         // Event Handlers
         //
 
-        _activateRoom: function (event, activateRoom) {
-            this.toggleMessageSection(activateRoom.isClosed());
+        _activateRoom: function (event, room) {
+            this.toggleMessageSection(room.isClosed());
         },
 
         _clientConnected: function (event, change, initial) {

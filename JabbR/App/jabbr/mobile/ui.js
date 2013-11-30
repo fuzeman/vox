@@ -7,6 +7,9 @@ define([
 
     'snap'
 ], function (UI, MobileRoomsUI, MobileHelp, templates) {
+    var $title = $('#title'),
+        $subtitle = $('.subtitle', $title);
+
     return UI.extend({
         constructor: function () {
             this.base();
@@ -31,8 +34,10 @@ define([
             });
         },
         
-        _activateRoom: function (event, activateRoom) {
-            this.base(event, activateRoom);
+        _activateRoom: function (event, room) {
+            this.base(event, room);
+
+            $subtitle.text(room.getName());
 
             this.snapper.close();
         }

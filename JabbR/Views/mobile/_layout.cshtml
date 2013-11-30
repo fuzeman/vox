@@ -20,20 +20,17 @@
         <link href="@Url.Content("~/Content/themes/mobile_default/layout.css")" rel="stylesheet" />
         <link href="@Url.Content("~/Content/snap.css")" rel="stylesheet" />
 
-        @RenderSection("Head", required: false);
+        @RenderSection("Head", required: false)
     </head>
 
     <body>
         <div class="snap-drawers">
-            @RenderSection("Drawers", required: false);
+            @RenderSection("Drawers", required: false)
         </div>
 
         <div id="container" class="page snap-content">
             <header class="action-bar fixed-top">
-                <a href="javascript: void(0);" class="app-icon action" data-ignore="true">
-                    <img src="@Url.Content("~/Content/images/logo64.png")" />
-                </a>
-                <h1 class="title">iceJabbR</h1>
+                @RenderSection("Header")
             </header>
 
             @RenderBody()
