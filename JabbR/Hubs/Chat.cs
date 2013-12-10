@@ -977,14 +977,14 @@ namespace JabbR
             }
         }
 
-        void INotificationService.ChangeMentions(ChatUser user, string[] mentions)
+        void INotificationService.ChangeMentions(ChatUser user, string[] mentions, bool update)
         {
             Clients.Caller.hash = user.Hash;
 
             // Update the calling client
             foreach (var client in user.ConnectedClients)
             {
-                Clients.Client(client.Id).mentionsChanged(mentions);
+                Clients.Client(client.Id).mentionsChanged(mentions, update);
             }
 
             // Create the view model

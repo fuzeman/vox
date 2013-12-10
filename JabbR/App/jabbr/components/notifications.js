@@ -122,13 +122,6 @@ define([
                 messages.addMessage('Your password has been changed', 'notification', state.get().activeRoom);
             };
 
-            // Called when you have added or cleared a note
-            client.chat.client.noteChanged = function (isAfk, isCleared) {
-                var afkMessage = 'You have gone AFK';
-                var noteMessage = 'Your note has been ' + (isCleared ? 'cleared' : 'set');
-                messages.addMessage(isAfk ? afkMessage : noteMessage, 'notification', state.get().activeRoom);
-            };
-
             client.chat.client.welcomeChanged = function (isCleared, welcome) {
                 var action = isCleared ? 'cleared' : 'set';
                 var to = welcome ? ' to:' : '';

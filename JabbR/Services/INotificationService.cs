@@ -7,7 +7,7 @@ namespace JabbR.Services
     public interface INotificationService
     {
         void ChangeGravatar(ChatUser user);
-        void ChangeMentions(ChatUser user, string[] mentions);
+        void ChangeMentions(ChatUser user, string[] mentions, bool update = true);
         void JoinRoom(ChatUser user, ChatRoom room);
 
         // Client actions

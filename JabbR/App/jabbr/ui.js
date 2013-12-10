@@ -750,19 +750,30 @@ define([
                 messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
             },
 
-            mentionsChanged: function (mentions) {
+            mentionsChanged: function (mentions, update) {
+                if (mentions === null) {
+                    mentions = [];
+                }
+
                 client.updateMentions(mentions);
 
                 var message = null;
-
-                if (mentions.length === 0) {
-                    message = 'cleared';
+                
+                if (update) {
+                    if (mentions.length === 0) {
+                        message = 'Your mention strings have been cleared';
+                    } else {
+                        message = 'Your mention strings have been set to "' + mentions.join('", "') + '"';
+                    }
                 } else {
-                    message = 'set to ' + mentions.join(", ");
+                    if (mentions.length === 0) {
+                        message = 'You have no mention strings set';
+                    } else {
+                        message = 'Your mention strings are "' + mentions.join('", "') + '"';
+                    }
                 }
 
-                messages.addMessage('Your mention strings have been ' + message,
-                    'notification', state.get().activeRoom);
+                messages.addMessage(message, 'notification', state.get().activeRoom);
             }
         };
 

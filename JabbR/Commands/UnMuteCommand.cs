@@ -6,7 +6,7 @@ using System.Web;
 
 namespace JabbR.Commands
 {
-    [Command("unmute", "Give a user permission to send messages in a room. Only works if you're an owner of that room", "user [room]", "room")]
+    [Command("unmute", "UnMute_CommandInfo", "user [room]", "room")]
     public class UnMuteCommand : UserCommand
     {
         public override void Execute(CommandContext context, CallerContext callerContext, Models.ChatUser callingUser, string[] args)
