@@ -1,13 +1,13 @@
-﻿using System;
+﻿using JabbR.Infrastructure;
+using JabbR.Models;
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using JabbR.Infrastructure;
-using JabbR.Models;
 using System.Net.Http;
-using Microsoft.Ajax.Utilities;
-using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace JabbR.Services
 {
@@ -131,32 +131,32 @@ namespace JabbR.Services
             if (preferences == null || !preferences.Enabled || preferences.APIKey.IsNullOrWhiteSpace())
                 return;
 
-            List<string> deviceIdentifiers;
+            // Get a list of all devices for user from pushbullet
+            var devices = await PushbulletRequest(preferences.APIKey, "devices", HttpMethod.Get);
 
-            if (preferences.Devices.IsNullOrWhiteSpace())
+            if (devices.Item1.StatusCode != HttpStatusCode.OK)
             {
-                // Get a list of all devices for user from pushbullet
-                var devices = await PushbulletRequest(preferences.APIKey, "devices", HttpMethod.Get);
-
-                if (devices.Item1.StatusCode != HttpStatusCode.OK)
-                {
-                    _logger.Log("Pushbullet /api/devices request failed, StatusCode: {0}", devices.Item1.StatusCode);
-                    return;
-                }
-
-                deviceIdentifiers = devices.Item2["devices"].Select(d => d["id"].Value<string>()).ToList();
+                _logger.Log("Pushbullet /api/devices request failed, StatusCode: {0}", devices.Item1.StatusCode);
+                return;
             }
-            else
+
+            var deviceIdentifiers = devices.Item2["devices"].Select(d => new Tuple<string, string>(d["id"].Value<string>(), d["extras"]["nickname"].Value<string>())).ToList();
+
+            // Filter devices from stored names
+            if (!preferences.Devices.IsNullOrWhiteSpace())
             {
                 // Parse devices from input
-                deviceIdentifiers = PushbulletParseDevices(preferences.Devices).ToList();
+                var names = PushbulletParseDevices(preferences.Devices).ToList();
+
+                // Filter devices based on names
+                deviceIdentifiers = deviceIdentifiers.Where(d => names.Contains(d.Item2)).ToList();
             }
 
-            foreach (var deviceId in deviceIdentifiers)
+            foreach (var device in deviceIdentifiers)
             {
                 var request = new Dictionary<string, string>
                 {
-                    {"device_id", deviceId},
+                    {"device_id", device.Item1},
                     {"type", "note"},
                     {"title", GetTitle(message)},
                     {"body", message.Content}
@@ -170,23 +170,7 @@ namespace JabbR.Services
 
         private IEnumerable<string> PushbulletParseDevices(string devicesString)
         {
-            var devices = devicesString.Split(',').Where(s => s.Length > 0);
-
-            var validDevices = new List<int>();
-
-            foreach (var s in devices)
-            {
-                var i = -1;
-                if (!int.TryParse(s, out i))
-                {
-                    _logger.Log("Pushbullet Device with ID \"{0}\" is not an integer", s);
-                    return null;
-                }
-
-                validDevices.Add(i);
-            }
-
-            return validDevices.Select(s => s.ToString());
+            return devicesString.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0);
         }
 
         private Task<Tuple<HttpResponseMessage, JObject>> PushbulletRequest(string apiKey, string method, HttpMethod httpMethod, Dictionary<string, string> request = null)
@@ -196,11 +180,11 @@ namespace JabbR.Services
             var auth = System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:", apiKey));
             message.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(auth));
 
-            if(request != null)
+            if (request != null)
                 message.Content = new FormUrlEncodedContent(request);
 
             return _httpClient.SendAsync(message).Then(response =>
-                response.Content.ReadAsStringAsync().Then(s => 
+                response.Content.ReadAsStringAsync().Then(s =>
                     new Tuple<HttpResponseMessage, JObject>(response, JObject.Parse(s))));
         }
     }
