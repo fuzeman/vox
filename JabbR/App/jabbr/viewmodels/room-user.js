@@ -100,7 +100,7 @@ define([
 
         if (this.user.noteClass === 'afk') {
             noteText = this.user.note + ' (' + this.user.timeAgo + ')';
-            requireRoomUpdate = this.setActive();
+            requireRoomUpdate = this.setInActive();
         } else if (this.user.active) {
             requireRoomUpdate = this.setActive();
         } else {
