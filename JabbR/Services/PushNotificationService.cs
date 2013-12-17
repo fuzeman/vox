@@ -140,7 +140,17 @@ namespace JabbR.Services
                 return;
             }
 
-            var deviceIdentifiers = devices.Item2["devices"].Select(d => new Tuple<string, string>(d["id"].Value<string>(), d["extras"]["nickname"].Value<string>())).ToList();
+            var deviceIdentifiers = devices.Item2["devices"]
+                .Select(d =>
+                {
+                    var name = d["extras"]["nickname"].Value<string>();
+
+                    if (name.Length < 1)
+                        name = d["extras"]["model"].Value<string>();
+
+                    return new Tuple<string, string>(d["id"].Value<string>(), name);
+                })
+                .ToList();
 
             // Filter devices from stored names
             if (!preferences.Devices.IsNullOrWhiteSpace())
