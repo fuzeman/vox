@@ -851,7 +851,7 @@ form#send-message {
 
 #info-container ul {
     position: absolute;
-    bottom: 0;
+    bottom: 2px;
     left: 3px;
 
     margin: 0;
