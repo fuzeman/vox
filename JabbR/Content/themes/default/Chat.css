@@ -824,24 +824,64 @@ form#send-message {
     right: 235px;
 }
 
-#message-total {
+#info-container {
     position: absolute;
-    bottom: 15px;
+    bottom: 5px;
     right: 5px;
-    font-size: 36px;
-    font-weight: bold;
-    color: #DDD;
 
-    -webkit-touch-callout: none;
+    width: 225px;
+    height: 40px;
 
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
-
-    cursor: default;
+    color: #666;
 }
+    #clock {
+        position: absolute;
+        right: 3px;
+
+        text-align: right;
+    }
+
+        #clock .time {
+            font-size: 16px;
+        }
+
+        #clock .date {
+            font-size: 10px;
+        }
+
+#info-container ul {
+    position: absolute;
+    bottom: 2px;
+    left: 3px;
+
+    margin: 0;
+
+    list-style-type: none;
+
+    font-size: 13px;
+
+    color: #AAA;
+}
+
+    #info-container ul li i {
+        padding: 0 2px;
+    }
+
+    #info-container ul li:hover {
+        color: #666;
+    }
+
+    #message-total {
+        -webkit-touch-callout: none;
+
+        -webkit-user-select: none;
+         -khtml-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+
+        cursor: default;
+    }
 
 #message-ticker {
     position: absolute;
@@ -3307,6 +3347,10 @@ h3.userlist-header {
         right: 200px;
     }
 
+    #info-container {
+        width: 190px;
+    }
+
     #message-ticker {
         width: 201px;
     }
@@ -3352,7 +3396,7 @@ h3.userlist-header {
         width: 151px;
     }
 
-    #message-total {
+    #info-container {
         display: none;
     }
 
