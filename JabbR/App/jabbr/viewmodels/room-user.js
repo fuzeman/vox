@@ -92,14 +92,15 @@ define([
     };
 
     RoomUser.prototype.updateNote = function () {
-        var $title = this.$roomUser.find('.name'),
+        var $extended = this.$roomUser.find('.extended'),
+            $note = $extended.find('.note'),
             noteText = this.user.note,
             noteTextEncoded = null,
             requireRoomUpdate = false;
 
         if (this.user.noteClass === 'afk') {
             noteText = this.user.note + ' (' + this.user.timeAgo + ')';
-            requireRoomUpdate = this.setActive();
+            requireRoomUpdate = this.setInActive();
         } else if (this.user.active) {
             requireRoomUpdate = this.setActive();
         } else {
@@ -108,12 +109,22 @@ define([
 
         noteTextEncoded = $('<div/>').html(noteText).text();
 
-        // Remove all classes and the text
-        $title.removeAttr('title');
-
+        // Update note
         if (this.user.note) {
-            $title.attr('title', noteTextEncoded);
+            // Add note status element if one doesn't exist
+            if ($note.length === 0) {
+                $note = $('<li class="note"><i class="icon-edit"></i> <span></span></li>');
+
+                $extended.append($note);
+            }
+            
+            $note.attr('title', noteTextEncoded);
+            $('span', $note).text(noteTextEncoded);
+        } else {
+            $note.remove();
         }
+        
+        this.updateExtended();
 
         if (requireRoomUpdate) {
             this.$roomUser.each(function () {
@@ -144,13 +155,20 @@ define([
     };
 
     RoomUser.prototype.updateExternalStatus = function () {
-        var $extendedTitle = this.$roomUser.find('.extended .title');
+        var $extended = this.$roomUser.find('.extended'),
+            $externalStatus = $extended.find('.external-status');
+        
+        if ($externalStatus.length === 0) {
+            $externalStatus = $('<li class="external-status"><i></i> <span></span></li>');
+            
+            $extended.prepend($externalStatus);
+        }
 
         if (this.user.status_type !== null &&
             this.user.status_result !== null) {
             var result = this.user.status_result;
 
-            var $titleSpan = $('span', $extendedTitle),
+            var $titleSpan = $('span', $externalStatus),
                 tooltip = "";
             
             // Set basic result
@@ -190,21 +208,21 @@ define([
             }
 
             // Update DOM
-            $extendedTitle.attr('title', tooltip);
+            $externalStatus.attr('title', tooltip);
             
             // Set status icon
             if (this.user.status_type == 'music') {
-                $('i', $extendedTitle).attr('class', 'icon-music');
+                $('i', $externalStatus).attr('class', 'icon-music');
             } else if (this.user.status_type == 'video') {
-                $('i', $extendedTitle).attr('class', 'icon-film');
+                $('i', $externalStatus).attr('class', 'icon-film');
             } else if (this.user.status_type == 'game') {
-                $('i', $extendedTitle).attr('class', 'icon-gamepad');
+                $('i', $externalStatus).attr('class', 'icon-gamepad');
             }
         } else {
-            $extendedTitle.attr('title', '');
-            $('span', $extendedTitle).text('');
-            $('i', $extendedTitle).attr('class', '');
+            $externalStatus.remove();
         }
+        
+        this.updateExtended();
     };
 
     RoomUser.prototype.updateActivity = function () {
@@ -226,6 +244,17 @@ define([
         }
 
         this.updateNote();
+    };
+
+    RoomUser.prototype.updateExtended = function () {
+        var $extended = this.$roomUser.find('.extended'),
+            $items = $extended.find('li');
+        
+        if ($items.length === 2) {
+            $extended.addClass('dual');
+        } else {
+            $extended.removeClass('dual');
+        }
     };
 
     RoomUser.prototype.setTyping = function () {
