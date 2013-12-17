@@ -25,6 +25,7 @@ define([
         rc = null,
         lobby = null,
         messages = null,
+        notifications = null,
         object = null;
 
     logger.trace('loaded');
@@ -748,6 +749,8 @@ define([
                 }, 300);
 
                 messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
+                
+                notifications.notifyMention(true);
             },
 
             mentionsChanged: function (mentions, update) {
@@ -783,6 +786,7 @@ define([
                 rc = kernel.get('jabbr/components/rooms.client');
                 lobby = kernel.get('jabbr/components/lobby');
                 messages = kernel.get('jabbr/components/messages');
+                notifications = kernel.get('jabbr/components/notifications');
 
                 connectionStatus.activate();
                 ru.activate();
