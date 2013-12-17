@@ -43,7 +43,9 @@ define([
             $sendMessage = $('#send-message'),
             $roomFilterInput = $('#room-filter'),
             $tabs = $('#tabs'),
-            $messageTotal = $('#message-total'),
+            $messageTotal = $('#message-total .value'),
+            $clockTime = $('#clock .time'),
+            $clockDate = $('#clock .date'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -705,6 +707,28 @@ define([
         });
 
         // #endregion
+
+        //
+        // Clock
+        //
+
+        var shortMonth = ["Jan", "Feb", "Mar",
+            "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+            "Oct", "Nov", "Dec"];
+
+        // Update clock every second
+        setInterval(function () {
+            var date = new Date();
+
+            var hours24 = date.getHours(),
+                hours = ((hours24 + 11) % 12) + 1,
+                period = hours24 > 11 ? 'PM' : 'AM';
+
+            $clockTime.text(hours + ':' + date.getMinutes() + ' ' + period);
+
+            $clockDate.text(date.getDate() + ' ' + shortMonth[date.getMonth()] + ' ' + date.getFullYear());
+        }, 1000);
+
 
         // Configure livestamp to only update every 30s since display
         // granularity is by minute anyway (saves CPU cycles)
