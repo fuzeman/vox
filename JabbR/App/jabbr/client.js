@@ -35,7 +35,7 @@ define([
         connection.hub.qs = "version=" + window.jabbrVersion;
 
         function generateCustomMentionRegex(strings) {
-            if (strings === null || strings.length < 0) {
+            if (strings === null || strings.length < 1) {
                 return null;
             }
 
