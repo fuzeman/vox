@@ -194,7 +194,9 @@ define([
     }
 
     utility = {
+        padZero: padZero,
         padLeft: padLeft,
+        
         trim: function (value, length) {
             if (value.length > length) {
                 return value.substr(0, length - 3) + '...';

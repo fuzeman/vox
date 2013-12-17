@@ -724,7 +724,7 @@ define([
                 hours = ((hours24 + 11) % 12) + 1,
                 period = hours24 > 11 ? 'PM' : 'AM';
 
-            $clockTime.text(hours + ':' + date.getMinutes() + ' ' + period);
+            $clockTime.text(hours + ':' + utility.padZero(date.getMinutes()) + ' ' + period);
 
             $clockDate.text(date.getDate() + ' ' + shortMonth[date.getMonth()] + ' ' + date.getFullYear());
         }, 1000);
