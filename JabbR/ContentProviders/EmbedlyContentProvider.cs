@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JabbR.ContentProviders.Core;
 using System.ComponentModel.Composition;
@@ -13,6 +14,11 @@ namespace JabbR.ContentProviders
 {
     public class EmbedlyContentProvider : CollapsibleContentProvider
     {
+        public List<string> HostExceptions = new List<string>
+        {
+            "docs.google.com"
+        }; 
+
         private readonly IKernel _kernel;
         private readonly IJabbrConfiguration _configuration;
         private ApplicationSettings _settings;
@@ -175,6 +181,9 @@ namespace JabbR.ContentProviders
                 _settings = _kernel.Get<ApplicationSettings>();
 
             if (_settings.EmbedlyKey.IsNullOrWhiteSpace())
+                return false;
+
+            if (HostExceptions.Contains(uri.Host))
                 return false;
 
             // valid for everything, requires a request to actually determine what
