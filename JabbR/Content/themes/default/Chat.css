@@ -540,13 +540,52 @@ form#send-message {
             font-size: 11px;
         }
 
-.user .gravatar {
+.user {
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+}
+
+.user .art {
+    float: left;
+
     width: 32px;
     height: 32px;
+
     margin: 3px 0;
-    float: left;
-    background-color: #C5C5C5;
+
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+
+    transition: transform 1s;
+    -webkit-transition: -webkit-transform 1s;
 }
+
+    .user .art div {
+        position: absolute;
+        display: block;
+
+        width: 32px;
+        height: 32px;
+
+      background-color: #C5C5C5;
+      background-size: cover;
+    }
+
+        .user .art .gravatar {
+            transform: rotateY(0deg);
+            -webkit-transform: rotateY(0deg);
+
+        }
+
+        .user .art .status {
+            transform: rotateY(90deg) translateZ(16px);
+            -webkit-transform: rotateY(90deg) translateZ(16px);
+        }
+
+    .user .art.show-status {
+        transform: translateZ( -16px ) rotateY(  -90deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  -90deg );
+    }
 
 .user .details .name-container .name {
     overflow: hidden;

@@ -128,7 +128,10 @@
             <div class="user-status-container">
                 <i class="user-status"></i>
             </div>
-            <img class="gravatar" src="https://secure.gravatar.com/avatar/${hash}?s=32&d=mm" />
+            <div class="art">
+                <div class="gravatar" style="background-image: url('https://secure.gravatar.com/avatar/${hash}?s=32&d=mm');" />
+                <div class="status" style="background-image: url('http://userserve-ak.last.fm/serve/500/94906097/Imitation+Is+Suicide+Chapter+3.jpg');" />
+            </div>
             <div class="details {{if admin}}admin{{/if}}">
                 <div class="glyph-container">
                     <div class="flag{{if flagClass}} ${flagClass}{{/if}}" {{if flag}}title="${country}"{{/if}}></div>
