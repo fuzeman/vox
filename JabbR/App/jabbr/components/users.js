@@ -73,6 +73,7 @@ define([
             $roomUser.data('mention', user.mention);
 
             roomUser.$roomUser = $roomUser;
+            roomUser.bind();
 
             room.addUser(roomUser);
 

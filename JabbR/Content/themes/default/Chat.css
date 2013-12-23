@@ -540,11 +540,6 @@ form#send-message {
             font-size: 11px;
         }
 
-.user {
-    perspective: 1000px;
-    -webkit-perspective: 1000px;
-}
-
 .user .art {
     float: left;
 
@@ -553,10 +548,10 @@ form#send-message {
 
     margin: 3px 0;
 
-    transform-style: preserve-3d;
+            transform-style: preserve-3d;
     -webkit-transform-style: preserve-3d;
 
-    transition: transform 1s;
+            transition: transform 1s;
     -webkit-transition: -webkit-transform 1s;
 }
 
@@ -567,25 +562,44 @@ form#send-message {
         width: 32px;
         height: 32px;
 
-      background-color: #C5C5C5;
-      background-size: cover;
+        background-color: #C5C5C5;
+        background-size: cover;
+
+        opacity: 0;
+
+        -webkit-transition: opacity 1s ease-in-out;
+                transition: opacity 1s ease-in-out;
     }
 
+        /* Cube Front */
         .user .art .gravatar {
-            transform: rotateY(0deg);
-            -webkit-transform: rotateY(0deg);
-
+                    transform: rotateY(0deg) translateZ(16px);
+            -webkit-transform: rotateY(0deg) translateZ(16px);
         }
 
+        /* Cube Right*/
         .user .art .status {
-            transform: rotateY(90deg) translateZ(16px);
+                    transform: rotateY(90deg) translateZ(16px);
             -webkit-transform: rotateY(90deg) translateZ(16px);
         }
 
+    .user .art.show-gravatar {
+                transform: translateZ( -16px ) rotateY(  0deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  0deg );
+    }
+
+        .user .art.show-gravatar .gravatar {
+            opacity: 1;
+        }
+
     .user .art.show-status {
-        transform: translateZ( -16px ) rotateY(  -90deg );
+                transform: translateZ( -16px ) rotateY(  -90deg );
         -webkit-transform: translateZ( -16px ) rotateY(  -90deg );
     }
+
+        .user .art.show-status .status {
+            opacity: 1;
+        }
 
 .user .details .name-container .name {
     overflow: hidden;

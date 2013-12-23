@@ -27,6 +27,13 @@ define([
         this.$roomUser = null;
     }
 
+    RoomUser.prototype.bind = function () {
+        this.$roomUser.find('.art').bind(
+            "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
+            $.proxy(this.artTransitionEnded, this)
+        );
+    };
+
     RoomUser.prototype.setOwner = function (isOwner) {
         var $roomUser = this.$roomUser.data('owner', isOwner);
 
@@ -218,11 +225,41 @@ define([
             } else if (this.user.status_type == 'game') {
                 $('i', $externalStatus).attr('class', 'icon-gamepad');
             }
+
+            // Animate status art
+            var $statusArt = this.$roomUser.find('.art .status');
+            
+            $statusArt.css('background-image', "url('" + "')");
+            this.artAnimate();
         } else {
             $externalStatus.remove();
         }
         
         this.updateExtended();
+    };
+
+    RoomUser.prototype.artAnimate = function () {
+        var $art = this.$roomUser.find('.art');
+
+        // Ensure we only animate from gravatar state
+        if ($art.hasClass('show-gravatar')) {
+            $art.removeClass('show-gravatar').addClass('show-status');
+        }
+    };
+
+    RoomUser.prototype.artTransitionEnded = function () {
+        var $art = this.$roomUser.find('.art');
+
+        if ($art.hasClass('show-status') && !$art.data('transition-ended')) {
+            $art.data('transition-ended', true);
+
+            $art.delay(5000).queue(function (next) {
+                $(this).removeClass('show-status')
+                        .addClass('show-gravatar');
+                    
+                next();
+            });
+        }
     };
 
     RoomUser.prototype.updateActivity = function () {
