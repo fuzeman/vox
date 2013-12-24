@@ -58,7 +58,6 @@
         function success(data) {
             if (data.result !== null) {
                 getArt(data.result).done(function (art) {
-                    console.log(art);
                     data.result.art = art;
                     
                     es.publish('trakt', 'video', data.result, 0, state.interval);

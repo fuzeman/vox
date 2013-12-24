@@ -12,8 +12,8 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var baseUrl = 'https://icejabbr-origin.herokuapp.com/steam/',
-            loaded = false,
+        var loaded = false,
+            metadataCache = null,  // Note: currently just stores the metadata for the previous item
 
             state = {
                 enabled: false,
@@ -34,9 +34,34 @@
             state.interval = interval;
         }
 
+        function getArt(info) {
+            var d = $.Deferred();
+
+            if (metadataCache !== null && metadataCache.path == info.steamcommunity.path) {
+                d.resolveWith(this, [metadataCache.data.icon]);
+            } else {
+                $.ajax({
+                    url: es.getOriginServer() + '/steamcommunity.com' + info.steamcommunity.path
+                }).done($.proxy(function (data) {
+                    metadataCache = {
+                        path: info.steamcommunity.path,
+                        data: data.result.steamcommunity
+                    };
+
+                    d.resolveWith(this, [metadataCache.data.icon]);
+                }, this));
+            }
+
+            return d.promise();
+        }
+
         function success(data) {
             if (data.result !== null) {
-                es.publish('steam', 'game', data.result, 0, state.interval);
+                getArt(data.result).done(function (art) {
+                    data.result.art = art;
+
+                    es.publish('steam', 'game', data.result, 0, state.interval);
+                });
             } else {
                 es.publish('steam', 'game', null, 0, state.interval);
             }
@@ -50,9 +75,9 @@
                 var requestUrl = null;
 
                 if (state.id.indexOf('7656119') === 0) {
-                    requestUrl = baseUrl + 'profiles/' + state.id;
+                    requestUrl = es.getOriginServer() + '/steamcommunity.com/profiles/' + state.id;
                 } else {
-                    requestUrl = baseUrl + 'id/' + state.id;
+                    requestUrl = es.getOriginServer() + '/steamcommunity.com/id/' + state.id;
                 }
 
                 $.ajax({
