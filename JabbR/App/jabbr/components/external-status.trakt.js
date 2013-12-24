@@ -36,22 +36,21 @@
         
         function getArt(info) {
             var d = $.Deferred();
-            
-            if (metadataCache !== null && metadataCache.path == info.trakt.path) {
-                console.log('found in cache');
-                d.resolveWith(this, [metadataCache.data.poster]);
-            }
-            
-            $.ajax({
-                url: es.getOriginServer() + '/trakt.tv' + info.trakt.path
-            }).done($.proxy(function(data) {
-                metadataCache = {
-                    path: info.trakt.path,
-                    data: data.result.trakt
-                };
 
+            if (metadataCache !== null && metadataCache.path == info.trakt.path) {
                 d.resolveWith(this, [metadataCache.data.poster]);
-            }, this));
+            } else {
+                $.ajax({
+                    url: es.getOriginServer() + '/trakt.tv' + info.trakt.path
+                }).done($.proxy(function (data) {
+                    metadataCache = {
+                        path: info.trakt.path,
+                        data: data.result.trakt
+                    };
+
+                    d.resolveWith(this, [metadataCache.data.poster]);
+                }, this));
+            }
 
             return d.promise();
         }
