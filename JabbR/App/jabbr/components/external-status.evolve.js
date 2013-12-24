@@ -12,8 +12,8 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var baseUrl = 'https://icejabbr-origin.herokuapp.com/evolve/',
-            loaded = false,
+        var loaded = false,
+            metadataCache = null,  // Note: currently just stores the metadata for the previous item
 
             state = {
                 enabled: false,
@@ -33,10 +33,35 @@
             state.username = username;
             state.interval = interval;
         }
+        
+        function getArt(info) {
+            var d = $.Deferred();
+
+            if (metadataCache !== null && metadataCache.path == info.evolve.path) {
+                d.resolveWith(this, [metadataCache.data.portrait]);
+            } else {
+                $.ajax({
+                    url: es.getOriginServer() + '/evolvehq.com' + info.evolve.path
+                }).done($.proxy(function (data) {
+                    metadataCache = {
+                        path: info.evolve.path,
+                        data: data.result.evolve
+                    };
+
+                    d.resolveWith(this, [metadataCache.data.portrait]);
+                }, this));
+            }
+
+            return d.promise();
+        }
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('evolve', 'game', data.result, 0, state.interval);
+                getArt(data.result).done(function (art) {
+                    data.result.art = art;
+                    
+                    es.publish('evolve', 'game', data.result, 0, state.interval);
+                });
             } else {
                 es.publish('evolve', 'game', null, 0, state.interval);
             }
@@ -48,7 +73,7 @@
             if (es.shouldPoll('game')) {
                 logger.trace('evolve poll');
                 $.ajax({
-                    url: baseUrl + state.username
+                    url: es.getOriginServer() + '/evolvehq.com/players/' + state.username
                 }).done(success);
             } else {
                 logger.info('ignoring evolve poll (shouldPoll)');

@@ -540,13 +540,77 @@ form#send-message {
             font-size: 11px;
         }
 
-.user .gravatar {
+.user .art {
+    float: left;
+
     width: 32px;
     height: 32px;
+
     margin: 3px 0;
-    float: left;
-    background-color: #C5C5C5;
+
+            transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+
+            transition: transform 1s;
+    -webkit-transition: -webkit-transform 1s;
 }
+
+    .user .art div {
+        position: absolute;
+        display: block;
+
+        width: 32px;
+        height: 32px;
+
+        background-color: #C5C5C5;
+        background-size: cover;
+        background-position: center 10%;
+        background-repeat: no-repeat;
+
+        opacity: 0;
+
+        -webkit-transition: opacity 1s ease-in-out;
+                transition: opacity 1s ease-in-out;
+
+        box-shadow: -1px  1px 2px rgba(255, 255, 255, 0.7) inset,
+                     1px -1px 2px rgba(255, 255, 255, 0.7) inset;
+    }
+
+        /* Cube Front */
+        .user .art .gravatar {
+                    transform: rotateY(0deg) translateZ(16px);
+            -webkit-transform: rotateY(0deg) translateZ(16px);
+        }
+
+        /* Cube Right*/
+        .user .art .status {
+                    transform: rotateY(90deg) translateZ(16px);
+            -webkit-transform: rotateY(90deg) translateZ(16px);
+        }
+
+            .user .art .status.steam {
+                background-size: 80%;
+                background-position: center;
+                background-color: black;
+            }
+
+    .user .art.show-gravatar {
+                transform: translateZ( -16px ) rotateY(  0deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  0deg );
+    }
+
+        .user .art.show-gravatar .gravatar {
+            opacity: 1;
+        }
+
+    .user .art.show-status {
+                transform: translateZ( -16px ) rotateY(  -90deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  -90deg );
+    }
+
+        .user .art.show-status .status {
+            opacity: 1;
+        }
 
 .user .details .name-container .name {
     overflow: hidden;

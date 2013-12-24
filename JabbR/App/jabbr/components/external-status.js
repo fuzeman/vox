@@ -6,7 +6,8 @@
     'jabbr/components/external-status.evolve',
     'jabbr/components/external-status.lastfm',
     'jabbr/components/external-status.steam',
-    'jabbr/components/external-status.trakt'
+    'jabbr/components/external-status.trakt',
+    'json2'
 ], function ($, Logger, kernel, events, evolve, lastfm, steam, trakt) {
     var logger = new Logger('jabbr/components/external-status'),
         client = null,
@@ -15,7 +16,8 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var currentPublisher = null,
+        var originServer = 'https://icejabbr-origin.herokuapp.com',
+            currentPublisher = null,
             last = {
                 source: null,
                 type: null,
@@ -46,6 +48,7 @@
                     if (last.type == 'game') {
                         return;
                     }
+
                     //  Video trumps music
                     if (last.type == 'video' && type == 'music') {
                         return;
@@ -55,13 +58,13 @@
                         ' (' + last.source + ') to ' + type + ' (' + source + ')');
                 }
 
-                logger.info('publishing: ' + result + ' (' + type + ') (' + source + ')');
+                logger.info('publishing: ' + JSON.stringify(result) + ' (' + type + ') (' + source + ')');
 
                 if (result === null) {
                     type = null;
                 }
 
-                client.chat.server.publishExternalStatus(type, result, timestamp, interval);
+                client.chat.server.publishExternalStatus(source, type, result, timestamp, interval);
 
                 last = {
                     source: source,
@@ -106,6 +109,10 @@
             getLastPublished: function () {
                 return last;
             },
+            getOriginServer: function () {
+                return originServer;
+            },
+
             shouldPublish: shouldPublish,
             shouldPoll: function (type) {
                 if (!shouldPublish()) {

@@ -128,7 +128,10 @@
             <div class="user-status-container">
                 <i class="user-status"></i>
             </div>
-            <img class="gravatar" src="https://secure.gravatar.com/avatar/${hash}?s=32&d=mm" />
+            <div class="art show-gravatar">
+                <div class="gravatar" style="background-image: url('https://secure.gravatar.com/avatar/${hash}?s=32&d=mm');" />
+                <div class="status"/>
+            </div>
             <div class="details {{if admin}}admin{{/if}}">
                 <div class="glyph-container">
                     <div class="flag{{if flagClass}} ${flagClass}{{/if}}" {{if flag}}title="${country}"{{/if}}></div>
