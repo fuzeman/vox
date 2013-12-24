@@ -191,7 +191,7 @@ define([
                     var title = result.titles[i];
 
                     // Construct status elements from non-extended titles
-                    if (title.extended === undefined || title.extended == false) {
+                    if (title.extended === undefined || title.extended === false) {
                         var $elem;
 
                         if (title.url !== undefined) {
@@ -245,7 +245,7 @@ define([
     };
 
     RoomUser.prototype.updateStatusArt = function (url) {
-        if (url === null || url.length == 0) {
+        if (url === null || url.length === 0) {
             return;
         }
 
