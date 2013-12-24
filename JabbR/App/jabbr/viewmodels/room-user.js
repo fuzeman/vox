@@ -168,6 +168,11 @@ define([
         if ($externalStatus.length === 0) {
             $externalStatus = $('<li class="external-status"><i></i> <span></span></li>');
             
+            $externalStatus.hover(
+                $.proxy(this.statusHoverEnter, this),
+                $.proxy(this.statusHoverLeave, this)
+            );
+            
             $extended.prepend($externalStatus);
         }
 
@@ -272,17 +277,36 @@ define([
     RoomUser.prototype.artTransitionEnded = function () {
         var $art = this.$roomUser.find('.art');
 
-        if ($art.hasClass('show-status') && !$art.data('transition-ended')) {
+        if ($art.hasClass('show-status') && !$art.data('transition-ended') && !$art.data('manual')) {
             $art.data('transition-ended', true);
 
             $art.delay(5000).queue(function (next) {
-                $(this).removeClass('show-status')
-                       .addClass('show-gravatar')
-                       .data('transition-ended', false);
-                    
+                // Re-check to ensure we haven't manually triggered the animation since the delay
+                if (!$art.data('manual')) {
+                    $(this).removeClass('show-status')
+                        .addClass('show-gravatar')
+                        .data('transition-ended', false);
+                }
+
                 next();
             });
         }
+    };
+
+    RoomUser.prototype.statusHoverEnter = function () {
+        var $art = this.$roomUser.find('.art');
+
+        $art.data('manual', true)
+            .removeClass('show-gravatar')
+            .addClass('show-status');
+    };
+
+    RoomUser.prototype.statusHoverLeave = function () {
+        var $art = this.$roomUser.find('.art');
+
+        $art.data('manual', false)
+            .removeClass('show-status')
+            .addClass('show-gravatar');
     };
 
     RoomUser.prototype.updateActivity = function () {
