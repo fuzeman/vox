@@ -15,6 +15,8 @@
             baseUrl = 'https://ws.audioscrobbler.com/2.0/?format=json',
             loaded = false,
             lastNothingPlaying = false, // Was the last poll result "nothing playing"
+            lastTrackMbid = null,
+            lastTrackMetadata = null,
 
             state = {
                 enabled: false,
@@ -34,11 +36,28 @@
             state.username = username;
             state.interval = interval;
         }
+        
+        function getArt (track, size) {
+            if (track.image === undefined) {
+                return null;
+            }
+
+            for (var i = 0; i < track.image.length; i++) {
+                var image = track.image[i];
+                
+                if (image.size == size) {
+                    return image['#text'];
+                }
+            }
+
+            return null;
+        }
 
         function success(data) {
             if (data.recenttracks !== undefined &&
                 data.recenttracks.track !== undefined &&
                 data.recenttracks.track.length !== 0) {
+
                 var lastTrack = data.recenttracks.track[0],
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
@@ -46,15 +65,20 @@
                     var artistUrl = lastTrack.url.substring(0, lastTrack.url.lastIndexOf('/'));
                     artistUrl = artistUrl.substring(0, artistUrl.lastIndexOf('/'));
                     
-                    es.publish('lastfm', 'music',
-                        {
-                            title: lastTrack.artist['#text'],
-                            url: artistUrl,
-                            
-                            sub: lastTrack.name,
-                            sub_url: lastTrack.url
-                        },
-                        0, state.interval);
+                    es.publish('lastfm', 'music', {
+                        titles: [
+                            {
+                                value: lastTrack.name,
+                                url: lastTrack.url
+                            },
+                            {
+                                value: lastTrack.artist['#text'],
+                                url: artistUrl
+                            }
+                        ],
+                        art: getArt(lastTrack, 'medium')
+                    }, 0, state.interval);
+                    
                     lastNothingPlaying = false;
                     return;
                 }

@@ -176,7 +176,7 @@ define([
         }
 
         // Only update if external status has actually changed
-        if (type != this.status_type || result != this.status_result) {
+        if (type != this.status_type || JSON.stringify(result) !== JSON.stringify(this.status_result)) {
             this.status_type = type;
             this.status_result = result;
             this.status_timestamp = timestamp;

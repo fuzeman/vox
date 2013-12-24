@@ -6,7 +6,8 @@
     'jabbr/components/external-status.evolve',
     'jabbr/components/external-status.lastfm',
     'jabbr/components/external-status.steam',
-    'jabbr/components/external-status.trakt'
+    'jabbr/components/external-status.trakt',
+    'json2'
 ], function ($, Logger, kernel, events, evolve, lastfm, steam, trakt) {
     var logger = new Logger('jabbr/components/external-status'),
         client = null,
@@ -55,7 +56,7 @@
                         ' (' + last.source + ') to ' + type + ' (' + source + ')');
                 }
 
-                logger.info('publishing: ' + result + ' (' + type + ') (' + source + ')');
+                logger.info('publishing: ' + JSON.stringify(result) + ' (' + type + ') (' + source + ')');
 
                 if (result === null) {
                     type = null;

@@ -176,46 +176,43 @@ define([
             var result = this.user.status_result;
 
             var $titleSpan = $('span', $externalStatus),
-                tooltip = "";
+                tooltipFragments = [];
+
+            $titleSpan.empty();
             
-            // Set basic result
-            if (result.title !== undefined) {
-                tooltip = result.title;
+            // Construct title and tooltip from result
+            if (result.titles !== undefined) {
+                for (var i = 0; i < result.titles.length; i++) {
+                    var title = result.titles[i];
+                    
+                    // TODO extended titles
 
-                if (result.url !== undefined) {
-                    $titleSpan.html('<a class="main"/>');
-                    $('a.main', $titleSpan).attr('href', result.url);
-                    $('a.main', $titleSpan).attr('target', '_blank');
-                    $('a.main', $titleSpan).text(result.title);
-                } else {
-                    $titleSpan.html('<span class="main"/>');
-                    $('span.main', $titleSpan).text(result.title);
-                }
+                    // Construct status elements
+                    var $elem;
 
-                // Append sub result if it exists
-                if (result.sub !== undefined) {
-                    // Add sub title to tooltip
-                    if (result.sub_title !== undefined) {
-                        tooltip = result.sub + ' ' + result.sub_title + ' - ' + tooltip;
+                    if (title.url !== undefined) {
+                        $elem = $('<a target="_blank" />');
+                        
+                        $elem.attr('href', title.url)
+                             .text(title.value);
                     } else {
-                        tooltip = result.sub + ' - ' + tooltip;
+                        $elem = $('<span />');
+                        
+                        $elem.text(title.value);
                     }
 
-                    // Add sub to element
-                    if (result.sub_url !== undefined) {
-                        $titleSpan.prepend('<a class="sub"/> - ');
-                        $('a.sub', $titleSpan).attr('href', result.sub_url);
-                        $('a.sub', $titleSpan).attr('target', '_blank');
-                        $('a.sub', $titleSpan).text(result.sub);
-                    } else {
-                        $titleSpan.prepend('<span class="sub"/> - ');
-                        $('span.sub', $titleSpan).text(result.sub);
+                    $titleSpan.append($elem);
+                    
+                    if (i < result.titles.length - 1) {
+                        $titleSpan.append(' - ');
                     }
+                    
+                    tooltipFragments.push(title.value);
                 }
             }
 
-            // Update DOM
-            $externalStatus.attr('title', tooltip);
+            // Update Tooltip
+            $externalStatus.attr('title', tooltipFragments.join(' - '));
             
             // Set status icon
             if (this.user.status_type == 'music') {
@@ -228,9 +225,12 @@ define([
 
             // Animate status art
             var $statusArt = this.$roomUser.find('.art .status');
-            
-            $statusArt.css('background-image', "url('" + "')");
-            this.artAnimate();
+
+            if (result.art !== undefined) {
+                this.updateStatusArt(result.art);
+            } else {
+                $statusArt.css('background-image', '');
+            }
         } else {
             $externalStatus.remove();
         }
@@ -238,13 +238,35 @@ define([
         this.updateExtended();
     };
 
-    RoomUser.prototype.artAnimate = function () {
-        var $art = this.$roomUser.find('.art');
-
-        // Ensure we only animate from gravatar state
-        if ($art.hasClass('show-gravatar')) {
-            $art.removeClass('show-gravatar').addClass('show-status');
+    RoomUser.prototype.updateStatusArt = function (url) {
+        if (url === null || url.length == 0) {
+            return;
         }
+
+        var $art = this.$roomUser.find('.art'),
+            $statusArt = $art.find('.status');
+        
+        // Ensure we aren't already preloading
+        if ($art.data('preloading') === true) {
+            return;
+        }
+
+        $art.data('preloading', true);
+                
+        var c = new Image();
+                
+        c.onload = $.proxy(function () {
+            $art.data('preloading', false);
+                    
+            $statusArt.css('background-image', "url('" + url + "')");
+            
+            // Ensure we only animate from gravatar state
+            if ($art.hasClass('show-gravatar')) {
+                $art.removeClass('show-gravatar').addClass('show-status');
+            }
+        }, this);
+                
+        c.src = url;
     };
 
     RoomUser.prototype.artTransitionEnded = function () {
@@ -255,7 +277,8 @@ define([
 
             $art.delay(5000).queue(function (next) {
                 $(this).removeClass('show-status')
-                        .addClass('show-gravatar');
+                       .addClass('show-gravatar')
+                       .data('transition-ended', false);
                     
                 next();
             });

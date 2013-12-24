@@ -564,6 +564,7 @@ form#send-message {
 
         background-color: #C5C5C5;
         background-size: cover;
+        background-position: center;
 
         opacity: 0;
 
