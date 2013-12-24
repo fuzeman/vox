@@ -16,7 +16,7 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var originServer = 'https://origin.skipthe.net',
+        var originServer = 'https://icejabbr-origin.herokuapp.com',
             currentPublisher = null,
             last = {
                 source: null,
