@@ -12,8 +12,7 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var baseUrl = 'https://icejabbr-origin.herokuapp.com/trakt/',
-            loaded = false,
+        var loaded = false,
 
             state = {
                 enabled: false,
@@ -48,7 +47,7 @@
             if (es.shouldPoll('video')) {
                 logger.trace('trakt poll');
                 $.ajax({
-                    url: baseUrl + state.username
+                    url: es.getOriginServer() + '/trakt.tv/user/' + state.username
                 }).done(success);
             } else {
                 logger.info('ignoring trakt poll (shouldPoll)');

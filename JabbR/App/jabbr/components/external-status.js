@@ -16,7 +16,8 @@
     logger.trace('loaded');
 
     var initialize = function () {
-        var currentPublisher = null,
+        var originServer = 'https://origin.skipthe.net',
+            currentPublisher = null,
             last = {
                 source: null,
                 type: null,
@@ -107,6 +108,10 @@
             getLastPublished: function () {
                 return last;
             },
+            getOriginServer: function () {
+                return originServer;
+            },
+
             shouldPublish: shouldPublish,
             shouldPoll: function (type) {
                 if (!shouldPublish()) {
