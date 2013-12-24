@@ -13,6 +13,7 @@
 
     var initialize = function () {
         var loaded = false,
+            metadataCache = null,  // Note: currently just stores the metadata for the previous item
 
             state = {
                 enabled: false,
@@ -32,10 +33,37 @@
             state.username = username;
             state.interval = interval;
         }
+        
+        function getArt(info) {
+            var d = $.Deferred();
+            
+            if (metadataCache !== null && metadataCache.path == info.trakt.path) {
+                console.log('found in cache');
+                d.resolveWith(this, [metadataCache.data.poster]);
+            }
+            
+            $.ajax({
+                url: es.getOriginServer() + '/trakt.tv' + info.trakt.path
+            }).done($.proxy(function(data) {
+                metadataCache = {
+                    path: info.trakt.path,
+                    data: data.result.trakt
+                };
+
+                d.resolveWith(this, [metadataCache.data.poster]);
+            }, this));
+
+            return d.promise();
+        }
 
         function success(data) {
             if (data.result !== null) {
-                es.publish('trakt', 'video', data.result, 0, state.interval);
+                getArt(data.result).done(function (art) {
+                    console.log(art);
+                    data.result.art = art;
+                    
+                    es.publish('trakt', 'video', data.result, 0, state.interval);
+                });
             } else {
                 es.publish('trakt', 'video', null, 0, state.interval);
             }

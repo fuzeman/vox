@@ -15,8 +15,6 @@
             baseUrl = 'https://ws.audioscrobbler.com/2.0/?format=json',
             loaded = false,
             lastNothingPlaying = false, // Was the last poll result "nothing playing"
-            lastTrackMbid = null,
-            lastTrackMetadata = null,
 
             state = {
                 enabled: false,
