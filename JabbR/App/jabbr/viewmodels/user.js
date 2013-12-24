@@ -60,6 +60,7 @@ define([
         this.owner = isOwner;
         update(this, userdata);
 
+        this.status_source = null;
         this.status_type = null;
         this.status_result = null;
         this.status_timestamp = null;
@@ -170,13 +171,14 @@ define([
         }
     };
 
-    User.prototype.changeExternalStatus = function (type, result, timestamp, interval) {
+    User.prototype.changeExternalStatus = function (source, type, result, timestamp, interval) {
         if (this.status_clear_timeout !== null) {
             clearTimeout(this.status_clear_timeout);
         }
 
         // Only update if external status has actually changed
         if (type != this.status_type || JSON.stringify(result) !== JSON.stringify(this.status_result)) {
+            this.status_source = source;
             this.status_type = type;
             this.status_result = result;
             this.status_timestamp = timestamp;
@@ -197,6 +199,7 @@ define([
                 logger.info('clearing external status for "' + user.name + '"');
 
                 // Reset old data
+                user.status_source = null;
                 user.status_type = null;
                 user.status_result = null;
                 user.status_timestamp = null;

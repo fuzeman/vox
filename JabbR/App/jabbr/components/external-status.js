@@ -48,6 +48,7 @@
                     if (last.type == 'game') {
                         return;
                     }
+
                     //  Video trumps music
                     if (last.type == 'video' && type == 'music') {
                         return;
@@ -63,7 +64,7 @@
                     type = null;
                 }
 
-                client.chat.server.publishExternalStatus(type, result, timestamp, interval);
+                client.chat.server.publishExternalStatus(source, type, result, timestamp, interval);
 
                 last = {
                     source: source,

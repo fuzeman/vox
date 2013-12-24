@@ -251,6 +251,8 @@ define([
 
         var $art = this.$roomUser.find('.art'),
             $statusArt = $art.find('.status');
+
+        $statusArt.attr('class', 'status ' + this.user.status_source);
         
         // Ensure we aren't already preloading
         if ($art.data('preloading') === true) {

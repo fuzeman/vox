@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using JabbR.Commands;
 using JabbR.ContentProviders.Core;
 using JabbR.Infrastructure;
@@ -9,13 +8,14 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Messaging;
 using Microsoft.Data.Edm.Validation;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace JabbR
 {
@@ -452,7 +452,7 @@ namespace JabbR
             var rooms = await _repository.Rooms.Where(r => roomNames.Contains(r.Name))
                                                .ToListAsync();
 
-            // Can't async whenall because we'd be hitting a single 
+            // Can't async whenall because we'd be hitting a single
             // EF context with multiple concurrent queries.
             foreach (var room in rooms)
             {
@@ -618,7 +618,7 @@ namespace JabbR
             }
         }
 
-        public void PublishExternalStatus(string type, Dictionary<string, object> result, long timestamp, int interval)
+        public void PublishExternalStatus(string source, string type, Dictionary<string, object> result, long timestamp, int interval)
         {
             var userId = Context.User.GetUserId();
             var user = _repository.GetUserById(userId);
@@ -626,7 +626,7 @@ namespace JabbR
             // TODO Stop message duplication here
             foreach (var room in user.Rooms)
             {
-                Clients.Group(room.Name).changeExternalStatus(user.Name, type, result, timestamp, interval);
+                Clients.Group(room.Name).changeExternalStatus(user.Name, source, type, result, timestamp, interval);
             }
         }
 
@@ -721,7 +721,7 @@ namespace JabbR
                     unreadNotifications
                 );
             }
-            
+
             // Send preferences to client
             Clients.Caller.preferencesChanged(user.Preferences);
         }
@@ -1121,7 +1121,6 @@ namespace JabbR
 
         void INotificationService.Invite(ChatUser user, ChatUser targetUser, ChatRoom targetRoom)
         {
-
             // Send the invite message to the sendee
             Clients.User(targetUser.Id).sendInvite(user.Name, targetUser.Name, targetRoom.Name);
 
@@ -1151,7 +1150,6 @@ namespace JabbR
         {
             // Create the view model
             var userViewModel = new UserViewModel(user);
-
 
             // Tell the user's connected clients that the name changed
             Clients.User(user.Id).userNameChanged(userViewModel);

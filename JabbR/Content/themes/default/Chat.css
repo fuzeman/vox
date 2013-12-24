@@ -565,6 +565,7 @@ form#send-message {
         background-color: #C5C5C5;
         background-size: cover;
         background-position: center 10%;
+        background-repeat: no-repeat;
 
         opacity: 0;
 
@@ -583,6 +584,12 @@ form#send-message {
                     transform: rotateY(90deg) translateZ(16px);
             -webkit-transform: rotateY(90deg) translateZ(16px);
         }
+
+            .user .art .status.steam {
+                background-size: 80%;
+                background-position: center;
+                background-color: black;
+            }
 
     .user .art.show-gravatar {
                 transform: translateZ( -16px ) rotateY(  0deg );

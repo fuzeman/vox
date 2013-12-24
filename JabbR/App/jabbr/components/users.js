@@ -272,7 +272,7 @@ define([
                     }
                 },
 
-                changeExternalStatus: function (username, type, text, timestamp, interval) {
+                changeExternalStatus: function (username, source, type, text, timestamp, interval) {
                     logger.trace('externalStatusChanged ' + username + ' ' + type + ' ' + text);
 
                     if (!(username in users)) {
@@ -280,7 +280,7 @@ define([
                         return;
                     }
 
-                    users[username].changeExternalStatus(type, text, timestamp, interval);
+                    users[username].changeExternalStatus(source, type, text, timestamp, interval);
                 },
 
                 userNameChanged: function (userdata) {
