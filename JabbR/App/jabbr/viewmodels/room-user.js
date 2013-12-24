@@ -27,6 +27,13 @@ define([
         this.$roomUser = null;
     }
 
+    RoomUser.prototype.bind = function () {
+        this.$roomUser.find('.art').bind(
+            "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
+            $.proxy(this.artTransitionEnded, this)
+        );
+    };
+
     RoomUser.prototype.setOwner = function (isOwner) {
         var $roomUser = this.$roomUser.data('owner', isOwner);
 
@@ -161,6 +168,11 @@ define([
         if ($externalStatus.length === 0) {
             $externalStatus = $('<li class="external-status"><i></i> <span></span></li>');
             
+            $externalStatus.hover(
+                $.proxy(this.statusHoverEnter, this),
+                $.proxy(this.statusHoverLeave, this)
+            );
+            
             $extended.prepend($externalStatus);
         }
 
@@ -169,46 +181,44 @@ define([
             var result = this.user.status_result;
 
             var $titleSpan = $('span', $externalStatus),
-                tooltip = "";
+                tooltipFragments = [];
+
+            $titleSpan.empty();
             
-            // Set basic result
-            if (result.title !== undefined) {
-                tooltip = result.title;
+            // Construct title and tooltip from result
+            if (result.titles !== undefined) {
+                for (var i = 0; i < result.titles.length; i++) {
+                    var title = result.titles[i];
 
-                if (result.url !== undefined) {
-                    $titleSpan.html('<a class="main"/>');
-                    $('a.main', $titleSpan).attr('href', result.url);
-                    $('a.main', $titleSpan).attr('target', '_blank');
-                    $('a.main', $titleSpan).text(result.title);
-                } else {
-                    $titleSpan.html('<span class="main"/>');
-                    $('span.main', $titleSpan).text(result.title);
-                }
+                    // Construct status elements from non-extended titles
+                    if (title.extended === undefined || title.extended === false) {
+                        var $elem;
 
-                // Append sub result if it exists
-                if (result.sub !== undefined) {
-                    // Add sub title to tooltip
-                    if (result.sub_title !== undefined) {
-                        tooltip = result.sub + ' ' + result.sub_title + ' - ' + tooltip;
-                    } else {
-                        tooltip = result.sub + ' - ' + tooltip;
+                        if (title.url !== undefined) {
+                            $elem = $('<a target="_blank" />');
+
+                            $elem.attr('href', title.url)
+                                .text(title.value);
+                        } else {
+                            $elem = $('<span />');
+
+                            $elem.text(title.value);
+                        }
+
+                        $titleSpan.append($elem);
+
+                        // Insert separator
+                        if (i < result.titles.length - 1) {
+                            $titleSpan.append(' - ');
+                        }
                     }
 
-                    // Add sub to element
-                    if (result.sub_url !== undefined) {
-                        $titleSpan.prepend('<a class="sub"/> - ');
-                        $('a.sub', $titleSpan).attr('href', result.sub_url);
-                        $('a.sub', $titleSpan).attr('target', '_blank');
-                        $('a.sub', $titleSpan).text(result.sub);
-                    } else {
-                        $titleSpan.prepend('<span class="sub"/> - ');
-                        $('span.sub', $titleSpan).text(result.sub);
-                    }
+                    tooltipFragments.push(title.value);
                 }
             }
 
-            // Update DOM
-            $externalStatus.attr('title', tooltip);
+            // Update Tooltip
+            $externalStatus.attr('title', tooltipFragments.join(' - '));
             
             // Set status icon
             if (this.user.status_type == 'music') {
@@ -218,11 +228,88 @@ define([
             } else if (this.user.status_type == 'game') {
                 $('i', $externalStatus).attr('class', 'icon-gamepad');
             }
+
+            // Animate status art
+            var $statusArt = this.$roomUser.find('.art .status');
+
+            if (result.art !== undefined) {
+                this.updateStatusArt(result.art);
+            } else {
+                $statusArt.css('background-image', '');
+            }
         } else {
             $externalStatus.remove();
         }
         
         this.updateExtended();
+    };
+
+    RoomUser.prototype.updateStatusArt = function (url) {
+        if (url === null || url.length === 0) {
+            return;
+        }
+
+        var $art = this.$roomUser.find('.art'),
+            $statusArt = $art.find('.status');
+
+        $statusArt.attr('class', 'status ' + this.user.status_source);
+        
+        // Ensure we aren't already preloading
+        if ($art.data('preloading') === true) {
+            return;
+        }
+
+        $art.data('preloading', true);
+                
+        var c = new Image();
+                
+        c.onload = $.proxy(function () {
+            $art.data('preloading', false);
+                    
+            $statusArt.css('background-image', "url('" + url + "')");
+            
+            // Ensure we only animate from gravatar state
+            if ($art.hasClass('show-gravatar')) {
+                $art.removeClass('show-gravatar').addClass('show-status');
+            }
+        }, this);
+                
+        c.src = url;
+    };
+
+    RoomUser.prototype.artTransitionEnded = function () {
+        var $art = this.$roomUser.find('.art');
+
+        if ($art.hasClass('show-status') && !$art.data('transition-ended') && !$art.data('manual')) {
+            $art.data('transition-ended', true);
+
+            $art.delay(5000).queue(function (next) {
+                // Re-check to ensure we haven't manually triggered the animation since the delay
+                if (!$art.data('manual')) {
+                    $(this).removeClass('show-status')
+                        .addClass('show-gravatar')
+                        .data('transition-ended', false);
+                }
+
+                next();
+            });
+        }
+    };
+
+    RoomUser.prototype.statusHoverEnter = function () {
+        var $art = this.$roomUser.find('.art');
+
+        $art.data('manual', true)
+            .removeClass('show-gravatar')
+            .addClass('show-status');
+    };
+
+    RoomUser.prototype.statusHoverLeave = function () {
+        var $art = this.$roomUser.find('.art');
+
+        $art.data('manual', false)
+            .removeClass('show-status')
+            .addClass('show-gravatar');
     };
 
     RoomUser.prototype.updateActivity = function () {
