@@ -189,29 +189,30 @@ define([
             if (result.titles !== undefined) {
                 for (var i = 0; i < result.titles.length; i++) {
                     var title = result.titles[i];
-                    
-                    // TODO extended titles
 
-                    // Construct status elements
-                    var $elem;
+                    // Construct status elements from non-extended titles
+                    if (title.extended === undefined || title.extended == false) {
+                        var $elem;
 
-                    if (title.url !== undefined) {
-                        $elem = $('<a target="_blank" />');
-                        
-                        $elem.attr('href', title.url)
-                             .text(title.value);
-                    } else {
-                        $elem = $('<span />');
-                        
-                        $elem.text(title.value);
+                        if (title.url !== undefined) {
+                            $elem = $('<a target="_blank" />');
+
+                            $elem.attr('href', title.url)
+                                .text(title.value);
+                        } else {
+                            $elem = $('<span />');
+
+                            $elem.text(title.value);
+                        }
+
+                        $titleSpan.append($elem);
+
+                        // Insert separator
+                        if (i < result.titles.length - 1) {
+                            $titleSpan.append(' - ');
+                        }
                     }
 
-                    $titleSpan.append($elem);
-                    
-                    if (i < result.titles.length - 1) {
-                        $titleSpan.append(' - ');
-                    }
-                    
                     tooltipFragments.push(title.value);
                 }
             }
