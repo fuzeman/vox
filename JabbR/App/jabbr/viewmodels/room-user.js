@@ -90,10 +90,10 @@ define([
         this.$roomUser.attr('data-active', false);
         this.$roomUser.data('active', false);
         this.$roomUser.addClass('inactive');
-        
+
         if (!$inactiveSince.html()) {
             $inactiveSince.livestamp(new Date());
-        } 
+        }
 
         return true;
     };
@@ -124,13 +124,13 @@ define([
 
                 $extended.append($note);
             }
-            
+
             $note.attr('title', noteTextEncoded);
             $('span', $note).text(noteTextEncoded);
         } else {
             $note.remove();
         }
-        
+
         this.updateExtended();
 
         if (requireRoomUpdate) {
@@ -164,15 +164,15 @@ define([
     RoomUser.prototype.updateExternalStatus = function () {
         var $extended = this.$roomUser.find('.extended'),
             $externalStatus = $extended.find('.external-status');
-        
+
         if ($externalStatus.length === 0) {
             $externalStatus = $('<li class="external-status"><i></i> <span></span></li>');
-            
+
             $externalStatus.hover(
                 $.proxy(this.statusHoverEnter, this),
                 $.proxy(this.statusHoverLeave, this)
             );
-            
+
             $extended.prepend($externalStatus);
         }
 
@@ -184,7 +184,7 @@ define([
                 tooltipFragments = [];
 
             $titleSpan.empty();
-            
+
             // Construct title and tooltip from result
             if (result.titles !== undefined) {
                 for (var i = 0; i < result.titles.length; i++) {
@@ -219,7 +219,7 @@ define([
 
             // Update Tooltip
             $externalStatus.attr('title', tooltipFragments.join(' - '));
-            
+
             // Set status icon
             if (this.user.status_type == 'music') {
                 $('i', $externalStatus).attr('class', 'icon-music');
@@ -230,50 +230,53 @@ define([
             }
 
             // Animate status art
-            var $statusArt = this.$roomUser.find('.art .status');
-
-            if (result.art !== undefined) {
-                this.updateStatusArt(result.art);
-            } else {
-                $statusArt.css('background-image', '');
-            }
+            this.updateStatusArt(result.art);
         } else {
             $externalStatus.remove();
+            
+            // Clear status art
+            this.updateStatusArt(null);
         }
-        
+
         this.updateExtended();
     };
 
     RoomUser.prototype.updateStatusArt = function (url) {
-        if (url === null || url.length === 0) {
+        var $art = this.$roomUser.find('.art'),
+            $statusArt = $art.find('.status');
+        
+        // Clear status art and disable cube rotation
+        if (url === undefined || url === null || url.length === 0) {
+            $art.addClass('rotation-disabled');
+            $statusArt.css('background-image', '');
+            
+            this.artChangeState('gravatar', true);
+            
             return;
         }
 
-        var $art = this.$roomUser.find('.art'),
-            $statusArt = $art.find('.status');
-
+        // Reset status and cube state
+        $art.removeClass('rotation-disabled');
         $statusArt.attr('class', 'status ' + this.user.status_source);
-        
+
         // Ensure we aren't already preloading
         if ($art.data('preloading') === true) {
             return;
         }
 
         $art.data('preloading', true);
-                
+
         var c = new Image();
-                
+
         c.onload = $.proxy(function () {
             $art.data('preloading', false);
-                    
+
             $statusArt.css('background-image', "url('" + url + "')");
-            
+
             // Ensure we only animate from gravatar state
-            if ($art.hasClass('show-gravatar')) {
-                $art.removeClass('show-gravatar').addClass('show-status');
-            }
+            this.artChangeState('status', true);
         }, this);
-                
+
         c.src = url;
     };
 
@@ -283,21 +286,41 @@ define([
         if ($art.hasClass('show-status') && !$art.data('transition-ended') && !$art.data('manual')) {
             $art.data('transition-ended', true);
 
-            $art.delay(5000).queue(function (next) {
-                // Re-check to ensure we haven't manually triggered the animation since the delay
-                if (!$art.data('manual')) {
-                    $(this).removeClass('show-status')
-                        .addClass('show-gravatar')
-                        .data('transition-ended', false);
-                }
+            $art.delay(5000).queue($.proxy(function (next) {
+                this.artChangeState('gravatar');
+                $art.data('transition-ended', false);
 
                 next();
-            });
+            }, this));
+        }
+    };
+
+    RoomUser.prototype.artChangeState = function (state, force) {
+        force = typeof force !== 'undefined' ? force : false;
+
+        var $art = this.$roomUser.find('.art');
+        
+        if ($art.data('manual') === true && !force) {
+            return;
+        }
+        
+        if (state == 'status') {
+            // Switch from 'gravatar' to 'status' state
+            $art.removeClass('show-gravatar')
+                .addClass('show-status');
+        } else if (state == 'gravatar') {
+            // Switch from 'status' to 'gravatar' state
+            $art.removeClass('show-status')
+                .addClass('show-gravatar');
         }
     };
 
     RoomUser.prototype.statusHoverEnter = function () {
         var $art = this.$roomUser.find('.art');
+        
+        if ($art.hasClass('rotation-disabled')) {
+            return;
+        }
 
         $art.data('manual', true)
             .removeClass('show-gravatar')
@@ -336,7 +359,7 @@ define([
     RoomUser.prototype.updateExtended = function () {
         var $extended = this.$roomUser.find('.extended'),
             $items = $extended.find('li');
-        
+
         if ($items.length === 2) {
             $extended.addClass('dual');
         } else {
