@@ -67,7 +67,7 @@
         }
         
         function mbSearch(recording, artist) {
-            var query = 'recording:(' + splitTerm(recording) + ') artist:(' + splitTerm(artist) + ')';
+            var query = 'recording:(' + splitTerm(recording) + ') artistname:(' + splitTerm(artist) + ')';
 
             var d = $.Deferred();
 
