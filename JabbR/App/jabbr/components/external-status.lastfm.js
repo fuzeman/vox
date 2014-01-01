@@ -51,7 +51,7 @@
             }
 
             // Try fetch art from Cover Art Archive via MusicBrainz search
-            if (!d.state() != 'resolved') {
+            if (d.state() != 'resolved') {
                 mbSearch(track.name, track.artist['#text']).done($.proxy(function (data) {
                     var releaseId = $(data).find('recording release').attr('id');
                     
