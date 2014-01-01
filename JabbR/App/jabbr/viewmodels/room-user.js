@@ -27,13 +27,6 @@ define([
         this.$roomUser = null;
     }
 
-    RoomUser.prototype.bind = function () {
-        this.$roomUser.find('.art').bind(
-            "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
-            $.proxy(this.artTransitionEnded, this)
-        );
-    };
-
     RoomUser.prototype.setOwner = function (isOwner) {
         var $roomUser = this.$roomUser.data('owner', isOwner);
 
@@ -280,21 +273,6 @@ define([
         c.src = url;
     };
 
-    RoomUser.prototype.artTransitionEnded = function () {
-        var $art = this.$roomUser.find('.art');
-
-        if ($art.hasClass('show-status') && !$art.data('transition-ended') && !$art.data('manual')) {
-            $art.data('transition-ended', true);
-
-            $art.delay(5000).queue($.proxy(function (next) {
-                this.artChangeState('gravatar');
-                $art.data('transition-ended', false);
-
-                next();
-            }, this));
-        }
-    };
-
     RoomUser.prototype.artChangeState = function (state, force) {
         force = typeof force !== 'undefined' ? force : false;
 
@@ -308,6 +286,12 @@ define([
             // Switch from 'gravatar' to 'status' state
             $art.removeClass('show-gravatar')
                 .addClass('show-status');
+            
+            // Queue reset back to gravatar state
+            $art.delay(5000).queue($.proxy(function (next) {
+                this.artChangeState('gravatar');
+                next();
+            }, this));
         } else if (state == 'gravatar') {
             // Switch from 'status' to 'gravatar' state
             $art.removeClass('show-status')
