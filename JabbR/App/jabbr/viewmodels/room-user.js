@@ -252,18 +252,16 @@ define([
         $art.removeClass('rotation-disabled');
         $statusArt.attr('class', 'status ' + this.user.status_source);
 
-        // Ensure we aren't already preloading
-        if ($art.data('preloading') === true) {
-            return;
-        }
-
-        $art.data('preloading', true);
+        $art.data('current-url', url);
 
         var c = new Image();
 
         c.onload = $.proxy(function () {
-            $art.data('preloading', false);
-
+            // Ensure this is still the image we want to display
+            if (url !== $art.data('current-url')) {
+                return;
+            }
+            
             $statusArt.css('background-image', "url('" + url + "')");
 
             // Ensure we only animate from gravatar state
