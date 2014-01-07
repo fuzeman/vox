@@ -29,7 +29,7 @@ define([
         var minSpaces = -1,
             minTabs = -1;
 
-        for (var i = 1; i < lines.length; i++) {
+        for (var i = 0; i < lines.length; i++) {
             var line = lines[i],
                 spaces = 0,
                 tabs = 0;
@@ -77,7 +77,7 @@ define([
         }
         
         // Normalize
-        for (var i = 1; i < lines.length; i++) {
+        for (var i = 0; i < lines.length; i++) {
             if (count.spaces > 0 && lines[i].length >= count.spaces) {
                 lines[i] = lines[i].slice(count.spaces);
             } else if (count.tabs > 0 && lines[i].length >= count.tabs) {

@@ -122,20 +122,21 @@ define([
                 return;
             }
 
-            var id = $newMessage.attr('message-id');
-            var msg = $.trim($newMessage.val());
+            var id = $newMessage.attr('message-id'),
+                value = $newMessage.val(),
+                lines = value.split('\n');
+
+            if (lines.length < 2) {
+                value = $.trim(value);
+            }
 
             focus = true;
 
-            if (msg) {
-                if (msg.toUpperCase() === '/LOGIN') {
-                    //TODO: ui.showLogin(); is this used?
+            if (value) {
+                if (id === undefined) {
+                    messages.sendMessage(value);
                 } else {
-                    if (id === undefined) {
-                        messages.sendMessage(msg);
-                    } else {
-                        messages.sendMessage({ content: msg, id: id });
-                    }
+                    messages.sendMessage({ content: value, id: id });
                 }
             }
             //TODO: updateNewMessageSize();
