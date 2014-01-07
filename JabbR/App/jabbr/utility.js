@@ -2,10 +2,11 @@
 define([
     'jquery',
     'jabbr/components/emoji',
+    'jabbr/messageprocessors/code',
     'markdown',
     'moment',
     'linkify'
-], function ($, emoji) {
+], function ($, emoji, code) {
     var utility = {};
 
     // getting the browser's name for use in isMobile
@@ -139,6 +140,13 @@ define([
         var hasNewline = content.indexOf('\n') !== -1;
 
         if (hasNewline) {
+            // Detect code highlighting
+            var result = code.processContent(content);
+            
+            if (result !== null) {
+                return result;
+            }
+
             // Multiline detection
             return $('<div />').append(templates.multiline.tmpl({ content: content })).html();
         } else {
