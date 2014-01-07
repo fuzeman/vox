@@ -1511,6 +1511,8 @@ pre.multiline {
 }
 
 .code-pre {
+    background: transparent;
+
     margin: 0;
 }
 

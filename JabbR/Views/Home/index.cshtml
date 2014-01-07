@@ -19,7 +19,6 @@
     <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16">
     @{
         WriteLiteral(Bundle.Css().ForceDebugIf(() => Model.DebugMode)
-            .Add("~/Content/highlight.js/styles/default.css")
             .Add("~/Content/bootstrap.min.css")
             .Add("~/Content/bootstrap-responsive.min.css")
             .Add("~/Content/font-awesome.min.css")
@@ -32,6 +31,8 @@
             .Add("~/Content/emoji20.css")
             .Add("~/Content/jquery.fancybox.css")
             .Add("~/Content/animate.min.css")
+            .Add("~/Content/highlight.js/themes/default.css")
+            .Add("~/Content/highlight.js/theme_extras/default.css")
             .Render("~/Content/JabbR_#.css"));
    }
 
@@ -103,7 +104,7 @@
         <div class="collapsible_content">
             <h3 class="collapsible_title">${title} (click to show/hide)</h3>
 
-            <div class="collapsible_box plain overflow-x {{if lines.length > 100}}limit-height{{/if}}" {{if lines.length > 100}}style="display: none;"{{/if}}>
+            <div class="collapsible_box code plain overflow-x {{if lines.length > 100}}limit-height{{/if}}" {{if lines.length > 100}}style="display: none;"{{/if}}>
                 <pre class="code-pre"><table class="code-container">
                     <tbody>
                         <tr>
