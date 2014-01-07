@@ -1441,12 +1441,12 @@ li.error {
 }
 
 .collapsible_box.overflow-x {
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .collapsible_box.limit-height {
     max-height: 450px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .embedly-content {
