@@ -139,7 +139,6 @@ define([
                     messages.sendMessage({ content: value, id: id });
                 }
             }
-            //TODO: updateNewMessageSize();
             resetSelection(id);
             $newMessage.focus();
 
@@ -265,7 +264,9 @@ define([
             }
 
             $newMessage.val('');
+            
             newMessageLines = 1;
+            updateNewMessageSize();
             
             $newMessage.removeAttr('message-id');
             $newMessage.removeClass('editing');
