@@ -77,10 +77,14 @@ msbuild "%~dp0Build\Build.proj" /p:Configuration="%config%" /v:M /fl /flp:LogFil
 :end
 
 echo ----------------------------------------------------------------------------
-echo Running jshint
+echo Installing jshint
 echo ----------------------------------------------------------------------------
 
 npm install jshint -g
+
+echo ----------------------------------------------------------------------------
+echo Running jshint
+echo ----------------------------------------------------------------------------
 
 cd JabbR
 jshint .
