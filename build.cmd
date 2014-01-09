@@ -1,5 +1,9 @@
 @echo off
 
+echo ----------------------------------------------------------------------------
+echo Building Solution
+echo ----------------------------------------------------------------------------
+
 set config=%1
 if "%config%" == "" (
    set config=debug
@@ -71,3 +75,10 @@ msbuild "%~dp0Build\Build.proj" /p:Configuration="%config%" /v:M /fl /flp:LogFil
 @goto end
 
 :end
+
+echo ----------------------------------------------------------------------------
+echo Running jshint
+echo ----------------------------------------------------------------------------
+
+cd JabbR
+jshint .
