@@ -5,9 +5,9 @@ if "%config%" == "" (
    set config=debug
 )
 
-@if "%FrameworkDir32%"=="" goto error
-@if "%FrameworkVersion32%"=="" goto error
-@if "%Framework35Version%"=="" goto error
+@if "%FrameworkDir32%"=="" goto error_no_FrameworkDIR32
+@if "%FrameworkVersion32%"=="" goto error_no_FrameworkVer32
+@if "%Framework35Version%"=="" goto error_no_Framework35Version
 
 @set FrameworkDir=%FrameworkDir32%
 @set FrameworkVersion=%FrameworkVersion32%
@@ -19,8 +19,16 @@ msbuild "%~dp0Build\Build.proj" /p:Configuration="%config%" /v:M /fl /flp:LogFil
 
 @goto end
 
-:error
-echo ERROR: Missing environment variable
+:error_no_FrameworkDIR32
+@echo ERROR: Cannot determine the location of the .NET Framework 32bit installation.
+@goto end
+
+:error_no_FrameworkVer32
+@echo ERROR: Cannot determine the version of the .NET Framework 32bit installation.
+@goto end
+
+:error_no_Framework35Version
+@echo ERROR: Cannot determine the .NET Framework 3.5 version.
 @goto end
 
 :end
