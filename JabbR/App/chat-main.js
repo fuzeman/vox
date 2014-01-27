@@ -21,13 +21,14 @@ require.config({
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
         'jquery.color': '../Scripts/jquery.color-2.1.2',
 
-        'quicksilver': '../Scripts/quicksilver',
+        'hljs': '../Scripts/highlight.pack',
+        'json2': '../Scripts/json2',
         'markdown': '../Scripts/Markdown.Converter',
         'moment': '../Scripts/moment.min',
         'livestamp': '../Scripts/livestamp.min',
         'linkify': '../Scripts/ba-linkify.min',
-        'stacktrace': '../Scripts/stacktrace-min-0.4',
-        'json2': '../Scripts/json2'
+        'quicksilver': '../Scripts/quicksilver',
+        'stacktrace': '../Scripts/stacktrace-min-0.4'
     },
 
     shim: {

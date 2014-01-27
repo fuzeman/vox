@@ -245,6 +245,7 @@
     <Content Include="App\jabbr\contentproviders\github-issues.js" />
     <Content Include="App\jabbr\contentproviders\core.js" />
     <Content Include="App\jabbr\contentproviders\twitter.js" />
+    <Content Include="App\jabbr\messageprocessors\code.js" />
     <Content Include="App\notifications-main.js" />
     <Content Include="App\jabbr\client.js" />
     <Content Include="App\jabbr\components\connection-status.js" />
@@ -283,6 +284,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\animate.min.css" />
+    <Content Include="Content\highlight.js\themes\default.css" />
+    <Content Include="Content\highlight.js\theme_extras\default.css" />
     <Content Include="Content\images\crown-admin.png" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
@@ -919,6 +922,7 @@
     <EmbeddedResource Include="Migrations\201307251218442_AddChatRoomUserData.resx">
       <DependentUpon>201307251218442_AddChatRoomUserData.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-migrate-1.2.1.min.js" />
     <Content Include="Scripts\jquery.easing.1.3.js" />
     <Content Include="Scripts\jquery.fancybox-buttons.js" />

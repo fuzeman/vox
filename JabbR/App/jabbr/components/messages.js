@@ -634,9 +634,6 @@ define([
                     addChatMessageContent(id, content, room);
                 }, room);
 
-                // isMentioned: this is outside normal messages and user shouldn't be mentioned
-                events.trigger(events.ui.updateUnread, [room, false]);
-
                 watchMessageScroll([id], room);
             },
 

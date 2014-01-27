@@ -14,6 +14,7 @@
         var apiKey = '4bf73213fd748d82b28b97c5b41e978c',
             baseUrl = 'https://ws.audioscrobbler.com/2.0/?format=json',
             loaded = false,
+            mbSearchCache = null,  // Note: currently just stores the metadata for the previous item
             lastNothingPlaying = false, // Was the last poll result "nothing playing"
 
             state = {
@@ -34,49 +35,127 @@
             state.username = username;
             state.interval = interval;
         }
-        
-        function getArt (track, size) {
-            if (track.image === undefined) {
-                return null;
-            }
 
-            for (var i = 0; i < track.image.length; i++) {
-                var image = track.image[i];
-                
-                if (image.size == size) {
-                    return image['#text'];
+        function getArt(track, size) {
+            var d = $.Deferred();
+
+            // Try fetch art from last.fm track
+            if (track.image !== undefined) {
+                for (var i = 0; i < track.image.length; i++) {
+                    var image = track.image[i];
+
+                    if (image.size == size && image['#text'].length > 0) {
+                        d.resolveWith(this, [image['#text']]);
+                    }
                 }
             }
 
-            return null;
+            // Try fetch art from Cover Art Archive via MusicBrainz search
+            if (d.state() != 'resolved') {
+                mbSearch(track.name, track.artist['#text']).done($.proxy(function (data) {
+                    var releaseId = $(data).find('recording release').attr('id');
+                    
+                    if (releaseId === undefined || releaseId === null) {
+                        d.resolveWith(this, [null]);
+                    }
+                    
+                    d.resolveWith(this, ['http://coverartarchive.org/release/' + releaseId + '/front-250']);
+                }, this));
+            }
+
+            return d.promise();
+        }
+        
+        function mbSearch(recording, artist) {
+            var query = 'recording:(' + splitTerm(recording) + ') artistname:(' + splitTerm(artist) + ')';
+
+            var d = $.Deferred();
+
+            if (mbSearchCache !== null && mbSearchCache.query == query) {
+                d.resolveWith(this, [mbSearchCache.data]);
+            } else {
+                $.ajax({
+                    url: 'http://musicbrainz.org/ws/2/recording?query=' + encodeURIComponent(query) + '&limit=1'
+                }).done($.proxy(function (data) {
+                    mbSearchCache = {
+                        query: query,
+                        data: data
+                    };
+                    
+                    d.resolveWith(this, [data]);
+                }, this));
+            }
+
+            return d.promise();
+        }
+        
+        function splitTerm(value) {
+            if (value === undefined || value === null) {
+                return value;
+            }
+
+            var fragments = [],
+                insideClosure = false,
+                buffer = '';
+
+            for (var i = 0; i < value.length; i++) {
+                if (value[i] == '(') {
+                    // Start of closure found
+                    insideClosure = true;
+                }
+
+                // Create fragment or append to buffer
+                if (value[i] == ' ' && !insideClosure && buffer.length > 0) {
+                    fragments.push(buffer);
+                    buffer = '';
+                } else {
+                    buffer += value[i];
+                }
+
+                if (insideClosure && value[i] == ')') {
+                    // End of closure found
+                    insideClosure = false;
+
+                    // Create fragment
+                    fragments.push(buffer);
+                    buffer = '';
+                }
+            }
+
+            if (buffer.length > 0) {
+                fragments.push(buffer);
+            }
+
+            return '"' + fragments.join('" "') + '"';
         }
 
         function success(data) {
             if (data.recenttracks !== undefined &&
                 data.recenttracks.track !== undefined &&
                 data.recenttracks.track.length !== 0) {
-
                 var lastTrack = data.recenttracks.track[0],
                     nowplaying = lastTrack['@attr'] !== undefined && lastTrack['@attr'].nowplaying == 'true';
 
                 if (nowplaying) {
                     var artistUrl = lastTrack.url.substring(0, lastTrack.url.lastIndexOf('/'));
                     artistUrl = artistUrl.substring(0, artistUrl.lastIndexOf('/'));
-                    
-                    es.publish('lastfm', 'music', {
-                        titles: [
-                            {
-                                value: lastTrack.name,
-                                url: lastTrack.url
-                            },
-                            {
-                                value: lastTrack.artist['#text'],
-                                url: artistUrl
-                            }
-                        ],
-                        art: getArt(lastTrack, 'medium')
-                    }, 0, state.interval);
-                    
+
+                    getArt(lastTrack, 'medium').done(function (art) {
+                        es.publish('lastfm', 'music', {
+                            titles: [
+                                {
+                                    value: lastTrack.name,
+                                    url: lastTrack.url
+                                },
+                                {
+                                    value: lastTrack.artist['#text'],
+                                    url: artistUrl
+                                }
+                            ],
+                            art: art
+                        }, 0, state.interval);
+                    });
+
                     lastNothingPlaying = false;
                     return;
                 }

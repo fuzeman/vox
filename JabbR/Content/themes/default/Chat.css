@@ -1423,6 +1423,10 @@ li.error {
     cursor: pointer;
 }
 
+.collapsible_content {
+    background-color: white;
+}
+
 .collapsible_box {
     border: 1px solid #DDD;
     padding: 5px;
@@ -1431,6 +1435,19 @@ li.error {
     .collapsible_box img, .collapsible_box embed {
         max-width: 100%;
     }
+
+.collapsible_box.plain {
+    padding: 0;
+}
+
+.collapsible_box.overflow-x {
+    overflow-x: auto;
+}
+
+.collapsible_box.limit-height {
+    max-height: 450px;
+    overflow-y: auto;
+}
 
 .embedly-content {
     position: relative;
@@ -1491,6 +1508,44 @@ pre.multiline {
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word; /* Internet Explorer 5.5+ */
     width: 99%;
+}
+
+.code-pre {
+    background: transparent;
+
+    margin: 0;
+}
+
+.code-container {
+    line-height: 18px;
+    font-size: 12px;
+}
+
+.code-container .line-numbers {
+    vertical-align: top;
+    min-width: 44px;
+    width: 44px;
+
+    text-align: right;
+
+    border-right: 1px solid #e5e5e5;
+    color: rgba(0, 0, 0, 0.3);
+}
+
+    .code-container .line-numbers span {
+        display: block;
+
+        padding: 0 8px;
+    }
+
+.code-container .body {
+    vertical-align: top;
+
+    padding-left: 8px;
+}
+
+.code-container code {
+    white-space: pre;
 }
 
 /* CLEAR FIX */

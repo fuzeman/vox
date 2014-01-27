@@ -10,6 +10,7 @@ define(['jquery'], function ($) {
         gravatarprofile: $('#gravatar-profile-template'),
         commandhelp: $('#command-help-template'),
         multiline: $('#multiline-content-template'),
+        code: $('#code-content-template'),
         lobbyroom: $('#new-lobby-room-template'),
         otherlobbyroom: $('#new-other-lobby-room-template')
     };

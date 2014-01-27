@@ -1,0 +1,8 @@
+﻿.collapsible_box.code {
+    background: white;
+}
+
+    .code-container code {
+        background: white;
+        padding: 0;
+    }
