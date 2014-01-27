@@ -1572,7 +1572,7 @@ namespace JabbR.Test
             }
 
             [Fact]
-            public void CanCreateRoomAndJoinsAutomaticly()
+            public void CanCreateRoomAndJoinsAutomatically()
             {
                 var repository = new InMemoryRepository();
                 var cache = new Mock<ICache>().Object;
@@ -3513,7 +3513,7 @@ namespace JabbR.Test
                 bool result = commandManager.TryHandleCommand("/nudge dfowler2");
 
                 Assert.True(result);
-                notificationService.Verify(x => x.NugeUser(user, user2), Times.Once());
+                notificationService.Verify(x => x.NudgeUser(user, user2), Times.Once());
                 HubException ex = Assert.Throws<HubException>(() => commandManager.TryHandleCommand("/nudge dfowler2"));
                 Assert.Equal("User can only be nudged once every 60 seconds.", ex.Message);
             }
@@ -3548,7 +3548,7 @@ namespace JabbR.Test
                 bool result = commandManager.TryHandleCommand("/nudge dfowler2");
 
                 Assert.True(result);
-                notificationService.Verify(x => x.NugeUser(user, user2), Times.Once());
+                notificationService.Verify(x => x.NudgeUser(user, user2), Times.Once());
                 Assert.NotNull(user2.LastNudged);
             }
 
@@ -5212,6 +5212,40 @@ namespace JabbR.Test
                 // Assert.
                 Assert.True(result);
                 notificationService.Verify(x => x.GenerateMeme(user, room, "https://upboat.me/aa/top-line/bottom-line.jpg"), Times.Once());
+            }
+
+            [Fact]
+            public void EncodesSpecialCharacters()
+            {
+                // Arrange.
+                var repository = new InMemoryRepository();
+                var cache = new Mock<ICache>().Object;
+                var user = new ChatUser
+                {
+                    Name = "asshat",
+                    Id = "1"
+                };
+                repository.Add(user);
+                var room = new ChatRoom
+                {
+                    Name = "room"
+                };
+                repository.Add(room);
+                var service = new ChatService(cache, new Mock<IRecentMessageCache>().Object, repository);
+                var notificationService = new Mock<INotificationService>();
+                var commandManager = new CommandManager("clientid",
+                                                        "1",
+                                                        "room",
+                                                        service,
+                                                        repository,
+                                                        cache,
+                                                        notificationService.Object);
+                // Act.
+                bool result = commandManager.TryHandleCommand("/meme ramsay cold-hands? type-faster/!...");
+
+                // Assert.
+                Assert.True(result);
+                notificationService.Verify(x => x.GenerateMeme(user, room, "https://upboat.me/ramsay/cold-hands%3F/type-faster%2F!....jpg"), Times.Once());
             }
 
             [Fact]

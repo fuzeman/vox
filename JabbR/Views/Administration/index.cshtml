@@ -10,6 +10,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>JabbR - administration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     @{ 
         WriteLiteral(Bundle.Css()
             .Add("~/Content/bootstrap.min.css")
@@ -65,6 +66,13 @@
                             @Html.CheckBox("allowRoomCreation", Model.AllowRoomCreation)
                         </div>
                     </div>
+                    <div class="control-group">
+                        <label class="control-label" for="maxMessageLength">@LanguageResources.Administration_MaxMessageLength</label>
+                        <div class="controls">
+                            <input type="text" id="maxMessageLength" name="maxMessageLength" class="input-xlarge" value="@Model.MaxMessageLength" placeholder="@LanguageResources.Administration_MaxMessageLength"/>
+                            <span class="help-block">@LanguageResources.Administration_MaxMessageLengthHelp</span>
+                        </div>
+                    </div>
                 </fieldset>
                 <fieldset id="emailSettings">
                     <legend>@LanguageResources.Administration_EmailSettings</legend>
@@ -81,29 +89,14 @@
                         <label class="control-label" for="encryptionKey">@LanguageResources.Administration_EncryptionKey</label>
                         <div class="controls">
                             <input type="hidden" id="encryptionKey" name="encryptionKey" value="@Model.EncryptionKey"/>
-                            <label class="control-label label-align-left">@Model.EncryptionKey</label>
+                            <label class="help-block label-align-left word-breakable literal-control">@Model.EncryptionKey</label>
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="verificationKey">@LanguageResources.Administration_VerificationKey</label>
                         <div class="controls">
                             <input type="hidden" id="verificationKey" name="verificationKey" value="@Model.VerificationKey"/>
-                            <label class="control-label label-align-left">@Model.VerificationKey</label>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset id="storage">
-                    <legend>@LanguageResources.Administration_Storage</legend>
-                    <div class="control-group">
-                        <label class="control-label" for="azureBlobStorageConnectionString">@LanguageResources.Administration_AzureBlobStorageConnectionString</label>
-                        <div class="controls">
-                            <input type="text" id="azureBlobStorageConnectionString" name="azureBlobStorageConnectionString" class="input-xlarge" value="@Model.AzureblobStorageConnectionString" placeholder="@LanguageResources.Administration_AzureBlobStorageConnectionString"/>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" for="maxFileUploadBytes">@LanguageResources.Administration_MaxFileUploadBytes</label>
-                        <div class="controls">
-                            <input type="text" id="maxFileUploadBytes" name="maxFileUploadBytes" class="input-xlarge" value="@Model.MaxFileUploadBytes" placeholder="@LanguageResources.Administration_MaxFileUploadBytes"/>
+                            <label class="help-block label-align-left word-breakable literal-control">@Model.VerificationKey</label>
                         </div>
                     </div>
                 </fieldset>
@@ -118,9 +111,43 @@
                 </fieldset>
                 <fieldset id="identityProviders">
                     <legend>@LanguageResources.Administration_IdentityProviders</legend>
+                    <div class="control-group">                        
+                        <label for="facebookKey" class="control-label">Facebook</label>
+                        <div class="controls">
+                            <input type="text" id="facebookAppId" name="facebookAppId" class="input-xlarge" value="@Model.FacebookAppId" placeholder="Facebook app ID" title="Facebook app ID" />
+                            <input type="text" id="facebookAppSecret" name="facebookAppSecret" class="input-xlarge" value="@Model.FacebookAppSecret" placeholder="Facebook app secret" title="Facebook app secret" />
+                        </div>
+                    </div>
                     <div class="control-group">
+                        <label for="twitterKey" class="control-label">Twitter</label>
+                        <div class="controls">
+                            <input type="text" id="twitterConsumerKey" name="twitterConsumerKey" class="input-xlarge" value="@Model.TwitterConsumerKey" placeholder="Twitter consumer key" title="Twitter consumer key" />
+                            <input type="text" id="twitterConsumerSecret" name="twitterConsumerSecret" class="input-xlarge" value="@Model.TwitterConsumerSecret" placeholder="Twitter consumer secret" title="Twitter consumer secret" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="googleKey" class="control-label">Google</label>
+                        <div class="controls">
+                            <input type="text" id="googleClientId" name="googleClientId" class="input-xlarge" value="@Model.GoogleClientID" placeholder="Google client id" title="Google client id" />
+                            <input type="text" id="googleClientSecret" name="googleClientSecret" class="input-xlarge" value="@Model.GoogleClientSecret" placeholder="Google client secret" title="Google client secret" />
+                        </div>
                     </div>
                 </fieldset>
+                <div class="row" style="padding-top: 75px;">
+                    <div class="row">
+                        <div class="span12">
+                            <span class="administration-title pull-left">@LanguageResources.Administration_Storage</span>
+                        </div>
+                    </div>
+                    <hr />
+                    <fieldset id="storageGeneral">
+                        <div class="control-group">
+                            <label class="control-label" for="maxFileUploadBytes">@LanguageResources.Administration_MaxFileUploadBytes</label>
+                            <div class="controls">
+                                <input type="text" id="maxFileUploadBytes" name="maxFileUploadBytes" class="input-xlarge" value="@Model.MaxFileUploadBytes" placeholder="@LanguageResources.Administration_MaxFileUploadBytes"/>
+                            </div>
+                        </div>
+                    </fieldset>
                 <fieldset id="pushNotifications">
                     <legend>@LanguageResources.Administration_PushNotifications</legend>
                     <div class="control-group">
@@ -130,6 +157,18 @@
                         </div>
                     </div>
                 </fieldset>
+                    <div class="control-group">
+                        <fieldset id="storageAzure">
+                            <legend>@LanguageResources.Administration_Storage_Azure</legend>
+                            <div class="control-group">
+                                <label class="control-label" for="azureBlobStorageConnectionString">@LanguageResources.Administration_AzureBlobStorageConnectionString</label>
+                                <div class="controls">
+                                    <input type="text" id="azureBlobStorageConnectionString" name="azureBlobStorageConnectionString" class="input-xlarge" value="@Model.AzureblobStorageConnectionString" placeholder="@LanguageResources.Administration_AzureBlobStorageConnectionString"/>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
                 <fieldset id="embedly">
                     <legend>@LanguageResources.Administration_Embedly</legend>
                     <div class="control-group">
@@ -139,6 +178,24 @@
                         </div>
                     </div>
                 </fieldset>
+                    <div class="control-group">
+                        <fieldset id="storageLocal">
+                            <legend>@LanguageResources.Administration_Storage_Local</legend>
+                            <div class="control-group">
+                                <label class="control-label" for="localFileSystemStoragePath">@LanguageResources.Administration_LocalFileSystemStoragePath</label>
+                                <div class="controls">
+                                    <input type="text" id="localFileSystemStoragePath" name="localFileSystemStoragePath" class="input-xlarge" value="@Model.LocalFileSystemStoragePath" placeholder="@LanguageResources.Administration_LocalFileSystemStoragePath_PlaceHolder"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="localFileSystemStorageUriPrefix">@LanguageResources.Administration_LocalFileSystemStorageUriPrefix</label>
+                                <div class="controls">
+                                    <input type="text" id="localFileSystemStorageUriPrefix" name="localFileSystemStorageUriPrefix" class="input-xlarge" value="@Model.LocalFileSystemStorageUriPrefix" placeholder="@LanguageResources.Administration_LocalFileSystemStorageUriPrefix_PlaceHolder"/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
                 <div class="control-group">
                     <div class="controls">
                         <input type="submit" class="btn pull-right" value="@LanguageResources.SettingsSave" />
