@@ -195,6 +195,50 @@ define([
             return $element;
         }
 
+        function addNotification(message, roomName) {
+            addMessage(message, 'notification', roomName);
+        }
+
+        function addNotificationToActiveRoom(message) {
+            addNotification(message, getActiveRoomName());
+        }
+
+        function addError(message, roomName) {
+            addMessage(message, 'error', roomName);
+        }
+
+        function addErrorToActiveRoom(message) {
+            addError(message, getActiveRoomName());
+        }
+
+        function addWelcome(message, roomName) {
+            addMessage(message, 'welcome', roomName);
+        }
+
+        function addWelcomeToActiveRoom(message) {
+            addWelcome(message, getActiveRoomName());
+        }
+
+        function addList(header, messages, roomName) {
+            addMessage(header, 'list-header', roomName);
+            
+            $.each(messages, function () {
+                addMessage(this, 'list-item', roomName);
+            });
+        }
+
+        function addListToActiveRoom(header, messages) {
+            addList(header, messages, getActiveRoomName());
+        }
+
+        function addBroadcast(message, roomName) {
+            addMessage(message, 'broadcast', roomName);
+        }
+
+        function addAction(message, roomName) {
+            addMessage(message, 'action', roomName);
+        }
+
         function addPrivateMessage(content, type) {
             var rooms = ru.getAllRoomElements();
             for (var r in rooms) {
@@ -691,6 +735,25 @@ define([
             appendMessage: appendMessage,
             addChatMessage: addChatMessage,
             addMessage: addMessage,
+
+            // Notification
+            addNotification: addNotification,
+            addNotificationToActiveRoom: addNotificationToActiveRoom,
+
+            // Error
+            addError: addError,
+            addErrorToActiveRoom: addErrorToActiveRoom,
+
+            // Welcome
+            addWelcome: addWelcome,
+            addWelcomeToActiveRoom: addWelcomeToActiveRoom,
+
+            // List
+            addList: addList,
+            addListToActiveRoom: addListToActiveRoom,
+
+            addBroadcast: addBroadcast,
+            addAction: addAction,
             addPrivateMessage: addPrivateMessage,
 
             sendMessage: sendMessage,

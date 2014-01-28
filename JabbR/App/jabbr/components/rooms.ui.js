@@ -44,7 +44,6 @@ define([
             $notify = $('#room-actions .notify'),
             $tabs = $('#tabs'),
             $chatArea = $('#chat-area'),
-            $topicBar = $('#topic-bar'),
             $kickedPopup = $('#jabbr-kicked'),
             $loadingHistoryIndicator = $('#loadingRoomHistory'),
             $this = $(this),
@@ -376,9 +375,9 @@ define([
                 .appendTo($chatArea)
                 .hide();
 
-            $roomTopic = $('<div/>').attr('id', 'roomTopic-' + roomId)
+            $('<div/>').attr('id', 'roomTopic-' + roomId)
                 .addClass('roomTopic')
-                .appendTo($topicBar)
+                .appendTo($chatArea)
                 .hide();
 
             userContainer = $('<div/>').attr('id', 'userlist-' + roomId)
