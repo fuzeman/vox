@@ -25,6 +25,7 @@ define([
             messageHistory = {},
             messageIds = [],
             historyLocation = 0,
+            roomsToLoad = 0,
             loadingHistory = false;
 
         //
@@ -325,6 +326,13 @@ define([
 
             roomLoaded: function(roomInfo) {
                 populateRoomFromInfo(roomInfo);
+
+                if (roomsToLoad === 1) {
+                    ui.hideSplashScreen();
+                }
+                else {
+                    roomsToLoad = roomsToLoad - 1;
+                }
             },
 
             lockRoom: function (userdata, roomName, userHasAccess) {
@@ -472,6 +480,14 @@ define([
                 logger.trace('activated');
 
                 handlers.bind();
+            },
+
+            roomsToLoad: function (value) {
+                if (typeof a !== 'undefined') {
+                    roomsToLoad = value;
+                }
+
+                return roomsToLoad;
             },
 
             messageHistory: messageHistory,

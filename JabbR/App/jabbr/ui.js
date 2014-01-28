@@ -46,6 +46,7 @@ define([
             $messageTotal = $('#message-total .value'),
             $clockTime = $('#clock .time'),
             $clockDate = $('#clock .date'),
+            $splashScreen = $('#splash-screen'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -311,6 +312,15 @@ define([
             return false;
         }
 
+        // Splash Screen
+        function showSplashScreen() {
+            $splashScreen.fadeIn('slow');
+        }
+
+        function hideSplashScreen() {
+            $splashScreen.fadeOut('slow');
+        }
+
         // #region Cycle Message
 
         function selectMessage(message) {
@@ -466,6 +476,9 @@ define([
                     }
                 });
 
+                // Set the amount of rooms to load
+                rc.roomsToLoad(filteredRooms.length);
+
                 populateRooms(filteredRooms);
                 
                 // Set current unread messages
@@ -480,12 +493,22 @@ define([
                     help.load();
                     lobby.updateRooms();
                     loadRooms();
+
+                    // No rooms to load just hide the splash screen
+                    if (rc.roomsToLoad() === 0) {
+                        hideSplashScreen();
+                    }
                 });
             } else {
                 // Populate the lobby first then everything else
                 lobby.updateRooms().done(function() {
                     help.load();
                     loadRooms();
+
+                    // No rooms to load just hide the splash screen
+                    if (rc.roomsToLoad() === 0) {
+                        hideSplashScreen();
+                    }
                 });
             }
 
@@ -836,6 +859,9 @@ define([
             incrementMessageCount: incrementMessageCount,
             setMessage: setMessage,
             resetSelection: resetSelection,
+
+            showSplashScreen: showSplashScreen,
+            hideSplashScreen: hideSplashScreen,
 
             isFocused: function () {
                 return focus;
