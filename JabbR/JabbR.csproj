@@ -867,8 +867,6 @@
     <Content Include="Content\images\small-logo.png" />
     <Content Include="Content\sounds\notification.wav" />
     <Content Include="robots.txt" />
-    <EmbeddedResource Include="LanguageResources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
     <Content Include="loader.js" />
     <Content Include="notifications.js" />
     <Content Include="notifications.unreadcounter.js" />
@@ -1498,13 +1496,10 @@ IF $(ConfigurationName) == Release (
   )
 )
 if $(ConfigurationName) == Debug (
-   xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.18.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
-  xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.18.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
+  xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
+  xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
 )
 </PostBuildEvent>
-xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
-xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
-)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
