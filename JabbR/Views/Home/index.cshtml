@@ -376,25 +376,24 @@
                 <ul id="messages-lobby" class="messages current" role="log" style="visibility: hidden;">
                 </ul>
             </div>
-            <form id="send-message" action="#">
-                <div id="message-box">
-                    <textarea id="new-message" autocomplete="off" aria-autocomplete="none" accesskey="m"></textarea>
-                </div>
-                <input type="submit" id="send" value="@LanguageResources.Client_Send" class="send btn" />
-            </form>
-            <div id="info-container">
-                <div id="clock">
-                    <div class="time"></div>
-                    <div class="date"></div>
-                </div>
-                <ul>
-                    <li id="message-total" title="Total number of messages processed by the server."><i class="icon-comments-alt"></i> <span class="value">...</span></li>
-                </ul>
-            </div>
             <ul id="message-ticker"></ul>
         </div>
-        <audio src="Content/sounds/notification.wav" id="notificationSound" hidden="hidden" aria-hidden="true">
-        </audio>
+        <div id="info-container">
+            <div id="clock">
+                <div class="time"></div>
+                <div class="date"></div>
+            </div>
+            <ul>
+                <li id="message-total" title="Total number of messages processed by the server."><i class="icon-comments-alt"></i> <span class="value">...</span></li>
+            </ul>
+        </div>
+        <form id="send-message" action="#">
+            <div id="message-box">
+                <textarea id="new-message" autocomplete="off" aria-autocomplete="none" accesskey="m"></textarea>
+            </div>
+            <input type="submit" id="send" value="@LanguageResources.Client_Send" class="send btn" />
+        </form>
+        <audio src="Content/sounds/notification.wav" id="notificationSound" hidden="hidden" aria-hidden="true"></audio>
         <section aria-hidden="true" aria-haspopup="true">
             <div id="disconnect-dialog" class="modal hide fade">
                 <div class="modal-header">

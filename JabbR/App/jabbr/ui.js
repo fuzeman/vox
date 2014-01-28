@@ -33,6 +33,7 @@ define([
     var initialize = function () {
         var $window = $(window),
             $document = $(document),
+            $chatArea = $('#chat-area'),
             $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
@@ -223,13 +224,8 @@ define([
             $sendMessage.height(20 + (20 * newMessageLines));
             $newMessage.height(20 * newMessageLines);
 
-            // Update Lobby
-            $lobbyWrapper.css('bottom', 30 + (20 * newMessageLines));
-
-            // Update Current Room
-            var room = ru.getCurrentRoomElements();
-            room.messages.css('bottom', 20 + (20 * newMessageLines));
-            room.users.css('bottom', 30 + (20 * newMessageLines));
+            // Update Chat Area
+            $chatArea.css('bottom', 30 + (20 * newMessageLines));
         }
 
         function setMessage(clientMessage) {
@@ -239,7 +235,7 @@ define([
                 newMessageLines = clientMessage.content.split('\n').length;
                 updateNewMessageSize();
                 
-            $('.my-message').removeClass('editing');            
+                $('.my-message').removeClass('editing');            
                 
 
                 if (clientMessage.id !== undefined) {
@@ -577,6 +573,11 @@ define([
                     break;
                 case Keys.Enter:
                     if (ev.shiftKey) {
+                        setTimeout(function () {
+                            newMessageLines = $newMessage.val().split('\n').length;
+                            updateNewMessageSize();
+                        }, 100);
+
                         triggerTyping();
                     } else {
                         triggerSend();
