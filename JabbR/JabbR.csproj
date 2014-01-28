@@ -293,9 +293,6 @@
     <Content Include="Content\images\splash-logo.png" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
-    <Content Include="Chat.documentOnWrite.js" />
-    <Content Include="Chat.twitter.js" />
-    <Content Include="Chat.ui.fileUpload.js" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -858,7 +855,6 @@
     <Content Include="Content\KeyTips.min.css" />
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
-    <Content Include="Chat.githubissues.js" />
     <Content Include="Content\themes\default\Chat.githubissues.css" />
     <Content Include="Content\themes\default\Chat.nuget.css" />
     <Content Include="favicon.ico" />
@@ -868,8 +864,6 @@
     <Content Include="Content\sounds\notification.wav" />
     <Content Include="robots.txt" />
     <Content Include="loader.js" />
-    <Content Include="notifications.js" />
-    <Content Include="notifications.unreadcounter.js" />
     <Content Include="robots.txt" />
     <EmbeddedResource Include="LanguageResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
