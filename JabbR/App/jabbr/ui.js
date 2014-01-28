@@ -14,7 +14,8 @@ define([
     'jabbr/components/emoji',
     'jabbr/utility',
     'jquery.pulse',
-    'jquery.autotabcomplete'
+    'jquery.autotabcomplete',
+    'moment'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,
     ru, help, cs, externalStatus,
@@ -761,6 +762,31 @@ define([
         // Configure livestamp to only update every 30s since display
         // granularity is by minute anyway (saves CPU cycles)
         $.livestamp.interval(30 * 1000);
+
+        // Setup Moment.js
+        moment.lang('en', {
+            relativeTime: {
+                future: "%s",
+                past: "%s",
+
+                s: "s",
+
+                m:   "1m",
+                mm: "%dm",
+
+                h:   "1h",
+                hh: "%dh",
+
+                d:   "1 day",
+                dd: "%d days",
+
+                M:   "1 month",
+                MM: "%d months",
+
+                y:   "1 year",
+                yy: "%d years"
+            }
+        });
 
         var handlers = {
             bind: function () {

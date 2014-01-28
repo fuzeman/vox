@@ -85,7 +85,7 @@ define([
         this.$roomUser.addClass('inactive');
 
         if (!$inactiveSince.html()) {
-            $inactiveSince.livestamp(new Date());
+            $inactiveSince.livestamp(this.user.lastActive);
         }
 
         return true;
