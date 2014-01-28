@@ -67,107 +67,108 @@ define([
 
         function bindNotificationEvents() {
             client.chat.client.allowUser = function (room) {
-                messages.addMessage('You were granted access to ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouGrantedRoomAccess', room));
             };
 
             client.chat.client.userAllowed = function (user, room) {
-                messages.addMessage(user + ' now has access to ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserGrantedRoomAccess', user, room));
             };
 
             client.chat.client.unallowUser = function (user, room) {
-                messages.addMessage('Your access to ' + room + ' was revoked.', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YourRoomAccessRevoked', room));
 
                 lobby.removeRoom(room);
             };
 
             client.chat.client.userUnallowed = function (user, room) {
-                messages.addMessage('You have revoked ' + user + '\'s access to ' + room, 'notification',
-                    state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouRevokedUserRoomAccess', user, room));
             };
 
             // Called when you make someone an owner
             client.chat.client.ownerMade = function (user, room) {
-                messages.addMessage(user + ' is now an owner of ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserGrantedRoomOwnership', user, room));
             };
 
             client.chat.client.ownerRemoved = function (user, room) {
-                messages.addMessage(user + ' is no longer an owner of ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserRoomOwnershipRevoked', user, room));
             };
 
             // Called when you've been made an owner
             client.chat.client.makeOwner = function (room) {
-                messages.addMessage('You are now an owner of ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouGrantedRoomOwnership', room));
             };
 
             // Called when you've been removed as an owner
             client.chat.client.demoteOwner = function (room) {
-                messages.addMessage('You are no longer an owner of ' + room, 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YourRoomOwnershipRevoked', room));
             };
 
             // Called when your gravatar has been changed
             client.chat.client.gravatarChanged = function () {
-                messages.addMessage('Your gravatar has been set', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YourGravatarChanged'));
             };
 
             // Called when the server sends a notification message
             client.chat.client.postNotification = function (msg, room) {
-                messages.addMessage(msg, 'notification', room);
-            };
-
-            client.chat.client.setPassword = function () {
-                messages.addMessage('Your password has been set', 'notification', state.get().activeRoom);
-            };
-
-            client.chat.client.changePassword = function () {
-                messages.addMessage('Your password has been changed', 'notification', state.get().activeRoom);
+                messages.addNotification(msg, room);
             };
 
             client.chat.client.welcomeChanged = function (isCleared, welcome) {
-                var action = isCleared ? 'cleared' : 'set';
-                var to = welcome ? ' to:' : '';
-                var message = 'You have ' + action + ' the room welcome' + to;
-                messages.addMessage(message, 'notification', state.get().activeRoom);
+                var message;
+
+                if (!isCleared) {
+                    message = utility.getLanguageResource('Chat_YouSetRoomWelcome', welcome);
+                } else {
+                    message = utility.getLanguageResource('Chat_YouClearedRoomWelcome');
+                }
+
+                messages.addNotificationToActiveRoom(message);
+
                 if (welcome) {
-                    messages.addMessage(welcome, 'welcome', state.get().activeRoom);
+                    messages.addWelcomeToActiveRoom(welcome);
                 }
             };
 
             // Called when you have added or cleared a flag
             client.chat.client.flagChanged = function (isCleared, country) {
-                var action = isCleared ? 'cleared' : 'set';
-                var place = country ? ' to ' + country : '';
-                var message = 'You have ' + action + ' your flag' + place;
-                messages.addMessage(message, 'notification', state.get().activeRoom);
+                var message;
+
+                if (!isCleared) {
+                    message = utility.getLanguageResource('Chat_YouSetFlag', country);
+                } else {
+                    message = utility.getLanguageResource('Chat_YouClearedFlag');
+                }
+
+                messages.addNotificationToActiveRoom(message);
             };
 
             client.chat.client.sendInvite = function (from, to, room) {
                 if (rc.isSelf({ Name: to })) {
                     notifyMention(true);
-                    messages.addPrivateMessage('*' + from + '* has invited you to #' + room +
-                        '. Click the room name to join.', 'pm');
+                    messages.addPrivateMessage(utility.getLanguageResource('Chat_UserInvitedYouToRoom', from, room));
                 }
                 else {
-                    messages.addPrivateMessage('Invitation to *' + to + '* to join #' + room + ' has been sent.', 'pm');
+                    messages.addPrivateMessage(utility.getLanguageResource('Chat_YouInvitedUserToRoom', to, room));
                 }
             };
 
             // Called when you make someone an admin
             client.chat.client.adminMade = function (user) {
-                messages.addMessage(user + ' is now an admin', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserAdminAllowed', user));
             };
 
             client.chat.client.adminRemoved = function (user) {
-                messages.addMessage(user + ' is no longer an admin', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserAdminRevoked', user));
             };
 
             // Called when you've been made an admin
             client.chat.client.makeAdmin = function () {
-                messages.addMessage('You are now an admin', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouAdminAllowed'));
             };
 
             // Called when you've been removed as an admin
             client.chat.client.demoteAdmin = function () {
-                messages.addMessage('You are no longer an admin', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouAdminRevoked'));
             };
 
             client.chat.client.userMuted = function (user, room) {
@@ -187,12 +188,12 @@ define([
             };
 
             client.chat.client.broadcastMessage = function (message, room) {
-                messages.addMessage('ADMIN: ' + message, 'broadcast', room);
+                messages.addBroadcast(utility.getLanguageResource('Chat_AdminBroadcast', message), room);
             };
 
             // Called when this user locked a room
             client.chat.client.roomLocked = function (room) {
-                messages.addMessage(room + ' is now locked.', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_RoomNowLocked', room));
             };
 
             client.chat.client.topicChanged = function (roomName, topic, who) {
@@ -213,7 +214,7 @@ define([
                     }
                 }
 
-                messages.addMessage(message, 'notification', roomName);
+                messages.addNotification(message, roomName);
 
                 ru.updateRoomTopic(roomName, topic);
             };

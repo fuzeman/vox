@@ -19,6 +19,7 @@
         if ($this.hasClass('disabled')) {
             return false;
         }
+        $this.addClass('disabled');
 
         $.publish('notifications.mark', [{ url: dataUrl, notificationId: notificationId }]);
     });

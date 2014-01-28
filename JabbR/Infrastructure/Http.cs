@@ -28,7 +28,7 @@ namespace JabbR.Infrastructure
             });
         }
 
-        public static Task<HttpWebResponse> GetAsync(Uri uri, Action<HttpWebRequest> init = null)
+        public static async Task<HttpWebResponse> GetAsync(Uri uri, Action<HttpWebRequest> init = null)
         {
             var request = (HttpWebRequest)HttpWebRequest.Create(uri);
             request.UserAgent = _userAgent;
@@ -37,16 +37,7 @@ namespace JabbR.Infrastructure
                 init(request);
             }
 
-            return Task.Factory.FromAsync((cb, state) => request.BeginGetResponse(cb, state), ar => {
-                try
-                {
-                    return (HttpWebResponse)request.EndGetResponse(ar);
-                }
-                catch (WebException)
-                {
-                    return null;
-                }
-            }, null);
+            return (HttpWebResponse)await request.GetResponseAsync().ConfigureAwait(continueOnCapturedContext: false);
         }
 
         public static Task<HttpWebResponse> GetAsync(string url, Action<HttpWebRequest> init = null)
