@@ -200,7 +200,7 @@ define([
         }
 
         function addNotificationToActiveRoom(message) {
-            addNotification(message, getActiveRoomName());
+            addNotification(message, ru.getActiveRoomName());
         }
 
         function addError(message, roomName) {
@@ -208,7 +208,7 @@ define([
         }
 
         function addErrorToActiveRoom(message) {
-            addError(message, getActiveRoomName());
+            addError(message, ru.getActiveRoomName());
         }
 
         function addWelcome(message, roomName) {
@@ -216,7 +216,7 @@ define([
         }
 
         function addWelcomeToActiveRoom(message) {
-            addWelcome(message, getActiveRoomName());
+            addWelcome(message, ru.getActiveRoomName());
         }
 
         function addList(header, messages, roomName) {
@@ -228,7 +228,7 @@ define([
         }
 
         function addListToActiveRoom(header, messages) {
-            addList(header, messages, getActiveRoomName());
+            addList(header, messages, ru.getActiveRoomName());
         }
 
         function addBroadcast(message, roomName) {

@@ -113,6 +113,11 @@ define([
             return null;
         }
 
+        function getActiveRoomName() {
+            //TODO: make this less DOM-read-ey
+            return $tabs.find('li.current').data('name');
+        }
+
         function getAllRoomElements() {
             var rooms = [];
             $("ul#tabs > li.room").each(function () {
@@ -622,6 +627,8 @@ define([
             getCurrentRoomElements: getCurrentRoomElements,
             getAllRoomElements: getAllRoomElements,
             getNextRoomListElement: getNextRoomListElement,
+
+            getActiveRoomName: getActiveRoomName,
 
             // #endregion
 
