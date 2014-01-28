@@ -4,10 +4,11 @@ define([
     'logger',
     'kernel',
     'jabbr/state',
+    'jabbr/utility',
     'jabbr/templates',
     'jabbr/viewmodels/user',
     'jabbr/viewmodels/room-user'
-], function ($, Logger, kernel, state, templates, User, RoomUser) {
+], function ($, Logger, kernel, state, utility, templates, User, RoomUser) {
     var logger = new Logger('jabbr/components/users'),
         client = null,
         ru = null,
@@ -160,35 +161,33 @@ define([
                 logger.trace('handlers bound');
             },
             chat: {
-                changeUserName: function (oldName, userdata, roomName) {
+                changeUserName: function (oldName, user, room) {
                     if (!(oldName in users)) {
                         logger.warn('unable to find old username "' + oldName + '" to update');
                         return;
                     }
 
-                    users[oldName].changeUserName(userdata);
-                    users[userdata.Name] = users[oldName];
+                    users[oldName].changeUserName(user);
+                    users[user.Name] = users[oldName];
                     delete users[oldName];
 
-                    if (!rc.isSelf(userdata)) {
-                        messages.addMessage(oldName + '\'s nick has changed to ' + userdata.Name,
-                            'notification', roomName);
+                    if (!rc.isSelf(user)) {
+                        messages.addNotification(utility.getLanguageResource('Chat_UserNameChanged', oldName, user.Name), room);
                     }
 
-                    logger.info('changed username from "' + oldName + '" to "' + userdata.Name + '"');
+                    logger.info('changed username from "' + oldName + '" to "' + user.Name + '"');
                 },
 
-                changeGravatar: function (userdata, roomName) {
-                    if (!(userdata.Name in users)) {
-                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                changeGravatar: function (user, room) {
+                    if (!(user.Name in users)) {
+                        logger.warn('unable to find username "' + user.Name + '" to update');
                         return;
                     }
 
-                    users[userdata.Name].changeGravatar(userdata);
+                    users[user.Name].changeGravatar(user);
 
-                    if (!rc.isSelf(userdata)) {
-                        messages.addMessage(userdata.Name + "'s gravatar changed.",
-                            'notification', roomName);
+                    if (!rc.isSelf(user)) {
+                        messages.addNotification(utility.getLanguageResource('Chat_UserGravatarChanged', user.Name), room);
                     }
                 },
 
@@ -201,73 +200,76 @@ define([
                     users[userdata.Name].changeMentions(userdata);
                 },
 
-                changeNote: function (userdata, roomName) {
-                    if (!(userdata.Name in users)) {
-                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                changeNote: function (user, room) {
+                    if (!(user.Name in users)) {
+                        logger.warn('unable to find username "' + user.Name + '" to update');
                         return;
                     }
 
-                    users[userdata.Name].changeNote(userdata);
+                    users[user.Name].changeNote(user);
                     
                     var message;
 
-                    if (!rc.isSelf(userdata)) {
-                        if (userdata.Note) {
-                            message = userdata.Name + " has set their note to \"" + userdata.Note + "\".";
+                    if (!rc.isSelf(user)) {
+                        if (user.Note) {
+                            message = user.Name + " has set their note to \"" + user.Note + "\".";
                         } else {
-                            message = userdata.Name + " has cleared their note.";
+                            message = user.Name + " has cleared their note.";
                         }
                     } else {
-                        if (userdata.Note) {
-                            message = "Your note has been set to \"" + userdata.Note + "\".";
+                        if (user.Note) {
+                            message = "Your note has been set to \"" + user.Note + "\".";
                         } else {
                             message = "Your note has been cleared.";
                         }
                     }
                     
-                    messages.addMessage(message, 'notification', roomName);
+                    messages.addNotification(message, room);
                 },
                 
-                changeAfk: function (userdata, roomName) {
-                    if (!(userdata.Name in users)) {
-                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                changeAfk: function (user, room) {
+                    if (!(user.Name in users)) {
+                        logger.warn('unable to find username "' + user.Name + '" to update');
                         return;
                     }
                     
-                    users[userdata.Name].changeNote(userdata);
+                    users[user.Name].changeNote(user);
 
                     var message;
 
-                    if (!rc.isSelf(userdata)) {
-                        if (userdata.AfkNote) {
-                            message = userdata.Name + " has gone AFK, with the message \"" + userdata.AfkNote + "\".";
+                    if (!rc.isSelf(user)) {
+                        if (user.AfkNote) {
+                            message = user.Name + " has gone AFK, with the message \"" + user.AfkNote + "\".";
                         } else {
-                            message = userdata.Name + " has gone AFK.";
+                            message = user.Name + " has gone AFK.";
                         }
                     } else {
-                        if (userdata.AfkNote) {
-                            message = "You have gone AFK, with the message \"" + userdata.AfkNote + "\".";
+                        if (user.AfkNote) {
+                            message = "You have gone AFK, with the message \"" + user.AfkNote + "\".";
                         } else {
                             message = "You have gone AFK.";
                         }
                     }
 
-                    messages.addMessage(message, 'notification', roomName);
+                    messages.addNotification(message, room);
                 },
 
-                changeFlag: function (userdata, roomName) {
-                    if (!(userdata.Name in users)) {
-                        logger.warn('unable to find username "' + userdata.Name + '" to update');
+                changeFlag: function (user, room) {
+                    if (!(user.Name in users)) {
+                        logger.warn('unable to find username "' + user.Name + '" to update');
                         return;
                     }
 
-                    users[userdata.Name].changeFlag(userdata);
+                    users[user.Name].changeFlag(user);
 
-                    if (!rc.isSelf(userdata)) {
-                        var action = userdata.Flag ? 'set' : 'cleared',
-                            country = user.country ? ' to ' + user.country : '',
-                            message = userdata.Name + ' has ' + action + ' their flag' + country;
-                        messages.addMessage(message, 'notification', roomName);
+                    if (!rc.isSelf(user)) {
+                        if (user.Flag) {
+                            message = utility.getLanguageResource('Chat_UserSetFlag', user.Name, users[user.Name].country);
+                        } else {
+                            message = utility.getLanguageResource('Chat_UserClearedFlag', user.Name);
+                        }
+
+                        messages.addNotification(message, room);
                     }
                 },
 
@@ -282,11 +284,11 @@ define([
                     users[username].changeExternalStatus(source, type, text, timestamp, interval);
                 },
 
-                userNameChanged: function (userdata) {
+                userNameChanged: function (user) {
                     // Update the client state
-                    client.chat.state.name = userdata.Name;
+                    client.chat.state.name = user.Name;
                     // TODO ui.setUserName(chat.state.name); is this needed?
-                    messages.addMessage('Your name is now ' + userdata.Name, 'notification', state.get().activeRoom);
+                    messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YourNameChanged', user.Name));
                 },
 
                 updateActivity: function (userdata) {
@@ -311,17 +313,17 @@ define([
                     });
                 },
 
-                addUser: function (userdata, room, isOwner) {
+                addUser: function (user, room, isOwner) {
                     logger.trace('client_addUser');
 
-                    var user = createUser(userdata);
+                    var user = createUser(user);
                     var added = !(room in user.roomUsers);
 
-                    createRoomUser(userdata, room, isOwner);
+                    createRoomUser(user, room, isOwner);
 
                     if (added) {
-                        if (!rc.isSelf(userdata)) {
-                            messages.addMessage(userdata.Name + ' just entered ' + room, 'notification', room);
+                        if (!rc.isSelf(user)) {
+                            messages.addNotification(utility.getLanguageResource('Chat_UserEnteredRoom', user.Name, room), room);
                         }
                     }
                 },

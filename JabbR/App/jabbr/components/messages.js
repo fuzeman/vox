@@ -348,7 +348,7 @@ define([
             if (msg[0] !== '/') {
                 // if you're in the lobby, you can't send mesages (only commands)
                 if (client.chat.state.activeRoom === undefined) {
-                    addMessage('You cannot send messages within the Lobby', 'error');
+                    addErrorToActiveRoom(utility.getLanguageResource('Chat_CannotSendLobby'));
                     return false;
                 }
 
@@ -405,7 +405,7 @@ define([
                     .fail(function (e) {
                         failMessage(clientMessage.id);
                         if (e.source === 'HubException') {
-                            addMessage(e.message, 'error');
+                            addErrorToActiveRoom(e.message);
                         }
                     });
             } catch (e) {
@@ -699,7 +699,7 @@ define([
             },
 
             sendMeMessage: function (name, message, room) {
-                addMessage('*' + name + ' ' + message, 'action', room);
+                addAction(utility.getLanguageResource('Chat_UserPerformsAction', name, message), room);
             },
 
             sendPrivateMessage: function (from, to, message) {
@@ -709,7 +709,7 @@ define([
                     lastPrivate = from;
                 }
 
-                addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
+                addPrivateMessage(utility.getLanguageResource('Chat_PrivateMessage', from, to, message));
             },
 
             messageReadStateChanged: function (mid, read) {

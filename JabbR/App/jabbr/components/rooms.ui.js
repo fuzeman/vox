@@ -559,10 +559,10 @@ define([
 
                 if (added) {
                     rc.populateRoom(roomdata.Name).done(function () {
-                        messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
+                        messages.addNotification(utility.getLanguageResource('Chat_YouEnteredRoom', roomdata.Name), roomdata.Name);
 
                         if (roomdata.Welcome) {
-                            messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
+                            messages.addWelcome(roomdata.Welcome, roomdata.Name);
                         }
                     });
                 }
@@ -570,14 +570,20 @@ define([
 
             kick: function (userdata, roomName, message, imageUrl) {
                 if (rc.isSelf(userdata)) {
+                    var message = utility.getLanguageResource('Chat_YouKickedFromRoom', roomName);
+
                     showKickPopup(roomName, message, imageUrl);
-                    rc.setActiveRoom('Lobby');
+
+                    if (chat.state.activeRoom === room) {
+                        rc.setActiveRoom('Lobby');
+                    }
                     rc.removeRoom(roomName);
+
                     // TODO Where does this message go?
-                    messages.addMessage('You were kicked from ' + roomName, 'notification');
+                    messages.addNotificationToActiveRoom(message);
                 } else {
                     users.remove(userdata, roomName);
-                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;
+                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;  // TODO use getLanguageResource
 
                     if (message !== null && imageUrl !== null) {
                         roomMessage += ' (' + [message, '<a href="' + imageUrl +

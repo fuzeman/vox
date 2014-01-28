@@ -768,7 +768,7 @@ define([
                 client.chat.client.outOfSync = showUpdatePopup;
             },
 
-            clientNudge: function (from, to) {
+            clientNudge: function (from, to, roomName) {
                 function shake(n) {
                     var move = function (x, y) {
                         parent.moveBy(x, y);
@@ -797,7 +797,18 @@ define([
                     shake(20);
                 }, 300);
 
-                messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
+                if (to) {
+                    if (rc.isSelf({ Name: to })) {
+                        message = utility.getLanguageResource('Chat_UserNudgedYou', from);
+                    } else {
+                        message = utility.getLanguageResource('Chat_UserNudgedUser', from, to);
+                    }
+
+                    // TODO: make this more consistent (ie make it a broadcast, proper pm to all rooms, or something)
+                    messages.addPrivateMessage(message);
+                } else {
+                    messages.addPrivateMessage(utility.getLanguageResource('Chat_UserNudgedRoom', from, roomName));
+                }
                 
                 notifications.notifyMention(true);
             },
