@@ -769,7 +769,7 @@ define([
                 future: "%s",
                 past: "%s",
 
-                s: "s",
+                s: "",
 
                 m:   "1m",
                 mm: "%dm",
