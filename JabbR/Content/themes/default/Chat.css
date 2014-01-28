@@ -182,9 +182,10 @@ form#send-message {
     top: 0;
     width: 100%;
     height: 45px;
-    padding-top: 9px;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
+
+    padding-top: 9px;
 }
 
     #heading h1 {
@@ -794,7 +795,7 @@ canvas {
 
 #tabs {
     padding: 0 0 0 0;
-    margin: 0 200px 0 110px;
+    margin: 0 50px 0 110px;
     left: 0;
     right: 160px;
     position: absolute;
@@ -805,7 +806,7 @@ canvas {
 
 .home-admin #tabs {
     /* wider for additional admin buttons */
-    margin-right: 236px;
+    margin-right: 90px;
 }
 
     #tabs li {
@@ -3460,13 +3461,17 @@ h3.userlist-header {
     border-radius: 0;
 }
 
+#main-menu {
+    margin-top: -2px;
+}
+
 .navbar-inner {
-    min-height: 35px;
+    min-height: 37px;
     padding: 0;
     background: #fff;
     box-shadow: none;
     border-bottom-width: 0;
-    margin: 0 5px 0 0;
+    margin: 0 7px 0 0;
 }
 
 .navbar .nav {
@@ -3485,10 +3490,10 @@ h3.userlist-header {
         .navbar .nav > li > a {
             text-shadow: none;
             color: #404040;
-            padding: 8px 10px 7px;
+            padding: 8px 12px;
         }
 
-.navbar .nav > li > a:hover {
+            .navbar .nav > li > a:hover {
                 background: #F2F2F2;
             }
 
@@ -3565,15 +3570,10 @@ h3.userlist-header {
         height: 32px;
         margin-top: 0;
     }
-    
-    .navbar .nav > li > a {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
 
     #tabs {
         /* wider for additional admin buttons */
-        margin-right: 160px;
+        margin-right: 50px;
         margin-left: 44px;
     }
        
@@ -3588,7 +3588,7 @@ h3.userlist-header {
 
     .home-admin #tabs {
         /* wider for additional admin buttons */
-        margin-right: 186px;
+        margin-right: 85px;
     }
     
     .messages,
