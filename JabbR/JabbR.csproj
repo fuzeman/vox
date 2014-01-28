@@ -64,11 +64,11 @@
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -932,8 +932,8 @@
     <Content Include="Scripts\jquery.fancybox-thumbs.js" />
     <Content Include="Scripts\jquery.fancybox.js" />
     <Content Include="Scripts\jquery.fancybox.pack.js" />
-    <EmbeddedResource Include="Migrations\201310240539050_AddPrecision.resx">
-      <DependentUpon>201310240539050_AddPrecision.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201401280137598_UpstreamAddPrecision.resx">
+      <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
@@ -1097,12 +1097,12 @@
     <Compile Include="Migrations\201308080731011_UpstreamAddUserPreferencesAllowUserResetPassword.Designer.cs">
       <DependentUpon>201308080731011_UpstreamAddUserPreferencesAllowUserResetPassword.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201401280137598_UpstreamAddPrecision.cs" />
+    <Compile Include="Migrations\201401280137598_UpstreamAddPrecision.Designer.cs">
+      <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />
-    <Compile Include="Migrations\201310240539050_AddPrecision.cs" />
-    <Compile Include="Migrations\201310240539050_AddPrecision.Designer.cs">
-      <DependentUpon>201310240539050_AddPrecision.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\ChatUserPreferenceSections\PushNotificationPreferences.cs" />
     <Compile Include="Models\ClientNotification.cs" />

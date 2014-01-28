@@ -6,14 +6,14 @@ namespace JabbR.Models.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    [GeneratedCode("EntityFramework.Migrations", "6.0.1-21010")]
-    public sealed partial class AddPrecision : IMigrationMetadata
+    [GeneratedCode("EntityFramework.Migrations", "6.0.2-21211")]
+    public sealed partial class UpstreamAddPrecision : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddPrecision));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpstreamAddPrecision));
         
         string IMigrationMetadata.Id
         {
-            get { return "201310240539050_AddPrecision"; }
+            get { return "201401280137598_UpstreamAddPrecision"; }
         }
         
         string IMigrationMetadata.Source
