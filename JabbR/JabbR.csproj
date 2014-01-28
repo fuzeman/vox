@@ -981,6 +981,8 @@
     <Content Include="Scripts\r.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\spin.js" />
+    <Content Include="Scripts\spin.min.js" />
     <Content Include="Scripts\stacktrace-min-0.4.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

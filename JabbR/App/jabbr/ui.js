@@ -310,10 +310,12 @@ define([
 
         // Splash Screen
         function showSplashScreen() {
+            window.jabbr.spinner.spin();
             $splashScreen.fadeIn('slow');
         }
 
         function hideSplashScreen() {
+            window.jabbr.spinner.stop();
             $splashScreen.fadeOut('slow');
         }
 

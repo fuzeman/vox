@@ -630,12 +630,7 @@
                 <i class="icon-spinner icon-spin"></i> @LanguageResources.Client_LoadingPreviousMessages
             </div>
             <div id="splash-screen" class="splash-screen-overlay">
-                <div class="jabbr-splash-logo"></div>
-                <div class="progress-wrapper" style="text-align: center;">
-                    <div class="progress progress-striped active">
-                        <div id="progress-bar" class="bar" style="width: 100%;"></div>
-                    </div>
-                </div>
+                <div id="splash-spinner" style="text-align: center;"></div>
             </div>
             <div id="jabbr-upload-preview" class="modal hide fade">
                 <div class="modal-header">
@@ -666,9 +661,14 @@
             @: window.jabbr = { debug: true };
         }
     </script>
-    <script type="text/javascript" src="/App/require.js"></script>
-    <script type="text/javascript" src="/loader.js"></script>
+    @{
+        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
+            .Add("~/Scripts/spin.min.js")
+            .Add("~/loader.js")
+            .Render("~/Scripts/JabbR_Loader_#.js"));
+    }
 
+    <script type="text/javascript" src="/App/require.js"></script>
     @if (Model.DebugMode)
     {
         // Load un-optimized require.js module
