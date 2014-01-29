@@ -270,7 +270,7 @@ form#send-message {
     position: absolute;
     top: 10px;
     left: 5px;
-    right: 125px;
+    right: 210px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -800,7 +800,7 @@ canvas {
     right: 160px;
     position: absolute;
     z-index: 1000;
-    height: 37px;
+    height: 36px;
     overflow: hidden;
 }
 
