@@ -1039,7 +1039,7 @@ canvas {
 #message-ticker {
     position: absolute;
     right: 0;
-    bottom: 51px;
+    bottom: 1px;
     width: 236px;
     z-index: 1000;
     list-style-type: none;
