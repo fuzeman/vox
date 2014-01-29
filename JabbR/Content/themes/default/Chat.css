@@ -809,6 +809,11 @@ canvas {
     margin-right: 90px;
 }
 
+    #tabs-lobby .icon {
+        margin-top: 3px;
+        display: none;
+    }
+
     #tabs li {
         display: inline-block;
         float: left;
@@ -3576,6 +3581,14 @@ h3.userlist-header {
         margin-right: 50px;
         margin-left: 44px;
     }
+
+        #tabs-lobby .content {
+        display: none;
+        }
+
+        #tabs-lobby .icon {
+            display: block;
+        }
        
         #tabs li a {
             padding-left: 6px;
