@@ -656,9 +656,11 @@
         window.languageResources = {
            @Html.Raw(Model.ClientLanguageResources)
         };
+        window.jabbr = {};
+        
         @if (Model.DebugMode)
         {
-            @: window.jabbr = { debug: true };
+            @: window.jabbr.debug = true;
         }
     </script>
     @{
