@@ -1488,10 +1488,16 @@ IF $(ConfigurationName) == Release (
     echo Local Optimization
     node Scripts\r.js -o $(ProjectDir)App\build.js dir=$(ProjectDir)Build baseUrl=$(ProjectDir)App
   )
-)
-if $(ConfigurationName) == Debug (
-  xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
-  xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
+  
+  IF %25APPHARBOR%25 EQU 0 (
+    echo Finishing Build (AppHarbor)
+    xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(OutDir)_PublishedWebsites\JabbR\bin\"
+    xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(OutDir)_PublishedWebsites\JabbR\bin\"
+  ) ELSE (
+    echo Finishing Build
+    xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\BuildProviders\Nancy.ViewEngines.Razor.BuildProviders.dll" "$(ProjectDir)bin\"
+    xcopy /s /y /R "$(SolutionDir)packages\Nancy.Viewengines.Razor.0.20.0\lib\Net40\Nancy.ViewEngines.Razor.dll" "$(ProjectDir)bin\"
+  )
 )
 </PostBuildEvent>
   </PropertyGroup>
