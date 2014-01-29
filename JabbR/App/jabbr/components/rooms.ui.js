@@ -5,6 +5,7 @@ define([
     'kernel',
     'jabbr/state',
     'jabbr/events',
+    'jabbr/utility',
     'jabbr/templates',
     'jabbr/viewmodels/room',
     'jabbr/viewmodels/message',
@@ -22,7 +23,7 @@ define([
     'quicksilver'
 ], function ($, Logger, kernel,
     // Core
-    state, events, templates,
+    state, events, utility, templates,
     // View Models
     Room, Message,
     // Components
@@ -570,17 +571,15 @@ define([
 
             kick: function (userdata, roomName, message, imageUrl) {
                 if (rc.isSelf(userdata)) {
-                    var message = utility.getLanguageResource('Chat_YouKickedFromRoom', roomName);
-
                     showKickPopup(roomName, message, imageUrl);
 
-                    if (chat.state.activeRoom === room) {
-                        rc.setActiveRoom('Lobby');
+                    if (client.chat.state.activeRoom === roomName) {
+                        rc.activateOrOpenRoom('Lobby');
                     }
                     rc.removeRoom(roomName);
 
                     // TODO Where does this message go?
-                    messages.addNotificationToActiveRoom(message);
+                    messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouKickedFromRoom', roomName));
                 } else {
                     users.remove(userdata, roomName);
                     var roomMessage = userdata.Name + ' was kicked from ' + roomName;  // TODO use getLanguageResource

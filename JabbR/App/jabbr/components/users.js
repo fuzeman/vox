@@ -313,17 +313,17 @@ define([
                     });
                 },
 
-                addUser: function (user, room, isOwner) {
+                addUser: function (userdata, room, isOwner) {
                     logger.trace('client_addUser');
 
-                    var user = createUser(user);
+                    var user = createUser(userdata);
                     var added = !(room in user.roomUsers);
 
-                    createRoomUser(user, room, isOwner);
+                    createRoomUser(userdata, room, isOwner);
 
                     if (added) {
-                        if (!rc.isSelf(user)) {
-                            messages.addNotification(utility.getLanguageResource('Chat_UserEnteredRoom', user.Name, room), room);
+                        if (!rc.isSelf(userdata)) {
+                            messages.addNotification(utility.getLanguageResource('Chat_UserEnteredRoom', userdata.Name, room), room);
                         }
                     }
                 },
