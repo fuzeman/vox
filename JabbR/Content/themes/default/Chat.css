@@ -175,7 +175,7 @@ form#send-message {
         }
 
 #heading {
-    background-color: #00103f;
+    background-color: #267F5D;
     color: #fafafa;
     position: absolute;
     left: 0;
@@ -185,7 +185,7 @@ form#send-message {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
 
-    padding-top: 9px;
+    padding-top: 10px;
 }
 
     #heading h1 {
@@ -795,12 +795,12 @@ canvas {
 
 #tabs {
     padding: 0 0 0 0;
-    margin: 0 50px 0 110px;
+    margin: 0 50px 0 65px;
     left: 0;
     right: 160px;
     position: absolute;
     z-index: 1000;
-    height: 36px;
+    height: 35px;
     overflow: hidden;
 }
 
@@ -819,11 +819,11 @@ canvas {
         float: left;
         padding: 0;
         margin: 0;
-        height: 36px;
+        height: 35px;
         position: relative;
-        background-color: #003259;
+        background-color: #31A176;
         cursor: pointer;
-        border: 1px solid #00103f;
+        /*border: 1px solid #00103f;*/
         border-bottom-width: 0;
         border-top-width: 0;
     }
