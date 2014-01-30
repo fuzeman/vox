@@ -358,7 +358,7 @@ define([
 
             leave: function (userdata, roomName) {
                 if (isSelf(userdata)) {
-                    if (chat.state.activeRoom === room) {
+                    if (client.chat.state.activeRoom === room) {
                         setActiveRoom('Lobby');
                     }
 
