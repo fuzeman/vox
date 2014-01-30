@@ -92,6 +92,29 @@ form#send-message {
         font-size: 13px;
     }
 
+#preferences .navbar-inner {
+	margin: 0;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.8);
+	border: none;
+}
+
+	#preferences .nav > li {
+		border: none;
+	}
+
+		#preferences .nav > li > a {
+			padding: 9px 12px;
+
+			color: inherit;
+		}
+
+		#preferences .nav > li > a:hover {
+			background: rgba(255, 255, 255, 0.2);
+			color: white;
+		}
+
 #preferences a, #room-preferences a {
     cursor: pointer;
 }
