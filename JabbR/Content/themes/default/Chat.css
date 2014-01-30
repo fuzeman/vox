@@ -189,10 +189,13 @@ form#send-message {
 }
 
     #heading h1 {
-        margin-left: 5px;
-        margin-top: -4px;
+    	font-family: 'Open Sans', sans-serif;
+    	font-weight: 400;
+    	font-size: 26px;
+
+        margin-left: 10px;
+        margin-top: -8px;
         line-height: normal;
-        font-size: 25px;
         margin-bottom: 0;
     }
 
