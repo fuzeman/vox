@@ -151,15 +151,51 @@ form#send-message {
     color: #00103f;
 }
 
-.home #page {
-    min-width: 300px;
-    min-height: 200px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+#page {
+	position: relative;
 }
+
+	.home #page {
+	    min-width: 300px;
+	    min-height: 200px;
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	}
+
+#background {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+
+	background: black;
+}
+
+#background-tint {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+
+	background: rgba(255, 255, 255, 0.498);
+}
+
+	#background-tint.connected {
+		background: rgba(76, 255, 187, 0.498);
+	}
+
+	#background-tint.reconnecting {
+		background: rgba(255, 255, 76, 0.498);
+	}
+
+	#background-tint.disconnected {
+		background: rgba(255, 76, 76, 0.498);
+	}
 
 #chat-area {
     position: absolute;
@@ -198,7 +234,6 @@ form#send-message {
         }
 
 #heading {
-    background-color: #267F5D;
     color: #fafafa;
     position: absolute;
     left: 0;
@@ -845,9 +880,7 @@ canvas {
         margin: 0;
         height: 35px;
         position: relative;
-        background-color: #31A176;
         cursor: pointer;
-        /*border: 1px solid #00103f;*/
         border-bottom-width: 0;
         border-top-width: 0;
     }
