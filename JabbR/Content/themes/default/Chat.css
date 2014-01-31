@@ -3450,53 +3450,6 @@ h3.userlist-header {
     line-height: 13px;
 }
 
-.connection-status {
-    float: left;
-    position: relative;
-}
-
-.icon-connection-status {
-    width: 6px;
-    background-color: #0ACF00;
-    display: inline-block;
-    height: 38px;
-}
-
-.reconnecting .icon-connection-status {
-    background-color: #ffaa22;
-}
-
-.disconnected .icon-connection-status {
-    background-color: #FF2222;
-}
-
-#connection-info-popover .popover-title-icon {
-    float: left;
-    margin: 10px 5px;
-}
-
-#connection-info-popover .popover-title {
-    font-weight: bold;
-}
-
-.popover-content {
-    padding: 4px 14px;
-    color: #333;
-}
-
-#connection-info-popover p {
-    margin: 0;
-}
-
-#connection-state-changed-popover #popover-content-icon {
-    float: left;
-    margin: 12px 5px;
-}
-
-#connection-state-changed-popover .popover-content {
-    margin: 0 15px;
-}
-
 .icon-white {
     color: white;
 }
@@ -3821,10 +3774,6 @@ h3.userlist-header {
 
     .navbar-inner {
         min-height: 32px;
-    }
-
-    .icon-connection-status {
-        height: 32px;
     }
 
     #tabs-dropdown-container .dropdown-toggle {

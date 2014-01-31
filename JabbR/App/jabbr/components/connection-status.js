@@ -5,7 +5,7 @@ define([
     'kernel',
     'jabbr/events',
 
-    'bootstrap'
+    'jquery.color'
 ], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/components/connection-status'),
         client = null,
@@ -14,128 +14,64 @@ define([
 
     logger.trace('loaded');
 
+    var colours = {
+        null:           'rgba(255, 255, 255, 0.498)',
+        'connected':    'rgba(76, 255, 187, 0.498)',
+        'reconnecting': 'rgba(255, 255, 76, 0.498)',
+        'disconnected': 'rgba(255, 76, 76, 0.498)'
+    };
+
     var initialize = function () {
-        var $connectionStatus = $('#connectionStatus'),
-            $connectionStateChangedPopover = $('#connection-state-changed-popover'),
-            $connectionInfoPopover = $('#connection-info-popover'),
-            $connectionInfoContent = $('#connection-info-content');
+        var $tint = $('#background-tint'),
+            $banner = $('#heading .banner');
 
-        var connectionState = -1,
-            connectionStateIcon = '#popover-content-icon',
-            connectionInfoStatus = '#connection-status',
-            connectionInfoTransport = '#connection-transport',
-            popoverTimer = null;
+        var current = null;
 
-        function getStateChangedPopoverOptions(statusText) {
-            var options = {
-                html: true,
-                trigger: 'hover',
-                template: $connectionStateChangedPopover,
-                content: function () {
-                    return statusText;
-                }
-            };
-            return options;
-        }
-
-        function getInfoPopoverOptions(transport) {
-            var options = {
-                html: true,
-                trigger: 'hover',
-                delay: {
-                    show: 0,
-                    hide: 500
-                },
-                template: $connectionInfoPopover,
-                content: function () {
-                    var connectionInfo = $connectionInfoContent;
-                    connectionInfo.find(connectionInfoStatus).text('Status: Connected');
-                    connectionInfo.find(connectionInfoTransport).text('Transport: ' + transport);
-                    return connectionInfo.html();
-                }
-            };
-            return options;
-        }
-
-        function initializeConnectionStatus(transport) {
-            $connectionStatus.popover(getInfoPopoverOptions(transport));
-        }
-
-        function showStatus(status, transport) {
-            // Change the status indicator here
-            if (connectionState !== status) {
-                if (popoverTimer) {
-                    clearTimeout(popoverTimer);
-                }
-
-                connectionState = status;
-                $connectionStatus.popover('destroy');
-
-                switch (status) {
-                    case 0:
-                        // Connected
-                        $connectionStatus.removeClass('reconnecting disconnected');
-                        $connectionStatus.popover(getStateChangedPopoverOptions('You\'re connected.'));
-                        $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-ok-sign');
-                        $connectionStatus.popover('show');
-                        popoverTimer = setTimeout(function () {
-                            $connectionStatus.popover('destroy');
-                            initializeConnectionStatus(transport);
-                            popoverTimer = null;
-                        }, 2000);
-                        break;
-                    case 1:
-                        // Reconnecting
-                        $connectionStatus.removeClass('disconnected').addClass('reconnecting');
-                        $connectionStatus.popover(getStateChangedPopoverOptions(
-                            'The connection to JabbR has been temporarily lost, trying to reconnect.'));
-                        $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-question-sign');
-                        $connectionStatus.popover('show');
-                        popoverTimer = setTimeout(function () {
-                            $connectionStatus.popover('hide');
-                            popoverTimer = null;
-                        }, 5000);
-                        break;
-                    case 2:
-                        // Disconnected
-                        $connectionStatus.removeClass('reconnecting').addClass('disconnected');
-                        $connectionStatus.popover(getStateChangedPopoverOptions(
-                            'The connection to JabbR has been lost, trying to reconnect.'));
-                        $connectionStateChangedPopover.find(connectionStateIcon).addClass('icon-exclamation-sign');
-                        $connectionStatus.popover('show');
-                        popoverTimer = setTimeout(function () {
-                            $connectionStatus.popover('hide');
-                            popoverTimer = null;
-                        }, 5000);
-                        break;
-                }
-            }
-        }
-
-        //
-        // Event Handlers
-        //
-
-        function clientReconnecting() {
+        function reconnecting() {
             logger.info('reconnecting');
 
             messages.failPendingMessages();
-            showStatus(1, '');
+            update('reconnecting');
         }
 
-        function clientConnected(event, change, initial) {
+        function connected(event, change, initial) {
             logger.info('connected');
 
-            if (!initial) {
-                showStatus(0, $.connection.hub.transport.name);
+            if (initial) {
+                setTimeout(function () {
+                    update('connected');
+                }, 1500);
             } else {
-                initializeConnectionStatus($.connection.hub.transport.name);
+                update('connected');
             }
         }
 
-        function clientDisconnected() {
+        function disconnected() {
+            logger.info('disconnected');
+
             messages.failPendingMessages();
-            showStatus(2, '');
+            update('disconnected');
+        }
+
+        function update(state) {
+            if (state === current) {
+                return;
+            }
+
+            current = state;
+
+            // Background Tint
+            $tint.animate({
+                backgroundColor: colours[state],
+            }, 1500);
+
+
+            // Connection Info
+            if (state == 'connected') {
+                $banner.attr('title', state + ", transport: '" + $.connection.hub.transport.name + "'");
+            } else {
+                $banner.attr('title', state);
+            }
         }
 
         return {
@@ -145,9 +81,9 @@ define([
 
                 logger.trace('activated');
 
-                client.bind(events.client.reconnecting, clientReconnecting);
-                client.bind(events.client.connected, clientConnected);
-                client.bind(events.client.disconnected, clientDisconnected);
+                client.bind(events.client.reconnecting, reconnecting);
+                client.bind(events.client.connected, connected);
+                client.bind(events.client.disconnected, disconnected);
             }
         };
     };
