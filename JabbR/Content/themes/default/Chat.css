@@ -1100,7 +1100,7 @@ canvas {
     position: absolute;
     right: 0;
     bottom: 1px;
-    width: 236px;
+    width: 235px;
     z-index: 1000;
     list-style-type: none;
     font-size: 12px;
@@ -3539,7 +3539,7 @@ h3.userlist-header {
     }
 
     #message-ticker {
-        width: 201px;
+        width: 200px;
     }
 
     .users {
@@ -3619,7 +3619,7 @@ h3.userlist-header {
     }
 
     #message-ticker {
-        width: 151px;
+        width: 150px;
     }
 
     #info-container {
@@ -3704,7 +3704,7 @@ h3.userlist-header {
     }
 
     #message-ticker {
-        width: 101px;
+        width: 100px;
     }
 
     #message-ticker .message {
