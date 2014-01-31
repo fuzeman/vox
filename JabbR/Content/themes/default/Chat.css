@@ -186,7 +186,7 @@ form#send-message {
 }
 
 	#background-tint.connected {
-		background: rgba(76, 255, 187, 0.498);
+		background: rgba(76, 243, 255, 0.498);
 	}
 
 	#background-tint.reconnecting {

@@ -16,7 +16,7 @@ define([
 
     var colours = {
         null:           'rgba(255, 255, 255, 0.498)',
-        'connected':    'rgba(76, 255, 187, 0.498)',
+        'connected':    'rgba(76, 243, 255, 0.498)',
         'reconnecting': 'rgba(255, 255, 76, 0.498)',
         'disconnected': 'rgba(255, 76, 76, 0.498)'
     };
