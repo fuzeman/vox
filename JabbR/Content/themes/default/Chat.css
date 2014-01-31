@@ -1039,16 +1039,16 @@ canvas {
     position: absolute;
     bottom: 0px;
     height: 40px;
-    left: 5px;
+    left: 10px;
     right: 235px;
 }
 
 #info-container {
     position: absolute;
     bottom: 5px;
-    right: 5px;
+    right: 10px;
 
-    width: 225px;
+    width: 220px;
     height: 40px;
 
     color: white;
@@ -3555,7 +3555,7 @@ h3.userlist-header {
     }
 
     #info-container {
-        width: 190px;
+        width: 185px;
     }
 
     #message-ticker {

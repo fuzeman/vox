@@ -58,12 +58,16 @@ define([
                 return;
             }
 
-            current = state;
-
             // Background Tint
             $tint.animate({
                 backgroundColor: colours[state],
-            }, 1500);
+            }, 1500, function () {
+                $tint.removeClass(current)
+                     .addClass(state)
+                     .attr('style', '');
+            });
+
+            current = state;
 
 
             // Connection Info
