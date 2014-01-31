@@ -203,7 +203,7 @@ form#send-message {
     bottom: 50px;
     left: 0;
     right: 0;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.8);
     color: #00103f;
 }
 
@@ -253,6 +253,10 @@ form#send-message {
         margin-top: -4px;
         line-height: normal;
         margin-bottom: 0;
+    }
+
+    #heading h1.icon {
+    	display: none;
     }
 
 .reload-message {
@@ -328,13 +332,11 @@ form#send-message {
 .roomTopic {
     position: absolute;
     top: 10px;
-    left: 5px;
+    left: 10px;
     right: 210px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-
-    color: #FAFAFA;
 }
 
 .users {
@@ -872,7 +874,6 @@ canvas {
 
     #tabs-lobby .icon {
         margin-top: 3px;
-        display: none;
     }
 
     #tabs li {
@@ -915,7 +916,8 @@ canvas {
         }
 
         #tabs li.current a {
-            background-color: rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #00103f;
         }
 
         #tabs li a i,
@@ -1043,7 +1045,7 @@ canvas {
     width: 225px;
     height: 40px;
 
-    color: #666;
+    color: white;
 }
     #clock {
         position: absolute;
@@ -1071,7 +1073,7 @@ canvas {
 
     font-size: 13px;
 
-    color: #AAA;
+    color: rgba(255, 255, 255, 0.8);
 }
 
     #info-container ul li i {
@@ -1079,7 +1081,7 @@ canvas {
     }
 
     #info-container ul li:hover {
-        color: #666;
+        color: white;
     }
 
     #message-total {
@@ -3621,36 +3623,19 @@ h3.userlist-header {
 }
 
 @media (max-width:700px) {
-    .home #heading h1 {
-        text-indent: -9999px;
-        background-image: url('../../images/logo32.png');
-        width: 32px;
-        height: 32px;
-        margin-top: 0;
+    .home #heading h1.full {
+    	display: none;
+    }
+
+    .home #heading h1.icon {
+    	display: block;
     }
 
     #tabs {
         /* wider for additional admin buttons */
         margin-right: 50px;
-        margin-left: 44px;
+        margin-left: 33px;
     }
-
-        #tabs-lobby .content {
-        display: none;
-        }
-
-        #tabs-lobby .icon {
-            display: block;
-        }
-       
-        #tabs li a {
-            padding-left: 6px;
-            padding-right: 20px;
-        }
-
-        #tabs li.no-close a {
-            padding-right: 6px;
-        }
 
     .home-admin #tabs {
         /* wider for additional admin buttons */
