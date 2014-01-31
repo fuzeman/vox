@@ -86,7 +86,7 @@ namespace JabbR.Services
             var request = new Dictionary<string, string>
             {
                 {"apikey", apikey},
-                {"application", "iceJabbR"},
+                {"application", "vox"},
                 {"event", GetTitle(message, 100)},
                 {"description", descriptionContent}
             };

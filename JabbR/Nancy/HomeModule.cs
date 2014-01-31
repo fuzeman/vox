@@ -254,8 +254,6 @@ namespace JabbR.Nancy
                 "Chat_ExpandHiddenMessages",
                 "Chat_CollapseHiddenMessages",
                 "Client_Connected",
-                "Client_Reconnecting",
-                "Client_Disconnected",
                 "Client_AdminTag",
                 "Client_OccupantsZero",
                 "Client_OccupantsOne",
