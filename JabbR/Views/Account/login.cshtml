@@ -8,7 +8,7 @@
 }
 
 <div class="row-fluid">
-    <div class="span6 @if (!hasSocialProviders) {<text>offset3</text>}">
+    <div id="login-form" class="span6 @if (!hasSocialProviders) {<text>offset3</text>}">
         <div class="usernamepassword-auth @if(hasSocialProviders) {<text>auth-divider</text>}">
           @Html.Partial("_username", Model)
         </div>

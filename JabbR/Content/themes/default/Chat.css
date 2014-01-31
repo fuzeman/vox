@@ -234,7 +234,9 @@ form#send-message {
         }
 
 #heading {
+	background-color: #267F5D;
     color: #fafafa;
+
     position: absolute;
     left: 0;
     top: 0;
@@ -258,6 +260,10 @@ form#send-message {
     #heading h1.icon {
     	display: none;
     }
+
+.home #heading {
+	background-color: transparent;
+}
 
 .reload-message {
     display: none;
@@ -3004,14 +3010,28 @@ li.clearfix {
     width: 500px;
 }
 
+	#login-form {
+		width: 255px;
+	}
+
+		#login-form .input-prepend input {
+			width: 210px;
+		}
+
 .login-header, .account-details-header {
-    background-color: #00103F;
-    height: 50px;
+    background-color: #267F5D;
+    height: 55px;
     margin: 0 auto;
-    padding-top: 10px;
-    padding-bottom: 20px;
     color: #FFFFFF;
 }
+
+	.login-header h1, .account-details-header h1 {
+		font-family: 'Open Sans', sans-serif;
+	    font-weight: 400;
+
+	    margin: 5px 17px;
+	}
+
 
 .user-profile .nav-tabs li.active a,
 .notifications .nav-tabs li.active a,
@@ -3090,7 +3110,7 @@ li.clearfix {
     }
 
 .login-body {
-    padding-top: 10px;
+    padding-top: 25px;
     padding-bottom: 15px;
 }
 
@@ -3197,7 +3217,7 @@ li.clearfix {
 .login-body .btn,
 .account-details .btn,
 .administration .btn {
-    background-color: #00103F;
+    background-color: #053F00;
     background-image: none;
     text-shadow: none;
     color: #FFF;
@@ -3207,7 +3227,7 @@ li.clearfix {
     .login-body .btn:hover,
     .account-details .btn:hover,
     .administration .btn:hover {
-        background-color: #164C85;
+        background-color: #1F8516;
     }
 
 .large-logo {
@@ -3561,8 +3581,14 @@ h3.userlist-header {
     }
 
     #login {
-        width: 220px;
+        width: 100%;
+        min-width: 255px;
     }
+
+	    #login-form {
+	    	margin-left: auto;
+	    	margin-right: auto;
+	    }
 
     .social-auth .btn-provider {
         width: 190px;
