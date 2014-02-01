@@ -65,12 +65,12 @@ define([
                 return;
             }
 
-            reset();
-
             // Background Tint
             $tint.animate({
                 backgroundColor: colours[state],
             }, 1500, function () {
+                reset();
+                
                 $tint.addClass(state)
                      .attr('style', '');
             });
