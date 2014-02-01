@@ -55,7 +55,7 @@ define([
 
         function reset() {
             // Remove all state classes
-            for (c in colours) {
+            for (var c in colours) {
                 $tint.removeClass(c);
             }
         }
