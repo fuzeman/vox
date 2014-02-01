@@ -5,8 +5,9 @@ define([
     'kernel',
     'jabbr/state',
     'jabbr/events',
+    'jabbr/utility',
     'jabbr/viewmodels/message'
-], function ($, Logger, kernel, state, events, Message) {
+], function ($, Logger, kernel, state, events, utility, Message) {
     var logger = new Logger('jabbr/components/rooms.client'),
         ru = null,
         client = null,
@@ -25,6 +26,7 @@ define([
             messageHistory = {},
             messageIds = [],
             historyLocation = 0,
+            roomsToLoad = 0,
             loadingHistory = false;
 
         //
@@ -127,8 +129,8 @@ define([
                 client.chat.server.send('/join ' + roomName, client.chat.state.activeRoom)
                     .fail(function (e) {
                         // TODO: setActiveRoom('Lobby');
-                        if(e.source === 'HubException') {
-                            $this.trigger(events.error, [e, 'error']);
+                        if (e.source === 'HubException') {
+                            messages.addErrorToActiveRoom(e.message);
                         }
                     });
             } catch (e) {
@@ -159,26 +161,29 @@ define([
             }
         }
 
-        function populateRoom(room) {
-            var d = $.Deferred();
+        function populateRoom(room, d) {
+            var deferred = d || $.Deferred();
 
-            client.connection.hub.log('getRoomInfo(' + room + ')');
+            client.connection.hub.log('populateRoom(' + room + ')');
 
             // Populate the list of users rooms and messages
             client.chat.server.getRoomInfo(room)
                 .done(function (roomInfo) {
-                    client.connection.hub.log('getRoomInfo.done(' + room + ')');
+                    client.connection.hub.log('populateRoom done(' + room + ')');
 
                     populateRoomFromInfo(roomInfo);
 
-                    d.resolveWith(client.chat);
+                    deferred.resolveWith(client.chat);
                 })
                 .fail(function (e) {
-                    client.connection.hub.log('getRoomInfo.failed(' + room + ', ' + e + ')');
-                    d.rejectWith(client.chat);
+                    client.connection.hub.log('populateRoom failed(' + room + ', ' + e + ')');
+
+                    setTimeout(function () {
+                        populateRoom(room, deferred);
+                    }, 1000);
                 });
 
-            return d.promise();
+            return deferred.promise();
         }
 
         function populateRoomFromInfo(roomInfo) {
@@ -296,7 +301,7 @@ define([
             },
 
             roomClosed: function (roomName) {
-                messages.addMessage('Room \'' + roomName + '\' is now closed', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_RoomNowClosed', roomName));
 
                 var room = getRoom(roomName);
 
@@ -310,7 +315,7 @@ define([
             },
 
             roomUnClosed: function (roomName) {
-                messages.addMessage('Room \'' + roomName + '\' is now open', 'notification', state.get().activeRoom);
+                messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_RoomNowOpen', roomName));
 
                 var room = getRoom(roomName);
 
@@ -325,12 +330,18 @@ define([
 
             roomLoaded: function(roomInfo) {
                 populateRoomFromInfo(roomInfo);
+
+                if (roomsToLoad === 1) {
+                    ui.hideSplashScreen();
+                }
+                else {
+                    roomsToLoad = roomsToLoad - 1;
+                }
             },
 
-            lockRoom: function (userdata, roomName, userHasAccess) {
-                if (!isSelf(userdata) && state.get().activeRoom === roomName) {
-                    messages.addMessage(userdata.Name + ' has locked ' + roomName + '.',
-                        'notification', state.get().activeRoom);
+            lockRoom: function (user, roomName, userHasAccess) {
+                if (!isSelf(user) && state.get().activeRoom === roomName) {
+                    messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_UserLockedRoom', user.Name, roomName));
                 }
 
                 var room = getRoom(roomName);
@@ -345,73 +356,69 @@ define([
                 }
             },
 
-            leave: function (userdata, roomName) {
-                if (isSelf(userdata)) {
-                    setActiveRoom('Lobby');
-                    removeRoom(roomName);
+            leave: function (user, room) {
+                if (isSelf(user)) {
+                    if (client.chat.state.activeRoom === room) {
+                        setActiveRoom('Lobby');
+                    }
+
+                    removeRoom(room);
                 } else {
-                    users.remove(userdata, roomName);
-                    messages.addMessage(userdata.Name + ' left ' + roomName, 'notification', roomName);
+                    users.remove(user, room);
+                    messages.addNotification(utility.getLanguageResource('Chat_UserLeftRoom', user.Name, room), room);
                 }
             },
 
             listAllowedUsers: function (roomName, isPrivate, allowedUsers) {
                 if (!isPrivate) {
-                    messages.addMessage('Anyone is allowed in ' + roomName + ' as it is not private', 'list-header');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_RoomNotPrivateAllowed', roomName), []);
                 } else if (allowedUsers.length === 0) {
-                    messages.addMessage('No users are allowed in ' + roomName, 'list-header');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_RoomPrivateNoUsersAllowed', roomName), []);
                 } else {
-                    messages.addMessage('The following users are allowed in ' + roomName, 'list-header');
-                    messages.addMessage(allowedUsers.join(', '), 'list-item');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_RoomPrivateUsersAllowedResults', roomName), [allowedUsers.join(', ')]);
                 }
             },
 
             showUsersRoomList: function (user, rooms) {
-                var message;
-
                 if (rooms.length === 0) {
-                    message = utility.getLanguageResource('Chat_UserNotInRooms', user.Name, user.Status);
-                    messages.addMessage(message, 'list-header');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_UserNotInRooms', user.Name, user.Status), []);
                 } else {
-                    message = utility.getLanguageResource('Chat_UserInRooms', user.Name, user.Status);
-                    messages.addMessage(message, 'list-header');
-                    messages.addMessage(rooms.join(', '), 'list-item');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_UserInRooms', user.Name, user.Status), [rooms.join(', ')]);
                 }
             },
 
             showUsersOwnedRoomList: function (username, ownedRooms) {
                 if (ownedRooms.length === 0) {
-                    messages.addMessage(username + ' does not own any rooms', 'list-header');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_UserOwnsNoRooms', username), []);
                 } else {
-                    messages.addMessage(username + ' owns the following rooms', 'list-header');
-                    messages.addMessage(ownedRooms.join(', '), 'list-item');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_UserOwnsRooms', username), [ownedRooms.join(', ')]);
                 }
             },
 
-            listUsers: function (users) {
+            listUsers: function (usernames) {
                 if (users.length === 0) {
-                    messages.addMessage('No users matched your search', 'list-header');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_RoomSearchEmpty'), []);
                 } else {
-                    messages.addMessage('The following users match your search', 'list-header');
-                    messages.addMessage(users.join(', '), 'list-item');
+                    messages.addListToActiveRoom(utility.getLanguageResource('Chat_RoomSearchResults'), [usernames.join(', ')]);
                 }
             },
 
             showUsersInRoom: function (roomName, usernames) {
-                messages.addMessage('Users in ' + roomName, 'list-header');
+                var header = utility.getLanguageResource('Chat_RoomUsersHeader', roomName);
+
                 if (usernames.length === 0) {
-                    messages.addMessage('Room is empty', 'list-item');
+                    messages.addListToActiveRoom(header, [utility.getLanguageResource('Chat_RoomUsersEmpty')]);
                 } else {
-                    $.each(usernames, function () {
-                        messages.addMessage('- ' + this, 'list-item');
-                    });
+                    messages.addListToActiveRoom(header, $.map(usernames, function () {
+                        return '- ' + this;
+                    }));
                 }
             },
 
+            //TODO: remove, not called anywhere.
             showRooms: function (rooms) {
-                messages.addMessage('Rooms', 'list-header');
                 if (!rooms.length) {
-                    messages.addMessage('No rooms available', 'list-item');
+                    messages.addListToActiveRoom('Rooms', [utility.getLanguageResource('Chat_NoRoomsAvailable')]);
                 } else {
                     // sort rooms by count descending then name
                     var sorted = rooms.sort(function (a, b) {
@@ -430,33 +437,38 @@ define([
                         return a.Name.toString().toUpperCase().localeCompare(b.Name.toString().toUpperCase());
                     });
 
-                    $.each(sorted, function () {
-                        messages.addMessage(this.Name + ' (' + this.Count + ')', 'list-item');
-                    });
+                    messagesaddListToActiveRoom('Rooms', $.map(sorted, function () {
+                        return this.Name + ' (' + this.Count + ')';
+                    }));
                 }
             },
 
             showUserInfo: function (user) {
-                var lastActivityDate = user.LastActivity.fromJsonDate();
+                var lastActivityDate = user.LastActivity.fromJsonDate(),
+                    header,
+                    list = [];
+
                 var status = "Currently " + user.Status;
                 if (user.IsAfk) {
                     status += user.Status === 'Active' ? ' but ' : ' and ';
                     status += ' is Afk';
                 }
-                messages.addMessage('User information for ' + user.Name +
-                    " (" + status + " - last seen " + $.timeago(lastActivityDate) + ")", 'list-header');
+
+                header = 'User information for ' + user.Name + ' (' + status + ' - last seen ' + $.timeago(lastActivityDate) + ')';
 
                 if (user.AfkNote) {
-                    messages.addMessage('Afk: ' + user.AfkNote, 'list-item');
+                    list.push('Afk: ' + user.AfkNote);
                 } else if (user.Note) {
-                    messages.addMessage('Note: ' + user.Note, 'list-item');
+                    list.push('Note: ' + user.Note);
                 }
+
+                messages.addListToActiveRoom(header, list);
 
                 $.getJSON('https://secure.gravatar.com/' + user.Hash + '.json?callback=?', function (profile) {
                     ru.showGravatarProfile(profile.entry[0]);
                 });
 
-                this.howUsersOwnedRoomList(user.Name, user.OwnedRooms);
+                this.showUsersOwnedRoomList(user.Name, user.OwnedRooms);
             }
         };
 
@@ -472,6 +484,14 @@ define([
                 logger.trace('activated');
 
                 handlers.bind();
+            },
+
+            roomsToLoad: function (value) {
+                if (typeof a !== 'undefined') {
+                    roomsToLoad = value;
+                }
+
+                return roomsToLoad;
             },
 
             messageHistory: messageHistory,
@@ -528,7 +548,7 @@ define([
                     client.chat.server.send('/leave ' + roomName, client.chat.state.activeRoom)
                         .fail(function (e) {
                             if(e.source === 'HubException') {
-                                $this.trigger(events.error, [e, 'error']);
+                                messages.addErrorToActiveRoom(e.message);
                             }
                         });
                 } catch (e) {

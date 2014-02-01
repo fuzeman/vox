@@ -4,7 +4,9 @@ define([
     'logger',
     'kernel',
     'jabbr/events',
-    'jabbr/templates'
+    'jabbr/templates',
+
+    'bootstrap'
 ], function ($, Logger, kernel, events, templates) {
     var logger = new Logger('jabbr/components/help'),
         client = null,

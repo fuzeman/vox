@@ -195,6 +195,50 @@ define([
             return $element;
         }
 
+        function addNotification(message, roomName) {
+            addMessage(message, 'notification', roomName);
+        }
+
+        function addNotificationToActiveRoom(message) {
+            addNotification(message, ru.getActiveRoomName());
+        }
+
+        function addError(message, roomName) {
+            addMessage(message, 'error', roomName);
+        }
+
+        function addErrorToActiveRoom(message) {
+            addError(message, ru.getActiveRoomName());
+        }
+
+        function addWelcome(message, roomName) {
+            addMessage(message, 'welcome', roomName);
+        }
+
+        function addWelcomeToActiveRoom(message) {
+            addWelcome(message, ru.getActiveRoomName());
+        }
+
+        function addList(header, messages, roomName) {
+            addMessage(header, 'list-header', roomName);
+            
+            $.each(messages, function () {
+                addMessage(this, 'list-item', roomName);
+            });
+        }
+
+        function addListToActiveRoom(header, messages) {
+            addList(header, messages, ru.getActiveRoomName());
+        }
+
+        function addBroadcast(message, roomName) {
+            addMessage(message, 'broadcast', roomName);
+        }
+
+        function addAction(message, roomName) {
+            addMessage(message, 'action', roomName);
+        }
+
         function addPrivateMessage(content, type) {
             var rooms = ru.getAllRoomElements();
             for (var r in rooms) {
@@ -304,7 +348,7 @@ define([
             if (msg[0] !== '/') {
                 // if you're in the lobby, you can't send mesages (only commands)
                 if (client.chat.state.activeRoom === undefined) {
-                    addMessage('You cannot send messages within the Lobby', 'error');
+                    addErrorToActiveRoom(utility.getLanguageResource('Chat_CannotSendLobby'));
                     return false;
                 }
 
@@ -361,7 +405,7 @@ define([
                     .fail(function (e) {
                         failMessage(clientMessage.id);
                         if (e.source === 'HubException') {
-                            addMessage(e.message, 'error');
+                            addErrorToActiveRoom(e.message);
                         }
                     });
             } catch (e) {
@@ -655,7 +699,7 @@ define([
             },
 
             sendMeMessage: function (name, message, room) {
-                addMessage('*' + name + ' ' + message, 'action', room);
+                addAction(utility.getLanguageResource('Chat_UserPerformsAction', name, message), room);
             },
 
             sendPrivateMessage: function (from, to, message) {
@@ -665,7 +709,7 @@ define([
                     lastPrivate = from;
                 }
 
-                addPrivateMessage('*' + from + '* *' + to + '* ' + message, 'pm');
+                addPrivateMessage(utility.getLanguageResource('Chat_PrivateMessage', from, to, message));
             },
 
             messageReadStateChanged: function (mid, read) {
@@ -691,6 +735,25 @@ define([
             appendMessage: appendMessage,
             addChatMessage: addChatMessage,
             addMessage: addMessage,
+
+            // Notification
+            addNotification: addNotification,
+            addNotificationToActiveRoom: addNotificationToActiveRoom,
+
+            // Error
+            addError: addError,
+            addErrorToActiveRoom: addErrorToActiveRoom,
+
+            // Welcome
+            addWelcome: addWelcome,
+            addWelcomeToActiveRoom: addWelcomeToActiveRoom,
+
+            // List
+            addList: addList,
+            addListToActiveRoom: addListToActiveRoom,
+
+            addBroadcast: addBroadcast,
+            addAction: addAction,
             addPrivateMessage: addPrivateMessage,
 
             sendMessage: sendMessage,

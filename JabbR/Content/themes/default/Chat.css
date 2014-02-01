@@ -63,11 +63,11 @@ form#send-message {
 
 #lobby-wrapper {
     position: absolute;
-    top: 55px;
+    top: 40px;
     left: 0;
     right: 0;
     padding: 5px;
-    bottom: 50px;
+    bottom: 0;
     background: #fff;
     overflow: auto;
     color: #00103f;
@@ -76,14 +76,44 @@ form#send-message {
 
 #room-filter-form {
     display: none;
-    margin: 5px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    height: 30px;
 }
 
-#room-filter-closed-area {
-    margin: 1px 5px;
-    font-size: 13px;
-    padding-top: 0;
+    #room-filter {
+        max-width: 284px;
+    }
+
+    #room-filter-closed-area {
+        margin: 0px 5px;
+        font-size: 13px;
+    }
+
+#preferences .navbar-inner {
+	margin: 0;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.8);
+	border: none;
 }
+
+	#preferences .nav > li {
+		border: none;
+	}
+
+		#preferences .nav > li > a {
+			padding: 9px 12px;
+
+			color: inherit;
+		}
+
+		#preferences .nav > li > a:hover {
+			background: rgba(255, 255, 255, 0.2);
+			color: white;
+		}
 
 #preferences a, #room-preferences a {
     cursor: pointer;
@@ -113,7 +143,7 @@ form#send-message {
 
 #topic-bar {
     position: absolute;
-    top: 45px;
+    top: 35px;
     left: 0;
     width: 100%;
     height: 41px;
@@ -121,14 +151,60 @@ form#send-message {
     color: #00103f;
 }
 
+#page {
+	position: relative;
+}
+
+	.home #page {
+	    min-width: 300px;
+	    min-height: 200px;
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	}
+
+#background {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+
+	background: black;
+}
+
+#background-tint {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+
+	background: rgba(255, 255, 255, 0.498);
+}
+
+	#background-tint.connected {
+		background: rgba(76, 243, 255, 0.498);
+	}
+
+	#background-tint.reconnecting {
+		background: rgba(255, 255, 76, 0.498);
+	}
+
+	#background-tint.disconnected {
+		background: rgba(255, 76, 76, 0.498);
+	}
+
 #chat-area {
     position: absolute;
-    top: 31px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    min-height: 450px;
-    z-index: -1;
+    top: 35px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #00103f;
 }
 
 .upload-button {
@@ -158,20 +234,36 @@ form#send-message {
         }
 
 #heading {
-    background-color: #00103f;
+	background-color: #26797F;
     color: #fafafa;
+
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
+    height: 35px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
     #heading h1 {
-        margin-left: 5px;
-        margin-top: 5px;
+    	font-family: 'Open Sans', sans-serif;
+    	font-weight: 400;
+    	font-size: 26px;
+
+        margin-left: 10px;
+        margin-top: -4px;
         line-height: normal;
-        font-size: 25px;
+        margin-bottom: 0;
     }
+
+    #heading h1.icon {
+    	display: none;
+    }
+
+.home #heading {
+	background-color: transparent;
+}
 
 .reload-message {
     display: none;
@@ -194,19 +286,19 @@ form#send-message {
     position: relative;
 }
 
-.messages {
+.messages,
+#drop-file-target {
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
     overflow: auto;
-    margin-left: 0px;
-    margin-top: 0px;
-    padding-left: 0px;
+    margin: 0;
+    padding: 0;
     left: 0;
     right: 235px;
     position: absolute;
-    top: 55px;
-    bottom: 40px;
+    top: 40px;
+    bottom: 0;
     background-color: #fff;
 }
 
@@ -245,22 +337,49 @@ form#send-message {
 
 .roomTopic {
     position: absolute;
-    margin-left: 5px;
-    margin-top: 10px;
+    top: 10px;
+    left: 10px;
+    right: 210px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .users {
     font-size: small;
     position: absolute;
-    top: 55px;
+    top: 40px;
     right: 0;
     width: 235px;
-    bottom: 50px;
+    bottom: 0;
     margin-top: 0px;
     overflow: auto;
     background: #FFFFFF;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
+}
+
+#drop-file-target {
+    display: none;
+    background-color: #000;
+    opacity: 0.25;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.drop-file-text {
+    font-size: 36pt;
+    display: block;
+    position: absolute;
+    line-height: 1.2em;
+    top: 50%;
+    left: 0;
+    right: 0;
+    margin: -0.6em 5px 0 5px;
+    text-align: center;
+    text-shadow: 3px 3px 4px #000;
+    color: #fff;
+    z-index: -1;
 }
 
 #lobby-wrapper .nav-header {
@@ -280,20 +399,35 @@ form#send-message {
 
 #room-loading {
     display: none;
-    margin: 10px 0;
-    position: relative;
-    top: 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1000;
+    background-color: rgba(68, 68, 68, 0.5);
 }
 
-    #room-loading i {
-        float: left;
-        margin: 0 10px;
-    }
-
-    #room-loading h3 {
-        font-weight: lighter;
-    }
+#loader-container {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+}
+#loader-container h4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -35px;
+    font-weight: normal;
+}
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -75px 0 0 -75px;
+}
 
 #lobby-private,
 #lobby-other {
@@ -540,6 +674,14 @@ form#send-message {
             font-size: 11px;
         }
 
+        .user .extended .external-status[type="video"] + .note.priority {
+            left: 16px;
+        }
+
+        .user .extended .external-status[type="game"] + .note.priority {
+            left: 16px;
+        }
+
 .user .art {
     float: left;
 
@@ -730,31 +872,32 @@ form#send-message {
 
 #tabs {
     padding: 0 0 0 0;
-    margin: 9px 90px 9px 110px;
+    margin: 0 50px 0 63px;
     left: 0;
-    right: 160px;
+    right: 128px;
     position: absolute;
     z-index: 1000;
-    min-width: 120px;
-    height: 37px;
+    height: 35px;
     overflow: hidden;
 }
 
 .home-admin #tabs {
     /* wider for additional admin buttons */
-    margin-right: 236px;
+    margin-right: 90px;
 }
+
+    #tabs-lobby .icon {
+        margin-top: 3px;
+    }
 
     #tabs li {
         display: inline-block;
         float: left;
         padding: 0;
         margin: 0;
-        height: 36px;
+        height: 35px;
         position: relative;
-        background-color: #003259;
         cursor: pointer;
-        border: 1px solid #00103f;
         border-bottom-width: 0;
         border-top-width: 0;
     }
@@ -764,20 +907,31 @@ form#send-message {
     }
 
         #tabs li a {
-            height: inherit;
-            display: inline-block;
-            vertical-align: middle;
-            font-family: sans-serif;
+        	display: inline-block;
+        	padding: 7px 24px 6px 8px;
+        	height: inherit;
+
+        	font-family: 'Open Sans', sans-serif;
             font-weight: normal;
-            color: #f5f5f5;
-            padding: 8px 24px 6px 8px;
             font-size: 0;
+
+            vertical-align: middle;
+            text-decoration: none;
+            white-space: nowrap;
+
+                  box-sizing: border-box;
+            -moz-box-sizing: border-box;
+
+            color: #FAFAFA;
         }
 
-        #tabs li a:hover,
+        #tabs li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
         #tabs li.current a {
-            text-decoration: none;
-            background-color: #e5e5e5;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #00103f;
         }
 
         #tabs li a i,
@@ -794,7 +948,7 @@ form#send-message {
         }
 
         #tabs li a span {
-            font-size: 16px;
+            font-size: 14px;
         }
 
         #tabs li.no-close a {
@@ -802,46 +956,33 @@ form#send-message {
         }
 
         #tabs li.unread {
-            background-color: #004b85;
+            background-color: rgba(255, 255, 255, 0.4);
             animation: btn-fade-unread 2s linear 3.5;
             -webkit-animation: btn-fade-unread 2s linear 3.5;
         }
 
         @-webkit-keyframes btn-fade-unread
         {
-          0% { background-color: #003259; }
-          50% { background-color: #004b85; }
-          100% { background-color: #003259; }
+          0% { background-color: rgba(255, 255, 255, 0.4); }
+          50% { background-color: rgba(255, 255, 255, 0.1); }
+          100% { background-color: rgba(255, 255, 255, 0.4); }
         }
 
         @keyframes btn-fade-unread {
-          0% { background-color: #003259; }
-          50% { background-color: #004b85; }
-          100% { background-color: #003259; }
-        }
-
-        #tabs li.current,        
-        #tabs li:hover {
-            background-color: #e5e5e5;
-            border-color: #e5e5e5;
-        }
-
-        #tabs li:hover a,
-        #tabs li.current a,
-        #tabs li:hover .close,
-        #tabs li.current .close {
-            color: #00103f;
+          0% { background-color: rgba(255, 255, 255, 0.4); }
+          50% { background-color: rgba(255, 255, 255, 0.1); }
+          100% { background-color: rgba(255, 255, 255, 0.4); }
         }
         
         #tabs li .close {
             position: absolute;
-            top: 9px;
+            top: 8px;
             right: 4px;
             width: 16px;
             height: 16px;
             opacity: 0.5;
             font-size: 18px;
-            color: #f5f5f5;
+            color: #00103f;
         }
             
         #tabs li .close:hover {
@@ -850,7 +991,6 @@ form#send-message {
 
 #tabs-dropdown-container {
     float: left;
-    margin-top: 9px;
     position: relative;
 }
 
@@ -907,19 +1047,19 @@ form#send-message {
     position: absolute;
     bottom: 0px;
     height: 40px;
-    left: 5px;
+    left: 10px;
     right: 235px;
 }
 
 #info-container {
     position: absolute;
     bottom: 5px;
-    right: 5px;
+    right: 10px;
 
-    width: 225px;
+    width: 220px;
     height: 40px;
 
-    color: #666;
+    color: white;
 }
     #clock {
         position: absolute;
@@ -947,7 +1087,7 @@ form#send-message {
 
     font-size: 13px;
 
-    color: #AAA;
+    color: rgba(255, 255, 255, 0.8);
 }
 
     #info-container ul li i {
@@ -955,7 +1095,7 @@ form#send-message {
     }
 
     #info-container ul li:hover {
-        color: #666;
+        color: white;
     }
 
     #message-total {
@@ -973,8 +1113,8 @@ form#send-message {
 #message-ticker {
     position: absolute;
     right: 0;
-    bottom: 51px;
-    width: 236px;
+    bottom: 1px;
+    width: 235px;
     z-index: 1000;
     list-style-type: none;
     font-size: 12px;
@@ -1301,7 +1441,8 @@ li.error {
         padding: 5px;
         word-wrap: break-word;
     }
-
+       
+        /* arrow to the left of a message */
         .message .middle.first:before,
         .message.my-message .middle.first:before,
         .message.highlight .middle.first:before,
@@ -2862,27 +3003,42 @@ li.clearfix {
     display: none;
 }
 
+.word-breakable {
+    word-break: break-all;
+}
+
+.form-horizontal input + .help-block {
+    margin-top: 5px;
+}
+
 #login {
     background-color: #FFF;
     border: 1px solid #e5e5e5;
-    margin: 100px auto;
+    margin: 100px auto 0 auto;
     width: 500px;
 }
 
+	#login-form {
+		width: 255px;
+	}
+
+		#login-form .input-prepend input {
+			width: 210px;
+		}
+
 .login-header, .account-details-header {
-    background-color: #00103F;
-    height: 50px;
+    background-color: #26797F;
+    height: 55px;
     margin: 0 auto;
-    padding-top: 10px;
-    padding-bottom: 20px;
     color: #FFFFFF;
 }
 
-.administration header,
-.notifications header,
-.user-profile header {
-    border-bottom: 1px solid #e5e5e5;
-}
+	.login-header h1, .account-details-header h1 {
+		font-family: 'Open Sans', sans-serif;
+	    font-weight: 400;
+
+	    margin: 5px 17px;
+	}
 
 
 .user-profile .nav-tabs li.active a,
@@ -2962,46 +3118,24 @@ li.clearfix {
     }
 
 .login-body {
-    padding-top: 10px;
+    padding-top: 25px;
     padding-bottom: 15px;
 }
 
-.windows-auth,
-.usernamepassword-auth,
-.user-registration,
-.user-request-reset-password {
-    margin: 20px -40px;
-}
-
-.user-reset-password {
-    margin: 20px;
-}
-
-    .user-registration .validation-summary-errors,
-    .user-request-reset-password .validation-summary-errors,
-    .user-reset-password .validation-summary-errors {
-        margin: 20px 200px;
-    }
-
-
-    .usernamepassword-auth .control-group {
-        margin-left: 40px;
-    }
-
-    .usernamepassword-auth .validation-summary-errors {
-        margin-left: 80px;
-    }
-
 .social-auth {
-    margin: 20px 15px;
-    padding: 0 20px;
+    margin: 0;
+    padding: 0;
 }
+
+    .social-auth ul.inline>li {
+        padding: 0;
+    }
 
     .social-auth .btn-provider {
         font-size: 17.5px;
-        width: 220px;
-        padding: 6px 0;
-        margin-left: 15px;
+        width: 228px;
+        padding: 4px 0;
+        margin-left: 0;
         text-align: left;
     }
 
@@ -3019,6 +3153,10 @@ li.clearfix {
         width: 45px;
         margin-left: 42px;
     }
+
+.user-reset-password {
+    margin: 0 10px;
+}
 
 .icon-link {
     background-image: url('../../images/link.png');
@@ -3046,10 +3184,6 @@ li.clearfix {
     margin-left: 20px;
 }
 
-.social-auth .btn-provider {
-    margin-left: 15px;
-}
-
 .provider {
     font-size: 17.5px;
     width: 400px;
@@ -3070,13 +3204,17 @@ li.clearfix {
     background: none;
 }
 
-.login-body .btn-provider {
-    width: 220px;
-    padding: 6px 0;
+.login-body .form-horizontal .controls {
+    margin-left: 10px;
 }
 
-.login-body .usernamepassword-auth .form-horizontal .controls {
-    margin-left: 10px;
+.login-body .usernamepassword-auth .form-horizontal .input-prepend {
+    width: 100%;
+}
+
+.login-body .usernamepassword-auth p,
+.login-body .usernamepassword-auth li {
+    margin-right: 10px;
 }
 
 .login-body .auth-divider {
@@ -3087,7 +3225,7 @@ li.clearfix {
 .login-body .btn,
 .account-details .btn,
 .administration .btn {
-    background-color: #00103F;
+    background-color: #003B40;
     background-image: none;
     text-shadow: none;
     color: #FFF;
@@ -3097,7 +3235,7 @@ li.clearfix {
     .login-body .btn:hover,
     .account-details .btn:hover,
     .administration .btn:hover {
-        background-color: #164C85;
+        background-color: #177D85;
     }
 
 .large-logo {
@@ -3227,7 +3365,7 @@ h3.userlist-header {
 
 #room-actions {
     margin-right: 7px;
-    margin-top: 8px;
+    top: 8px;
     display: none;
 }
 
@@ -3340,54 +3478,6 @@ h3.userlist-header {
     line-height: 13px;
 }
 
-.connection-status {
-    float: left;
-    position: relative;
-    top: 7px;
-}
-
-.icon-connection-status {
-    width: 6px;
-    background-color: #0ACF00;
-    display: inline-block;
-    height: 38px;
-}
-
-.reconnecting .icon-connection-status {
-    background-color: #ffaa22;
-}
-
-.disconnected .icon-connection-status {
-    background-color: #FF2222;
-}
-
-#connection-info-popover .popover-title-icon {
-    float: left;
-    margin: 10px 5px;
-}
-
-#connection-info-popover .popover-title {
-    font-weight: bold;
-}
-
-.popover-content {
-    padding: 4px 14px;
-    color: #333;
-}
-
-#connection-info-popover p {
-    margin: 0;
-}
-
-#connection-state-changed-popover #popover-content-icon {
-    float: left;
-    margin: 12px 5px;
-}
-
-#connection-state-changed-popover .popover-content {
-    margin: 0 15px;
-}
-
 .icon-white {
     color: white;
 }
@@ -3412,14 +3502,17 @@ h3.userlist-header {
     border-radius: 0;
 }
 
+#main-menu {
+    margin-top: -2px;
+}
+
 .navbar-inner {
-    min-height: 35px;
+    min-height: 37px;
     padding: 0;
     background: #fff;
     box-shadow: none;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px 4px 0 0;
-    margin: 7px 7px 0 0;
+    border-bottom-width: 0;
+    margin: 0 7px 0 0;
 }
 
 .navbar .nav {
@@ -3432,7 +3525,7 @@ h3.userlist-header {
     }
 
         .navbar .nav > li:first-child {
-            border-left: 0;
+            border-left-width: 0;
         }
 
         .navbar .nav > li > a {
@@ -3441,33 +3534,13 @@ h3.userlist-header {
             padding: 8px 12px;
         }
 
-.navbar .nav > li > a:hover {
+            .navbar .nav > li > a:hover {
                 background: #F2F2F2;
             }
 
 @media (max-width:900px) {
-    #login {
-        margin: inherit;
-        width: inherit;
-    }
-
-    .windows-auth, .usernamepassword-auth, .user-registration {
-        margin: auto 10px;
-    }
-
-        .user-registration .validation-summary-errors {
-            margin: 20px 20px;
-        }
-
-        .usernamepassword-auth .control-group {
-            margin: inherit;
-        }
-
-        .usernamepassword-auth .validation-summary-errors {
-            margin: inherit;
-        }
-
-    .messages {
+    .messages,
+    #drop-file-target {
         right: 200px;
     }
 
@@ -3490,11 +3563,11 @@ h3.userlist-header {
     }
 
     #info-container {
-        width: 190px;
+        width: 185px;
     }
 
     #message-ticker {
-        width: 201px;
+        width: 200px;
     }
 
     .users {
@@ -3510,9 +3583,54 @@ h3.userlist-header {
     }
 }
 
+@media (max-width:768px) {
+    .login-body .auth-divider {
+        border-right-width: 0;
+    }
+
+    #login {
+        width: 100%;
+        min-width: 255px;
+    }
+
+	    #login-form {
+	    	margin-left: auto;
+	    	margin-right: auto;
+	    }
+
+    .social-auth .btn-provider {
+        width: 190px;
+        margin-left: 10px;
+    }
+
+    .social-auth [class^="icon-"],
+    .social-auth [class*=" icon-"] {
+        margin-left: 20px;
+    }
+}
 
 @media (max-width:700px) {
-    .messages {
+    .home #heading h1.full {
+    	display: none;
+    }
+
+    .home #heading h1.icon {
+    	display: block;
+    }
+
+    #tabs {
+        /* wider for additional admin buttons */
+        margin-right: 50px;
+        margin-left: 33px;
+    }
+
+    .home-admin #tabs {
+        /* wider for additional admin buttons */
+        margin-right: 85px;
+    }
+    
+    .messages,
+    #drop-file-target {
         right: 150px;
     }
 
@@ -3535,7 +3653,7 @@ h3.userlist-header {
     }
 
     #message-ticker {
-        width: 151px;
+        width: 150px;
     }
 
     #info-container {
@@ -3551,34 +3669,76 @@ h3.userlist-header {
     }
 }
 
+@media screen and (max-width:580px) {
+    #lobby-wrapper {
+        top: 65px;
+    }
+
+    #room-filter {
+        max-width: none;
+    }
+}
+
 @media screen and (max-width:480px) {
-    .messages {
+    .messages,
+    #drop-file-target {
         width: auto;
         right: 100px;
         left: 0px;
     }
 
+    .drop-file-text {
+        font-size: 24px;
+    }
+
         .messages li.message {
             border-left: 30px solid #f1f1f1;
+            padding: 3px;
         }
 
     .message .left {
         margin-left: -32px;
+        margin-right: -8px;
         width: 30px;
+        padding: 0;
+        padding-left: 3px;
     }
 
-        .message .left .name {
+        .messages .message .left .name {
             display: none;
         }
 
+    .messages .middle, .notification .content,
+    .action .content, .pm .content, .error .content, .broadcast .content {
+        display: inline;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* arrow to the left of a message */
+    .message .middle.first:before,
+    .message.my-message .middle.first:before,
+    .message.highlight .middle.first:before,
+    .message.highlight.my-message .middle.first:before {
+        top: 3px;
+    }
+
+    .messages li .right {
+        float: right;
+        display: inline;
+        padding: 0;
+        position: inherit;
+        width: auto;
+        margin-left: 6px;
+    }
+
     .message.loading .left .state,
     .message.failed .left .state {
-        margin-top: 5px;
-        margin-right: 8px;
+        height: 18px;
     }
 
     #message-ticker {
-        width: 101px;
+        width: 100px;
     }
 
     #message-ticker .message {
@@ -3616,6 +3776,106 @@ h3.userlist-header {
     }
 }
 
+@media screen and (max-height:600px) {
+    #login {
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-height:400px) {
+    .home #heading {
+        height: 32px;
+        padding-top: 0;
+    }
+
+    #tabs li {
+        height: 32px;
+    }
+
+        #tabs li a {
+            padding-top: 6px;
+            padding-bottom: 4px;
+        }
+
+        #tabs li .close {
+            top: 6px;
+        }
+
+    .navbar .nav > li > a {
+        padding-top: 5px;
+        padding-bottom: 6px;
+    }
+
+    .navbar-inner {
+        min-height: 32px;
+    }
+
+    #tabs-dropdown-container .dropdown-toggle {
+        height: 32px;
+    }
+
+    #chat-area {
+        top: 32px;
+        bottom: 40px;
+    }
+
+    .roomTopic {
+        top: 6px;
+    }
+
+    #room-actions {
+        top: 4px;
+    }
+
+    .messages,
+    .users,
+    #drop-file-target {
+        top: 32px;
+    }
+
+    form#send-message textarea,
+    #send {
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .upload-button {
+        bottom: 5px;
+    }
+}
+
+.splash-screen-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    padding-top: 15%;
+}
+
+.jabbr-splash-logo {
+    height: 300px;
+    width: 350px;
+    background: url('../../images/splash-logo.png') no-repeat left center;
+    margin: 0 auto;
+}
+
+.progress-wrapper {
+    margin-left: -75px;
+}
+
+.progress {
+    width: 200px;
+    margin: 0 auto;
+}
+
+.progress .bar {
+    background-image: linear-gradient(45deg,rgba(255,255,255,1) 25%,transparent 25%,transparent 50%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 75%,transparent 75%,transparent);
+    background-color: #e5e5e5;
+}
+
 #image-upload-preview {
     display: block;
     margin: 0 auto;
@@ -3639,23 +3899,6 @@ h3.userlist-header {
     border-radius: 0px !important;
     border-collapse: collapse !important;
     background-image: none !important;
-}
-
-#drop-file-target {
-    display: none;
-}
-
-.drop-file-text {
-    font-size: 72pt;
-    display: block;
-    position: absolute;
-    line-height: 50px;
-    top: 50%;
-    left: 40%;
-    margin: -82px 0 0 -180px;
-    text-shadow: 3px 3px 4px #000;
-    color: #fff;
-    z-index: -1;
 }
 
 /* Make admin screens nicer */

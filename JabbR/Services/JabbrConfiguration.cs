@@ -56,5 +56,35 @@ namespace JabbR.Services
                 return ConfigurationManager.AppSettings["jabbr:releaseTime"];
             }
         }
+
+        public string ServiceBusConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["jabbr:serviceBusConnectionString"];
+            }
+        }
+
+        public string ServiceBusTopicPrefix
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["jabbr:serviceBusTopicPrefix"];
+            }
+        }
+        
+        public bool ScaleOutSqlServer
+        {
+            get
+            {
+                string scaleOutSqlServerValue = ConfigurationManager.AppSettings["jabbr:scaleOutSqlServer"];
+                bool scaleOutSqlServer;
+                if (Boolean.TryParse(scaleOutSqlServerValue, out scaleOutSqlServer))
+                {
+                    return scaleOutSqlServer;
+                }
+                return false;
+            }
+        }
     }
 }

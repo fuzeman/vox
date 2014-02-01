@@ -10,6 +10,7 @@ define([
     'noext!signalr/hubs'
 ], function ($, Logger, kernel, events) {
     var logger = new Logger('jabbr/client'),
+        messages = null,
         object = null;
 
     logger.trace('loaded');
@@ -129,7 +130,7 @@ define([
                 chat.server.send('/logout', chat.state.activeRoom)
                     .fail(function (e) {
                         if (e.source == 'HubException') {
-                            $window.trigger(events.error, [e.message, 'error', chat.state.activeRoom]);
+                            messages.addErrorToActiveRoom(e.message);
                         }
                     });
             });
@@ -137,6 +138,8 @@ define([
 
         return {
             activate: function () {
+                messages = kernel.get('jabbr/components/messages');
+
                 logger.trace('activated');
             },
 

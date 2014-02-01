@@ -9,14 +9,15 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>iceJabbR</title>
+    <title>vox</title>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="A real-time chat application." />
-    <meta name="keywords" content="chat,realtime chat,signalr,jabbr" />
-    <link href="@Url.Content("~/Content/images/logo32.png")" rel="icon" type="image/png" sizes="32x32">
-    <link href="@Url.Content("~/Content/images/logo64.png")" rel="icon" type="image/png" sizes="64x64">
-    <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16">
+    <meta name="keywords" content="chat,realtime chat,signalr,vox" />
+    <link href="@Url.Content("~/Content/images/logo32.png")" rel="icon" type="image/png" sizes="32x32" />
+    <link href="@Url.Content("~/Content/images/logo64.png")" rel="icon" type="image/png" sizes="64x64" />
+    <link href="@Url.Content("~/favicon.ico")" rel="shortcut icon" type="image/x-icon" sizes="16x16" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css' />
     @{
         WriteLiteral(Bundle.Css().ForceDebugIf(() => Model.DebugMode)
             .Add("~/Content/bootstrap.min.css")
@@ -287,17 +288,21 @@
     </script>
     <!--/Gravatar Profile Template-->
 </head>
-<body @if (Model.IsAdmin) { @Html.Raw("class=\"home-admin\""); }>
+<body class="home@(Model.IsAdmin ? " home-admin" : "")">
     <section id="page" role="application">
+        <div id="background"></div>
+        <div id="background-tint"></div>
+
         <header id="heading" role="heading">
             <div class="banner" role="banner">
-                <h1>iceJabbR</h1>
+                <h1 class="icon">v</h1>
+                <h1 class="full">vox</h1>
             </div>
             <nav>
                 <ul id="tabs" role="tablist">
                     <li id="tabs-lobby" class="current lobby no-close" data-name="Lobby" data-trimmable="false" role="tab">
                         <a accesskey="l">
-                            <span class="content">@LanguageResources.Client_Lobby</span>
+                            <i class="icon icon-globe" title="@LanguageResources.Client_Lobby"></i>
                         </a>
                     </li>
                 </ul>
@@ -310,12 +315,6 @@
                   
                     <ul id="tabs-dropdown" class="dropdown-menu pull-right" aria-labelledby="tabs-dropdown-rooms">
                     </ul>
-                </div>
-                <div id="connectionStatus" class="connection-status" data-toggle="popover" data-placement="bottom">
-                    <i class="icon-connection-status"></i>
-                <div id="connection-info-popover" class="popover"><div class="arrow"></div><div class="popover-inner"><i class="popover-title-icon icon-globe" style="display: none;"></i><h3 class="popover-title" style="display: none;"></h3><div class="popover-content"><p></p></div></div></div>
-                <div id="connection-info-content" style="display: none;"><p id="connection-status"></p><p id="connection-transport"></p></div>
-                <div id="connection-state-changed-popover" class="popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title" style="display: none;"></h3><i id="popover-content-icon"></i><div class="popover-content"><p></p></div></div></div>
                 </div>
                 <div id="preferences" class="navbar account pull-right">
                     <div class="navbar-inner">
@@ -338,7 +337,7 @@
                 </div>
             </div>
         </header>
-        <div id="topic-bar">
+        <div id="chat-area" role="tabpanel">
             <form id="room-filter-form" action="#" class="form-inline">
                 <input id="room-filter" class="filter input-xlarge" type="text" placeholder="@LanguageResources.Client_RoomFilterInstruction" />
                 <label id="room-filter-closed-area" class="checkbox inline">
@@ -356,10 +355,11 @@
                     <li><a class="download" title="download messages" aria-haspopup="true"><i class="icon-download"></i> @LanguageResources.Client_DownloadMessages</a></li>
                 </ul>
             </div>
-        </div>
-        <div id="chat-area" role="tabpanel">
             <div id="room-loading">
-                <i class="icon-spinner icon-3x"> </i><h3>@LanguageResources.LoadingMessage</h3>
+                <div id="loader-container">
+                    <canvas id="canvas" width="150" height="150"></canvas>
+                    <h4>@LanguageResources.LoadingMessage</h4>
+                </div>
             </div>
             <div id="lobby-wrapper">
                 <div id="lobby-private">
@@ -375,25 +375,24 @@
                 <ul id="messages-lobby" class="messages current" role="log" style="visibility: hidden;">
                 </ul>
             </div>
-            <form id="send-message" action="#">
-                <div id="message-box">
-                    <textarea id="new-message" autocomplete="off" aria-autocomplete="none" accesskey="m"></textarea>
-                </div>
-                <input type="submit" id="send" value="@LanguageResources.Client_Send" class="send btn" />
-            </form>
-            <div id="info-container">
-                <div id="clock">
-                    <div class="time"></div>
-                    <div class="date"></div>
-                </div>
-                <ul>
-                    <li id="message-total" title="Total number of messages processed by the server."><i class="icon-comments-alt"></i> <span class="value">...</span></li>
-                </ul>
-            </div>
             <ul id="message-ticker"></ul>
         </div>
-        <audio src="Content/sounds/notification.wav" id="notificationSound" hidden="hidden" aria-hidden="true">
-        </audio>
+        <div id="info-container">
+            <div id="clock">
+                <div class="time"></div>
+                <div class="date"></div>
+            </div>
+            <ul>
+                <li id="message-total" title="Total number of messages processed by the server."><i class="icon-comments-alt"></i> <span class="value">...</span></li>
+            </ul>
+        </div>
+        <form id="send-message" action="#">
+            <div id="message-box">
+                <textarea id="new-message" autocomplete="off" aria-autocomplete="none" accesskey="m"></textarea>
+            </div>
+            <input type="submit" id="send" value="@LanguageResources.Client_Send" class="send btn" />
+        </form>
+        <audio src="Content/sounds/notification.wav" id="notificationSound" hidden="hidden" aria-hidden="true"></audio>
         <section aria-hidden="true" aria-haspopup="true">
             <div id="disconnect-dialog" class="modal hide fade">
                 <div class="modal-header">
@@ -629,6 +628,9 @@
             <div id="loadingRoomHistory" class="loading-room-history alert alert-info">
                 <i class="icon-spinner icon-spin"></i> @LanguageResources.Client_LoadingPreviousMessages
             </div>
+            <div id="splash-screen" class="splash-screen-overlay">
+                <div id="splash-spinner" style="text-align: center;"></div>
+            </div>
             <div id="jabbr-upload-preview" class="modal hide fade">
                 <div class="modal-header">
                     <a class="close" data-dismiss="modal">&times;</a>
@@ -653,21 +655,29 @@
         window.languageResources = {
            @Html.Raw(Model.ClientLanguageResources)
         };
+        window.jabbr = {};
+        
         @if (Model.DebugMode)
         {
-            @: window.jabbr = { debug: true };
+            @: window.jabbr.debug = true;
         }
     </script>
+    @{
+        WriteLiteral(Bundle.JavaScript().ForceDebugIf(() => Model.DebugMode)
+            .Add("~/Scripts/spin.min.js")
+            .Add("~/loader.js")
+            .Render("~/Scripts/JabbR_Loader_#.js"));
+    }
+
+    <script type="text/javascript" src="/App/require.js"></script>
     @if (Model.DebugMode)
     {
         // Load un-optimized require.js module
-        @: <script type="text/javascript" src="/App/require.js"></script>
         @: <script type="text/javascript" src="/App/chat-main.js"></script>
     }
     else
     {
         // Load optimized require.js module
-        @: <script type="text/javascript" src="/App/require.js"></script>
         @: <script type="text/javascript" src="/Build/chat-main.js"></script>
     }
 </body>

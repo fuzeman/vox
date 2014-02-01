@@ -85,7 +85,7 @@ define([
         this.$roomUser.addClass('inactive');
 
         if (!$inactiveSince.html()) {
-            $inactiveSince.livestamp(new Date());
+            $inactiveSince.livestamp(this.user.lastActive);
         }
 
         return true;
@@ -111,11 +111,24 @@ define([
 
         // Update note
         if (this.user.note) {
+            var priority = this.user.noteClass === 'afk',
+                priorityChanged = false;
+
+            if (priority !== $note.hasClass('priority')) {
+                priorityChanged = true;
+                $note.remove();
+            }
+
             // Add note status element if one doesn't exist
-            if ($note.length === 0) {
+            if ($note.length === 0 || priorityChanged) {
                 $note = $('<li class="note"><i class="icon-edit"></i> <span></span></li>');
 
-                $extended.append($note);
+                if (priority) {
+                    $note.addClass('priority');
+                    $extended.append($note);
+                } else {
+                    $extended.prepend($note);
+                }
             }
 
             $note.attr('title', noteTextEncoded);
@@ -166,7 +179,11 @@ define([
                 $.proxy(this.statusHoverLeave, this)
             );
 
-            $extended.prepend($externalStatus);
+            if ($('.priority', $extended).length > 0) {
+                $extended.prepend($externalStatus);
+            } else {
+                $extended.append($externalStatus);
+            }
         }
 
         if (this.user.status_type !== null &&
@@ -211,7 +228,8 @@ define([
             }
 
             // Update Tooltip
-            $externalStatus.attr('title', tooltipFragments.join(' - '));
+            $externalStatus.attr('title', tooltipFragments.join(' - '))
+                           .attr('type', this.user.status_type);
 
             // Set status icon
             if (this.user.status_type == 'music') {

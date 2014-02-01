@@ -14,7 +14,8 @@ define([
     'jabbr/components/emoji',
     'jabbr/utility',
     'jquery.pulse',
-    'jquery.autotabcomplete'
+    'jquery.autotabcomplete',
+    'moment'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,
     ru, help, cs, externalStatus,
@@ -33,6 +34,7 @@ define([
     var initialize = function () {
         var $window = $(window),
             $document = $(document),
+            $chatArea = $('#chat-area'),
             $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
@@ -46,6 +48,7 @@ define([
             $messageTotal = $('#message-total .value'),
             $clockTime = $('#clock .time'),
             $clockDate = $('#clock .date'),
+            $splashScreen = $('#splash-screen'),
             readOnly = false,
             focus = true,
             originalTitle = document.title,
@@ -222,13 +225,8 @@ define([
             $sendMessage.height(20 + (20 * newMessageLines));
             $newMessage.height(20 * newMessageLines);
 
-            // Update Lobby
-            $lobbyWrapper.css('bottom', 30 + (20 * newMessageLines));
-
-            // Update Current Room
-            var room = ru.getCurrentRoomElements();
-            room.messages.css('bottom', 20 + (20 * newMessageLines));
-            room.users.css('bottom', 30 + (20 * newMessageLines));
+            // Update Chat Area
+            $chatArea.css('bottom', 30 + (20 * newMessageLines));
         }
 
         function setMessage(clientMessage) {
@@ -238,7 +236,7 @@ define([
                 newMessageLines = clientMessage.content.split('\n').length;
                 updateNewMessageSize();
                 
-            $('.my-message').removeClass('editing');            
+                $('.my-message').removeClass('editing');            
                 
 
                 if (clientMessage.id !== undefined) {
@@ -309,6 +307,17 @@ define([
             message = mention + ' ' + message;
             setMessage({ content: message });
             return false;
+        }
+
+        // Splash Screen
+        function showSplashScreen() {
+            window.jabbr.spinner.spin();
+            $splashScreen.fadeIn('slow');
+        }
+
+        function hideSplashScreen() {
+            window.jabbr.spinner.stop();
+            $splashScreen.fadeOut('slow');
         }
 
         // #region Cycle Message
@@ -466,6 +475,9 @@ define([
                     }
                 });
 
+                // Set the amount of rooms to load
+                rc.roomsToLoad(filteredRooms.length);
+
                 populateRooms(filteredRooms);
                 
                 // Set current unread messages
@@ -480,12 +492,22 @@ define([
                     help.load();
                     lobby.updateRooms();
                     loadRooms();
+
+                    // No rooms to load just hide the splash screen
+                    if (rc.roomsToLoad() === 0) {
+                        hideSplashScreen();
+                    }
                 });
             } else {
                 // Populate the lobby first then everything else
                 lobby.updateRooms().done(function() {
                     help.load();
                     loadRooms();
+
+                    // No rooms to load just hide the splash screen
+                    if (rc.roomsToLoad() === 0) {
+                        hideSplashScreen();
+                    }
                 });
             }
 
@@ -554,6 +576,11 @@ define([
                     break;
                 case Keys.Enter:
                     if (ev.shiftKey) {
+                        setTimeout(function () {
+                            newMessageLines = $newMessage.val().split('\n').length;
+                            updateNewMessageSize();
+                        }, 100);
+
                         triggerTyping();
                     } else {
                         triggerSend();
@@ -736,6 +763,31 @@ define([
         // granularity is by minute anyway (saves CPU cycles)
         $.livestamp.interval(30 * 1000);
 
+        // Setup Moment.js
+        moment.lang('en', {
+            relativeTime: {
+                future: "%s",
+                past: "%s",
+
+                s: "",
+
+                m:   "1m",
+                mm: "%dm",
+
+                h:   "1h",
+                hh: "%dh",
+
+                d:   "1 day",
+                dd: "%d days",
+
+                M:   "1 month",
+                MM: "%d months",
+
+                y:   "1 year",
+                yy: "%d years"
+            }
+        });
+
         var handlers = {
             bind: function () {
                 client.chat.client.nudge = this.clientNudge;
@@ -745,7 +797,7 @@ define([
                 client.chat.client.outOfSync = showUpdatePopup;
             },
 
-            clientNudge: function (from, to) {
+            clientNudge: function (from, to, roomName) {
                 function shake(n) {
                     var move = function (x, y) {
                         parent.moveBy(x, y);
@@ -774,7 +826,18 @@ define([
                     shake(20);
                 }, 300);
 
-                messages.addMessage('*' + from + ' nudged ' + (to ? 'you' : 'the room'), to ? 'pm' : 'notification');
+                if (to) {
+                    if (rc.isSelf({ Name: to })) {
+                        message = utility.getLanguageResource('Chat_UserNudgedYou', from);
+                    } else {
+                        message = utility.getLanguageResource('Chat_UserNudgedUser', from, to);
+                    }
+
+                    // TODO: make this more consistent (ie make it a broadcast, proper pm to all rooms, or something)
+                    messages.addPrivateMessage(message);
+                } else {
+                    messages.addPrivateMessage(utility.getLanguageResource('Chat_UserNudgedRoom', from, roomName));
+                }
                 
                 notifications.notifyMention(true);
             },
@@ -836,6 +899,9 @@ define([
             incrementMessageCount: incrementMessageCount,
             setMessage: setMessage,
             resetSelection: resetSelection,
+
+            showSplashScreen: showSplashScreen,
+            hideSplashScreen: hideSplashScreen,
 
             isFocused: function () {
                 return focus;

@@ -5,6 +5,7 @@ define([
     'kernel',
     'jabbr/state',
     'jabbr/events',
+    'jabbr/utility',
     'jabbr/templates',
     'jabbr/viewmodels/room',
     'jabbr/viewmodels/message',
@@ -22,7 +23,7 @@ define([
     'quicksilver'
 ], function ($, Logger, kernel,
     // Core
-    state, events, templates,
+    state, events, utility, templates,
     // View Models
     Room, Message,
     // Components
@@ -44,7 +45,6 @@ define([
             $notify = $('#room-actions .notify'),
             $tabs = $('#tabs'),
             $chatArea = $('#chat-area'),
-            $topicBar = $('#topic-bar'),
             $kickedPopup = $('#jabbr-kicked'),
             $loadingHistoryIndicator = $('#loadingRoomHistory'),
             $this = $(this),
@@ -112,6 +112,11 @@ define([
                 return rc.getRoom(currentRoom.data('name'));
             }
             return null;
+        }
+
+        function getActiveRoomName() {
+            //TODO: make this less DOM-read-ey
+            return $tabs.find('li.current').data('name');
         }
 
         function getAllRoomElements() {
@@ -376,9 +381,9 @@ define([
                 .appendTo($chatArea)
                 .hide();
 
-            $roomTopic = $('<div/>').attr('id', 'roomTopic-' + roomId)
+            $('<div/>').attr('id', 'roomTopic-' + roomId)
                 .addClass('roomTopic')
-                .appendTo($topicBar)
+                .appendTo($chatArea)
                 .hide();
 
             userContainer = $('<div/>').attr('id', 'userlist-' + roomId)
@@ -555,10 +560,10 @@ define([
 
                 if (added) {
                     rc.populateRoom(roomdata.Name).done(function () {
-                        messages.addMessage('You just entered ' + roomdata.Name, 'notification', roomdata.Name);
+                        messages.addNotification(utility.getLanguageResource('Chat_YouEnteredRoom', roomdata.Name), roomdata.Name);
 
                         if (roomdata.Welcome) {
-                            messages.addMessage(roomdata.Welcome, 'welcome', roomdata.Name);
+                            messages.addWelcome(roomdata.Welcome, roomdata.Name);
                         }
                     });
                 }
@@ -567,13 +572,17 @@ define([
             kick: function (userdata, roomName, message, imageUrl) {
                 if (rc.isSelf(userdata)) {
                     showKickPopup(roomName, message, imageUrl);
-                    rc.setActiveRoom('Lobby');
+
+                    if (client.chat.state.activeRoom === roomName) {
+                        rc.activateOrOpenRoom('Lobby');
+                    }
                     rc.removeRoom(roomName);
+
                     // TODO Where does this message go?
-                    messages.addMessage('You were kicked from ' + roomName, 'notification');
+                    messages.addNotificationToActiveRoom(utility.getLanguageResource('Chat_YouKickedFromRoom', roomName));
                 } else {
                     users.remove(userdata, roomName);
-                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;
+                    var roomMessage = userdata.Name + ' was kicked from ' + roomName;  // TODO use getLanguageResource
 
                     if (message !== null && imageUrl !== null) {
                         roomMessage += ' (' + [message, '<a href="' + imageUrl +
@@ -623,6 +632,8 @@ define([
             getCurrentRoomElements: getCurrentRoomElements,
             getAllRoomElements: getAllRoomElements,
             getNextRoomListElement: getNextRoomListElement,
+
+            getActiveRoomName: getActiveRoomName,
 
             // #endregion
 
