@@ -674,6 +674,14 @@ canvas {
             font-size: 11px;
         }
 
+        .user .extended .external-status[type="video"] + .note.priority {
+            left: 16px;
+        }
+
+        .user .extended .external-status[type="game"] + .note.priority {
+            left: 16px;
+        }
+
 .user .art {
     float: left;
 
