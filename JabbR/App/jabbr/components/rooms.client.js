@@ -356,15 +356,15 @@ define([
                 }
             },
 
-            leave: function (userdata, roomName) {
-                if (isSelf(userdata)) {
+            leave: function (user, room) {
+                if (isSelf(user)) {
                     if (client.chat.state.activeRoom === room) {
                         setActiveRoom('Lobby');
                     }
 
-                    removeRoom(roomName);
+                    removeRoom(room);
                 } else {
-                    users.remove(userdata, roomName);
+                    users.remove(user, room);
                     messages.addNotification(utility.getLanguageResource('Chat_UserLeftRoom', user.Name, room), room);
                 }
             },
