@@ -53,17 +53,25 @@ define([
             update('disconnected');
         }
 
+        function reset() {
+            // Remove all state classes
+            for (c in colours) {
+                $tint.removeClass(c);
+            }
+        }
+
         function update(state) {
             if (state === current) {
                 return;
             }
 
+            reset();
+
             // Background Tint
             $tint.animate({
                 backgroundColor: colours[state],
             }, 1500, function () {
-                $tint.removeClass(current)
-                     .addClass(state)
+                $tint.addClass(state)
                      .attr('style', '');
             });
 
