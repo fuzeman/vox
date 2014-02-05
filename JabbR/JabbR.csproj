@@ -58,6 +58,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AntiXSS.4.2.1\lib\net40\AntiXssLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="DotLiquid">
+      <HintPath>..\packages\DotLiquid.1.8.0-beta1\lib\NET45\DotLiquid.dll</HintPath>
+    </Reference>
     <Reference Include="EcmaScript.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EcmaScript.Net.1.0.1.0\lib\net20\EcmaScript.NET.dll</HintPath>
@@ -1021,6 +1024,7 @@
     <Compile Include="Infrastructure\IAuthenticationService.cs" />
     <Compile Include="Infrastructure\JabbrUserIdProvider.cs" />
     <Compile Include="Infrastructure\StringReaderExtensions.cs" />
+    <Compile Include="Infrastructure\TemplateHelper.cs" />
     <Compile Include="LanguageResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
