@@ -20,6 +20,7 @@ require.config({
         'jquery.pulse': '../Scripts/jquery.pulse',
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
         'jquery.color': '../Scripts/jquery.color-2.1.2',
+        'jquery.iframeResizer': '../Scripts/jquery.iframeResizer.min',
 
         'hljs': '../Scripts/highlight.pack',
         'json2': '../Scripts/json2',
@@ -49,6 +50,7 @@ require.config({
         'jquery.pulse': ['jquery'],
         'jquery.autotabcomplete': ['jquery'],
         'jquery.color': ['jquery'],
+        'jquery.iframeResizer': ['jquery'],
 
         'markdown': {
             exports: 'Markdown'

@@ -13,6 +13,7 @@ define([
     'jabbr/components/external-status',
     'jabbr/components/emoji',
     'jabbr/utility',
+
     'jquery.pulse',
     'jquery.autotabcomplete',
     'moment'
