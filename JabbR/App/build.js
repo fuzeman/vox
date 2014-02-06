@@ -34,6 +34,7 @@
         'jquery.autotabcomplete': '../Scripts/jquery.autotabcomplete',
         'jquery.color': '../Scripts/jquery.color-2.1.2',
         'jquery.pubsub': '../Scripts/jquery.pubsub',
+        'jquery.iframeResizer': '../Scripts/jquery.iframeResizer.min',
 
         'hljs': '../Scripts/highlight.pack',
         'json2': '../Scripts/json2',

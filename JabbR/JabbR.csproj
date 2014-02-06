@@ -945,6 +945,7 @@
     <Content Include="Scripts\jquery.captureDocumentWrite.js" />
     <Content Include="Scripts\jquery.captureDocumentWrite.min.js" />
     <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery.iframeResizer.min.js" />
     <Content Include="Scripts\jquery.KeyTips.js" />
     <Content Include="Scripts\jquery.KeyTips.min.js">
       <DependentUpon>jquery.KeyTips.js</DependentUpon>
