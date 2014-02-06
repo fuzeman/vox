@@ -50,6 +50,7 @@ require.config({
         'jquery.pulse': ['jquery'],
         'jquery.autotabcomplete': ['jquery'],
         'jquery.color': ['jquery'],
+        'jquery.iframeResizer': ['jquery'],
 
         'markdown': {
             exports: 'Markdown'

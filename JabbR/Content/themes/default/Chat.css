@@ -1590,6 +1590,10 @@ li.error {
     overflow-y: auto;
 }
 
+.content-reddit {
+    height: 48px;
+}
+
 .embedly-content {
     position: relative;
 
