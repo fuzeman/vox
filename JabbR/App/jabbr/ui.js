@@ -16,7 +16,6 @@ define([
 
     'jquery.pulse',
     'jquery.autotabcomplete',
-    'jquery.iframeResizer',
     'moment'
 ], function ($, Logger, kernel, Keys,
     state, events, connectionStatus,

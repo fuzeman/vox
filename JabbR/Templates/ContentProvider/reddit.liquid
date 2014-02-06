@@ -2,14 +2,8 @@
 
 <script type="text/javascript">
     var frames = $('iframe.content-reddit[constructed="false"]');
-  
-    frames.attr('constructed', 'true').iFrameResize({
-        log: false,
-        contentWindowBodyMargin: 0,
-        doHeight: true,
-        doWidth: false,
-        enablePublicMethods: false,
-        interval: 33,
-        autoResize: true
-    });
+    
+    setTimeout(function() {
+        window.contentproviders.reddit.construct(frames);
+    }, 500);
 </script>
