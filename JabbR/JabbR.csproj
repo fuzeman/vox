@@ -242,6 +242,7 @@
     <Content Include="App\jabbr\components\external-status.trakt.js" />
     <Content Include="App\jabbr\contentproviders\github-issues.js" />
     <Content Include="App\jabbr\contentproviders\core.js" />
+    <Content Include="App\jabbr\contentproviders\reddit.js" />
     <Content Include="App\jabbr\contentproviders\twitter.js" />
     <Content Include="App\jabbr\messageprocessors\code.js" />
     <Content Include="App\notifications-main.js" />
