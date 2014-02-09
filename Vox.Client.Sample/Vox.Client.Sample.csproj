@@ -68,7 +68,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Vox.Client.Portable\Vox.Client.Portable.csproj">
       <Project>{3786fc2e-7fc9-43ec-b137-41b070de37d8}</Project>
-      <Name>JabbR.Client.Portable</Name>
+      <Name>Vox.Client.Portable</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

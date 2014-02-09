@@ -68,10 +68,10 @@
     <Compile Include="..\Vox.Client\TaskAsyncHelper.cs">
       <Link>TaskAsyncHelper.cs</Link>
     </Compile>
-    <Compile Include="..\JabbR\Models\ClientMessage.cs">
+    <Compile Include="..\Vox\Models\ClientMessage.cs">
       <Link>Models\ClientMessage.cs</Link>
     </Compile>
-    <Compile Include="..\JabbR\Models\ClientNotification.cs">
+    <Compile Include="..\Vox\Models\ClientNotification.cs">
       <Link>Models\ClientNotification.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

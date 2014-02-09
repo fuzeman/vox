@@ -86,16 +86,16 @@
     <Compile Include="..\Vox.Client\Models\UserStatus.cs">
       <Link>Models\UserStatus.cs</Link>
     </Compile>
-    <Compile Include="..\JabbR\Models\ClientMessage.cs">
+    <Compile Include="..\Vox\Models\ClientMessage.cs">
       <Link>ClientMessage.cs</Link>
     </Compile>
-    <Compile Include="..\JabbR\Models\ClientNotification.cs">
+    <Compile Include="..\Vox\Models\ClientNotification.cs">
       <Link>ClientNotification.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Vox.Client\JabbR.Client.csproj">
-      <Link>JabbR.Client.csproj</Link>
+    <None Include="..\Vox.Client\Vox.Client.csproj">
+      <Link>Vox.Client.csproj</Link>
     </None>
   </ItemGroup>
 </Project>

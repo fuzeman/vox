@@ -92,7 +92,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Vox\Vox.csproj">
       <Project>{16204F16-6354-4B68-BB0F-1A4F109FC92B}</Project>
-      <Name>JabbR</Name>
+      <Name>Vox</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
