@@ -18,7 +18,7 @@ lib/iOS/Microsoft.AspNet.SignalR.Client.iOS.dll.mdb
 .DS_Store
 *.pfx
 *.DotSettings
-JabbR/Build
-JabbR/App_Data
+Vox/Build
+Vox/App_Data
 /_UpgradeReport_Files
 /UpgradeLog*

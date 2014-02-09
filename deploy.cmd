@@ -66,13 +66,13 @@ IF NOT DEFINED MSBUILD_PATH (
 
 echo Handling .NET Web Application deployment.
 
-%DEPLOYMENT_SOURCE%\.nuget\NuGet.exe restore %DEPLOYMENT_SOURCE%\JabbR.sln -configFile %DEPLOYMENT_SOURCE%\.nuget\NuGet.config
+%DEPLOYMENT_SOURCE%\.nuget\NuGet.exe restore %DEPLOYMENT_SOURCE%\Vox.sln -configFile %DEPLOYMENT_SOURCE%\.nuget\NuGet.config
 
 :: 1. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
-  %MSBUILD_PATH% "%DEPLOYMENT_SOURCE%\JabbR\JabbR.csproj" /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  %MSBUILD_PATH% "%DEPLOYMENT_SOURCE%\Vox\Vox.csproj" /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
 ) ELSE (
-  %MSBUILD_PATH% "%DEPLOYMENT_SOURCE%\JabbR\JabbR.csproj" /nologo /verbosity:m /t:Build /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  %MSBUILD_PATH% "%DEPLOYMENT_SOURCE%\Vox\Vox.csproj" /nologo /verbosity:m /t:Build /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
 )
 
 IF !ERRORLEVEL! NEQ 0 goto error
