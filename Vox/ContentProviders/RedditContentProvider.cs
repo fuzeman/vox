@@ -12,6 +12,8 @@ namespace JabbR.ContentProviders
 
         public RedditContentProvider()
         {
+            BoxClasses = new[] { "collapsible_box", "no-padding" };
+
             TemplateHelper.Compile("ContentProvider/reddit");
         }
 

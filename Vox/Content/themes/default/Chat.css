@@ -1590,6 +1590,11 @@ li.error {
     overflow-y: auto;
 }
 
+.collapsible_box.no-padding {
+    line-height: 11px;
+    padding: 0;
+}
+
 .content-reddit {
     height: 48px;
 }

@@ -11,6 +11,14 @@ namespace JabbR.ContentProviders.Core
 {
     public abstract class CollapsibleContentProvider : IContentProvider
     {
+        private string[] _boxClasses = new [] { "collapsible_box" };
+
+        public virtual string[] BoxClasses
+        {
+            get { return _boxClasses; }
+            set { _boxClasses = value; }
+        }
+
         public virtual Task<ContentProviderResult> GetContent(ContentProviderHttpRequest request)
         {
             return GetCollapsibleContent(request).Then(result => ProcessResult(result));
@@ -26,7 +34,7 @@ namespace JabbR.ContentProviders.Core
             if (IsCollapsible && result != null)
             {
                 string contentTitle = String.Format(LanguageResources.Content_HeaderAndToggle, Encoder.HtmlEncode(result.Title));
-                result.Content = String.Format(ContentFormat, contentTitle, result.Content);
+                result.Content = String.Format(ContentFormat, contentTitle, string.Join(" ", BoxClasses), result.Content);
             }
 
             return result;
@@ -76,6 +84,6 @@ namespace JabbR.ContentProviders.Core
 
         public IJabbrRepository Repository { get; set; }
 
-        private const string ContentFormat = @"<div class=""collapsible_content""><h3 class=""collapsible_title"">{0}</h3><div class=""collapsible_box"">{1}</div></div>";
+        private const string ContentFormat = @"<div class=""collapsible_content""><h3 class=""collapsible_title"">{0}</h3><div class=""{1}"">{2}</div></div>";
     }
 }
