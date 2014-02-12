@@ -23,7 +23,7 @@ if "%config%" == "" (
 @set PATH=%FrameworkDir%%Framework35Version%;%PATH%
 @set PATH=%FrameworkDir%%FrameworkVersion%;%PATH%
 
-.nuget\NuGet.exe restore "%~dp0JabbR.sln" -configFile "%~dp0.nuget\NuGet.config" -nocache
+.nuget\NuGet.exe restore "%~dp0Vox.sln" -configFile "%~dp0.nuget\NuGet.config" -nocache
 msbuild "%~dp0Build\Build.proj" /p:Configuration="%config%" /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 
 @goto end
@@ -86,5 +86,5 @@ echo ---------------------------------------------------------------------------
 echo Running jshint
 echo ----------------------------------------------------------------------------
 
-cd JabbR
+cd Vox
 jshint .

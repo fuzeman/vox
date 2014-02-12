@@ -13,7 +13,7 @@
     <Import Project="$(MSBuildProjectDirectory)\MSBuild.Community.Tasks.targets"/>
     
     <ItemGroup>
-        <TestProjects Include="$(ProjectRoot)\JabbR.Tests\bin\$(Configuration)\JabbR.Tests.dll" />
+        <TestProjects Include="$(ProjectRoot)\Vox.Tests\bin\$(Configuration)\Vox.Tests.dll" />
     </ItemGroup>
     
     <UsingTask AssemblyFile="$(XunitPath)xunit.runner.msbuild.dll"
@@ -30,13 +30,13 @@
     </Target>
     
     <Target Name="Build">
-        <MSBuild Projects="$(ProjectRoot)\JabbR.sln" 
+        <MSBuild Projects="$(ProjectRoot)\Vox.sln" 
                  Targets="Build" 
                  Properties="Configuration=$(Configuration)" />
     </Target>
     
     <Target Name="Package" DependsOnTargets="MakeArtifactsPath">
-        <MSBuild Projects="$(ProjectRoot)\JabbR\JabbR.csproj" 
+        <MSBuild Projects="$(ProjectRoot)\Vox\Vox.csproj" 
                  Targets="pipelinePreDeployCopyAllFilesToOneFolder" 
                  Properties="_PackageTempDir=$(SiteArtifactsPath);
                              AutoParameterizationWebConfigConnectionStrings=false;

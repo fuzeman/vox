@@ -95,15 +95,15 @@ function set-releasemode {
 $scriptPath = split-path $MyInvocation.MyCommand.Path
 $rootPath = resolve-path(join-path $scriptPath "..")
 $libPath = join-path $rootPath "lib"
-$csdefFile = join-path $scriptPath "JabbR.csdef"
-$websitePath = join-path $rootPath "JabbR"
+$csdefFile = join-path $scriptPath "Vox.csdef"
+$websitePath = join-path $rootPath "Vox"
 $webConfigPath = join-path $websitePath "Web.config"
 $webConfigBakPath = join-path $scriptPath "Web.config.bak"
-$rolePropertiesPath = join-path $scriptPath "JabbR.RoleProperties.txt"
-$cscfgPath = join-path $scriptPath "JabbR.cscfg"
-$cscfgBakPath = join-path $scriptPath "JabbR.cscfg.bak"
+$rolePropertiesPath = join-path $scriptPath "Vox.RoleProperties.txt"
+$cscfgPath = join-path $scriptPath "Vox.cscfg"
+$cscfgBakPath = join-path $scriptPath "Vox.cscfg.bak"
 $cspkgFolder = join-path $rootPath "_AzurePackage"
-$cspkgFile = join-path $cspkgFolder "JabbR.cspkg"
+$cspkgFile = join-path $cspkgFolder "Vox.cspkg"
 $gitPath = join-path (programfiles-dir) "Git\bin\git.exe"
 $binPath = join-path $websitePath "bin"
 
