@@ -8,7 +8,7 @@ namespace JabbR.ContentProviders
 {
     public class RedditContentProvider : CollapsibleContentProvider
     {
-        public readonly Regex UriRegex = new Regex(@"https?:\/\/(?<value>(\w+.)?reddit.com(\/r\/\w+)?(\/comments\/\w+\/\w+(\/\w+)?)?)(\/)?", RegexOptions.IgnoreCase);
+        public readonly Regex UriRegex = new Regex(@"^https?:\/\/(?<value>(\w+.)?reddit.com(\/r\/\w+)?(\/comments\/\w+\/\w+(\/\w+)?)?)(\/)?(?<parameters>\?.*?)?$", RegexOptions.IgnoreCase);
 
         public RedditContentProvider()
         {
@@ -20,6 +20,9 @@ namespace JabbR.ContentProviders
         protected override Task<ContentProviderResult> GetCollapsibleContent(ContentProviderHttpRequest request, Match match)
         {
             var value = match.Groups["value"].Value;
+
+            if (match.Groups["parameters"].Success)
+                value += match.Groups["parameters"].Value;
 
             return TaskAsyncHelper.FromResult(new ContentProviderResult
             {
