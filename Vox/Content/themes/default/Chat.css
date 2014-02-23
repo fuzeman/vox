@@ -3382,10 +3382,18 @@ h3.userlist-header {
     display: none;
 }
 
+    #room-actions .btn {
+        padding: 2px 8px;
+    }
+
     #room-actions .btn.dropdown-toggle {
-        padding-left: 8px;
-        padding-right: 8px;
-        margin: 0;
+        padding: 2px 8px;
+    }
+
+    #room-actions .userlist-mode {
+        display: none;
+
+        height: 26px;
     }
 
 #room-preferences .sound:hover .icon-sound {
@@ -3694,14 +3702,6 @@ h3.userlist-header {
 }
 
 @media screen and (max-width:580px) {
-    .res-switch i.small {
-        display: inline;
-    }
-
-    .res-switch .large {
-        display: none;
-    }
-
     #lobby-wrapper {
         top: 65px;
     }
@@ -3712,6 +3712,14 @@ h3.userlist-header {
 }
 
 @media screen and (max-width:480px) {
+    .res-switch i.small {
+        display: inline;
+    }
+
+    .res-switch .large {
+        display: none;
+    }
+
     .messages,
     #drop-file-target {
         width: auto;
@@ -3777,27 +3785,27 @@ h3.userlist-header {
         display: none;
     }
 
+    h3.userlist-header {
+        padding: 2px 4px;
+    }
+
+        .userlist-header span {
+            font-size: 10px;
+        }
+
     .users {
         width: 100px;
         right: 0px;
         left: auto;
     }
 
-        .users ul .users li.empty {
+        .users li {
+            padding: 4px 8px;
+        }
+
+        .users li.empty {
             font-size: 80%;
         }
-
-        .users .details .name-container {
-            width: 45px;
-        }
-
-    .user .details .name-container .name {
-        width: 45px;
-    }
-
-    .user .details.admin .name-container .name {
-        width: 45px;
-    }
 
     .user-status {
         margin: 0;
@@ -3805,6 +3813,26 @@ h3.userlist-header {
 
     .glyph-container {
         display: none;
+    }
+
+    .users:not(.expanded) {
+        width: 55px;
+    }
+
+        .users:not(.expanded) .details {
+            display: none;
+        }
+
+        .users:not(.expanded) .extended {
+            display: none;
+        }
+
+    .messages:not(.expanded) {
+        right: 55px;
+    }
+
+    #room-actions .userlist-mode {
+        display: inline-block;
     }
 }
 
