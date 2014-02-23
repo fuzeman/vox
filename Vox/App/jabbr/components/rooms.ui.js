@@ -235,13 +235,17 @@ define([
             var notifyState = state.getRoomPreference(roomName, 'notify') || 'mentions';
 
             if (notifyState === 'all' && $element.hasClass('notify-mentions')) {
-                $element.removeClass('notify-mentions');
-                $element.addClass('notify-all');
+                $element.removeClass('notify-mentions')
+                        .addClass('notify-all');
+                
                 $('.notify-text', $element).text('All');
+                $("i", $element).attr('class', 'icon-bullhorn');
             } else if (notifyState === 'mentions' && $element.hasClass('notify-all')) {
-                $element.removeClass('notify-all');
-                $element.addClass('notify-mentions');
+                $element.removeClass('notify-all')
+                        .addClass('notify-mentions');
+                
                 $('.notify-text', $element).text('Mentions');
+                $("i", $element).attr('class', 'icon-bell');
             }
         }
 

@@ -61,6 +61,10 @@ form#send-message {
     text-decoration: none;
 }
 
+.res-switch .small {
+    display: none;
+}
+
 #lobby-wrapper {
     position: absolute;
     top: 40px;
@@ -3664,6 +3668,7 @@ h3.userlist-header {
         }
 
     #send-message {
+        left: 5px;
         right: 5px;
     }
 
@@ -3685,6 +3690,14 @@ h3.userlist-header {
 }
 
 @media screen and (max-width:580px) {
+    .res-switch i.small {
+        display: inline;
+    }
+
+    .res-switch .large {
+        display: none;
+    }
+
     #lobby-wrapper {
         top: 65px;
     }
@@ -3846,12 +3859,6 @@ h3.userlist-header {
     .users,
     #drop-file-target {
         top: 32px;
-    }
-
-    form#send-message textarea,
-    #send {
-        margin-top: 5px;
-        margin-bottom: 0;
     }
 
     .upload-button {

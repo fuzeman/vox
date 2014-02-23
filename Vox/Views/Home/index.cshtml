@@ -346,8 +346,20 @@
                 </label>
             </form>
             <div id="room-actions" class="btn-group pull-right">
-                <button class="btn btn-small notify notify-all"><i class="icon-bullhorn"></i> <span class="notify-text">All</span></button>
-                <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">@LanguageResources.Client_RoomSettings <span class="caret"></span></button>
+                <button class="btn btn-small res-switch notify notify-all">
+                    <i class="icon-bullhorn"></i>
+                    
+                    <span class="large notify-text">All</span>
+                </button>
+
+                <button class="btn btn-small dropdown-toggle res-switch" data-toggle="dropdown">
+                    <i class="small icon-cog"></i>
+
+                    <span class="large">
+                        @LanguageResources.Client_RoomSettings <span class="caret"></span>
+                    </span>
+                </button>
+
                 <ul id="room-preferences" class="dropdown-menu">
                     <li><a class="sound" title="audible notifications"><i class="icon-sound"></i> @LanguageResources.Client_AudibleNotifications</a></li>
                     <li><a class="richness" title="toggle rich-content"><i class="icon-richness"></i> @LanguageResources.Client_ToggleRichContent</a></li>
