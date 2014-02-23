@@ -3637,17 +3637,13 @@ h3.userlist-header {
 }
 
 @media (max-width:700px) {
-    .home #heading h1 {
-        margin-top: -5px;
+    .home #heading h1.full {
+    	display: none;
     }
 
-        .home #heading h1.full {
-        	display: none;
-        }
-
-        .home #heading h1.icon {
-        	display: block;
-        }
+    .home #heading h1.icon {
+    	display: block;
+    }
 
     #tabs {
         /* wider for additional admin buttons */
