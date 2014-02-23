@@ -3378,6 +3378,12 @@ h3.userlist-header {
     display: none;
 }
 
+    #room-actions .btn.dropdown-toggle {
+        padding-left: 8px;
+        padding-right: 8px;
+        margin: 0;
+    }
+
 #room-preferences .sound:hover .icon-sound {
     background-image: url('../../images/sound-on-white.png');
     background-repeat: no-repeat;
