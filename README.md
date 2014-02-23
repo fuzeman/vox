@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/fuzeman/vox.png?label=ready)](https://waffle.io/fuzeman/vox)
 ## iceJabbR [![Build Status](https://travis-ci.org/fuzeman/vox.png)](https://travis-ci.org/fuzeman/vox)
 iceJabbR is a chat application forked from [JabbR](https://github.com/JabbR/JabbR/) and built with ASP.NET using SignalR.
 
