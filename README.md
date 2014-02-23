@@ -1,5 +1,6 @@
 ## iceJabbR
 [![](https://travis-ci.org/fuzeman/vox.png)](https://travis-ci.org/fuzeman/vox) [![](https://badge.waffle.io/fuzeman/vox.png?label=ready)](https://waffle.io/fuzeman/vox)
+
 iceJabbR is a chat application forked from [JabbR](https://github.com/JabbR/JabbR/) and built with ASP.NET using SignalR.
 
 iceJabbR includes a number of extra features *(not available in JabbR upstream yet)*:
