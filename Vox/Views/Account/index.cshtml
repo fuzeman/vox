@@ -5,7 +5,6 @@
 @using JabbR
 @using JabbR.ViewModels
 @using SquishIt.Framework
-@model ProfilePageViewModel
 
 @{
     var userModel = Model;
@@ -17,10 +16,15 @@
 <head>
     <meta charset="UTF-8">
     <title>vox - account</title>
-    <link href="@Url.Content("~/Content/bootstrap.css")" rel="stylesheet" />
-    <link href="@Url.Content("~/Content/bootstrap-responsive.min.css")" rel="stylesheet" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css' />
-    <link href="@Url.Content("~/Content/themes/default/Chat.css")" rel="stylesheet" />
+
+    @{
+        WriteLiteral(Bundle.Css()
+            .Add("~/Content/bootstrap.min.css")
+            .Add("~/Content/bootstrap-responsive.min.css")
+            .Add("~/Content/less/account/index.less")
+            .Render("~/Content/JabbR_#.css"));
+    }
 </head>
 <body class="user-profile">
     <section id="page" role="application">

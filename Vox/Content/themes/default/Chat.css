@@ -1281,7 +1281,6 @@ li.error {
         opacity: 0.4;
     }
 
-.user-profile,
 .administration {
     background: #fff;
 }
@@ -2982,35 +2981,8 @@ li.clearfix {
 	    margin: 5px 17px;
 	}
 
-
-.user-profile .nav-tabs li.active a,
-.user-profile .nav-tabs li:not(.active) a:hover {
-    color: #00103f;
-    color: rgba(0, 16, 63, 1);
-}
-
-.user-profile .nav-tabs li:not(.active) a {
-    color: #00103f;
-    color: rgba(0, 16, 63, 0.4);
-}
-
-.account-details .flag {
-    position: absolute;
-    margin: 4px 5px;
-}
-
 .tab-content {
     padding-top: 5px;
-}
-
-.user-details img {
-    height: 48px;
-    margin-right: 10px;
-    width: 48px;
-}
-
-.user-details .name {
-    font-size: 2em;
 }
 
 .subheader {
@@ -3162,7 +3134,6 @@ li.clearfix {
 
 .modal .btn-primary,
 .login-body .btn,
-.account-details .btn,
 .administration .btn {
     background-color: #003B40;
     background-image: none;
@@ -3172,7 +3143,6 @@ li.clearfix {
 
     .modal .btn-primary:hover,
     .login-body .btn:hover,
-    .account-details .btn:hover,
     .administration .btn:hover {
         background-color: #177D85;
     }
@@ -3260,13 +3230,6 @@ h3.userlist-header {
 
 .btn-primary {
     background-color: #00103f;
-}
-
-.account-details {
-    background-color: #FFF;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
 }
 
 .account {

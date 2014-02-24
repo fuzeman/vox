@@ -949,6 +949,7 @@
     <Content Include="Content\less\lib\elements.less" />
     <Content Include="Content\less\notifications\index.less" />
     <Content Include="Content\less\global.less" />
+    <Content Include="Content\less\account\index.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />

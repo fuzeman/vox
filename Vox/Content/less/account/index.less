@@ -1,0 +1,52 @@
+﻿@import "../global.less";
+@import "../components/heading.less";
+
+.user-profile {
+    background: #fff;
+
+    .nav-tabs {
+        li.active a,
+        li:not(.active) a:hover {
+            color: #00103f;
+            color: rgba(0, 16, 63, 1);
+        }
+
+        li:not(.active) a {
+            color: #00103f;
+            color: rgba(0, 16, 63, 0.4);
+        }
+    }
+}
+
+.user-details img {
+    height: 48px;
+    margin-right: 10px;
+    width: 48px;
+}
+
+.user-details .name {
+    font-size: 2em;
+}
+
+.account-details {
+    background-color: #FFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+
+    .flag {
+        position: absolute;
+        margin: 4px 5px;
+    }
+
+    .btn {
+        background-color: #003B40;
+        background-image: none;
+        text-shadow: none;
+        color: #FFF;
+    }
+
+    .btn:hover {
+        background-color: #177D85;
+    }
+}
