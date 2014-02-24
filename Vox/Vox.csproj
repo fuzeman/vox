@@ -952,6 +952,7 @@
     <Content Include="Content\less\account\index.less" />
     <Content Include="Content\less\administration\index.less" />
     <Content Include="Content\less\account\layout.less" />
+    <Content Include="Content\less\components\elements.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />

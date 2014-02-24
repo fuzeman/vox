@@ -2944,20 +2944,6 @@ li.clearfix {
     margin-top: 5px;
 }
 
-.account-details-header {
-    background-color: #26797F;
-    height: 55px;
-    margin: 0 auto;
-    color: #FFFFFF;
-}
-
-	.account-details-header h1 {
-		font-family: 'Open Sans', sans-serif;
-	    font-weight: 400;
-
-	    margin: 5px 17px;
-	}
-
 .tab-content {
     padding-top: 5px;
 }

@@ -1,5 +1,6 @@
 ﻿@import "../global.less";
 @import "../components/heading.less";
+@import "../lib/elements.less";
 
 .user-profile {
     background: #fff;
@@ -30,23 +31,11 @@
 
 .account-details {
     background-color: #FFF;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+
+    .border-radius(5px);
 
     .flag {
         position: absolute;
         margin: 4px 5px;
-    }
-
-    .btn {
-        background-color: #003B40;
-        background-image: none;
-        text-shadow: none;
-        color: #FFF;
-    }
-
-    .btn:hover {
-        background-color: #177D85;
     }
 }
