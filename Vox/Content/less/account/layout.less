@@ -1,0 +1,92 @@
+﻿@import "../global.less";
+
+.banner > * {
+    float: left;
+    margin-left: 10px;
+    font-weight: 400;
+}
+
+.login-header {
+    background-color: #26797F;
+    height: 55px;
+    margin: 0 auto;
+    color: #FFFFFF;
+
+    h1 {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 400;
+
+        margin: 5px 17px;
+    }
+}
+
+#login {
+    background-color: #FFF;
+    border: 1px solid #e5e5e5;
+    margin: 100px auto 0 auto;
+    width: 500px;
+}
+
+#login-form {
+    width: 255px;
+
+    .input-prepend input {
+        width: 210px;
+    }
+}
+
+.login-body {
+    padding-top: 25px;
+    padding-bottom: 15px;
+
+    .form-horizontal .controls {
+        margin-left: 10px;
+    }
+
+    .usernamepassword-auth {
+        .form-horizontal .input-prepend {
+            width: 100%;
+        }
+
+        p, li {
+            margin-right: 10px;
+        }
+    }
+
+    .auth-divider {
+        border-right: 1px solid #ccc;
+    }
+
+    .btn {
+        background-color: #003B40;
+        background-image: none;
+        text-shadow: none;
+        color: #FFF;
+    }
+
+        .btn:hover {
+            background-color: #177D85;
+        }
+}
+
+@media (max-width:768px) {
+    #login {
+        width: 100%;
+        min-width: 255px;
+    }
+
+        #login-form {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    .login-body .auth-divider {
+        border-right-width: 0;
+    }
+}
+
+@media screen and (max-height:600px) {
+    #login {
+        margin-top: 10px;
+    }
+}
