@@ -1,3 +1,31 @@
 ﻿@import "../global.less";
 @import "../components/flags.less";
+@import "../components/heading.less";
 
+@import "components/lobby.less";
+
+/* Heading */
+.home #heading {
+    background-color: transparent;
+}
+
+@media (max-width:700px) {
+    .home #heading h1.full {
+        display: none;
+    }
+
+    .home #heading h1.icon {
+        display: block;
+    }
+}
+
+@media screen and (max-height:400px) {
+    .home #heading {
+        height: 32px;
+        padding-top: 0;
+
+        h1 {
+            margin-top: -6px;
+        }
+    }
+}

@@ -2,70 +2,9 @@
     margin: 0;
 }
 
-.banner > * {
-    float: left;
-    margin-left: 10px;
-    font-weight: 400;
-}
-
-.jabbrLogo {
-    background-image: url('../../images/logo32.png');
-    background-repeat: no-repeat;
-
-       -moz-background-size: 24px 24px;
-         -o-background-size: 24px 24px;
-    -webkit-background-size: 24px 24px;
-            background-size: 24px 24px;
-
-    width: 24px;
-    height: 24px;
-}
-
-.banner > div {
-    float: left;
-    margin-top: 28px;
-    margin-left: 10px;
-}
-
-.banner a {
-    color: #fff;
-    text-decoration: none;
-}
-
 .res-switch .small {
     display: none;
 }
-
-#lobby-wrapper {
-    position: absolute;
-    top: 40px;
-    left: 0;
-    right: 0;
-    padding: 5px;
-    bottom: 0;
-    background: #fff;
-    overflow: auto;
-    color: #00103f;
-    color: rgba(0, 16, 63, 0.5);
-}
-
-#room-filter-form {
-    display: none;
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    height: 30px;
-}
-
-    #room-filter {
-        max-width: 284px;
-    }
-
-    #room-filter-closed-area {
-        margin: 0px 5px;
-        font-size: 13px;
-    }
 
 #preferences .navbar-inner {
 	margin: 0;
@@ -102,18 +41,6 @@
     background-color: #00103f;
     background-color: rgba(0, 16, 63, 1);
     background-image: none;
-}
-
-#logo {
-    margin-top: 10px;
-    margin-left: 0;
-}
-
-#heading #logo {
-    margin-top: 14px;
-    margin-left: 80px;
-    margin-right: 10px;
-    margin-bottom: 22px;
 }
 
 #topic-bar {
@@ -208,38 +135,6 @@
             cursor: inherit;
         }
 
-#heading {
-	background-color: #26797F;
-    color: #fafafa;
-
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 35px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-}
-
-    #heading h1 {
-    	font-family: 'Open Sans', sans-serif;
-    	font-weight: 400;
-    	font-size: 26px;
-
-        margin-left: 10px;
-        margin-top: -4px;
-        line-height: normal;
-        margin-bottom: 0;
-    }
-
-    #heading h1.icon {
-    	display: none;
-    }
-
-.home #heading {
-	background-color: transparent;
-}
-
 .reload-message {
     display: none;
     text-align: center;
@@ -255,10 +150,6 @@
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
-}
-
-#messages-lobby {
-    position: relative;
 }
 
 .messages,
@@ -357,21 +248,6 @@
     z-index: -1;
 }
 
-#lobby-wrapper .nav-header {
-    line-height: normal;
-    font-size: 1.25em;
-    font-weight: normal;
-    margin: 25px 0 0 0;
-}
-
-    #lobby-wrapper .nav-header:first-child {
-        margin: 10px 0 0 0;
-    }
-
-#lobby-wrapper hr {
-    margin: 0;
-}
-
 #room-loading {
     display: none;
     position: absolute;
@@ -404,81 +280,6 @@ canvas {
     margin: -75px 0 0 -75px;
 }
 
-#lobby-private,
-#lobby-other {
-    display: none;
-}
-
-#userlist-lobby,
-#userlist-lobby-owners {
-    position: relative;
-    margin: 0 5px;
-    top: 10px;
-    background: none;
-}
-
-    #userlist-lobby li {
-        display: block;
-        animation: room-fade 0.8s linear 1;
-        -webkit-animation: room-fade 0.8s linear 1;
-        animation-play-state: paused;
-        -webkit-animation-play-state: paused;
-    }
-
-    #userlist-lobby-owners li {
-        display: inline-block;
-        margin: 0 5px 10px 5px;
-        height: 102px;
-        animation: room-fade 0.8s linear 1;
-        -webkit-animation: room-fade 0.8s linear 1;
-        animation-play-state: paused;
-        -webkit-animation-play-state: paused;
-    }
-
-    @-webkit-keyframes room-fade
-    {
-        0% { background-color: #FFFFFF; }
-        2% { background-color: #F5F5F5; }
-        100% { background-color: #FFFFFF; }
-    }
-
-    @keyframes room-fade {
-        0% { background-color: #FFFFFF; }
-        2% { background-color: #F5F5F5; }
-        100% { background-color: #FFFFFF; }
-    }
-
-        #userlist-lobby li.empty,
-        #userlist-lobby-owners li.empty {
-            color: #909090;
-            display: inline-block;
-            font-style: italic;
-            margin-bottom: 10px;
-            margin-left: 10px;
-        }
-
-        #userlist-lobby li:hover,
-        #userlist-lobby-owners li:hover {
-            background: none;
-        }
-
-
-    #userlist-lobby div.room-row {
-        min-height: 30px;
-        border-color: #EEEEEE;
-        border-style: solid;
-        border-width: 1px 0;
-        margin: 5px 5px 0 -5px;
-        padding-top: 5px;
-        padding-left: 15px;
-    }
-
-    #userlist-lobby div:hover {
-        background: #e5e5e5;
-        color: #00103f;
-        color: rgba(0, 16, 63, 1);
-    }
-
 #load-more-rooms-item {
     cursor: pointer;
     margin: 0 5px;
@@ -508,73 +309,6 @@ canvas {
             color: #00103f;
             color: rgba(0, 16, 63, 1);
         }
-
-#userlist-lobby-owners li div.room-row {
-    display: inline-block;
-    width: 250px;
-    padding: 5px;
-    border: 1px solid #e5e5e5;
-}
-
-    #userlist-lobby-owners li div.room-row:hover {
-        background: #e5e5e5;
-        color: #00103f;
-        color: rgba(0, 16, 63, 1);
-    }
-
-#userlist-lobby-owners li div.room-row div {
-        width: 100%;
-        margin: 0;
-    }
-
-
-#userlist-lobby-owners span {
-    float: left;
-}
-
-#userlist-lobby .name,
-#userlist-lobby-owners .name {
-    font-size: 1.25em;
-    overflow: hidden;
-    width: 215px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#userlist-lobby .count,
-#userlist-lobby-owners .count {
-    font-style: italic;
-    color: #00103f;
-    color: rgba(0, 16, 63, 0.5);
-    font-weight: 300;
-    font-size: 0.85em;
-}
-
-#userlist-lobby .topic,
-#userlist-lobby-owners .topic {
-    font-size: 1em;
-    overflow: hidden;
-}
-
-#userlist-lobby-owners .topic {
-    width: 250px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-#userlist-lobby .lock,
-#userlist-lobby .readonly,
-#userlist-lobby-owners .lock,
-#userlist-lobby-owners .readonly {
-    display: none;
-}
-
-#userlist-lobby .locked .lock,
-#userlist-lobby .closed .readonly,
-#userlist-lobby-owners .locked .lock,
-#userlist-lobby-owners .closed .readonly {
-    display: inline-block;
-}
 
 .users ul {
     margin-left: 0px;
@@ -2405,14 +2139,6 @@ h3.userlist-header {
 }
 
 @media (max-width:700px) {
-    .home #heading h1.full {
-    	display: none;
-    }
-
-    .home #heading h1.icon {
-    	display: block;
-    }
-
     #tabs {
         /* wider for additional admin buttons */
         margin-right: 50px;
@@ -2462,16 +2188,6 @@ h3.userlist-header {
 
     .user .details .name-container .name {
         width: 55px;
-    }
-}
-
-@media screen and (max-width:580px) {
-    #lobby-wrapper {
-        top: 65px;
-    }
-
-    #room-filter {
-        max-width: none;
     }
 }
 
@@ -2601,15 +2317,6 @@ h3.userlist-header {
 }
 
 @media screen and (max-height:400px) {
-    .home #heading {
-        height: 32px;
-        padding-top: 0;
-    }
-
-        .home #heading h1 {
-            margin-top: -6px;
-        }
-
     #main-menu{
         margin-top: -4px;
     }

@@ -955,6 +955,7 @@
     <Content Include="Content\less\components\elements.less" />
     <Content Include="Content\less\components\flags.less" />
     <Content Include="Content\less\home\index.less" />
+    <Content Include="Content\less\home\components\lobby.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
