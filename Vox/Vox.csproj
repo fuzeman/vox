@@ -58,6 +58,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AntiXSS.4.2.1\lib\net40\AntiXssLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="dotless.Core, Version=1.4.0.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\dotless.1.4.0.0\lib\dotless.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DotLiquid">
       <HintPath>..\packages\DotLiquid.1.8.0-beta1\lib\NET45\DotLiquid.dll</HintPath>
     </Reference>
@@ -132,6 +136,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.ServiceBus.2.1.3.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -188,9 +195,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SimpleAuthentication.Core.0.3.7\lib\net40\SimpleAuthentication.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SquishIt.Framework, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SquishIt.Framework, Version=0.9.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SquishIt.0.9.3\lib\SquishIt.Framework.dll</HintPath>
+      <HintPath>..\packages\SquishIt.0.9.5.1-alpha2\lib\SquishIt.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="SquishIt.Less">
+      <HintPath>..\packages\SquishIt.Less.0.9.5.1-alpha2\lib\SquishIt.Less.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -227,6 +237,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
     <Reference Include="Yahoo.Yui.Compressor, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\YUICompressor.NET.2.2.1.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
@@ -1003,6 +1016,7 @@
     <Content Include="Templates\ContentProvider\reddit.liquid" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\Startup.SquishIt.cs" />
     <Compile Include="Commands\ClearMentionsCommands.cs" />
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
