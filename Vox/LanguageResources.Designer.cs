@@ -2606,7 +2606,7 @@ namespace JabbR {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;span class=&quot;time&quot; data-timestamp=&quot;{2}&quot;&gt;&lt;/span&gt;.
+        ///   Looks up a localized string similar to {0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;a class=&quot;time&quot; href=&quot;{2}&quot; data-timestamp=&quot;{3}&quot;&gt;&lt;/a&gt;.
         /// </summary>
         public static string Notifications_MetadataInfo {
             get {

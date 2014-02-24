@@ -79,6 +79,7 @@
                                                 @Html.Raw(String.Format(LanguageResources.Notifications_MetadataInfo, 
                                                                         Encoder.HtmlEncode(notification.FromUserName), 
                                                                         Encoder.HtmlEncode(notification.RoomName), 
+                                                                        Url.Content("~/notifications/" + notification.NotificationKey),
                                                                         Encoder.HtmlEncode(notification.WhenString)))
                                         </small>
                                     </blockquote>

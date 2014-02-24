@@ -945,6 +945,7 @@
     <EmbeddedResource Include="Migrations\201401280137598_UpstreamAddPrecision.resx">
       <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Content\less\notifications\view.less" />
     <Content Include="Content\less\components\heading.less" />
     <Content Include="Content\less\_lib\elements.less" />
     <Content Include="Content\less\notifications\index.less" />
@@ -1005,6 +1006,7 @@
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
     <Content Include="Scripts\stacktrace-min-0.4.js" />
+    <None Include="Views\Notifications\view.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
