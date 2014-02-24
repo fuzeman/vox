@@ -1281,14 +1281,6 @@ li.error {
         opacity: 0.4;
     }
 
-.administration {
-    background: #fff;
-}
-
-.administration-title {
-    font-size: 2em;
-}
-
 
 #notification-unread-count.badge {
     display: none;
@@ -3133,8 +3125,7 @@ li.clearfix {
 }
 
 .modal .btn-primary,
-.login-body .btn,
-.administration .btn {
+.login-body .btn {
     background-color: #003B40;
     background-image: none;
     text-shadow: none;
@@ -3142,8 +3133,7 @@ li.clearfix {
 }
 
     .modal .btn-primary:hover,
-    .login-body .btn:hover,
-    .administration .btn:hover {
+    .login-body .btn:hover {
         background-color: #177D85;
     }
 
@@ -3846,31 +3836,4 @@ h3.userlist-header {
     border-radius: 0px !important;
     border-collapse: collapse !important;
     background-image: none !important;
-}
-
-/* Make admin screens nicer */
-.administration .form-horizontal .control-label {
-  width: 260px;
-}
-
-.administration .form-horizontal .controls {
-  margin-left: 280px;
-  *margin-left: 0;
-}
-
-.administration .form-horizontal .controls:first-child {
-  *padding-left: 280px;
-}
-
-@media (max-width: 480px)
-{
-    .administration .form-horizontal .control-label
-    {
-        width: auto;
-    }
-
-    .administration .form-horizontal .controls
-    {
-        margin-left: 0;
-    }
 }
