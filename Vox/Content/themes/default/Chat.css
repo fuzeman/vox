@@ -1281,86 +1281,15 @@ li.error {
         opacity: 0.4;
     }
 
-.notifications,
 .user-profile,
 .administration {
     background: #fff;
 }
 
-.notifications-title,
 .administration-title {
     font-size: 2em;
 }
 
-.notifications .tabbable {
-    height: 100%;
-}
-
-.notification-item {
-    background: #fcfcfc;
-}
-
-    .notification-item .js-mark-as-read {
-        margin: 14px;
-        text-decoration: none;
-        color: #00103f;
-        color: rgba(0, 16, 63, 0.4);
-    }
-
-.notification-item .js-mark-as-read:hover {
-    color: #00103f;
-    color: rgba(0, 16, 63, 1);
-}
-
-.notification-item blockquote small {
-        padding-bottom: 5px;
-    }
-
-#notifications-pager .pager ul {
-    margin: 0 0 10px 0;
-}
-
-#notifications-title-row {
-    padding-top: 75px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.js-mark-all-as-read-span {
-    width: 220px;
-}
-
-.js-mark-all-as-read,
-#notifications-pager .pager a {
-    display: inline-block;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    font-weight: 600;
-    color: #00103f;
-    color: rgba(0, 16, 63, 0.5);    
-    border-radius: 0;
-    padding: 0 6px;
-}
-
-.js-mark-all-as-read:hover,
-#notifications-pager .pager a:hover {
-    color: #00103f;
-    color: rgba(0, 16, 63, 1);
-}
-
-#notifications-pager .pager .disabled > a, #notifications-pager .pager .disabled > a:hover {
-    color: #999;
-}
-
-#no-notifications {
-    text-align: center;
-    font-size: 1.25em;
-}
-
-#notifications {
-    position: relative;
-}
 
 #notification-unread-count.badge {
     display: none;
@@ -3055,15 +2984,12 @@ li.clearfix {
 
 
 .user-profile .nav-tabs li.active a,
-.notifications .nav-tabs li.active a,
-.user-profile .nav-tabs li:not(.active) a:hover,
-.notifications .nav-tabs li:not(.active) a:hover {
+.user-profile .nav-tabs li:not(.active) a:hover {
     color: #00103f;
     color: rgba(0, 16, 63, 1);
 }
 
-.user-profile .nav-tabs li:not(.active) a,
-.notifications .nav-tabs li:not(.active) a {
+.user-profile .nav-tabs li:not(.active) a {
     color: #00103f;
     color: rgba(0, 16, 63, 0.4);
 }

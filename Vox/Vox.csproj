@@ -945,6 +945,10 @@
     <EmbeddedResource Include="Migrations\201401280137598_UpstreamAddPrecision.resx">
       <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Content\less\components\heading.less" />
+    <Content Include="Content\less\lib\elements.less" />
+    <Content Include="Content\less\notifications\index.less" />
+    <Content Include="Content\less\global.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
