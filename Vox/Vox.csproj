@@ -312,8 +312,9 @@
     <Content Include="Content\less\components\icons.less" />
     <Content Include="Content\less\home\components\main-menu.less" />
     <Content Include="Content\less\home\modals\help.less" />
+    <Content Include="Content\less\home\content\bbcnews.less" />
+    <Content Include="Content\less\home\content\dictionary.less" />
     <None Include="Content\less\home\content\embedly.less" />
-    <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -876,8 +877,6 @@
     <Content Include="Content\KeyTips.min.css" />
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
-    <Content Include="Content\themes\default\Chat.githubissues.css" />
-    <Content Include="Content\themes\default\Chat.nuget.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\images\logo32.png" />
     <Content Include="Content\images\small-logo.png" />
@@ -976,6 +975,9 @@
     <Content Include="Content\less\home\content\gravatar.less" />
     <Content Include="Content\less\home\modals\kicked.less" />
     <Content Include="Content\less\home\modals\core.less" />
+    <Content Include="Content\less\home\content\github-issues.less" />
+    <Content Include="Content\less\home\content\nuget.less" />
+    <Content Include="Content\less\home\status.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -1017,7 +1019,6 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
-    <Content Include="Content\themes\default\Chat.dictionary.css" />
     <Content Include="Scripts\r.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
