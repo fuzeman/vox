@@ -2,13 +2,66 @@
 @import "../components/flags.less";
 @import "../components/heading.less";
 
+@import "components/client-settings.less";
 @import "components/lobby.less";
 @import "components/messages.less";
+@import "components/tabs.less";
 @import "components/users.less";
 
-/* Heading */
+.home #page {
+    min-width: 300px;
+    min-height: 200px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 .home #heading {
     background-color: transparent;
+}
+
+#background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    background: black;
+}
+
+#background-tint {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    background: rgba(255, 255, 255, 0.498);
+}
+
+    #background-tint.connected {
+        background: rgba(76, 243, 255, 0.498);
+    }
+
+    #background-tint.reconnecting {
+        background: rgba(255, 255, 76, 0.498);
+    }
+
+    #background-tint.disconnected {
+        background: rgba(255, 76, 76, 0.498);
+    }
+
+#chat-area {
+    position: absolute;
+    top: 35px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #00103f;
 }
 
 @media (max-width:700px) {

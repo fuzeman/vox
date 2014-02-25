@@ -53,62 +53,6 @@
     color: #00103f;
 }
 
-#page {
-	position: relative;
-}
-
-	.home #page {
-	    min-width: 300px;
-	    min-height: 200px;
-	    position: absolute;
-	    top: 0;
-	    left: 0;
-	    right: 0;
-	    bottom: 0;
-	}
-
-#background {
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-
-	background: black;
-}
-
-#background-tint {
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-
-	background: rgba(255, 255, 255, 0.498);
-}
-
-	#background-tint.connected {
-		background: rgba(76, 243, 255, 0.498);
-	}
-
-	#background-tint.reconnecting {
-		background: rgba(255, 255, 76, 0.498);
-	}
-
-	#background-tint.disconnected {
-		background: rgba(255, 76, 76, 0.498);
-	}
-
-#chat-area {
-    position: absolute;
-    top: 35px;
-    bottom: 50px;
-    left: 0;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #00103f;
-}
-
 .upload-button {
     display: inline-block;
     position: absolute;
@@ -224,17 +168,6 @@ canvas {
             color: rgba(0, 16, 63, 1);
         }
 
-#tabs {
-    padding: 0 0 0 0;
-    margin: 0 50px 0 63px;
-    left: 0;
-    right: 128px;
-    position: absolute;
-    z-index: 1000;
-    height: 35px;
-    overflow: hidden;
-}
-
 .home-admin #tabs {
     /* wider for additional admin buttons */
     margin-right: 90px;
@@ -244,158 +177,6 @@ canvas {
         margin-top: 3px;
     }
 
-    #tabs li {
-        display: inline-block;
-        float: left;
-        padding: 0;
-        margin: 0;
-        height: 35px;
-        position: relative;
-        cursor: pointer;
-        border-bottom-width: 0;
-        border-top-width: 0;
-    }
-
-    #tabs li:not(:first-child) {
-        border-left: none;
-    }
-
-        #tabs li a {
-        	display: inline-block;
-        	padding: 7px 24px 6px 8px;
-        	height: inherit;
-
-        	font-family: 'Open Sans', sans-serif;
-            font-weight: normal;
-            font-size: 0;
-
-            vertical-align: middle;
-            text-decoration: none;
-            white-space: nowrap;
-
-                  box-sizing: border-box;
-            -moz-box-sizing: border-box;
-
-            color: #FAFAFA;
-        }
-
-        #tabs li a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        #tabs li.current a {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #00103f;
-        }
-
-        #tabs li a i,
-        #tabs li a span {
-            display: inline-block;
-        }
-
-        #tabs li a i.hide {
-            display: none;
-        }
-
-        #tabs li a i {
-            font-size: 14px;
-        }
-
-        #tabs li a span {
-            font-size: 14px;
-        }
-
-        #tabs li.no-close a {
-            padding-right: 8px;
-        }
-
-        #tabs li.unread {
-            background-color: rgba(255, 255, 255, 0.4);
-            animation: btn-fade-unread 2s linear 3.5;
-            -webkit-animation: btn-fade-unread 2s linear 3.5;
-        }
-
-        @-webkit-keyframes btn-fade-unread
-        {
-          0% { background-color: rgba(255, 255, 255, 0.4); }
-          50% { background-color: rgba(255, 255, 255, 0.1); }
-          100% { background-color: rgba(255, 255, 255, 0.4); }
-        }
-
-        @keyframes btn-fade-unread {
-          0% { background-color: rgba(255, 255, 255, 0.4); }
-          50% { background-color: rgba(255, 255, 255, 0.1); }
-          100% { background-color: rgba(255, 255, 255, 0.4); }
-        }
-        
-        #tabs li .close {
-            position: absolute;
-            top: 8px;
-            right: 4px;
-            width: 16px;
-            height: 16px;
-            opacity: 0.5;
-            font-size: 18px;
-            color: #00103f;
-        }
-            
-        #tabs li .close:hover {
-            opacity: 0.75;
-        }
-
-#tabs-dropdown-container {
-    float: left;
-    position: relative;
-}
-
-    #tabs-dropdown-container .dropdown-toggle {
-        display: none;
-        border: none;
-        outline: 0;
-        background-color: transparent;
-        color: #fff;
-        height: 36px;
-        margin-right: 4px;
-    }
-
-    #tabs-dropdown li {
-        position: relative;
-        cursor: pointer;
-        background-color: #fff;
-    }
-
-    #tabs-dropdown li:hover {
-        background-color: #00103F;
-    }
-
-    #tabs-dropdown li:hover a,
-    #tabs-dropdown li:hover .close {
-        color: #fff;
-    }
-
-    #tabs-dropdown li a i.hide {
-        display: none;
-    }
-
-    #tabs-dropdown li .close {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        width: 16px;
-        height: 16px;
-        opacity: 0.5;
-        font-size: 18px;
-    }
-            
-        #tabs-dropdown li .close:hover {
-            opacity: 0.75;
-        }
-
-    #tabs-dropdown li.current {
-        color: #00103f;
-        background-color: #e5e5e5 !important;
-        border-bottom-color: #e5e5e5;
-    }
 
 #send-message {
     position: absolute;
@@ -946,133 +727,6 @@ li.clearfix {
         overflow: hidden;
     }
 
-#jabbr-client-settings {
-    background: transparent;
-    border: none;
-
-    width: 700px;
-    margin-left: -350px;
-}
-
-    #jabbr-client-settings .close {
-        margin-right: 12px;
-        margin-top: 6px;
-        position: absolute;
-        right: 0;
-        z-index: 1;
-    }
-
-    #jabbr-client-settings .tabbable {
-        background: transparent;
-    }
-
-    #jabbr-client-settings .nav-tabs {
-        margin-right: 0;
-        margin-left: -40px;
-        width: 40px;
-        border-right: none;
-    }
-
-        #jabbr-client-settings .nav-tabs li:first-child {
-            margin-top: 39px;
-        }
-
-        #jabbr-client-settings .nav-tabs li a {
-            color: white;
-            margin-bottom: 0;
-            background: #999;
-            min-width: 0;
-            border: none;
-        }
-
-        #jabbr-client-settings .nav-tabs li a:hover {
-            background: #777;
-            border-color: #777 #888 #777 #888;
-        }
-
-        #jabbr-client-settings .nav-tabs li.active a {
-            color: #555;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-right-color: transparent;
-        }
-
-    #jabbr-client-settings .tab-content {
-        position: relative;
-        background: white;
-        padding-top: 0;
-    }
-
-        #jabbr-client-settings .tab-pane {
-            margin-top: -2px;
-            min-height: 200px;
-            padding: 0;
-        }
-
-            #jabbr-client-settings form {
-                margin: 0;
-            }
-
-                #jabbr-client-settings fieldset {
-                    min-height: 200px;
-                    margin-bottom: 100px;
-                }
-
-                    #jabbr-client-settings legend span {
-                        margin-left: 8px;
-                    }
-
-                    #jabbr-client-settings legend+.control-group {
-                        margin-top: 0;
-                    }
-
-                    #jabbr-client-settings .control-group span.update-every {
-                        padding: 0 5px;
-                    }
-
-                    #jabbr-client-settings .control-group input[type="checkbox"].state {
-                        margin-right: 5px;
-                        margin-top: -1px;
-                    }
-
-                    #jabbr-client-settings .form-actions {
-                        position: absolute;
-                        left: 1px;
-                        right: 0;
-                        bottom: 0;
-                        margin-bottom: 0;
-                    }
-
-                        #jabbr-client-settings span.error {
-                            margin-left: 5px;
-                        }
-
-@media (max-width: 767px) {
-    #jabbr-client-settings {
-        width: 100%;
-        margin-left: 0;
-    }
-
-        #jabbr-client-settings .close {
-            margin-right: 52px;
-        }
-
-        #jabbr-client-settings .tabbable {
-            margin-right: 40px;
-        }
-
-        #jabbr-client-settings .nav-tabs {
-            margin-left: 0;
-        }
-}
-
-@media (min-width: 768px) and (max-width: 979px) {
-    #jabbr-client-settings {
-        width: 500px;
-        margin-left: -250px;
-    }
-}
-
 #jabbr-kicked .kick-message {
     font-size: 24px;
     line-height: 28px;
@@ -1182,88 +836,6 @@ li.clearfix {
         left: 0;
     }
 
-.social-auth {
-    margin: 0;
-    padding: 0;
-}
-
-    .social-auth ul.inline>li {
-        padding: 0;
-    }
-
-    .social-auth .btn-provider {
-        font-size: 17.5px;
-        width: 228px;
-        padding: 4px 0;
-        margin-left: 0;
-        text-align: left;
-    }
-
-    .social-auth .icon-windowslive:before {
-        content: "\f090";
-    }
-
-    .social-auth .icon-google:before {
-        content: "\f0d5";
-    }
-
-    .social-auth [class^="icon-"],
-    .social-auth [class*=" icon-"] {
-        display: inline-block;
-        width: 45px;
-        margin-left: 42px;
-    }
-
-.user-reset-password {
-    margin: 0 10px;
-}
-
-.icon-link {
-    background-image: url('../../images/link.png');
-    background-repeat: no-repeat;
-    background-position: top left;
-    background-size: 24px 24px;
-    height: 32px;
-    width: 32px;
-}
-
-.icon-unlink {
-    background-image: url('../../images/unlink.png');
-    background-repeat: no-repeat;
-    background-position: top left;
-    background-size: 24px 24px;
-    height: 32px;
-    width: 32px;
-    margin-left: 10px;
-}
-
-.btn-provider {
-    font-size: 17.5px;
-    width: 400px;
-    padding: 11px 0;
-    margin-left: 20px;
-}
-
-.provider {
-    font-size: 17.5px;
-    width: 400px;
-    padding: 11px 0;
-    margin-left: 20px;
-    background-color: #00103f;
-    text-align: center;
-    line-height: 20px;
-    cursor: default;
-    border: 1px solid #00103f;
-    display: inline-block;
-    color: #f1f1f1;
-    opacity: 0.25;
-}
-
-.btn-unlink {
-    border: none;
-    background: none;
-}
-
 .modal .btn-primary {
     background-color: #003B40;
     background-image: none;
@@ -1274,13 +846,6 @@ li.clearfix {
 	.modal .btn-primary:hover {
         background-color: #177D85;
     }
-
-.large-logo {
-    background-image: url('../../images/logo64.png');
-    background-size: 48px 48px;
-    height: 48px;
-    width: 48px;
-}
 
 h3.collapsible_title {
     line-height: normal;
@@ -1329,10 +894,6 @@ pre {
 
 .btn-primary {
     background-color: #00103f;
-}
-
-.account {
-    margin: 0;
 }
 
 .form-horizontal .label-align-left {
@@ -1573,12 +1134,6 @@ pre {
 }
 
 @media (max-width:700px) {
-    #tabs {
-        /* wider for additional admin buttons */
-        margin-right: 50px;
-        margin-left: 33px;
-    }
-
     .home-admin #tabs {
         /* wider for additional admin buttons */
         margin-right: 85px;
@@ -1625,19 +1180,6 @@ pre {
         margin-top: -4px;
     }
 
-    #tabs li {
-        height: 32px;
-    }
-
-        #tabs li a {
-            padding-top: 6px;
-            padding-bottom: 4px;
-        }
-
-        #tabs li .close {
-            top: 6px;
-        }
-
     .navbar .nav > li > a {
         padding-top: 5px;
         padding-bottom: 6px;
@@ -1645,10 +1187,6 @@ pre {
 
     .navbar-inner {
         min-height: 32px;
-    }
-
-    #tabs-dropdown-container .dropdown-toggle {
-        height: 32px;
     }
 
     #chat-area {

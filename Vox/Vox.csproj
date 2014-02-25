@@ -959,6 +959,8 @@
     <Content Include="Content\less\home\components\lobby.less" />
     <Content Include="Content\less\home\components\messages.less" />
     <Content Include="Content\less\home\components\users.less" />
+    <Content Include="Content\less\home\components\tabs.less" />
+    <Content Include="Content\less\home\components\client-settings.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
