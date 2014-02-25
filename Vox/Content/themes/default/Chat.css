@@ -53,32 +53,6 @@
     color: #00103f;
 }
 
-.upload-button {
-    display: inline-block;
-    position: absolute;
-    right: 305px;
-    bottom: 10px;
-    margin: 0 3px;
-    padding: 5px;
-    overflow: hidden;
-    line-height: 18px;
-}
-
-    .upload-button input {
-        cursor: pointer;
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin: 0;
-        font-size: 70px;
-        opacity: 0;
-        filter: alpha(opacity=0);
-    }
-
-        .upload-button input[disabled] {
-            cursor: inherit;
-        }
-
 .reload-message {
     display: none;
     text-align: center;
@@ -1205,10 +1179,6 @@ pre {
     .messages,
     .users {
         top: 32px;
-    }
-
-    .upload-button {
-        bottom: 5px;
     }
 }
 
