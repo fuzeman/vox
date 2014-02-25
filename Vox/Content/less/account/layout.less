@@ -1,0 +1,167 @@
+﻿@import "../global.less";
+
+.login-header {
+    background-color: #26797F;
+    height: 55px;
+    margin: 0 auto;
+    color: #FFFFFF;
+
+    h1 {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 400;
+
+        margin: 5px 17px;
+    }
+}
+
+#login {
+    background-color: #FFF;
+    border: 1px solid #e5e5e5;
+    margin: 100px auto 0 auto;
+    width: 500px;
+}
+
+#login-form {
+    width: 255px;
+
+    .input-prepend input {
+        width: 210px;
+    }
+}
+
+.login-body {
+    padding-top: 25px;
+    padding-bottom: 15px;
+
+    .form-horizontal .controls {
+        margin-left: 10px;
+    }
+
+    .usernamepassword-auth {
+        .form-horizontal .input-prepend {
+            width: 100%;
+        }
+
+        p, li {
+            margin-right: 10px;
+        }
+    }
+
+    .auth-divider {
+        border-right: 1px solid #ccc;
+    }
+}
+
+.social-auth {
+    margin: 0;
+    padding: 0;
+
+    ul.inline>li {
+        padding: 0;
+    }
+
+    .btn-provider {
+        font-size: 17.5px;
+        width: 228px;
+        padding: 4px 0;
+        margin-left: 0;
+        text-align: left;
+    }
+
+    .icon-windowslive:before {
+        content: "\f090";
+    }
+
+    .icon-google:before {
+        content: "\f0d5";
+    }
+
+    [class^="icon-"],
+    [class*=" icon-"] {
+        display: inline-block;
+        width: 45px;
+        margin-left: 42px;
+    }
+}
+
+.icon-link {
+    background-image: url('/Content/images/link.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-size: 24px 24px;
+    height: 32px;
+    width: 32px;
+}
+
+.icon-unlink {
+    background-image: url('/Content/images/unlink.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-size: 24px 24px;
+    height: 32px;
+    width: 32px;
+    margin-left: 10px;
+}
+
+.btn-provider {
+    font-size: 17.5px;
+    width: 400px;
+    padding: 11px 0;
+    margin-left: 20px;
+}
+
+.provider {
+    font-size: 17.5px;
+    width: 400px;
+    padding: 11px 0;
+    margin-left: 20px;
+    background-color: #00103f;
+    text-align: center;
+    line-height: 20px;
+    cursor: default;
+    border: 1px solid #00103f;
+    display: inline-block;
+    color: #f1f1f1;
+    opacity: 0.25;
+}
+
+.btn-unlink {
+    border: none;
+    background: none;
+}
+
+.user-reset-password {
+    margin: 0 10px;
+}
+
+@media (max-width:768px) {
+    #login {
+        width: 100%;
+        min-width: 255px;
+    }
+
+        #login-form {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    .login-body .auth-divider {
+        border-right-width: 0;
+    }
+
+    .social-auth .btn-provider {
+        width: 190px;
+        margin-left: 10px;
+    }
+
+    .social-auth [class^="icon-"],
+    .social-auth [class*=" icon-"] {
+        margin-left: 20px;
+    }
+}
+
+@media screen and (max-height:600px) {
+    #login {
+        margin-top: 10px;
+    }
+}

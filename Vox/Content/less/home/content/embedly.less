@@ -1,0 +1,52 @@
+﻿.embedly-content {
+    position: relative;
+
+    min-height: 105px;
+    max-width: 700px;
+
+    a.imageContent .thumbnail {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+
+        width: 95px;
+        float: left;
+
+        margin-right: 10px;
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .content {
+        padding-bottom: 8px;
+    }
+
+    a.title {
+        color: black;
+
+        h3 {
+            font-size: 18px;
+
+            margin: 0;
+            padding: 0;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    a.title:hover {
+        color: #08c;
+    }
+
+    p {
+        font-size: 11px;
+        margin: 0;
+    }
+}
+
+.embedly-content.embedly-thumbnail .content {
+    margin-left: 115px;
+}

@@ -1,9 +1,9 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApplicationSettings>
 
-@using SquishIt.Framework;
 @using JabbR
 @using JabbR.ViewModels
 @using JabbR.Services
+@using SquishIt.Framework;
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -12,13 +12,14 @@
     <title>vox - administration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css' />
+
     @{ 
         WriteLiteral(Bundle.Css()
             .Add("~/Content/bootstrap.min.css")
             .Add("~/Content/bootstrap-responsive.min.css")
             .Add("~/Content/font-awesome.min.css")
-            .Add("~/Content/themes/default/Chat.css")
             .Add("~/Content/emoji20.css")
+            .Add("~/Content/less/administration/index.less")
             .Render("~/Content/JabbR_#.css"));
     }
 </head>
@@ -199,7 +200,7 @@
                 </div>
                 <div class="control-group">
                     <div class="controls">
-                        <input type="submit" class="btn pull-right" value="@LanguageResources.SettingsSave" />
+                        <input type="submit" class="btn btn-primary pull-right" value="@LanguageResources.SettingsSave" />
                     </div>
                 </div>
                 @Html.AntiForgeryToken()

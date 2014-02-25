@@ -577,8 +577,8 @@
     <value>Mark Notification as Read</value>
   </data>
   <data name="Notifications_MetadataInfo" xml:space="preserve">
-    <value>{0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;span class="time" data-timestamp="{2}"&gt;&lt;/span&gt;</value>
-    <comment>{0} is sender, {1} is room, {2} is timestamp</comment>
+    <value>{0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;a class="time" href="{2}" data-timestamp="{3}"&gt;&lt;/a&gt;</value>
+    <comment>{0} is sender, {1} is room, {2} is url, {3} is timestamp</comment>
   </data>
   <data name="Notifications_NoUnread" xml:space="preserve">
     <value>No unread notifications!</value>

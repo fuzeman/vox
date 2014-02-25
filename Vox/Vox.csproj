@@ -58,6 +58,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AntiXSS.4.2.1\lib\net40\AntiXssLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="dotless.Core, Version=1.4.0.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\dotless.1.4.0.0\lib\dotless.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DotLiquid">
       <HintPath>..\packages\DotLiquid.1.8.0-beta1\lib\NET45\DotLiquid.dll</HintPath>
     </Reference>
@@ -132,6 +136,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.ServiceBus.2.1.3.0\lib\net40-full\Microsoft.ServiceBus.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -188,9 +195,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SimpleAuthentication.Core.0.3.7\lib\net40\SimpleAuthentication.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SquishIt.Framework, Version=0.9.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SquishIt.Framework, Version=0.9.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SquishIt.0.9.3\lib\SquishIt.Framework.dll</HintPath>
+      <HintPath>..\packages\SquishIt.0.9.5.1-alpha2\lib\SquishIt.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="SquishIt.Less">
+      <HintPath>..\packages\SquishIt.Less.0.9.5.1-alpha2\lib\SquishIt.Less.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -227,6 +237,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
     <Reference Include="Yahoo.Yui.Compressor, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\YUICompressor.NET.2.2.1.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
@@ -289,8 +302,19 @@
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\splash-logo.png" />
-    <Content Include="Content\themes\default\Chat.bbcnews.css" />
-    <Content Include="Content\themes\default\Chat.css" />
+    <Content Include="Content\less\components\navigation.less" />
+    <None Include="Content\less\home\components\info.less" />
+    <Content Include="Content\less\home\content\core.less" />
+    <Content Include="Content\less\home\components\message-ticker.less" />
+    <Content Include="Content\less\home\components\room.less" />
+    <Content Include="Content\less\home\components\room-actions.less" />
+    <Content Include="Content\less\home\components\splash.less" />
+    <Content Include="Content\less\components\icons.less" />
+    <Content Include="Content\less\home\components\main-menu.less" />
+    <Content Include="Content\less\home\modals\help.less" />
+    <Content Include="Content\less\home\content\bbcnews.less" />
+    <Content Include="Content\less\home\content\dictionary.less" />
+    <None Include="Content\less\home\content\embedly.less" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -853,8 +877,6 @@
     <Content Include="Content\KeyTips.min.css" />
     <Content Include="Content\popup-back.gif" />
     <Content Include="Content\qunit.css" />
-    <Content Include="Content\themes\default\Chat.githubissues.css" />
-    <Content Include="Content\themes\default\Chat.nuget.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\images\logo32.png" />
     <Content Include="Content\images\small-logo.png" />
@@ -932,6 +954,30 @@
     <EmbeddedResource Include="Migrations\201401280137598_UpstreamAddPrecision.resx">
       <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Content\less\notifications\view.less" />
+    <Content Include="Content\less\components\heading.less" />
+    <Content Include="Content\less\_lib\elements.less" />
+    <Content Include="Content\less\notifications\index.less" />
+    <Content Include="Content\less\global.less" />
+    <Content Include="Content\less\account\index.less" />
+    <Content Include="Content\less\administration\index.less" />
+    <Content Include="Content\less\account\layout.less" />
+    <Content Include="Content\less\components\elements.less" />
+    <Content Include="Content\less\components\flags.less" />
+    <Content Include="Content\less\home\index.less" />
+    <Content Include="Content\less\home\components\lobby.less" />
+    <Content Include="Content\less\home\components\messages.less" />
+    <Content Include="Content\less\home\components\users.less" />
+    <Content Include="Content\less\home\components\tabs.less" />
+    <Content Include="Content\less\home\components\client-settings.less" />
+    <Content Include="Content\less\home\content\code.less" />
+    <Content Include="Content\less\home\content\twitter.less" />
+    <Content Include="Content\less\home\content\gravatar.less" />
+    <Content Include="Content\less\home\modals\kicked.less" />
+    <Content Include="Content\less\home\modals\core.less" />
+    <Content Include="Content\less\home\content\github-issues.less" />
+    <Content Include="Content\less\home\content\nuget.less" />
+    <Content Include="Content\less\home\status.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -973,13 +1019,13 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\quicksilver.js" />
     <Content Include="Scripts\qunit.js" />
-    <Content Include="Content\themes\default\Chat.dictionary.css" />
     <Content Include="Scripts\r.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
     <Content Include="Scripts\stacktrace-min-0.4.js" />
+    <None Include="Views\Notifications\view.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1003,6 +1049,7 @@
     <Content Include="Templates\ContentProvider\reddit.liquid" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\Startup.SquishIt.cs" />
     <Compile Include="Commands\ClearMentionsCommands.cs" />
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />

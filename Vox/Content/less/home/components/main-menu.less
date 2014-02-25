@@ -1,0 +1,56 @@
+﻿#main-menu {
+    margin-top: -2px;
+}
+
+#preferences a {
+    cursor: pointer;
+}
+
+#preferences .navbar-inner {
+    margin: 0;
+
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+}
+
+    #preferences .nav > li {
+        border: none;
+    }
+
+        #preferences .nav > li > a {
+            padding: 9px 12px;
+
+            color: inherit;
+        }
+
+        #preferences .nav > li > a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+#preferences .logout:hover .icon-logout {
+    background-image: url('/Content/images/logout-white.png');
+    background-repeat: no-repeat;
+}
+
+#preferences .help:hover .icon-help {
+    background-image: url('/Content/images/question-icon-white.png');
+    background-repeat: no-repeat;
+}
+
+#notification-unread-count.badge {
+    display: none;
+    position: absolute;
+    right: 3px;
+    top: 2px;
+    font-size: 0.55em;
+    padding: 0 3px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+@media screen and (max-height:400px) {
+    #main-menu {
+        margin-top: -4px;
+    }
+}

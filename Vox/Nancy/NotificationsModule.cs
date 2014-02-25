@@ -106,6 +106,27 @@ namespace JabbR.Nancy
 
                 return response;
             };
+
+            Get["/{key}"] = _ =>
+            {
+                if (!IsAuthenticated)
+                    return Response.AsRedirect(String.Format("~/account/login?returnUrl={0}", HttpUtility.UrlEncode(Request.Path)));
+
+                var notification = repository.GetNotificationById(_.key);
+                if (notification == null)
+                    return HttpStatusCode.NotFound;
+
+                var user = repository.GetUserById(Principal.GetUserId());
+                if (notification.UserKey != user.Key)
+                    return HttpStatusCode.Forbidden;
+
+                var model = new {
+                    DebugMode = (bool)Context.Items["_debugMode"],
+                    Notification = notification
+                };
+
+                return View["view", model];
+            };
         }
 
         private static void UpdateUnreadCountInChat(IJabbrRepository repository, IChatNotificationService notificationService,

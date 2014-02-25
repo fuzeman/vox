@@ -36,10 +36,8 @@ define([
         var $window = $(window),
             $document = $(document),
             $chatArea = $('#chat-area'),
-            $hiddenFile = $('#hidden-file'),
             $submitButton = $('#send'),
             $newMessage = $('#new-message'),
-            $fileUploadButton = $('.upload-button'),
             $logout = $('#preferences .logout'),
             $updatePopup = $('#jabbr-update'),
             $lobbyWrapper = $('#lobby-wrapper'),
@@ -72,15 +70,11 @@ define([
             readOnly = isReadOnly;
 
             if (readOnly === true) {
-                $hiddenFile.attr('disabled', 'disabled');
                 $submitButton.attr('disabled', 'disabled');
                 $newMessage.attr('disabled', 'disabled');
-                $fileUploadButton.attr('disabled', 'disabled');
             } else {
-                $hiddenFile.removeAttr('disabled');
                 $submitButton.removeAttr('disabled');
                 $newMessage.removeAttr('disabled');
-                $fileUploadButton.removeAttr('disabled');
             }
         }
 
@@ -91,8 +85,6 @@ define([
                 // disable send button, textarea and file upload
                 $newMessage.attr('disabled', 'disabled');
                 $submitButton.attr('disabled', 'disabled');
-                $fileUploadButton.attr('disabled', 'disabled');
-                $hiddenFile.attr('disabled', 'disabled');
             } else if (!readOnly) {
                 // re-enable textarea button
                 $newMessage.attr('disabled', '');
@@ -101,12 +93,6 @@ define([
                 // re-enable submit button
                 $submitButton.attr('disabled', '');
                 $submitButton.removeAttr('disabled');
-
-                // re-enable file upload button
-                $fileUploadButton.attr('disabled', '');
-                $fileUploadButton.removeAttr('disabled');
-                $hiddenFile.attr('disabled', '');
-                $hiddenFile.removeAttr('disabled');
             }
         }
 

@@ -22,3 +22,5 @@ Vox/Build
 Vox/App_Data
 /_UpgradeReport_Files
 /UpgradeLog*
+
+*.squishit.debug.css
