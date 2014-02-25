@@ -1,0 +1,60 @@
+﻿#message-ticker {
+    position: absolute;
+    right: 0;
+    bottom: 1px;
+    width: 235px;
+    z-index: 1000;
+    list-style-type: none;
+    font-size: 12px;
+    overflow: hidden;
+    margin: 0;
+    color: #555;
+
+    li {
+        border-top: 1px solid #ccc;
+        background-color: #F0F0F0;
+        padding-left: 4px;
+        display: block;
+        overflow: hidden;
+        padding-right: 2px;
+        white-space: nowrap;
+
+        -ms-text-overflow: ellipsis;
+         -o-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+    }
+
+    .appending .inner {
+        height: 20px;
+    }
+
+    .appending {
+        height: 0;
+    }
+
+    .highlight {
+        background-color: #fff6bd;
+    }
+}
+
+@media (max-width:900px) {
+    #message-ticker {
+        width: 200px;
+    }
+}
+
+@media (max-width:700px) {
+    #message-ticker {
+        width: 150px;
+    }
+}
+
+@media screen and (max-width:480px) {
+    #message-ticker {
+        width: 100px;
+
+        .message {
+            display: none;
+        }
+    }
+}

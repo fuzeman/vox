@@ -1,12 +1,23 @@
 ﻿@import "../global.less";
 @import "../components/flags.less";
 @import "../components/heading.less";
+@import "../components/icons.less";
+@import "content/core.less";
 
 @import "components/client-settings.less";
 @import "components/lobby.less";
+@import "components/message-ticker.less";
 @import "components/messages.less";
+@import "components/room-actions.less";
+@import "components/room.less";
+@import "components/splash.less";
 @import "components/tabs.less";
 @import "components/users.less";
+
+@import "content/code.less";
+@import "content/embedly.less";
+@import "content/gravatar.less";
+@import "content/twitter.less";
 
 .home #page {
     min-width: 300px;
@@ -20,6 +31,51 @@
 
 .home #heading {
     background-color: transparent;
+}
+
+.home-admin #tabs {
+    /* wider for additional admin buttons */
+    margin-right: 90px;
+}
+
+#send-message {
+    position: absolute;
+    bottom: 0px;
+    height: 40px;
+    left: 10px;
+    right: 235px;
+
+    margin: 0;
+}
+
+#message-box {
+    position: absolute;
+    left: 0;
+    right: 90px;
+    padding: 0;
+    margin: 0;
+}
+
+#new-message {
+    font-size: 13px;
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 20px;
+    resize: none;
+    overflow: auto;
+}
+
+#new-message.editing {
+    background-color: lightgoldenrodyellow;
+}
+
+#send {
+    padding: 4px;
+    position: absolute;
+    right: 0;
+    width: 70px;
+    height: 30px;
+    bottom: 10px;
 }
 
 #background {
@@ -64,6 +120,12 @@
     color: #00103f;
 }
 
+@media (max-width:900px) {
+    #send-message {
+        right: 200px;
+    }
+}
+
 @media (max-width:700px) {
     .home #heading h1.full {
         display: none;
@@ -71,6 +133,16 @@
 
     .home #heading h1.icon {
         display: block;
+    }
+
+    .home-admin #tabs {
+        /* wider for additional admin buttons */
+        margin-right: 85px;
+    }
+
+    #send-message {
+        left: 5px;
+        right: 5px;
     }
 }
 
@@ -82,5 +154,15 @@
         h1 {
             margin-top: -6px;
         }
+    }
+
+    #chat-area {
+        top: 32px;
+        bottom: 40px;
+    }
+
+    .messages,
+    .users {
+        top: 32px;
     }
 }

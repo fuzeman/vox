@@ -302,6 +302,15 @@
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\splash-logo.png" />
+    <Content Include="Content\less\home\content\core.less" />
+    <Content Include="Content\less\home\components\message-ticker.less" />
+    <Content Include="Content\less\home\components\room.less" />
+    <Content Include="Content\less\home\components\room-actions.less" />
+    <Content Include="Content\less\home\components\splash.less" />
+    <Content Include="Content\less\components\icons.less" />
+    <Content Include="Content\less\home\components\main-menu.less" />
+    <Content Include="Content\less\home\modals\help.less" />
+    <None Include="Content\less\home\content\embedly.less" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
     <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Content\bootstrap-responsive.css" />
@@ -961,6 +970,11 @@
     <Content Include="Content\less\home\components\users.less" />
     <Content Include="Content\less\home\components\tabs.less" />
     <Content Include="Content\less\home\components\client-settings.less" />
+    <Content Include="Content\less\home\content\code.less" />
+    <Content Include="Content\less\home\content\twitter.less" />
+    <Content Include="Content\less\home\content\gravatar.less" />
+    <Content Include="Content\less\home\modals\kicked.less" />
+    <Content Include="Content\less\home\modals\core.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
