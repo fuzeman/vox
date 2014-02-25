@@ -1,0 +1,402 @@
+﻿.users {
+    font-size: small;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 235px;
+    bottom: 0;
+    margin-top: 0px;
+    overflow: auto;
+    background: #FFFFFF;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+    ul {
+        margin-left: 0px;
+        padding-left: 0px;
+        margin-top: 0px;
+    }
+
+    li {
+        margin-left: 0;
+        padding: 4px 6px;
+        list-style: none;
+
+        .name {
+            vertical-align: middle;
+            cursor: pointer;
+        }
+    }
+
+    li:hover {
+        background: #f1f1f1;
+    }
+
+    li.empty {
+        color: #909090;
+        font-style: italic;
+    }
+
+    li.room.closed .name {
+        margin-right: 23px;
+    }
+
+    li.room.locked .name {
+        margin-right: 20px;
+    }
+
+    li.room.closed.locked .name {
+        margin-right: 43px;
+    }
+
+    li.room.locked .lock {
+        position: relative;
+        width: 19px;
+        height: 16px;
+    }
+
+    li.room.closed .readonly {
+        position: relative;
+        width: 19px;
+        height: 16px;
+    }
+
+    li.room.closed.locked .readonly {
+        margin-right: 20px;
+    }
+
+    .typing {
+        .user-status {
+            background-color: #000;
+        }
+
+        .user-status-container {
+            -webkit-animation-iteration-count: infinite;
+            -moz-animation-iteration-count: infinite;
+            -ms-animation-iteration-count: infinite;
+            -o-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+        }
+    }
+
+    .details {
+        overflow: hidden;
+    }
+
+    .owner {
+        vertical-align: middle;
+    }
+}
+
+.users > .userlist-header:first-child {
+    margin: 0;
+}
+
+h3.userlist-header {
+    padding: 6px 6px;
+    margin: 16px 0 0 0;
+    font-weight: 300;
+    background: #f5f5f5;
+    color: #00103f;
+    text-shadow: none;
+
+    .list-toggle {
+        position: relative;
+        top: -6px;
+        right: -6px;
+        padding: 6px 12px;
+        border-left: 1px solid #ccc;
+
+        .icon-caret-right {
+            padding: 6px 1px;
+        }
+    }
+
+    .list-toggle:hover {
+        background-color: #e5e5e5;
+    }
+}
+
+.user {
+    .details {
+        margin-left: 42px;
+        margin-top: 1px;
+
+        .name-container {
+            overflow: hidden;
+            margin-left: 2px;
+            height: 20px;
+
+            .name {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                float: left;
+                padding-right: 2px;
+            }
+        }
+    }
+
+    .extended {
+        position: relative;
+
+        font-weight: bold;
+        color: #999;
+        font-size: 10px;
+        margin-top: -4px;
+        margin-left: 42px;
+
+        a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #005580;
+            text-decoration: underline;
+        }
+
+        .icon-film {
+            font-size: 11px;
+        }
+
+        .icon-gamepad {
+            font-size: 12px;
+        }
+
+        .external-status[type="video"] + .note.priority {
+            left: 16px;
+        }
+
+        .external-status[type="game"] + .note.priority {
+            left: 16px;
+        }
+
+        .icon-edit {
+            vertical-align: -1px;
+            font-size: 11px;
+        }
+
+        li {
+            position: absolute;
+            left: 0;
+            right: 0;
+
+            list-style-type: none;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            padding: 0;
+            padding-left: 2px;
+        }
+    }
+
+    .extended.dual li:first-child span {
+        display: none;
+    }
+
+    .extended.dual li:nth-child(2) {
+        left: 14px;
+    }
+
+    .art {
+        float: left;
+
+        width: 32px;
+        height: 32px;
+
+        margin: 3px 0;
+
+                transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+
+                transition: transform 1s;
+        -webkit-transition: -webkit-transform 1s;
+
+        div {
+            position: absolute;
+            display: block;
+
+            width: 32px;
+            height: 32px;
+
+            background-color: #C5C5C5;
+            background-size: cover;
+            background-position: center 10%;
+            background-repeat: no-repeat;
+
+            opacity: 0;
+
+            -webkit-transition: opacity 1s ease-in-out;
+                    transition: opacity 1s ease-in-out;
+
+            box-shadow: -1px  1px 2px rgba(255, 255, 255, 0.7) inset,
+                         1px -1px 2px rgba(255, 255, 255, 0.7) inset;
+        }
+
+        /* Cube Front */
+        .gravatar {
+                    transform: rotateY(0deg) translateZ(16px);
+            -webkit-transform: rotateY(0deg) translateZ(16px);
+        }
+
+        /* Cube Right*/
+        .status {
+                    transform: rotateY(90deg) translateZ(16px);
+            -webkit-transform: rotateY(90deg) translateZ(16px);
+        }
+
+        .status.steam {
+            background-size: 80%;
+            background-position: center;
+            background-color: black;
+        }
+    }
+
+    
+    .art.show-gravatar {
+                transform: translateZ( -16px ) rotateY(  0deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  0deg );
+
+        .gravatar {
+            opacity: 1;
+        }
+    }
+
+    .art.show-status {
+                transform: translateZ( -16px ) rotateY(  -90deg );
+        -webkit-transform: translateZ( -16px ) rotateY(  -90deg );
+
+        .status {
+            opacity: 1;
+        }
+    }
+}
+
+.user-status-container {
+    float: left;
+    line-height: 12px;
+    margin: 3px 4px 3px 0;
+}
+
+.user-status {
+    background-color: #0ACF00;
+    display: inline-block;
+    width: 3px;
+    height: 32px;
+}
+
+.inactive .user-status {
+    background-color: #ffaa22;
+}
+
+.offline .user-status,
+.absent .user-status {
+    background-color: #e5e5e5;
+}
+
+.glyph-container {
+    position: relative;
+    float: right;
+    margin-top: 4px;
+
+    .flag {
+        float: right;
+        margin-left: 5px;
+    }
+
+    .admin {
+        float: right;
+        width: 11px;
+        height: 11px;
+        margin-left: 5px;
+        background: url('../../images/crown-admin.png') no-repeat;
+    }
+
+    .inactive-since {
+        float: right;
+        line-height: 11px;
+    }
+}
+
+.inactive-since {
+    float: right;
+    font-size: 11px;
+    font-weight: bold;
+    color: #ccc;
+}
+
+.note {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (max-width:900px) {
+    .users {
+        width: 200px;
+    }
+
+    .user.inactive .details.admin .name-container .name {
+        width: 85px;
+    }
+
+    .user .details .name-container .name {
+        width: 105px;
+    }
+}
+
+@media (max-width:700px) {
+    .users {
+        width: 150px;
+    }
+
+    .user .details .name-container .name {
+        width: 55px;
+    }
+}
+
+@media screen and (max-width:480px) {
+    h3.userlist-header {
+        padding: 2px 4px;
+    }
+
+        .userlist-header span {
+            font-size: 10px;
+        }
+
+    .users {
+        width: 100px;
+        right: 0px;
+        left: auto;
+    }
+
+        .users li {
+            padding: 4px 8px;
+        }
+
+        .users li.empty {
+            font-size: 80%;
+        }
+
+    .user-status {
+        margin: 0;
+    }
+
+    .glyph-container {
+        display: none;
+    }
+
+    .users:not(.expanded) {
+        width: 55px;
+    }
+
+        .users:not(.expanded) .details {
+            display: none;
+        }
+
+        .users:not(.expanded) .extended {
+            display: none;
+        }
+}
