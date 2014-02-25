@@ -302,6 +302,8 @@
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="Content\images\splash-logo.png" />
+    <Content Include="Content\less\components\navigation.less" />
+    <None Include="Content\less\home\components\info.less" />
     <Content Include="Content\less\home\content\core.less" />
     <Content Include="Content\less\home\components\message-ticker.less" />
     <Content Include="Content\less\home\components\room.less" />
@@ -312,7 +314,6 @@
     <Content Include="Content\less\home\modals\help.less" />
     <None Include="Content\less\home\content\embedly.less" />
     <Content Include="Content\themes\default\Chat.bbcnews.css" />
-    <Content Include="Content\themes\default\Chat.css" />
     <Content Include="Content\bootstrap-responsive.css" />
     <Content Include="Content\bootstrap-responsive.min.css" />
     <Content Include="Content\bootstrap.css" />
