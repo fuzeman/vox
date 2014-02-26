@@ -40,6 +40,7 @@ namespace JabbR.Middleware
                     origin.Authority == _settings.Host)
                 {
                     context.Response.Headers["Access-Control-Allow-Origin"] = GetOrigin(origin);
+                    context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
                 }
             }
 
