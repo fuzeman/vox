@@ -642,7 +642,20 @@
         window.languageResources = {
            @Html.Raw(Model.ClientLanguageResources)
         };
-        window.jabbr = {};
+
+        window.jabbr = {
+            host: "@Model.Host",
+            protocol: null
+        };
+
+        window.jabbr.protocol = window.location.protocol;
+        
+        // Strip trailing ":"
+        window.jabbr.protocol = window.jabbr.protocol.substring(0, window.jabbr.protocol.length - 1);
+        
+        window.jabbr.channel = {
+            protocol: @Html.Raw(Model.UseSecureChannel ? "\"https\"" : "null") || window.jabbr.protocol || "http"
+        };
         
         @if (Model.DebugMode)
         {

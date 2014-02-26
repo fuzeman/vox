@@ -1183,4 +1183,10 @@ Use ? or type /? to display the FAQ and list of commands.</value>
   <data name="SendMessageTooLong" xml:space="preserve">
     <value>You cannot post this message. It is too long.</value>
   </data>
+  <data name="Administration_Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Administration_UseSecureChannel" xml:space="preserve">
+    <value>Use Secure Channel</value>
+  </data>
 </root>

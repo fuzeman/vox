@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace JabbR.ViewModels
 {
     public class SettingsViewModel
     {
+        public string Host { get; set; }
+        public bool UseSecureChannel { get; set; }
+
         public string GoogleAnalytics { get; set; }
         public string Sha { get; set; }
         public string Branch { get; set; }
