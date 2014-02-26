@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JabbR.Services;
 using Microsoft.Owin;
+using Nancy;
 using Ninject;
 
 namespace JabbR.Middleware
@@ -30,12 +31,15 @@ namespace JabbR.Middleware
         {
             var context = new OwinContext(env);
 
-            if (context.Request.Uri.AbsolutePath.StartsWith("/signalr"))
+            if (context.Request.Uri.AbsolutePath.StartsWith("/signalr") &&
+                context.Request.Headers.ContainsKey("Origin"))
             {
+                var origin = new Uri(context.Request.Headers["Origin"]);
+
                 if (!string.IsNullOrWhiteSpace(_settings.Host) &&
-                    context.Request.Uri.Authority == _settings.Host)
+                    origin.Authority == _settings.Host)
                 {
-                    context.Response.Headers["Access-Control-Allow-Origin"] = GetOrigin(context.Request.Uri);
+                    context.Response.Headers["Access-Control-Allow-Origin"] = GetOrigin(origin);
                 }
             }
 
