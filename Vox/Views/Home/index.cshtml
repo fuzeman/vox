@@ -654,7 +654,7 @@
         window.jabbr.protocol = window.jabbr.protocol.substring(0, window.jabbr.protocol.length - 1);
         
         window.jabbr.channel = {
-            protocol: @(Model.UseSecureChannel ? "\"https\"" : "null") || window.jabbr.protocol || "http"
+            protocol: @Html.Raw(Model.UseSecureChannel ? "\"https\"" : "null") || window.jabbr.protocol || "http"
         };
         
         @if (Model.DebugMode)
