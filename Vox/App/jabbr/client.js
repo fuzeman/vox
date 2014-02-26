@@ -35,6 +35,10 @@ define([
         connection.hub.logging = logging;
         connection.hub.qs = "version=" + window.jabbrVersion;
 
+        if (jabbr.host !== undefined && jabbr.host !== '') {
+            connection.hub.url = jabbr.channel.protocol + "://" + jabbr.host + "/signalr";
+        }
+
         function generateCustomMentionRegex(strings) {
             if (strings === null || strings.length < 1) {
                 return null;
