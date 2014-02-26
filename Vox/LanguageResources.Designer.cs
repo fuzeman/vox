@@ -505,6 +505,15 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Host.
+        /// </summary>
+        public static string Administration_Host {
+            get {
+                return ResourceManager.GetString("Administration_Host", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Identity Providers.
         /// </summary>
         public static string Administration_IdentityProviders {
@@ -636,6 +645,15 @@ namespace JabbR {
         public static string Administration_Storage_Local {
             get {
                 return ResourceManager.GetString("Administration_Storage_Local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Secure Channel.
+        /// </summary>
+        public static string Administration_UseSecureChannel {
+            get {
+                return ResourceManager.GetString("Administration_UseSecureChannel", resourceCulture);
             }
         }
         
