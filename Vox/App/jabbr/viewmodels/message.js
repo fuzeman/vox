@@ -43,6 +43,7 @@ define([
         this.mention = data.User.Mention;
         this.id = data.Id;
         this.date = data.When.fromJsonDate();
+        this.editedAt = data.Edited !== null ? moment(data.Edited.fromJsonDate()).format('h:mm:ss A') : null;
         this.highlight = (reUsername.test(data.Content) || mentionsMatch(data.Content)) ? 'highlight' : '';
         this.isOwn = reUsername.test(data.User.name);
         this.isMine = data.User.Name === client.chat.state.name;

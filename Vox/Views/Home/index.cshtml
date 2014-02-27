@@ -61,6 +61,7 @@
                 {{html message}}
             </div>
             <div class="right{{if showUser}} first{{/if}}">
+                <i class="edited icon-pencil" title="${editedAt}" {{if editedAt}}style="display: inline;"{{/if}} />
                 <span id="t-${id}" class="time" title="${fulldate}">${when}</span>
             </div>
         </li>

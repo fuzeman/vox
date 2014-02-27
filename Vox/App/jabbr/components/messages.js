@@ -8,7 +8,9 @@ define([
     'jabbr/utility',
     'jabbr/viewmodels/message',
     'jabbr/components/message-ticker',
-    'jabbr/messageprocessors/collapse'
+    'jabbr/messageprocessors/collapse',
+
+    'moment'
 ], function (
     $, Logger, kernel, templates,
     events, utility, Message, MessageTicker, collapse
@@ -471,9 +473,21 @@ define([
             var $message = $('#m-' + id);
             processMessage(message);
 
-            $message.find('.middle').html(message.message);
-            $message.find('.right .time').attr('title', message.fulldate).text(message.when);
             $message.attr('id', 'm-' + message.id);
+
+            $message.find('.middle')
+                    .html(message.message);
+
+            $message.find('.right .time')
+                    .attr('title', message.fulldate)
+                    .text(message.when);
+
+            if (message.editedAt !== null) {
+                // Show edited icon
+                $message.find('.right .edited')
+                        .attr('title', message.editedAt)
+                        .css('display', 'inline');
+            }
 
             changeMessageId(id, message.id);
         }

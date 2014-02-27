@@ -978,6 +978,9 @@
     <Content Include="Content\less\home\content\github-issues.less" />
     <Content Include="Content\less\home\content\nuget.less" />
     <Content Include="Content\less\home\status.less" />
+    <EmbeddedResource Include="Migrations\201402271459111_AddChatMessageEdited.resx">
+      <DependentUpon>201402271459111_AddChatMessageEdited.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -1149,6 +1152,10 @@
     <Compile Include="Migrations\201401280137598_UpstreamAddPrecision.cs" />
     <Compile Include="Migrations\201401280137598_UpstreamAddPrecision.Designer.cs">
       <DependentUpon>201401280137598_UpstreamAddPrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402271459111_AddChatMessageEdited.cs" />
+    <Compile Include="Migrations\201402271459111_AddChatMessageEdited.Designer.cs">
+      <DependentUpon>201402271459111_AddChatMessageEdited.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\ChatRoomUserData.cs" />
     <Compile Include="Models\ChatUserMention.cs" />

@@ -14,6 +14,7 @@ namespace JabbR.ViewModels
             User = new UserViewModel(message.User);
             UserRoomPresence = ChatService.GetUserRoomPresence(message.User, message.Room);
             When = message.When;
+            Edited = message.Edited;
             HtmlEncoded = message.HtmlEncoded;
             MessageType = message.MessageType;
             Source = message.Source;
@@ -25,6 +26,7 @@ namespace JabbR.ViewModels
         public string Content { get; set; }
         public string HtmlContent { get; set; }
         public DateTimeOffset When { get; set; }
+        public DateTimeOffset? Edited { get; set; }
         public UserViewModel User { get; set; }
         public int MessageType { get; set; }
         public string UserRoomPresence { get; set; }
