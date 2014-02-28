@@ -624,7 +624,7 @@ define([
         });
         
         function setMessageReadState(mid, read) {
-            var cur = $('#m-' + mid + ' .left .state a.read');
+            var cur = $('#m-' + mid + ' .left a.read');
 
             if (read) {
                 cur.remove();
@@ -633,7 +633,7 @@ define([
                     var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
                     $readButton.click(messageReadClick);
 
-                    $('#m-' + mid + ' .left .state').append($readButton);
+                    $('#m-' + mid + ' .left').append($readButton);
                 }
             }
         }
