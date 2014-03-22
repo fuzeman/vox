@@ -482,21 +482,29 @@ define([
                     .attr('title', message.fulldate)
                     .text(message.when);
 
+            setEdited($message, message);
+
+            changeMessageId(id, message.id);
+        }
+
+        function replaceMessageElement(message) {
+            var $message = $('#m-' + message.id);
+
+            processMessage(message);
+
+            $message.find('.middle')
+                    .html(message.message);
+
+            setEdited($message, message);
+        }
+        
+        function setEdited($message, message) {
             if (message.editedAt !== null) {
                 // Show edited icon
                 $message.find('.right .edited')
                         .attr('title', message.editedAt)
                         .css('display', 'inline');
             }
-
-            changeMessageId(id, message.id);
-        }
-
-        function replaceMessageElement(message) {
-            processMessage(message);
-
-            $('#m-' + message.id).find('.middle')
-                                 .html(message.message);
         }
 
         function messageExists(id) {
