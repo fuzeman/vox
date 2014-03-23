@@ -636,12 +636,16 @@ define([
 
             if (read) {
                 cur.remove();
-            } else {
-                if (cur.length === 0) {
-                    var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
-                    $readButton.click(messageReadClick);
+            } else if (cur.length === 0) {
+                var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
+                $readButton.click(messageReadClick);
 
-                    $('#m-' + mid + ' .left').append($readButton);
+                var $message = $('#m-' + mid + ' .left');
+
+                if ($message.length > 0) {
+                    $message.append($readButton);
+                } else {
+                    logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '"');
                 }
             }
         }
