@@ -659,7 +659,7 @@ define([
 
             // Check if message exists
             if ($message.length === 0) {
-                logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '"');
+                logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '" (network lag)');
                 return;
             }
                 
@@ -668,6 +668,8 @@ define([
                 .click(messageReadClick);
             
             $message.append($readButton);
+
+            logger.info('Set read state for message with id "' + mid + '"');
         }
 
         function messageReadClick() {
