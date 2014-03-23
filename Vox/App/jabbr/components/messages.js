@@ -28,7 +28,8 @@ define([
         var $document = $(document),
             messageSendingDelay = 1500,
             lastPrivate = null,
-            pendingMessages = {};
+            pendingMessages = {},
+            unreadMessages = {};
 
         function dateHeaderFormat(date) {
             return moment(date).format('dddd, MMMM Do YYYY');
@@ -112,7 +113,13 @@ define([
                     MessageTicker.appendMessage(message, roomName);
                 }
             }
+            
+            // Set state if message is unread
+            if (unreadMessages[message.id] !== undefined) {
+                setMessageReadState(message.id, false);
+            }
 
+            // Add rich content
             if (message.htmlContent) {
                 addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
@@ -634,20 +641,33 @@ define([
         function setMessageReadState(mid, read) {
             var cur = $('#m-' + mid + ' .left a.read');
 
+            // Remove cached state and button if we are marking it read
             if (read) {
+                delete unreadMessages[mid];
                 cur.remove();
-            } else if (cur.length === 0) {
-                var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
-                $readButton.click(messageReadClick);
-
-                var $message = $('#m-' + mid + ' .left');
-
-                if ($message.length > 0) {
-                    $message.append($readButton);
-                } else {
-                    logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '"');
-                }
+                return;
             }
+            
+            // Cache 'unread' state (if message doesn't exist yet)
+            unreadMessages[mid] = true;
+
+            // Check if button already exists
+            if (cur.length > 0) {
+                return;
+            }
+            var $message = $('#m-' + mid + ' .left');
+
+            // Check if message exists
+            if ($message.length === 0) {
+                logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '"');
+                return;
+            }
+                
+            // Create button
+            var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>')
+                .click(messageReadClick);
+            
+            $message.append($readButton);
         }
 
         function messageReadClick() {
