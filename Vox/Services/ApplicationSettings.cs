@@ -14,6 +14,11 @@ namespace JabbR.Services
             AllowRoomCreation = true;
         }
 
+        public string Host { get; set; }
+
+        public bool UseSecureChannel { get; set; }
+
+
         public string EncryptionKey { get; set; }
 
         public string VerificationKey { get; set; }
@@ -82,6 +87,9 @@ namespace JabbR.Services
         {
             return new ApplicationSettings
             {
+                Host = string.Empty,
+                UseSecureChannel = false,
+
                 EncryptionKey = CryptoHelper.ToHex(GenerateRandomBytes()),
                 VerificationKey = CryptoHelper.ToHex(GenerateRandomBytes()),
                 MaxFileUploadBytes = 5242880,

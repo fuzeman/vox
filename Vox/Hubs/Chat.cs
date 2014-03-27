@@ -209,12 +209,14 @@ namespace JabbR
                 // Create a true unique id and save the message to the db
                 id = Guid.NewGuid().ToString("d");
                 chatMessage = _service.AddMessage(user, room, id, clientMessage.Content);
+
                 _repository.CommitChanges();
             }
             else if (chatMessage.User == user)
             {
                 chatMessage.Content = clientMessage.Content;
                 chatMessage.HtmlContent = null;
+                chatMessage.Edited = DateTimeOffset.UtcNow;
 
                 _repository.Update(chatMessage);
                 _repository.CommitChanges();

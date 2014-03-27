@@ -43,6 +43,7 @@ define([
             $richness = $('#room-preferences .richness'),
             $roomActions = $('#room-actions'),
             $notify = $('#room-actions .notify'),
+            $userlistMode = $('#room-actions .userlist-mode'),
             $tabs = $('#tabs'),
             $chatArea = $('#chat-area'),
             $kickedPopup = $('#jabbr-kicked'),
@@ -235,13 +236,17 @@ define([
             var notifyState = state.getRoomPreference(roomName, 'notify') || 'mentions';
 
             if (notifyState === 'all' && $element.hasClass('notify-mentions')) {
-                $element.removeClass('notify-mentions');
-                $element.addClass('notify-all');
+                $element.removeClass('notify-mentions')
+                        .addClass('notify-all');
+                
                 $('.notify-text', $element).text('All');
+                $("i", $element).attr('class', 'icon-bullhorn');
             } else if (notifyState === 'mentions' && $element.hasClass('notify-all')) {
-                $element.removeClass('notify-all');
-                $element.addClass('notify-mentions');
+                $element.removeClass('notify-all')
+                        .addClass('notify-mentions');
+                
                 $('.notify-text', $element).text('Mentions');
+                $("i", $element).attr('class', 'icon-bell');
             }
         }
 
@@ -254,6 +259,31 @@ define([
                 $element.removeClass('off');
             } else {
                 $element.addClass('off');
+            }
+        }
+        
+        function toggleUserListMode($messages, $users) {
+            $messages = typeof $messages !== 'undefined' ? $messages : $('.messages', $chatArea);
+            $users = typeof $users !== 'undefined' ? $users : $('.users', $chatArea);
+
+            var mode = state.getPreference('userlist-mode') || 'auto';
+            
+            if (mode === 'expanded') {
+                $messages.addClass('expanded');
+                $users.addClass('expanded');
+
+                $('i', $userlistMode).attr('class', 'icon-long-arrow-right');
+
+                $userlistMode.removeClass('expand')
+                             .addClass('collapse');
+            } else {
+                $messages.removeClass('expanded');
+                $users.removeClass('expanded');
+
+                $('i', $userlistMode).attr('class', 'icon-long-arrow-left');
+
+                $userlistMode.removeClass('collapse')
+                             .addClass('expand');
             }
         }
 
@@ -389,11 +419,13 @@ define([
             userContainer = $('<div/>').attr('id', 'userlist-' + roomId)
                 .addClass('users')
                 .appendTo($chatArea).hide();
-            templates.userlist.tmpl({ listname: 'Room Owners', id: 'userlist-' + roomId + '-owners' })
+            templates.userlist.tmpl({ listname: 'Owners', id: 'userlist-' + roomId + '-owners' })
                 .addClass('owners')
                 .appendTo(userContainer);
             templates.userlist.tmpl({ listname: 'Users', id: 'userlist-' + roomId + '-active' })
                 .appendTo(userContainer);
+
+            toggleUserListMode($messages, userContainer);
 
             $tabs.find('li')
                 .not('.lobby')
@@ -528,6 +560,18 @@ define([
 
             ev.preventDefault();
             return false;
+        });
+
+        $userlistMode.click(function () {
+            var mode = state.getPreference('userlist-mode') || 'auto';
+            
+            if (mode === 'auto') {
+                state.setPreference('userlist-mode', 'expanded');
+            } else {
+                state.setPreference('userlist-mode', 'auto');
+            }
+            
+            toggleUserListMode();
         });
 
         // #endregion

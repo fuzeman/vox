@@ -1,0 +1,352 @@
+﻿.messages {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    right: 235px;
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    background-color: #fff;
+
+    li {
+        list-style-type: none;
+        position: relative;
+        margin: 0px;
+
+        img.gravatar {
+            height: 16px;
+            width: 16px;
+            display: inline-block;
+            float: left;
+            margin: 0 2px 0 0;
+        }
+
+        .right {
+            position: absolute;
+            padding: 5px;
+            top: 0px;
+            right: 0px;
+            width: 90px;
+            font-size: 0.9em;
+            text-align: right;
+            color: #bbb;
+
+
+            .edited {
+                display: none;
+
+                margin-right: 2px;
+            }
+        }
+    }
+
+    li.message {
+        padding: 0px;
+        border-left: 175px solid #f1f1f1; /* background color for left column (user info) */
+    }
+
+    li.message.my-message {
+        border-color: #E4ECF1;
+        background: #f5f5f5;
+    }
+
+    li.message.my-message.editing {
+        background-color: lightgoldenrodyellow;
+    }
+
+    li.welcome .right .time {
+        color: #666;
+        font-weight: normal;
+    }
+}
+
+.message {
+    border-bottom: 1px solid #eee;
+
+    img {
+        max-width: 300px;
+        max-height: 250px;
+    }
+
+    .left {
+        float: left;
+        width: 170px; /* width should exclude padding */
+        padding: 5px;
+        margin-left: -175px;
+
+        .name {
+            font-weight: 400;
+            font-size: small;
+            cursor: pointer;
+            overflow: hidden;
+            max-width: 140px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            float: left;
+        }
+
+        a.read {
+            float: right;
+            line-height: 17px;
+            font-size: 17px;
+            text-decoration: none;
+            color: rgba(0, 16, 63, 0.4);
+            margin-right: 5px;
+        }
+
+        a.read:hover,
+        a.read:focus {
+            color: rgb(0, 85, 128);
+        }
+    }
+
+    .middle {
+        margin-right: 95px;
+        padding: 5px;
+        word-wrap: break-word;
+    }
+}
+
+.message.continue {
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* arrow to the left of a message */
+.message .middle.first:before,
+.message.my-message .middle.first:before,
+.message.highlight .middle.first:before,
+.message.highlight.my-message .middle.first:before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid #ffffff;
+    border-bottom: 8px solid rgba(255,255,255,0);
+    border-top: 8px solid #ffffff;
+    border-top: 8px solid rgba(255,255,255,0);
+    border-right: 8px solid white;
+}
+
+.message.my-message .middle.first:before,
+.message.highlight.my-message .middle.first:before {
+    border-right: 8px solid #f5f5f5;
+}
+
+.message.highlight .middle.first:before {
+    border-right: 8px solid #fff6bd;
+}
+
+.action .content,
+.pm .content,
+.error .content,
+.broadcast .content {
+    margin-right: 95px;
+}
+
+.pm {
+    color: Red;
+    padding: 5px;
+}
+
+.welcome {
+    color: #031531;
+    padding: 5px;
+    background-color: #c0e8ff;
+    font-weight: bold;
+}
+
+li.error {
+    padding: 5px;
+    background-color: #fddfde;
+    border-bottom: 1px solid #fbc7c6;
+}
+
+.broadcast {
+    color: #c09853;
+    padding: 5px;
+    background-color: #fff6bd;
+    font-weight: bold;
+}
+
+.action {
+    color: #9c009c;
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+
+    a.info {
+        color: #9c009c;
+        font-style: italic;
+        text-decoration: none;
+    }
+
+    a.info:visited {
+        color: inherit;
+    }
+}
+
+.postedNotification {
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+
+    .content {
+        margin-right: 95px;
+    }
+
+    img {
+        width: 16px;
+        height: 16px;
+        margin-top: -5px;
+    }
+
+}
+
+.notification {
+    color: #bbb;
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+
+    a {
+        color: #71ABC8;
+    }
+
+    a.info {
+        color: #bbb;
+        font-style: italic;
+        text-decoration: none;
+    }
+
+    a.info:visited {
+        color: inherit;
+    }
+
+    .emoji20 {
+        opacity: 0.4;
+    }
+}
+
+.list-header {
+    padding: 3px 5px;
+    color: #c5c5c5;
+    border-bottom: 1px solid #eee;
+
+    .content {
+        font-size: 0.9em;
+    }
+}
+
+.list-item {
+    padding: 5px;
+    padding-left: 10px;
+    border-bottom: 1px solid #f1f1f1;
+
+    .right {
+        /* hide time for list items */
+        display: none;
+    }
+
+}
+
+
+@media (max-width:900px) {
+    .messages {
+        right: 200px;
+
+        li.message {
+            border-left: 115px solid #f1f1f1;
+        }
+    }
+
+    .message .left {
+        margin-left: -115px;
+        width: 100px;
+
+        .name {
+            width: 55px;
+            max-width: 55px;
+        }
+    }
+}
+
+@media (max-width:700px) {
+    .messages {
+        right: 150px;
+
+        li.message {
+            border-left: 95px solid #f1f1f1;
+        }
+    }
+
+    .message .left {
+        margin-left: -95px;
+        width: 90px;
+
+        .name {
+            width: 45px;
+            max-width: 45px;
+        }
+    }
+}
+
+@media screen and (max-width:480px) {
+    .messages {
+        width: auto;
+        right: 100px;
+        left: 0px;
+
+        li.message {
+            border-left: 30px solid #f1f1f1;
+            padding: 3px;
+        }
+    }
+
+    .message .left {
+        margin-left: -32px;
+        margin-right: -8px;
+        width: 30px;
+        padding: 0;
+        padding-left: 3px;
+
+        .name {
+            display: none;
+        }
+    }
+
+    .messages .middle, .notification .content,
+    .action .content, .pm .content, .error .content, .broadcast .content {
+        display: inline;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* arrow to the left of a message */
+    .message .middle.first:before,
+    .message.my-message .middle.first:before,
+    .message.highlight .middle.first:before,
+    .message.highlight.my-message .middle.first:before {
+        top: 3px;
+    }
+
+    .messages li .right {
+        float: right;
+        display: inline;
+        padding: 0;
+        position: inherit;
+        width: auto;
+        margin-left: 6px;
+    }
+
+    .message.loading .left .state,
+    .message.failed .left .state {
+        height: 18px;
+    }
+
+    .messages:not(.expanded) {
+        right: 55px;
+    }
+}

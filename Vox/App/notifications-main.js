@@ -6,6 +6,7 @@ require.config({
         'jquery': '../Scripts/jquery-2.0.3',
         'jquery.pubsub': '../Scripts/jquery.pubsub',
         
+        'hljs': '../Scripts/highlight.pack',
         'markdown': '../Scripts/Markdown.Converter',
         'moment': '../Scripts/moment.min',
         'linkify': '../Scripts/ba-linkify.min'

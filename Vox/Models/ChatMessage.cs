@@ -15,6 +15,7 @@ namespace JabbR.Models
         public virtual ChatRoom Room { get; set; }
         public virtual ChatUser User { get; set; }
         public DateTimeOffset When { get; set; }
+        public DateTimeOffset? Edited { get; set; }
         public bool HtmlEncoded { get; set; }
         public int MessageType { get; set; }
 

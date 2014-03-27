@@ -8,7 +8,9 @@ define([
     'jabbr/utility',
     'jabbr/viewmodels/message',
     'jabbr/components/message-ticker',
-    'jabbr/messageprocessors/collapse'
+    'jabbr/messageprocessors/collapse',
+
+    'moment'
 ], function (
     $, Logger, kernel, templates,
     events, utility, Message, MessageTicker, collapse
@@ -26,7 +28,8 @@ define([
         var $document = $(document),
             messageSendingDelay = 1500,
             lastPrivate = null,
-            pendingMessages = {};
+            pendingMessages = {},
+            unreadMessages = {};
 
         function dateHeaderFormat(date) {
             return moment(date).format('dddd, MMMM Do YYYY');
@@ -110,7 +113,13 @@ define([
                     MessageTicker.appendMessage(message, roomName);
                 }
             }
+            
+            // Set state if message is unread
+            if (unreadMessages[message.id] !== undefined) {
+                setMessageReadState(message.id, false);
+            }
 
+            // Add rich content
             if (message.htmlContent) {
                 addChatMessageContent(message.id, message.htmlContent, room.getName());
             }
@@ -471,18 +480,38 @@ define([
             var $message = $('#m-' + id);
             processMessage(message);
 
-            $message.find('.middle').html(message.message);
-            $message.find('.right .time').attr('title', message.fulldate).text(message.when);
             $message.attr('id', 'm-' + message.id);
+
+            $message.find('.middle')
+                    .html(message.message);
+
+            $message.find('.right .time')
+                    .attr('title', message.fulldate)
+                    .text(message.when);
+
+            setEdited($message, message);
 
             changeMessageId(id, message.id);
         }
 
         function replaceMessageElement(message) {
+            var $message = $('#m-' + message.id);
+
             processMessage(message);
 
-            $('#m-' + message.id).find('.middle')
-                                 .html(message.message);
+            $message.find('.middle')
+                    .html(message.message);
+
+            setEdited($message, message);
+        }
+        
+        function setEdited($message, message) {
+            if (message.editedAt !== null) {
+                // Show edited icon
+                $message.find('.right .edited')
+                        .attr('title', message.editedAt)
+                        .css('display', 'inline');
+            }
         }
 
         function messageExists(id) {
@@ -610,18 +639,37 @@ define([
         });
         
         function setMessageReadState(mid, read) {
-            var cur = $('#m-' + mid + ' .left .state a.read');
+            var cur = $('#m-' + mid + ' .left a.read');
 
+            // Remove cached state and button if we are marking it read
             if (read) {
+                delete unreadMessages[mid];
                 cur.remove();
-            } else {
-                if (cur.length === 0) {
-                    var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>');
-                    $readButton.click(messageReadClick);
-
-                    $('#m-' + mid + ' .left .state').append($readButton);
-                }
+                return;
             }
+            
+            // Cache 'unread' state (if message doesn't exist yet)
+            unreadMessages[mid] = true;
+
+            // Check if button already exists
+            if (cur.length > 0) {
+                return;
+            }
+            var $message = $('#m-' + mid + ' .left');
+
+            // Check if message exists
+            if ($message.length === 0) {
+                logger.warn('Unable to set read state, couldn\'t find message with id "' + mid + '" (network lag)');
+                return;
+            }
+                
+            // Create button
+            var $readButton = $('<a href="#" class="read"><i class="icon-ok-circle"></i></a>')
+                .click(messageReadClick);
+            
+            $message.append($readButton);
+
+            logger.info('Set read state for message with id "' + mid + '"');
         }
 
         function messageReadClick() {

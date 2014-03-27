@@ -53,6 +53,8 @@ namespace JabbR
                 app.Use(typeof(RequireHttpsHandler));
             }
 
+            app.Use(typeof(CrossOriginHubHandler), kernel);
+
             app.UseErrorPage();
 
             SetupAuth(app, kernel);

@@ -247,13 +247,17 @@ define([
             }
 
             if ($(this).hasClass("notify-all")) {
-                $(this).removeClass('notify-all');
-                $(this).addClass('notify-mentions');
+                $(this).removeClass('notify-all')
+                       .addClass('notify-mentions');
+                
                 $(".notify-text", this).text('Mentions');
+                $("i", this).attr('class', 'icon-bell');
             } else if ($(this).hasClass("notify-mentions")) {
-                $(this).removeClass('notify-mentions');
-                $(this).addClass('notify-all');
+                $(this).removeClass('notify-mentions')
+                       .addClass('notify-all');
+                
                 $(".notify-text", this).text('All');
+                $("i", this).attr('class', 'icon-bullhorn');
             }
 
             if ($(this).hasClass("notify-all")) {

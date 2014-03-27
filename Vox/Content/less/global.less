@@ -1,0 +1,114 @@
+﻿@import "_lib/elements.less";
+
+@import "components/elements.less";
+@import "components/navigation.less";
+
+body {
+    font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
+    font-weight: 400;
+    font-size: 14px;
+    background-color: #f5f5f5;
+    color: #000;
+}
+
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -75px 0 0 -75px;
+}
+
+input, button, select, textarea {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
+    margin: 10px 0;
+}
+
+
+h1, h2, h3 {
+    font-weight: 100;
+}
+
+b, strong {
+    font-family: "Segoe UI","Segoe UI Web Regular","Segoe UI Symbol","Helvetica Neue","BBAlpha Sans","S60 Sans",Arial,"sans-serif";
+    font-weight: 700;
+}
+
+.tab-content {
+    padding-top: 5px;
+}
+
+#page {
+    position: relative;
+}
+
+/* Flatten das boostrap */
+.well, .navbar-inner, .popover, .btn, .tooltip, input, select, textarea, pre, .progress, .modal, .add-on, .alert, .table-bordered, .nav > .active > a, .dropdown-menu, .tooltip-inner, .badge, .label, .img-polaroid, .tabs-left > .nav-tabs > li > a {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    border-radius: 0px !important;
+    border-collapse: collapse !important;
+    background-image: none !important;
+}
+
+.res-switch .small {
+    display: none;
+}
+
+.highlight {
+    background-color: #fff6bd;
+}
+
+.hide {
+    display: none;
+}
+
+/* CLEAR FIX */
+.clearfix:after {
+    clear: both;
+    display: block;
+    content: " ";
+    height: 0px;
+    visibility: hidden;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+/* Hide these rules from IE-mac \*/
+* html .clearfix {
+    height: 1%;
+}
+
+.clearfix {
+    display: block;
+}
+
+li.clearfix {
+    display: list-item;
+}
+
+@media screen and (max-width:480px) {
+    .res-switch i.small {
+        display: inline;
+    }
+
+    .res-switch .large {
+        display: none;
+    }
+}
+
+@media only screen and (-Webkit-min-device-pixel-ratio: 1.5), only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min-device-pixel-ratio: 1.5) {
+    .close {
+        line-height: 15px;
+    }
+}

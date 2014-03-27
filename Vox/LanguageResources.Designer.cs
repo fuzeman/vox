@@ -505,6 +505,15 @@ namespace JabbR {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Host.
+        /// </summary>
+        public static string Administration_Host {
+            get {
+                return ResourceManager.GetString("Administration_Host", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Identity Providers.
         /// </summary>
         public static string Administration_IdentityProviders {
@@ -636,6 +645,15 @@ namespace JabbR {
         public static string Administration_Storage_Local {
             get {
                 return ResourceManager.GetString("Administration_Storage_Local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Secure Channel.
+        /// </summary>
+        public static string Administration_UseSecureChannel {
+            get {
+                return ResourceManager.GetString("Administration_UseSecureChannel", resourceCulture);
             }
         }
         
@@ -2606,7 +2624,7 @@ namespace JabbR {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;span class=&quot;time&quot; data-timestamp=&quot;{2}&quot;&gt;&lt;/span&gt;.
+        ///   Looks up a localized string similar to {0} in &lt;strong&gt;&lt;cite&gt;{1}&lt;/cite&gt;&lt;/strong&gt; on &lt;a class=&quot;time&quot; href=&quot;{2}&quot; data-timestamp=&quot;{3}&quot;&gt;&lt;/a&gt;.
         /// </summary>
         public static string Notifications_MetadataInfo {
             get {

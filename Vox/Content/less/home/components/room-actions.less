@@ -1,0 +1,116 @@
+﻿#room-actions {
+    margin-right: 7px;
+    top: 8px;
+    display: none;
+
+    .btn {
+        padding: 2px 8px;
+    }
+
+    .btn.dropdown-toggle {
+        padding: 2px 8px;
+    }
+
+    .userlist-mode {
+        display: none;
+
+        height: 26px;
+    }
+}
+
+#room-preferences a:focus, #room-preferences a:hover {
+    color: #e5e5e5;
+}
+
+#room-preferences a {
+    cursor: pointer;
+}
+
+/* Sound*/
+
+#room-preferences .sound:hover .icon-sound {
+    background-image: url('/Content/images/sound-on-white.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .sound.off .icon-sound {
+    background-image: url('/Content/images/sound-off.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .sound.off:hover .icon-sound {
+    background-image: url('/Content/images/sound-off-white.png');
+    background-repeat: no-repeat;
+}
+
+/* Toast */
+
+#enable-disable-toast {
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    bottom: 35px;
+    height: 20px;
+    padding: 5px;
+    left: 71%;
+}
+
+#room-preferences .toast:hover .icon-toast {
+    background-image: url('/Content/images/toast-on-white.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .toast.off .icon-toast {
+    background-image: url('/Content/images/toast-off.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .toast.off:hover .icon-toast {
+    background-image: url('/Content/images/toast-off-white.png');
+    background-repeat: no-repeat;
+}
+
+/* Richness */
+
+#room-preferences .richness:hover .icon-richness {
+    background-image: url('/Content/images/richness-on-white.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .richness.off .icon-richness {
+    background-image: url('/Content/images/richness-off.png');
+    background-repeat: no-repeat;
+}
+
+#room-preferences .richness.off:hover .icon-richness {
+    background-image: url('/Content/images/richness-off-white.png');
+    background-repeat: no-repeat;
+}
+
+/* Download */
+
+#room-preferences .icon-download {
+    background-position: 0 0;
+    background-size: 10px 14px;
+    height: 14px;
+    width: 10px;
+    margin-left: 2px;
+    margin-right: 6px;
+    background-repeat: no-repeat;
+}
+
+#room-preferences .download:hover .icon-download {
+    background-repeat: no-repeat;
+}
+
+@media screen and (max-width:480px) {
+    #room-actions .userlist-mode {
+        display: inline-block;
+    }
+}
+
+@media screen and (max-height:400px) {
+    #room-actions {
+        top: 4px;
+    }
+}

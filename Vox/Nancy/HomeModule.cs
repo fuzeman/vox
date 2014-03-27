@@ -27,6 +27,9 @@ namespace JabbR.Nancy
                 {
                     var viewModel = new SettingsViewModel
                     {
+                        Host = settings.Host,
+                        UseSecureChannel = settings.UseSecureChannel,
+
                         GoogleAnalytics = settings.GoogleAnalytics,
                         Sha = configuration.DeploymentSha,
                         Branch = configuration.DeploymentBranch,
