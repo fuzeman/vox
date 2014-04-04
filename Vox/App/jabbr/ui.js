@@ -14,6 +14,7 @@ define([
     'jabbr/components/emoji',
     'jabbr/utility',
 
+    'colorpicker',
     'jquery.pulse',
     'jquery.autotabcomplete',
     'moment'
@@ -774,6 +775,29 @@ define([
                 yy: "%d years"
             }
         });
+        
+        //
+        // Background Color Picker
+        //
+
+        var showBackgroundPicker = function () {
+            $('#background-picker').ColorPicker({
+                color: '#4CF3FF',
+                flat: true,
+                
+                onChange: function (hsb, hex, rgb) {
+                    $('#background-tint').css('background',
+                        'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.498)'
+                    );
+                },
+                onSubmit: function (hsb, hex, rgb) {
+                    this.onChange(hsb, hex, rgb);
+                    $('#background-picker').hide();
+                }
+            }).show();
+        };
+
+        window.showBackgroundPicker = showBackgroundPicker;
 
         var handlers = {
             bind: function () {

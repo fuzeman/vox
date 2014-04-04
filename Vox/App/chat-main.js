@@ -7,6 +7,8 @@ require.config({
 
         'bootstrap': '../Scripts/bootstrap',
 
+        'colorpicker': '../Scripts/colorpicker.min',
+
         'jquery': '../Scripts/jquery-2.0.3',
         'jquery-migrate': '../Scripts/jquery-migrate-1.2.1.min',
         'jquery.cookie': '../Scripts/jquery.cookie',
