@@ -16,7 +16,12 @@ namespace JabbR.ContentProviders
     {
         public List<string> HostExceptions = new List<string>
         {
-            "docs.google.com"
+            // google docs - embeds are resource heavy
+            "docs.google.com",
+
+            // kickstarter - embeds auto-play
+            "www.kickstarter.com",
+            "kickstarter.com"
         }; 
 
         private readonly IKernel _kernel;
