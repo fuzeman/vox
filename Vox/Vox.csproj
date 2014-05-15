@@ -1042,6 +1042,7 @@
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
     <Content Include="Scripts\stacktrace-min-0.4.js" />
+    <Content Include="Templates\ContentProvider\gfycat.liquid" />
     <None Include="Views\Notifications\view.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -1070,6 +1071,7 @@
     <Compile Include="Commands\ClearMentionsCommands.cs" />
     <Compile Include="Commands\MuteCommand.cs" />
     <Compile Include="Commands\UnMuteCommand.cs" />
+    <Compile Include="ContentProviders\GfycatContentProvider.cs" />
     <Compile Include="ContentProviders\EmbedlyContentProvider.cs" />
     <Compile Include="ContentProviders\MinusContentProvider.cs" />
     <Content Include="Views\EmailTemplates\RequestResetPassword.cshtml" />
