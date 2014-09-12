@@ -199,7 +199,7 @@ namespace JabbR
             // We need to extend this since the inital connect might take a while
             configuration.TransportConnectTimeout = TimeSpan.FromSeconds(30);
 
-            configuration.DefaultMessageBufferSize = 500;
+            configuration.DefaultMessageBufferSize = 50;
 
             var config = new HubConfiguration
             {
